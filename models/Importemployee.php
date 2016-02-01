@@ -45,9 +45,9 @@ class Importemployee extends \yii\db\ActiveRecord
     {
         return [
             'importemployee_id' => 'Importemployee ID',
-            'importemployee_combination' => 'Importemployee Combination',
-            'id_build' => 'Id Build',
-            'id_podraz' => 'Id Podraz',
+            'importemployee_combination' => 'Словосочетание',
+            'id_build' => 'Здание',
+            'id_podraz' => 'Подразделение',
         ];
     }
 

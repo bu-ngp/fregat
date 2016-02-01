@@ -89,3 +89,10 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+
+select.form-control.inactive {
+  -moz-appearance: none;
+   -webkit-appearance: none;
+   appearance: none;
+   cursor: default;
+}

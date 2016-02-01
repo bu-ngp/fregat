@@ -41,7 +41,7 @@ class Build extends \yii\db\ActiveRecord
     {
         return [
             'build_id' => 'Build ID',
-            'build_name' => 'Build Name',
+            'build_name' => 'Здание',
         ];
     }
 

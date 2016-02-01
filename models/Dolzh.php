@@ -40,7 +40,7 @@ class Dolzh extends \yii\db\ActiveRecord
     {
         return [
             'dolzh_id' => 'Dolzh ID',
-            'dolzh_name' => 'Dolzh Name',
+            'dolzh_name' => 'Должность',
         ];
     }
 

@@ -51,7 +51,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             'employee_id' => 'Employee ID',
-            'employee_fio' => 'Employee Fio',
+            'employee_fio' => 'Фамилия Имя Отчество',
             'id_dolzh' => 'Id Dolzh',
             'id_podraz' => 'Id Podraz',
             'id_build' => 'Id Build',

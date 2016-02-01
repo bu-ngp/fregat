@@ -43,7 +43,7 @@ class Impemployee extends \yii\db\ActiveRecord
         return [
             'impemployee_id' => 'Impemployee ID',
             'id_importemployee' => 'Id Importemployee',
-            'id_employee' => 'Id Employee',
+            'id_employee' => 'Сотрудник',
         ];
     }
 

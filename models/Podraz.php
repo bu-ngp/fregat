@@ -41,7 +41,7 @@ class Podraz extends \yii\db\ActiveRecord
     {
         return [
             'podraz_id' => 'Podraz ID',
-            'podraz_name' => 'Podraz Name',
+            'podraz_name' => 'Подразделение',
         ];
     }
 
