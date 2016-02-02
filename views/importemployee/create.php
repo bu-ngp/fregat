@@ -1,14 +1,19 @@
 <?php
 
 use yii\helpers\Html;
-
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Importemployee */
 
-$this->title = 'Create Importemployee';
-$this->params['breadcrumbs'][] = ['label' => 'Importemployees', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Создать словосочетание';
+/*$this->params['breadcrumbs'][] = ['label' => 'Importemployees', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;*/
+
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+
+//var_dump($this->params['breadcrumbs']);
+
 ?>
 <div class="importemployee-create">
 
@@ -16,6 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'id_podraz' => [],
+        'id_build' => [],
     ]) ?>
 
 </div>
