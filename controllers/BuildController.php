@@ -33,11 +33,13 @@ class BuildController extends Controller
     public function actionIndex()
     {
         $searchModel = new BuildSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
+        $selectelement = (string) filter_input(INPUT_GET, 'selectelement');            
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'selectelement' => $selectelement,
         ]);
     }
 
