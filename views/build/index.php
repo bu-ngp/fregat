@@ -2,9 +2,11 @@
 
 use yii\helpers\Html;
 //use yii\grid\GridView;
+use kartik\dynagrid\DynaGrid;
 use kartik\grid\GridView;
 use app\func\Proc;
 use yii\helpers\Url;
+use yii\web\View;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\BuildSearch */
@@ -29,27 +31,63 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         ?>
     </div>
     <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'export' => false,
+    DynaGrid::widget([
+        // 'export' => false,
+        'options' => ['id' => 'dynagrid-1'],
         'columns' => [
             [
-                'class' => 'yii\grid\CheckboxColumn',
-                'multiple' => false,
+                'class' => 'kartik\grid\RadioColumn',
+            //   'width' => '36px',
+            //       'headerOptions' => ['class' => 'kartik-sheet-style'],
             ],
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'kartik\grid\SerialColumn'],
             //  'build_id',
             'build_name',
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]);
-    var_dump($selectelement);
-    end($this->params['breadcrumbs']);
+            ['class' => 'kartik\grid\ActionColumn',
+                'template' => '{update} {delete}',
+                'buttons' => [
+                    'update' => function ($url, $model) {
+                        $customurl = Yii::$app->getUrlManager()->createUrl(['build/update', 'id' => $model['build_id']]);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-success']);
+                    },
+                            'delete' => function ($url, $model) {
+                        $customurl = Yii::$app->getUrlManager()->createUrl(['build/delete', 'id' => $model['build_id']]);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger']);
+                    },
+                        ],
+                    ],
+                ],
+                'gridOptions' => [
+                    'export' => false,
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'options' => ['id' => 'grid1'],
+                    'panel' => [
+                        'type' => GridView::TYPE_DEFAULT,
+                    //  'heading'=>$heading,
+                    ],
+                ]
+            ]);
+            /*   var_dump($selectelement);
+              end($this->params['breadcrumbs']);
 
-    var_dump($this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']);
-    var_dump(key(array_slice($this->params['breadcrumbs'], -1, 1, TRUE)));
+              var_dump($this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']);
+              var_dump(key(array_slice($this->params['breadcrumbs'], -1, 1, TRUE))); */
 // var_dump(array_pop(array_keys($this->params['breadcrumbs'])));
-    ?>
+            //  Yii::$app->view->registerJs("console.debug($('#grid1').length)", View::POS_END);
+            ?>
+
+
 
 </div>
+
+<script type="text/javascript">
+    //  $(document).ready(function() {
+    // js script
+    // var keys = $('#grid1').yiiGridView('getSelectedRows');
+    //  console.debug($('#grid1').length)
+
+// keys is an array consisting of the keys associated with the selected rows
+    // });
+
+</script>
