@@ -22,7 +22,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <?= $this->render('_form', [
         'model' => $model,
         'id_podraz' => [],
-        'id_build' => [],
+        'id_build' => $id_build,
     ]) ?>
 
 </div>

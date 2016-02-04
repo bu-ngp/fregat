@@ -26,7 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         echo Html::a('Добавить', ['create'], ['class' => 'btn btn-info']);
         if (!empty($selectelement)) {
             end($this->params['breadcrumbs']);
-            echo Html::a('Выбрать', [$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']], ['class' => 'btn btn-success']);
+            echo Html::a('Выбрать', "#" /*[$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']]*/, ['onclick'=>"ChooseItemGrid('".$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']."','".$selectelement."','buildgrid');",  'class' => 'btn btn-success']);
         }
         ?>
     </div>
@@ -37,6 +37,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         'columns' => [
             [
                 'class' => 'kartik\grid\RadioColumn',
+                'name' => 'buildgrid_check',
             //   'width' => '36px',
             //       'headerOptions' => ['class' => 'kartik-sheet-style'],
             ],
@@ -61,7 +62,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'export' => false,
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
-                    'options' => ['id' => 'grid1'],
+                    'options' => ['id' => 'buildgrid'],
                     'panel' => [
                         'type' => GridView::TYPE_DEFAULT,
                     //  'heading'=>$heading,
@@ -74,7 +75,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
               var_dump($this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']);
               var_dump(key(array_slice($this->params['breadcrumbs'], -1, 1, TRUE))); */
 // var_dump(array_pop(array_keys($this->params['breadcrumbs'])));
-            //  Yii::$app->view->registerJs("console.debug($('#grid1').length)", View::POS_END);
+             $this->registerJs("console.debug($('#grid1').length)", View::POS_END);
             ?>
 
 

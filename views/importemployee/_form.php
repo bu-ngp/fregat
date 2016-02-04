@@ -35,7 +35,7 @@ use yii\helpers\ArrayHelper;
             'selectelement' => 'importemployee-id_build'
                 ], ['class' => 'btn btn-success']) . '</span></div>{hint}{error}',
     ])->dropdownList(
-            $id_build, ['prompt' => 'Выбрать здание', 'class' => 'form-control inactive', "disabled" => "disabled"]
+            $id_build, [/* 'prompt' => 'Выбрать здание', */ 'class' => 'form-control inactive', "disabled" => "disabled"]
     );
     ?>
     <div class="form-group">

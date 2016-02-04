@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
+use app\models\Build;
+use app\models\Podraz;
 
 /**
  * ImportemployeeController implements the CRUD actions for Importemployee model.
@@ -66,14 +68,27 @@ class ImportemployeeController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        $model = new Importemployee();        
+        $model = new Importemployee();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-         //  return $this->redirect(['view', 'id' => $model->importemployee_id]);
-            return $this->redirect(['index']);            
+            //  return $this->redirect(['view', 'id' => $model->importemployee_id]);
+            return $this->redirect(['index']);
         } else {
+            $elem = (string) filter_input(INPUT_GET, 'selectelement');            
+        //    $idbuild = (string) filter_input(INPUT_GET, 'idvalue') === 'id_build' ? (string) filter_input(INPUT_GET, 'idvalue') : $elem;
+            $idbuild = (string) filter_input(INPUT_GET, 'idvalue');
+
+            //  'id_podraz' => Podraz::find()->select(['podraz_name'])->where(['podraz_id' => $model->id_podraz])->indexBy('podraz_id')->column(),
+
+
+            if (!empty($elem) && !empty($idbuild)) {
+                $id_build = Build::find()->select(['build_name'])->where(['build_id' => $idbuild])->indexBy('build_id')->column();
+            }
+
+
             return $this->render('create', [
                         'model' => $model,
+                        'id_build' => $id_build === null ? ['Выбрать здание'] : $id_build,
             ]);
         }
     }
