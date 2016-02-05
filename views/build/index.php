@@ -26,7 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         echo Html::a('Добавить', ['create'], ['class' => 'btn btn-info']);
         if (!empty($selectelement)) {
             end($this->params['breadcrumbs']);
-            echo Html::a('Выбрать', "#" /*[$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']]*/, ['onclick'=>"ChooseItemGrid('".$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']."','".$selectelement."','buildgrid');",  'class' => 'btn btn-success']);
+            echo Html::a('Выбрать', "#" /* [$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']] */, ['onclick' => "ChooseItemGrid('" . $this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url'] . "','" . $selectelement . "','buildgrid');", 'class' => 'btn btn-success']);
         }
         ?>
     </div>
@@ -34,28 +34,36 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     DynaGrid::widget([
         // 'export' => false,
         'options' => ['id' => 'dynagrid-1'],
+        'showPersonalize' => true,
+        'storage' => 'cookie',
         'columns' => [
-            [
-                'class' => 'kartik\grid\RadioColumn',
-                'name' => 'buildgrid_check',
-            //   'width' => '36px',
-            //       'headerOptions' => ['class' => 'kartik-sheet-style'],
-            ],
+            /*  [
+              'class' => 'kartik\grid\RadioColumn',
+              'name' => 'buildgrid_check',
+              //   'width' => '36px',
+              //       'headerOptions' => ['class' => 'kartik-sheet-style'],
+              ], */
             ['class' => 'kartik\grid\SerialColumn'],
             //  'build_id',
             'build_name',
             ['class' => 'kartik\grid\ActionColumn',
-                'template' => '{update} {delete}',
+                'template' => empty($selectelement) ? '{update} {delete}' : '{choose} {update} {delete}',
                 'buttons' => [
-                    'update' => function ($url, $model) {
+                    'choose' => function ($url, $model, $key) {
+                        // $customurl = Yii::$app->getUrlManager()->createUrl(['build/update', 'id' => $model['build_id']]);
+                        $customurl = Url::to(['build/update', 'id' => $model['build_id'], 'id' => $model['build_id']], true);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl /* ['employee' => ['id' => $model['build_id']]] */, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
+                    },
+                            'update' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['build/update', 'id' => $model['build_id']]);
-                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-success']);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning']);
                     },
                             'delete' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['build/delete', 'id' => $model['build_id']]);
                         return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger']);
                     },
                         ],
+                        'contentOptions' => ['style' => 'white-space: nowrap;']
                     ],
                 ],
                 'gridOptions' => [
@@ -63,10 +71,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'options' => ['id' => 'buildgrid'],
+                    /* 'panel' => [
+                      'type' => GridView::TYPE_DEFAULT,
+                      //  'heading'=>$heading,
+                      ], */
                     'panel' => [
                         'type' => GridView::TYPE_DEFAULT,
-                    //  'heading'=>$heading,
                     ],
+                    'toolbar' => [
+                        ['content' => '{dynagrid}'],
+                    ]
                 ]
             ]);
             /*   var_dump($selectelement);
@@ -75,7 +89,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
               var_dump($this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']);
               var_dump(key(array_slice($this->params['breadcrumbs'], -1, 1, TRUE))); */
 // var_dump(array_pop(array_keys($this->params['breadcrumbs'])));
-             $this->registerJs("console.debug($('#grid1').length)", View::POS_END);
+            $this->registerJs("console.debug($('#grid1').length)", View::POS_END);
             ?>
 
 

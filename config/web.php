@@ -40,9 +40,12 @@ $config = [
         ],
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
-            //'encodeParams' => FALSE,
-            'enablePrettyUrl' => true,
+         //   'encodeParams' => FALSE,
+          //  'enablePrettyUrl' => true,
+          //  'enableStrictParsing' => true,
+          //  'showScriptName' => false,
             'rules' => [
+              //  'encodeParams' => FALSE,
             // my rules
             ],
         ]
@@ -50,6 +53,10 @@ $config = [
     'modules' => [
         'dynagrid' => [
             'class' => '\kartik\dynagrid\Module',
+            'cookieSettings' => [
+                'httpOnly'=>true,
+                'expire'=>time() + 8640000
+            ],
         // other module settings
         ],
         'gridview' => [
