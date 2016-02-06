@@ -50,7 +50,7 @@ class Impemployee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdEmployee()
+    public function getIdemployee()
     {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee']);
     }
@@ -58,7 +58,7 @@ class Impemployee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdImportemployee()
+    public function getIdimportemployee()
     {
         return $this->hasOne(Importemployee::className(), ['importemployee_id' => 'id_importemployee']);
     }

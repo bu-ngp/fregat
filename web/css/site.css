@@ -96,3 +96,8 @@ select.form-control.inactive {
    appearance: none;
    cursor: default;
 }
+
+div.required label.control-label:after {
+    content: " *";
+    color: red;
+}

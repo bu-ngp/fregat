@@ -32,7 +32,7 @@ class Importemployee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['importemployee_combination'], 'required'],
+            [['importemployee_combination', 'id_podraz'], 'required'],
             [['id_build', 'id_podraz'], 'integer'],
             [['importemployee_combination'], 'string', 'max' => 255]
         ];

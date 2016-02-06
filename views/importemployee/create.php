@@ -7,13 +7,7 @@ use app\func\Proc;
 /* @var $model app\models\Importemployee */
 
 $this->title = 'Создать словосочетание';
-/*$this->params['breadcrumbs'][] = ['label' => 'Importemployees', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;*/
-
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
-
-//var_dump($this->params['breadcrumbs']);
-
 ?>
 <div class="importemployee-create">
 
@@ -21,8 +15,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
     <?= $this->render('_form', [
         'model' => $model,
-        'id_podraz' => [],
-        'id_build' => $id_build,
     ]) ?>
-
+    
 </div>

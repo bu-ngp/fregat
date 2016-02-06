@@ -9,20 +9,24 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
+use yii\web\Session;
 
-class SiteController extends Controller
-{
-    public function behaviors()
-    {
+class SiteController extends Controller {
+
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'setsession'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['setsession'],
+                        'allow' => true,
                     ],
                 ],
             ],
@@ -35,8 +39,7 @@ class SiteController extends Controller
         ];
     }
 
-    public function actions()
-    {
+    public function actions() {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -48,13 +51,11 @@ class SiteController extends Controller
         ];
     }
 
-    public function actionIndex()
-    {
+    public function actionIndex() {
         return $this->render('index');
     }
 
-    public function actionLogin()
-    {
+    public function actionLogin() {
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -64,19 +65,17 @@ class SiteController extends Controller
             return $this->goBack();
         }
         return $this->render('login', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
-    public function actionLogout()
-    {
+    public function actionLogout() {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
 
-    public function actionContact()
-    {
+    public function actionContact() {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -84,12 +83,35 @@ class SiteController extends Controller
             return $this->refresh();
         }
         return $this->render('contact', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
-    public function actionAbout()
-    {
+    public function actionAbout() {
         return $this->render('about');
     }
+
+    public function actionSetsession() {
+        $result = '0';
+        $modelclass = (string) filter_input(INPUT_POST, 'modelclass');
+        $field = (string) filter_input(INPUT_POST, 'field');
+        $value = (string) filter_input(INPUT_POST, 'value');
+
+        if (!empty($modelclass) && !empty($field)) {
+            $session = new Session;
+            $session->open();
+            if (isset($session[$modelclass])) {
+                $session[$modelclass] = array_replace_recursive($session[$modelclass], [
+                    'attributes' => [
+                        $field => $value,
+                    ],
+                ]);
+                $result = '1';
+            }
+            $session->close();
+        }
+
+        echo $result;
+    }
+
 }

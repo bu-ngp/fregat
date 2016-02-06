@@ -5,12 +5,15 @@ namespace app\controllers;
 use Yii;
 use app\models\Importemployee;
 use app\models\ImportemployeeSearch;
+use app\models\Impemployee;
+use app\models\ImpemployeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use app\models\Build;
 use app\models\Podraz;
+use yii\web\Session;
 
 /**
  * ImportemployeeController implements the CRUD actions for Importemployee model.
@@ -71,24 +74,47 @@ class ImportemployeeController extends Controller {
         $model = new Importemployee();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //  return $this->redirect(['view', 'id' => $model->importemployee_id]);
-            return $this->redirect(['index']);
+            //  return $this->redirect(['index']);
+            $session = new Session;
+            $session->open();
+            $bc = $session['breadcrumbs'];
+            end($bc);
+            unset($bc[key($bc)]);
+            $session['breadcrumbs'] = $bc;
+            $session->close();
+
+            return $this->redirect(['update', 'id' => $model->importemployee_id]);
         } else {
-            $elem = (string) filter_input(INPUT_GET, 'selectelement');            
-        //    $idbuild = (string) filter_input(INPUT_GET, 'idvalue') === 'id_build' ? (string) filter_input(INPUT_GET, 'idvalue') : $elem;
-            $idbuild = (string) filter_input(INPUT_GET, 'idvalue');
-
-            //  'id_podraz' => Podraz::find()->select(['podraz_name'])->where(['podraz_id' => $model->id_podraz])->indexBy('podraz_id')->column(),
-
-
-            if (!empty($elem) && !empty($idbuild)) {
-                $id_build = Build::find()->select(['build_name'])->where(['build_id' => $idbuild])->indexBy('build_id')->column();
-            }
+            $session = new Session;
+            $session->open();
+            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+            if (is_array(['foreign']) && count($session[$fmodel]['foreign']) > 0) {
+                $field = $session[$fmodel]['foreign']['field'];
+                // $model->$field = (string) filter_input(INPUT_GET, $field);
 
 
+                $value = isset(Yii::$app->request->get()[$fmodel][$field]) ? Yii::$app->request->get()[$fmodel][$field] : '';
+
+                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                    'attributes' => [
+                        $field => $value,
+                    ]
+                ]);
+
+                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                    'foreign' => NULL,
+                ]);
+
+                $model->load($session[$fmodel], 'attributes');
+            } else
+                $session[$fmodel] = [
+                    'attributes' => [],
+                ];
+
+
+            $session->close();
             return $this->render('create', [
                         'model' => $model,
-                        'id_build' => $id_build === null ? ['Выбрать здание'] : $id_build,
             ]);
         }
     }
@@ -101,12 +127,72 @@ class ImportemployeeController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->importemployee_id]);
+            return $this->redirect(['index']);
         } else {
+            $session = new Session;
+            $session->open();
+            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+
+            if (is_array($session[$fmodel]['foreign']) && count($session[$fmodel]['foreign']) > 0) {
+                $field = $session[$fmodel]['foreign']['field'];
+                // $model->$field = (string) filter_input(INPUT_GET, $field);
+
+                $value = isset(Yii::$app->request->get()[$fmodel][$field]) ? Yii::$app->request->get()[$fmodel][$field] : '';
+
+                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                    'attributes' => [
+                        $field => $value,
+                    ]
+                ]);
+
+                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                    'foreign' => NULL,
+                ]);
+
+                $model->load($session[$fmodel], 'attributes');
+            } else {
+                //unset($session[$fmodel]);
+                $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
+                    'attributes' => $model->attributes(),
+                ]);
+            }
+
+
+            $session->close();
+
+            $searchModel = new ImpemployeeSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+            $dataProvider->sort->attributes['idemployee.employee_id'] = [
+                'asc' => ['idemployee.employee_id' => SORT_ASC],
+                'desc' => ['idemployee.employee_id' => SORT_DESC],
+            ];
+            
+            $dataProvider->sort->attributes['idemployee.employee_fio'] = [
+                'asc' => ['idemployee.employee_fio' => SORT_ASC],
+                'desc' => ['idemployee.employee_fio' => SORT_DESC],
+            ];
+
+            $dataProvider->sort->attributes['idemployee.iddolzh.dolzh_name'] = [
+                'asc' => ['idemployee.iddolzh.dolzh_name' => SORT_ASC],
+                'desc' => ['idemployee.iddolzh.dolzh_name' => SORT_DESC],
+            ];
+
+            $dataProvider->sort->attributes['idemployee.idbuild.build_name'] = [
+                'asc' => ['idemployee.idbuild.build_name' => SORT_ASC],
+                'desc' => ['idemployee.idbuild.build_name' => SORT_DESC],
+            ];
+
+            $dataProvider->sort->attributes['idemployee.idpodraz.podraz_name'] = [
+                'asc' => ['idemployee.idpodraz.podraz_name' => SORT_ASC],
+                'desc' => ['idemployee.idpodraz.podraz_name' => SORT_DESC],
+            ];
+
             return $this->render('update', [
                         'model' => $model,
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
             ]);
         }
     }

@@ -50,7 +50,7 @@ class Employee extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'employee_id' => 'Employee ID',
+            'employee_id' => 'Код',
             'employee_fio' => 'Фамилия Имя Отчество',
             'id_dolzh' => 'Id Dolzh',
             'id_podraz' => 'Id Podraz',
@@ -61,7 +61,7 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdBuild()
+    public function getIdbuild()
     {
         return $this->hasOne(Build::className(), ['build_id' => 'id_build']);
     }
@@ -69,7 +69,7 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdDolzh()
+    public function getIddolzh()
     {
         return $this->hasOne(Dolzh::className(), ['dolzh_id' => 'id_dolzh']);
     }
@@ -77,7 +77,7 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdPodraz()
+    public function getIdpodraz()
     {
         return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz']);
     }
@@ -85,7 +85,7 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImpemployees()
+    public function getimpemployees()
     {
         return $this->hasMany(Impemployee::className(), ['id_employee' => 'employee_id']);
     }

@@ -8,14 +8,14 @@ use app\models\BuildSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Session;
 
 /**
  * BuildController implements the CRUD actions for Build model.
  */
-class BuildController extends Controller
-{
-    public function behaviors()
-    {
+class BuildController extends Controller {
+
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -30,17 +30,42 @@ class BuildController extends Controller
      * Lists all Build models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new BuildSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
-        $selectelement = (string) filter_input(INPUT_GET, 'selectelement');            
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $foreignmodel = (string) filter_input(INPUT_GET, 'foreignmodel');
+
+        if (!empty($foreignmodel)) {
+            $session = new Session;
+            $session->open();
+            $session[$foreignmodel] = array_replace_recursive(isset($session[$foreignmodel]) ? $session[$foreignmodel] : [], ['foreign' => [
+                    'url' => (string) filter_input(INPUT_GET, 'url'),
+                    'field' => (string) filter_input(INPUT_GET, 'field'),
+                    'id' => (string) filter_input(INPUT_GET, 'id'),
+            ]]);
+
+            $session->close();
+        }
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'selectelement' => $selectelement,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'foreignmodel' => $foreignmodel,
         ]);
+    }
+
+    public function actionSelectinput($q = null) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $out['results'] = Build::find()
+                    ->select(['build_id AS id', 'build_name AS text'])
+                    ->where(['like', 'build_name', $q])
+                    ->limit(20)
+                    ->asArray()
+                    ->all();
+        }
+        return $out;
     }
 
     /**
@@ -48,10 +73,9 @@ class BuildController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -60,15 +84,14 @@ class BuildController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Build();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->build_id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -79,15 +102,14 @@ class BuildController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->build_id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -98,11 +120,17 @@ class BuildController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+    public function actionDelete($id) {
+        $record = $this->findModel($id);
+        if ($record !== null) {
+            if ($record->delete()) {
+                return $this->redirect(['index']);
+            } else {
+                return $this->redirect(['index', 'errordelete' => 'Нельзя удалить']);
+            }
+        } else {
+            return $this->redirect(['index']);
+        }
     }
 
     /**
@@ -112,12 +140,12 @@ class BuildController extends Controller
      * @return Build the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Build::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

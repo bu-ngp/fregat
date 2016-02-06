@@ -49,9 +49,11 @@ class ImportemployeeSearch extends Importemployee {
             'query' => $query,
         ]);
 
-        $query->joinWith(['idbuild' => function($query) {
+        $query->joinWith([
+            'idbuild' => function($query) {
                 $query->from(['idbuild' => 'build']);
-            }]);
+            },
+                ]);
 
                 $query->joinWith(['idpodraz' => function($query) {
                         $query->from(['idpodraz' => 'podraz']);

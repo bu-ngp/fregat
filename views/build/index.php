@@ -7,13 +7,13 @@ use kartik\grid\GridView;
 use app\func\Proc;
 use yii\helpers\Url;
 use yii\web\View;
+use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\BuildSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Здания';
-//$this->params['breadcrumbs'][] = $this->title;
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="build-index">
@@ -23,36 +23,38 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
     <div class="btn-group">
         <?php
-        echo Html::a('Добавить', ['create'], ['class' => 'btn btn-info']);
-        if (!empty($selectelement)) {
-            end($this->params['breadcrumbs']);
-            echo Html::a('Выбрать', "#" /* [$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']] */, ['onclick' => "ChooseItemGrid('" . $this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url'] . "','" . $selectelement . "','buildgrid');", 'class' => 'btn btn-success']);
-        }
+        echo Html::a('Добавить', ['create'], ['class' => 'btn btn-success']);
+        /*   if (!empty($selectelement)) {
+          end($this->params['breadcrumbs']);
+          echo Html::a('Выбрать', [$this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url'], 'class' => 'btn btn-success']);
+          } */
         ?>
     </div>
-    <?=
-    DynaGrid::widget([
-        // 'export' => false,
+    <?php
+    $session = new Session;
+    $session->open();
+
+    echo DynaGrid::widget([
         'options' => ['id' => 'dynagrid-1'],
-        'showPersonalize' => true,
         'storage' => 'cookie',
+        'showPersonalize' => true,
+        //'allowPageSetting' => false, 
+        'allowThemeSetting' => false,
+        'allowFilterSetting' => false,
+        'allowSortSetting' => false,
         'columns' => [
-            /*  [
-              'class' => 'kartik\grid\RadioColumn',
-              'name' => 'buildgrid_check',
-              //   'width' => '36px',
-              //       'headerOptions' => ['class' => 'kartik-sheet-style'],
-              ], */
-            ['class' => 'kartik\grid\SerialColumn'],
-            //  'build_id',
+            ['class' => 'kartik\grid\SerialColumn',
+                'header' => Html::encode('№')
+            ],
             'build_name',
             ['class' => 'kartik\grid\ActionColumn',
-                'template' => empty($selectelement) ? '{update} {delete}' : '{choose} {update} {delete}',
+                'header' => Html::encode('Действия'),
+                'template' => isset($session[$foreignmodel]['foreign']) ? '{choose} {update} {delete}' : '{update} {delete}',
                 'buttons' => [
-                    'choose' => function ($url, $model, $key) {
-                        // $customurl = Yii::$app->getUrlManager()->createUrl(['build/update', 'id' => $model['build_id']]);
-                        $customurl = Url::to(['build/update', 'id' => $model['build_id'], 'id' => $model['build_id']], true);
-                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl /* ['employee' => ['id' => $model['build_id']]] */, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
+                    'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
+                        $field = $session[$foreignmodel]['foreign']['field'];
+                        $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['build_id']]]);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
                     },
                             'update' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['build/update', 'id' => $model['build_id']]);
@@ -60,49 +62,37 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     },
                             'delete' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['build/delete', 'id' => $model['build_id']]);
-                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger']);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger', 'data' => [
+                                        'confirm' => "Вы уверены, что хотите удалить запись?",
+                                        'method' => 'post',
+                        ]]);
                     },
                         ],
                         'contentOptions' => ['style' => 'white-space: nowrap;']
                     ],
                 ],
                 'gridOptions' => [
-                    'export' => false,
+                    // 'export' => false,
+                    'exportConfig' => [
+                        GridView::EXCEL => [
+                            'label' => 'EXCEL',
+                            'filename' => 'EXCEL',
+                            'options' => ['title' => 'EXCEL List'],
+                        ],
+                    ],
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'options' => ['id' => 'buildgrid'],
-                    /* 'panel' => [
-                      'type' => GridView::TYPE_DEFAULT,
-                      //  'heading'=>$heading,
-                      ], */
-                    'panel' => [
-                        'type' => GridView::TYPE_DEFAULT,
-                    ],
+                    'panel' => [ 'type' => GridView::TYPE_DEFAULT,],
                     'toolbar' => [
-                        ['content' => '{dynagrid}'],
+                        ['content' => '{export} {dynagrid}'],
                     ]
                 ]
             ]);
-            /*   var_dump($selectelement);
-              end($this->params['breadcrumbs']);
 
-              var_dump($this->params['breadcrumbs'][key($this->params['breadcrumbs']) - 1]['url']);
-              var_dump(key(array_slice($this->params['breadcrumbs'], -1, 1, TRUE))); */
-// var_dump(array_pop(array_keys($this->params['breadcrumbs'])));
-            $this->registerJs("console.debug($('#grid1').length)", View::POS_END);
+            $session->close();
             ?>
 
-
+            <?php // var_dump($_SESSION); ?>
 
 </div>
-
-<script type="text/javascript">
-    //  $(document).ready(function() {
-    // js script
-    // var keys = $('#grid1').yiiGridView('getSelectedRows');
-    //  console.debug($('#grid1').length)
-
-// keys is an array consisting of the keys associated with the selected rows
-    // });
-
-</script>

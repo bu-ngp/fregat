@@ -41,3 +41,19 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
         console.error("Не переданы обязательные параметры в ChooseItemGrid");
 
 }
+
+$(function () {
+    $("input.form-control").focusout(function () {
+        var field = $(this).attr("name");
+
+        $.ajax({
+            url: "?r=site%2Fsetsession",
+            type: "post",
+            data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: $(this).val()},
+            async: false,
+            error: function (data) {
+                console.error("Ошибка SetSession");
+            }
+        });
+    });
+});
