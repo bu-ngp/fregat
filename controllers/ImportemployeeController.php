@@ -5,14 +5,10 @@ namespace app\controllers;
 use Yii;
 use app\models\Importemployee;
 use app\models\ImportemployeeSearch;
-use app\models\Impemployee;
 use app\models\ImpemployeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\data\ActiveDataProvider;
-use app\models\Build;
-use app\models\Podraz;
 use yii\web\Session;
 
 /**
@@ -90,16 +86,12 @@ class ImportemployeeController extends Controller {
             $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
             if (is_array(['foreign']) && count($session[$fmodel]['foreign']) > 0) {
                 $field = $session[$fmodel]['foreign']['field'];
-                // $model->$field = (string) filter_input(INPUT_GET, $field);
-
-
-                $value = isset(Yii::$app->request->get()[$fmodel][$field]) ? Yii::$app->request->get()[$fmodel][$field] : '';
-
-                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                    'attributes' => [
-                        $field => $value,
-                    ]
-                ]);
+                $value = '';
+                
+                if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                    $value = Yii::$app->request->get()[$fmodel][$field];
+                elseif (isset($session[$fmodel]['attributes'][$field]))
+                    $value = $session[$fmodel]['attributes'][$field];
 
                 $session[$fmodel] = array_replace_recursive($session[$fmodel], [
                     'foreign' => NULL,
@@ -135,10 +127,14 @@ class ImportemployeeController extends Controller {
             $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
 
             if (is_array($session[$fmodel]['foreign']) && count($session[$fmodel]['foreign']) > 0) {
-                $field = $session[$fmodel]['foreign']['field'];
-                // $model->$field = (string) filter_input(INPUT_GET, $field);
-
-                $value = isset(Yii::$app->request->get()[$fmodel][$field]) ? Yii::$app->request->get()[$fmodel][$field] : '';
+                $field = $session[$fmodel]['foreign']['field'];                
+                $value = '';
+                
+                if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                    $value = Yii::$app->request->get()[$fmodel][$field];
+                elseif (isset($session[$fmodel]['attributes'][$field]))
+                    $value = $session[$fmodel]['attributes'][$field];
+                
 
                 $session[$fmodel] = array_replace_recursive($session[$fmodel], [
                     'attributes' => [
@@ -154,7 +150,7 @@ class ImportemployeeController extends Controller {
             } else {
                 //unset($session[$fmodel]);
                 $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
-                    'attributes' => $model->attributes(),
+                    'attributes' => $model->attributes,
                 ]);
             }
 
@@ -175,18 +171,18 @@ class ImportemployeeController extends Controller {
             ];
 
             $dataProvider->sort->attributes['idemployee.iddolzh.dolzh_name'] = [
-                'asc' => ['idemployee.iddolzh.dolzh_name' => SORT_ASC],
-                'desc' => ['idemployee.iddolzh.dolzh_name' => SORT_DESC],
+                'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
+                'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
             ];
 
             $dataProvider->sort->attributes['idemployee.idbuild.build_name'] = [
-                'asc' => ['idemployee.idbuild.build_name' => SORT_ASC],
-                'desc' => ['idemployee.idbuild.build_name' => SORT_DESC],
+                'asc' => ['idbuild.build_name' => SORT_ASC],
+                'desc' => ['idbuild.build_name' => SORT_DESC],
             ];
 
             $dataProvider->sort->attributes['idemployee.idpodraz.podraz_name'] = [
-                'asc' => ['idemployee.idpodraz.podraz_name' => SORT_ASC],
-                'desc' => ['idemployee.idpodraz.podraz_name' => SORT_DESC],
+                'asc' => ['idpodraz.podraz_name' => SORT_ASC],
+                'desc' => ['idpodraz.podraz_name' => SORT_DESC],
             ];
 
             return $this->render('update', [

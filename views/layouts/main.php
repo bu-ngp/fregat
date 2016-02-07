@@ -63,7 +63,8 @@ AppAsset::register($this);
                 if (!isset($this->params['breadcrumbs'])) {
                     $session = new Session;
                     $session->open();
-                    unset($session['breadcrumbs']);
+                    $session->removeAll();
+                   // unset($session['breadcrumbs']);
                     $session->close();
                 }
                 ?>

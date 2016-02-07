@@ -40,6 +40,20 @@ class DolzhController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    
+    public function actionSelectinput($q = null) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $out['results'] = Dolzh::find()
+                    ->select(['dolzh_id AS id', 'dolzh_name AS text'])
+                    ->where(['like', 'dolzh_name', $q])
+                    ->limit(20)
+                    ->asArray()
+                    ->all();
+        }
+        return $out;
+    }
 
     /**
      * Displays a single Dolzh model.
@@ -63,7 +77,7 @@ class DolzhController extends Controller
         $model = new Dolzh();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->dolzh_id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -82,7 +96,7 @@ class DolzhController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->dolzh_id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,

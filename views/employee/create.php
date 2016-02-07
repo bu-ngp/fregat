@@ -1,14 +1,13 @@
 <?php
 
 use yii\helpers\Html;
-
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Employee */
 
-$this->title = 'Create Employee';
-$this->params['breadcrumbs'][] = ['label' => 'Employees', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Новый сотрудник';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="employee-create">
 

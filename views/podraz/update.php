@@ -1,14 +1,13 @@
 <?php
 
 use yii\helpers\Html;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Podraz */
 
-$this->title = 'Update Podraz: ' . ' ' . $model->podraz_id;
-$this->params['breadcrumbs'][] = ['label' => 'Podrazs', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->podraz_id, 'url' => ['view', 'id' => $model->podraz_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Обновить подразделение';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="podraz-update">
 

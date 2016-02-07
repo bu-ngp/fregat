@@ -75,5 +75,5 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ]
             ]);
             ?>
-
+   
 </div>

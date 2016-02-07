@@ -20,22 +20,15 @@ use kartik\grid\GridView;
 
 <div class="importemployee-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php
+    $form = ActiveForm::begin([
+                'id' => 'Importemployeeform',
+    ]);
+    ?>
 
     <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true]) ?>
 
     <?=
-    /* $form->field($model, 'id_podraz', [
-      'template' => '{label}<div class="input-group">{input}<span class="input-group-btn">' . Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', ['podraz/index',
-      'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-      'url' => $this->context->module->requestedRoute,
-      'field' => 'id_podraz',
-      'id' => $model->importemployee_id,
-      ], ['class' => 'btn btn-success']) . '</span></div>{hint}{error}',
-      ])->dropdownList(Podraz::find()->select(['podraz_name'])->where(['podraz_id' => $model->id_podraz])->indexBy('podraz_id')->column()
-      , ['prompt' => 'Выбрать подразделение', 'class' => 'form-control inactive']
-      ); */
-
     $form->field($model, 'id_podraz')->widget(Select2::classname(), [
         'initValueText' => empty($model->id_podraz) ? '' : Podraz::findOne($model->id_podraz)->podraz_name,
         'options' => ['placeholder' => 'Выберете подразделение'],
@@ -56,14 +49,14 @@ use kartik\grid\GridView;
                     'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
                     'url' => $this->context->module->requestedRoute,
                     'field' => 'id_podraz',
-                    'id' => $model->importemployee_id,
+                    'id' => $model->primaryKey,
                         ], ['class' => 'btn btn-success']),
                 'asButton' => true
             ]
         ]
     ]);
     ?>
-
+    
     <?=
     $form->field($model, 'id_build')->widget(Select2::classname(), [
         'initValueText' => empty($model->id_build) ? '' : Build::findOne($model->id_build)->build_name,
@@ -85,7 +78,7 @@ use kartik\grid\GridView;
                     'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
                     'url' => $this->context->module->requestedRoute,
                     'field' => 'id_build',
-                    'id' => $model->importemployee_id,
+                    'id' => $model->primaryKey,
                         ], ['class' => 'btn btn-success']),
                 'asButton' => true
             ]
@@ -93,12 +86,14 @@ use kartik\grid\GridView;
     ]);
     ?>
 
+    <?php ActiveForm::end(); ?>
+
     <?php
     if (!$model->isNewRecord)
         echo DynaGrid::widget([
             'options' => ['id' => 'dynagrid-1'],
             'showPersonalize' => true,
-            'storage' => 'cookie',
+            'storage' => 'cookie',            
             //'allowPageSetting' => false, 
             'allowThemeSetting' => false,
             'allowFilterSetting' => false,
@@ -116,7 +111,7 @@ use kartik\grid\GridView;
                     'header' => Html::encode('Действия'),
                     'template' => '{delete}',
                     'buttons' => [
-                                'delete' => function ($url, $model) {
+                        'delete' => function ($url, $model) {
                             $customurl = Yii::$app->getUrlManager()->createUrl(['impemployee/delete', 'id' => $model['impemployee_id']]);
                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger', 'data' => [
                                             'confirm' => "Вы уверены, что хотите удалить запись?",
@@ -128,6 +123,7 @@ use kartik\grid\GridView;
                         ],
                     ],
                     'gridOptions' => [
+                      //  'caption'=>'Привязать к сотруднику',
                         'exportConfig' => [
                             GridView::EXCEL => [
                                 'label' => 'EXCEL',
@@ -137,8 +133,13 @@ use kartik\grid\GridView;
                         ],
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
+                        //   'filterUrl'=>  Url::to(['importemployee/update']),
                         'options' => ['id' => 'impemployeegrid'],
-                        'panel' => [ 'type' => GridView::TYPE_DEFAULT,],
+                        'panel' => [
+                            'type' => GridView::TYPE_DEFAULT,
+                            'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
+                            'before' => Html::a('Добавить сотрудника', ['employee/index'], ['class' => 'btn btn-success']),
+                            ],
                         'toolbar' => [
                             ['content' => '{export} {dynagrid}'],
                         ]
@@ -147,10 +148,9 @@ use kartik\grid\GridView;
             ?>
 
             <div class="form-group">
-                <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-            </div>
+        <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
+    </div>
 
-            <?php ActiveForm::end();
-            ?>
+
 
 </div>

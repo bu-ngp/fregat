@@ -52,9 +52,9 @@ class Employee extends \yii\db\ActiveRecord
         return [
             'employee_id' => 'Код',
             'employee_fio' => 'Фамилия Имя Отчество',
-            'id_dolzh' => 'Id Dolzh',
-            'id_podraz' => 'Id Podraz',
-            'id_build' => 'Id Build',
+            'id_dolzh' => 'Должность',
+            'id_podraz' => 'Подразделение',
+            'id_build' => 'Здание',
         ];
     }
 

@@ -12,12 +12,24 @@ use app\models\Impemployee;
  */
 class ImpemployeeSearch extends Impemployee {
 
+    public function attributes() {
+        // add related fields to searchable attributes
+        return array_merge(parent::attributes(), [
+            'idemployee.employee_id',
+            'idemployee.employee_fio',
+            'idemployee.iddolzh.dolzh_name',
+            'idemployee.idpodraz.podraz_name',
+            'idemployee.idbuild.build_name',
+        ]);
+    }
+
     /**
      * @inheritdoc
      */
     public function rules() {
         return [
             [['impemployee_id', 'id_importemployee', 'id_employee'], 'integer'],
+            [['idemployee.employee_id', 'idemployee.employee_fio', 'idemployee.iddolzh.dolzh_name', 'idemployee.idbuild.build_name', 'idemployee.idpodraz.podraz_name'], 'safe'],
         ];
     }
 
@@ -62,6 +74,7 @@ class ImpemployeeSearch extends Impemployee {
                                         ]);
 
                                         $this->load($params);
+                                        $this->id_importemployee = $params['id'];
 
                                         if (!$this->validate()) {
                                             // uncomment the following line if you do not want to return any records when validation fails
@@ -77,9 +90,9 @@ class ImpemployeeSearch extends Impemployee {
 
                                         $query->andFilterWhere(['LIKE', 'idemployee.employee_id', $this->getAttribute('idemployee.employee_id')]);
                                         $query->andFilterWhere(['LIKE', 'idemployee.employee_fio', $this->getAttribute('idemployee.employee_fio')]);
-                                        $query->andFilterWhere(['LIKE', 'idemployee.iddolzh.dolzh_name', $this->getAttribute('idemployee.iddolzh.dolzh_name')]);                                        
-                                        $query->andFilterWhere(['LIKE', 'idemployee.idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
-                                        $query->andFilterWhere(['LIKE', 'idemployee.idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
+                                        $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idemployee.iddolzh.dolzh_name')]);
+                                        $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
+                                        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
 
                                         return $dataProvider;
                                     }
