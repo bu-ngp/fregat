@@ -55,20 +55,6 @@ class PodrazController extends Controller {
         ]);
     }
 
-    public function actionSelectinput($q = null) {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $out['results'] = Podraz::find()
-                    ->select(['podraz_id AS id', 'podraz_name AS text'])
-                    ->where(['like', 'podraz_name', $q])
-                    ->limit(20)
-                    ->asArray()
-                    ->all();
-        }
-        return $out;
-    }
-
     /**
      * Displays a single Podraz model.
      * @param integer $id

@@ -41,20 +41,6 @@ class DolzhController extends Controller
         ]);
     }
     
-    public function actionSelectinput($q = null) {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $out['results'] = Dolzh::find()
-                    ->select(['dolzh_id AS id', 'dolzh_name AS text'])
-                    ->where(['like', 'dolzh_name', $q])
-                    ->limit(20)
-                    ->asArray()
-                    ->all();
-        }
-        return $out;
-    }
-
     /**
      * Displays a single Dolzh model.
      * @param integer $id

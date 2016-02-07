@@ -17,7 +17,7 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'setsession'],
+                'only' => ['logout', 'setsession', 'selectinput'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -25,7 +25,7 @@ class SiteController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['setsession'],
+                        'actions' => ['setsession', 'selectinput'],
                         'allow' => true,
                     ],
                 ],
@@ -112,6 +112,21 @@ class SiteController extends Controller {
         }
 
         echo $result;
+    }
+
+    public function actionSelectinput($model, $field, $q = null) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $m = new $model;
+            $out['results'] = $model::find()
+                    ->select([$m->primaryKey()[0] . ' AS id', $field . ' AS text'])
+                    ->where(['like', $field, $q])
+                    ->limit(20)
+                    ->asArray()
+                    ->all();
+        }
+        return $out;
     }
 
 }

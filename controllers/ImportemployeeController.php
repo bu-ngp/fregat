@@ -92,6 +92,12 @@ class ImportemployeeController extends Controller {
                     $value = Yii::$app->request->get()[$fmodel][$field];
                 elseif (isset($session[$fmodel]['attributes'][$field]))
                     $value = $session[$fmodel]['attributes'][$field];
+                
+                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                    'attributes' => [
+                        $field => $value,
+                    ]
+                ]);
 
                 $session[$fmodel] = array_replace_recursive($session[$fmodel], [
                     'foreign' => NULL,

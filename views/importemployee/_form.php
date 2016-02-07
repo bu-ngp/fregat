@@ -2,16 +2,11 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
-use yii\bootstrap\Button;
 use app\models\Build;
 use app\models\Podraz;
-use yii\helpers\ArrayHelper;
-//use kartik\widgets\Select2; // or kartik\select2\Select2
 use kartik\select2\Select2;
-use yii\web\JsExpression;
-use yii\helpers\Url;
 use kartik\dynagrid\DynaGrid;
-use kartik\grid\GridView;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Importemployee */
@@ -29,128 +24,60 @@ use kartik\grid\GridView;
     <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true]) ?>
 
     <?=
-    $form->field($model, 'id_podraz')->widget(Select2::classname(), [
-        'initValueText' => empty($model->id_podraz) ? '' : Podraz::findOne($model->id_podraz)->podraz_name,
-        'options' => ['placeholder' => 'Выберете подразделение'],
-        'theme' => Select2::THEME_BOOTSTRAP,
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'ajax' => [
-                'url' => Url::to(['podraz/selectinput']),
-                'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term}; }')
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-        ],
-        'addon' => [
-            'append' => [
-                'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', ['podraz/index',
-                    'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                    'url' => $this->context->module->requestedRoute,
-                    'field' => 'id_podraz',
-                    'id' => $model->primaryKey,
-                        ], ['class' => 'btn btn-success']),
-                'asButton' => true
-            ]
-        ]
-    ]);
+    $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
+                'resultmodel' => new Podraz,
+                'keyfield' => 'id_podraz',
+                'resultfield' => 'podraz_name',
+                'placeholder' => 'Выберете подразделение',
+                'fromgridroute' => 'podraz/index',
+                'thisroute' => $this->context->module->requestedRoute,
+    ]));
     ?>
-    
+
     <?=
-    $form->field($model, 'id_build')->widget(Select2::classname(), [
-        'initValueText' => empty($model->id_build) ? '' : Build::findOne($model->id_build)->build_name,
-        'options' => ['placeholder' => 'Выберете здание'],
-        'theme' => Select2::THEME_BOOTSTRAP,
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'ajax' => [
-                'url' => Url::to(['build/selectinput']),
-                'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term}; }')
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-        ],
-        'addon' => [
-            'append' => [
-                'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', ['build/index',
-                    'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                    'url' => $this->context->module->requestedRoute,
-                    'field' => 'id_build',
-                    'id' => $model->primaryKey,
-                        ], ['class' => 'btn btn-success']),
-                'asButton' => true
-            ]
-        ]
-    ]);
+    $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
+                'resultmodel' => new Build,
+                'keyfield' => 'id_build',
+                'resultfield' => 'build_name',
+                'placeholder' => 'Выберете здание',
+                'fromgridroute' => 'build/index',
+                'thisroute' => $this->context->module->requestedRoute,
+    ]));
     ?>
 
     <?php ActiveForm::end(); ?>
 
     <?php
     if (!$model->isNewRecord)
-        echo DynaGrid::widget([
-            'options' => ['id' => 'dynagrid-1'],
-            'showPersonalize' => true,
-            'storage' => 'cookie',            
-            //'allowPageSetting' => false, 
-            'allowThemeSetting' => false,
-            'allowFilterSetting' => false,
-            'allowSortSetting' => false,
-            'columns' => [
-                ['class' => 'kartik\grid\SerialColumn',
-                    'header' => Html::encode('№'),
-                ],
-                'idemployee.employee_id',
-                'idemployee.employee_fio',
-                'idemployee.iddolzh.dolzh_name',
-                'idemployee.idpodraz.podraz_name',
-                'idemployee.idbuild.build_name',
-                ['class' => 'kartik\grid\ActionColumn',
-                    'header' => Html::encode('Действия'),
-                    'template' => '{delete}',
-                    'buttons' => [
-                        'delete' => function ($url, $model) {
-                            $customurl = Yii::$app->getUrlManager()->createUrl(['impemployee/delete', 'id' => $model['impemployee_id']]);
-                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger', 'data' => [
-                                            'confirm' => "Вы уверены, что хотите удалить запись?",
-                                            'method' => 'post',
-                            ]]);
-                        },
-                            ],
-                            'contentOptions' => ['style' => 'white-space: nowrap;']
+        echo DynaGrid::widget(Proc::DGopts([
+                    'columns' => Proc::DGcols([
+                        'columns' => [
+                            'idemployee.employee_id',
+                            'idemployee.employee_fio',
+                            'idemployee.iddolzh.dolzh_name',
+                            'idemployee.idpodraz.podraz_name',
+                            'idemployee.idbuild.build_name',
                         ],
-                    ],
+                        'buttons' => [
+                            'delete' => ['impemployee/delete', 'impemployee_id']
+                        ],
+                    ]),
                     'gridOptions' => [
-                      //  'caption'=>'Привязать к сотруднику',
-                        'exportConfig' => [
-                            GridView::EXCEL => [
-                                'label' => 'EXCEL',
-                                'filename' => 'EXCEL',
-                                'options' => ['title' => 'EXCEL List'],
-                            ],
-                        ],
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        //   'filterUrl'=>  Url::to(['importemployee/update']),
                         'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
-                            'type' => GridView::TYPE_DEFAULT,
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
                             'before' => Html::a('Добавить сотрудника', ['employee/index'], ['class' => 'btn btn-success']),
-                            ],
-                        'toolbar' => [
-                            ['content' => '{export} {dynagrid}'],
-                        ]
+                        ],
                     ]
-                ]);
-            ?>
+        ]));
+    ?>
 
-            <div class="form-group">
+    <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
     </div>
-
-
 
 </div>

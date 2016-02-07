@@ -54,20 +54,6 @@ class BuildController extends Controller {
         ]);
     }
 
-    public function actionSelectinput($q = null) {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $out['results'] = Build::find()
-                    ->select(['build_id AS id', 'build_name AS text'])
-                    ->where(['like', 'build_name', $q])
-                    ->limit(20)
-                    ->asArray()
-                    ->all();
-        }
-        return $out;
-    }
-
     /**
      * Displays a single Build model.
      * @param integer $id

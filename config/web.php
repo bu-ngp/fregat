@@ -40,12 +40,12 @@ $config = [
         ],
         'db' => require(__DIR__ . '/db.php'),
         'urlManager' => [
-         //   'encodeParams' => FALSE,
-          //  'enablePrettyUrl' => true,
-          //  'enableStrictParsing' => true,
-          //  'showScriptName' => false,
+            //   'encodeParams' => FALSE,
+            //  'enablePrettyUrl' => true,
+            //  'enableStrictParsing' => true,
+            //  'showScriptName' => false,
             'rules' => [
-              //  'encodeParams' => FALSE,
+            //  'encodeParams' => FALSE,
             // my rules
             ],
         ]
@@ -54,9 +54,24 @@ $config = [
         'dynagrid' => [
             'class' => '\kartik\dynagrid\Module',
             'cookieSettings' => [
-                'httpOnly'=>true,
-                'expire'=>time() + 8640000
+                'httpOnly' => true,
+                'expire' => time() + 8640000
             ],
+            'defaultTheme' => 'panel-default',
+            'dynaGridOptions' => [
+                'gridOptions' => [                    
+                    'exportConfig' => [
+                        \kartik\grid\GridView::EXCEL => [
+                            'label' => 'EXCEL',
+                            'filename' => 'EXCEL',
+                            'options' => ['title' => 'EXCEL List'],
+                        ],
+                    ],
+                    'toolbar' => [
+                        ['content' => '{export} {dynagrid}'],
+                    ]
+                ],
+            ]
         // other module settings
         ],
         'gridview' => [
