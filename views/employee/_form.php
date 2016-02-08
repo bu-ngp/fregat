@@ -27,6 +27,7 @@ use app\func\Proc;
         'resultfield' => 'dolzh_name',
         'placeholder' => 'Выберете должность',
         'fromgridroute' => 'dolzh/index',
+        'resultrequest' => 'dolzh/selectinput',
         'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
@@ -39,6 +40,7 @@ use app\func\Proc;
         'resultfield' => 'podraz_name',
         'placeholder' => 'Выберете подразделение',
         'fromgridroute' => 'podraz/index',
+        'resultrequest' => 'podraz/selectinput',
         'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
@@ -51,6 +53,7 @@ use app\func\Proc;
                 'resultfield' => 'build_name',
                 'placeholder' => 'Выберете здание',
                 'fromgridroute' => 'build/index',
+                'resultrequest' => 'build/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>

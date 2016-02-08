@@ -42,18 +42,26 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 
 }
 
+function SetSession(thiselem) {
+    var field = $(thiselem).attr("name");
+
+    $.ajax({
+        url: "?r=site%2Fsetsession",
+        type: "post",
+        data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: $(thiselem).val()},
+        async: false,
+        error: function (data) {
+            console.error("Ошибка SetSession");
+        }
+    });
+}
+
 $(function () {
     $("input.form-control").focusout(function () {
-        var field = $(this).attr("name");
+        SetSession(this);
+    });
 
-        $.ajax({
-            url: "?r=site%2Fsetsession",
-            type: "post",
-            data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: $(this).val()},
-            async: false,
-            error: function (data) {
-                console.error("Ошибка SetSession");
-            }
-        });
+    $("select.form-control").change(function () {
+        SetSession(this);
     });
 });

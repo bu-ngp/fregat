@@ -8,7 +8,7 @@ use app\models\EmployeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\Session;
+use app\func\Proc;
 
 /**
  * EmployeeController implements the CRUD actions for Employee model.
@@ -34,25 +34,22 @@ class EmployeeController extends Controller {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
-            'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-            'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idbuild.build_name'] = [
-            'asc' => ['idbuild.build_name' => SORT_ASC],
-            'desc' => ['idbuild.build_name' => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idpodraz.podraz_name'] = [
-            'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-            'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-        ];
-
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
         ]);
     }
+    
+    public function actionForimportemployee() {
+        $searchModel = new EmployeeSearch();
+        $dataProvider = $searchModel->searchforimportemployee(Yii::$app->request->queryParams);
 
+        return $this->render('index', Proc::SetForeignmodel([
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]));
+    }
+    
     /**
      * Displays a single Employee model.
      * @param integer $id
@@ -75,30 +72,7 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            $session = new Session;
-            $session->open();
-            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
-            if (is_array(['foreign']) && count($session[$fmodel]['foreign']) > 0) {
-                $field = $session[$fmodel]['foreign']['field'];
-                $value = '';
-                
-                if (isset(Yii::$app->request->get()[$fmodel][$field]))
-                    $value = Yii::$app->request->get()[$fmodel][$field];
-                elseif (isset($session[$fmodel]['attributes'][$field]))
-                    $value = $session[$fmodel]['attributes'][$field];
-
-                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                    'foreign' => NULL,
-                ]);
-
-                $model->load($session[$fmodel], 'attributes');
-            } else
-                $session[$fmodel] = [
-                    'attributes' => [],
-                ];
-
-
-            $session->close();
+            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
 
             return $this->render('create', [
                         'model' => $model,
@@ -118,37 +92,7 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            $session = new Session;
-            $session->open();
-            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
-
-            if (is_array($session[$fmodel]['foreign']) && count($session[$fmodel]['foreign']) > 0) {
-                $field = $session[$fmodel]['foreign']['field'];
-                $value = '';
-                
-                if (isset(Yii::$app->request->get()[$fmodel][$field]))
-                    $value = Yii::$app->request->get()[$fmodel][$field];
-                elseif (isset($session[$fmodel]['attributes'][$field]))
-                    $value = $session[$fmodel]['attributes'][$field];
-                
-                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                    'attributes' => [
-                        $field => $value,
-                    ]
-                ]);
-
-                $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                    'foreign' => NULL,
-                ]);
-
-                $model->load($session[$fmodel], 'attributes');
-            } else {
-                $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
-                    'attributes' => $model->attributes,
-                ]);
-            }
-
-            $session->close();
+            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
 
             return $this->render('update', [
                         'model' => $model,

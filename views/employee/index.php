@@ -30,17 +30,23 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'idpodraz.podraz_name',
                         'idbuild.build_name',
                     ],
-                    'buttons' => [
-                        'update' => ['employee/update', 'employee_id'],
-                        'delete' => ['employee/delete', 'employee_id'],
-                    ],
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'options' => ['id' => 'employeegrid'],
-                ]
-    ]));
-    ?>
+                    'buttons' => array_merge(
+                                isset($session[$foreignmodel]['foreign']) ? [
+                                    'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
+                                        $field = $session[$foreignmodel]['foreign']['field'];
+                                        $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['employee_id']]]);
+                                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
+                                    }] : [], [
+                                    'update' => ['employee/update', 'employee_id'],
+                                    'delete' => ['employee/delete', 'employee_id'],])
+                            ,
+                        ]),
+                        'gridOptions' => [
+                            'dataProvider' => $dataProvider,
+                            'filterModel' => $searchModel,
+                            'options' => ['id' => 'employeegrid'],
+                        ]
+            ]));
+            ?>
 
 </div>

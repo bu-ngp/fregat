@@ -7,6 +7,7 @@ use app\models\Podraz;
 use kartik\select2\Select2;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
+use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Importemployee */
@@ -31,18 +32,21 @@ use app\func\Proc;
                 'resultfield' => 'podraz_name',
                 'placeholder' => 'Выберете подразделение',
                 'fromgridroute' => 'podraz/index',
+                'resultrequest' => 'podraz/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
 
     <?=
-    $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2([
+    $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2t([
                 'model' => $model,
                 'resultmodel' => new Build,
                 'keyfield' => 'id_build',
                 'resultfield' => 'build_name',
+                'showresultfields' => ['build_id', 'build_name'],
                 'placeholder' => 'Выберете здание',
                 'fromgridroute' => 'build/index',
+                'resultrequest' => 'build/selectinput2',
                 'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
@@ -50,7 +54,10 @@ use app\func\Proc;
     <?php ActiveForm::end(); ?>
 
     <?php
-    if (!$model->isNewRecord)
+    if (!$model->isNewRecord) {
+        $session = new Session;
+        $session->open();
+
         echo DynaGrid::widget(Proc::DGopts([
                     'columns' => Proc::DGcols([
                         'columns' => [
@@ -61,7 +68,8 @@ use app\func\Proc;
                             'idemployee.idbuild.build_name',
                         ],
                         'buttons' => [
-                            'delete' => ['impemployee/delete', 'impemployee_id']
+                            'delete' => ['impemployee/delete', 'impemployee_id',
+                            ]
                         ],
                     ]),
                     'gridOptions' => [
@@ -70,10 +78,13 @@ use app\func\Proc;
                         'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
-                            'before' => Html::a('Добавить сотрудника', ['employee/index'], ['class' => 'btn btn-success']),
+                            'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee', 'id' => $_GET['id']], ['class' => 'btn btn-success']),
                         ],
                     ]
         ]));
+
+        $session->close();
+    }
     ?>
 
     <div class="form-group">

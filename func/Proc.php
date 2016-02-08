@@ -9,6 +9,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
+use yii\helpers\ArrayHelper;
 
 class Proc {
 
@@ -137,6 +138,7 @@ class Proc {
         if (isset($params) && is_array($params)) {
             $model = $params['model'];
             $resultmodel = $params['resultmodel'];
+            $resultrequest = $params['resultrequest'];
             $keyfield = $params['keyfield'];
             $resultfield = $params['resultfield'];
             $placeholder = $params['placeholder'];
@@ -145,34 +147,178 @@ class Proc {
 
             //if (!empty($model) && !empty($resultmodel) && !empty($keyfield) && !empty($resultfield) && !empty($fromgridroute) && !empty($$thisroute)) {
 
-                return [
-                    'initValueText' => empty($model->$keyfield) ? '' : $resultmodel::findOne($model->$keyfield)->$resultfield,
-                    'options' => ['placeholder' => $placeholder],
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 3,
-                        'ajax' => [
-                            'url' => Url::to(['site/selectinput']),
-                            'dataType' => 'json',
-                            'data' => new JsExpression('function(params) { return {q:params.term, model: "' . str_replace('\\', '\\\\', $resultmodel->className()) /* substr($resultmodel->className(), strrpos($resultmodel->className(), '\\') + 1) */ . '", field: "' . $resultfield . '" } }')
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            return [
+                'initValueText' => empty($model->$keyfield) ? '' : $resultmodel::findOne($model->$keyfield)->$resultfield,
+                'options' => ['placeholder' => $placeholder],
+                'theme' => Select2::THEME_BOOTSTRAP,
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 3,
+                    'ajax' => [
+                        'url' => Url::to([$resultrequest]),
+                        'dataType' => 'json',
+                        'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $resultfield . '" } }')
                     ],
-                    'addon' => [
-                        'append' => [
-                            'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
-                                'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                                'url' => $thisroute,
-                                'field' => $keyfield,
-                                'id' => $model->primaryKey,
-                                    ], ['class' => 'btn btn-success']),
-                            'asButton' => true
-                        ]
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                ],
+                'addon' => [
+                    'append' => [
+                        'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
+                            'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                            'url' => $thisroute,
+                            'field' => $keyfield,
+                            'id' => $model->primaryKey,
+                                ], ['class' => 'btn btn-success']),
+                        'asButton' => true
                     ]
-                ];
-            }
+                ]
+            ];
+        }
         //}
+    }
+
+    public static function DGselect2t($params) {
+        if (isset($params) && is_array($params)) {
+            $model = $params['model'];
+            $resultmodel = $params['resultmodel'];
+            $resultrequest = $params['resultrequest'];
+            $keyfield = $params['keyfield'];
+            $resultfield = $params['resultfield'];
+            $showresultfields = $params['showresultfields'];
+            $placeholder = $params['placeholder'];
+            $fromgridroute = $params['fromgridroute'];
+            $thisroute = $params['thisroute'];
+
+            //if (!empty($model) && !empty($resultmodel) && !empty($keyfield) && !empty($resultfield) && !empty($fromgridroute) && !empty($$thisroute)) {
+
+            $initValueText = empty($model->$keyfield) ? '' : $resultmodel::findOne($model->$keyfield);
+            $data = ArrayHelper::toArray($initValueText, $showresultfields); // ------------------------------------------------------------------------------
+
+            return [
+                'initValueText' => empty($model->$keyfield) ? '' : implode(', ', $data),
+                'options' => ['placeholder' => $placeholder],
+                'theme' => Select2::THEME_BOOTSTRAP,
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 3,
+                    'ajax' => [
+                        'url' => Url::to([$resultrequest]),
+                        'dataType' => 'json',
+                        'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $resultfield . '", showresultfields: ' . json_encode($showresultfields) . ' } }')
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                ],
+                'addon' => [
+                    'append' => [
+                        'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
+                            'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                            'url' => $thisroute,
+                            'field' => $keyfield,
+                            'id' => $model->primaryKey,
+                                ], ['class' => 'btn btn-success']),
+                        'asButton' => true
+                    ]
+                ]
+            ];
+        }
+        //}
+    }
+
+    public static function select2request($model, $field, $q = null) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $m = new $model;
+            $out['results'] = $model::find()
+                    ->select([$m->primaryKey()[0] . ' AS id', $field . ' AS text'])
+                    ->where(['like', $field, $q])
+                    ->limit(20)
+                    ->asArray()
+                    ->all();
+        }
+        return $out;
+    }
+
+    public static function select2request2($model, $field, $q = null, $showresultfields = null) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        $showresultfields = implode(', ', $showresultfields);
+        if (!is_null($q)) {
+            $m = new $model;
+            $out['results'] = $model::find()
+                    ->select([$m->primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $showresultfields . ') AS text'])
+                    ->where(['like', $field, $q])
+                    ->limit(20)
+                    ->asArray()
+                    ->all();
+        }
+        return $out;
+    }
+
+    public static function RemoveLastBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        end($bc);
+        unset($bc[key($bc)]);
+        $session['breadcrumbs'] = $bc;
+        $session->close();
+    }
+
+    public static function LoadFormFromCache(&$model) {
+        $session = new Session;
+        $session->open();
+        $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+
+        if (is_array($session[$fmodel]['foreign']) && count($session[$fmodel]['foreign']) > 0) {
+            $field = $session[$fmodel]['foreign']['field'];
+            $value = '';
+
+            if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                $value = Yii::$app->request->get()[$fmodel][$field];
+            elseif (isset($session[$fmodel]['attributes'][$field]))
+                $value = $session[$fmodel]['attributes'][$field];
+
+            $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                'attributes' => [
+                    $field => $value,
+                ]
+            ]);
+
+            $session[$fmodel] = array_replace_recursive($session[$fmodel], [
+                'foreign' => NULL,
+            ]);
+
+            $model->load($session[$fmodel], 'attributes');
+        } else {
+            $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
+                'attributes' => $model->isNewRecord ? $model->load($session[$fmodel], 'attributes') : $model->attributes,
+            ]);
+        }
+
+        $session->close();
+    }
+
+    public static function SetForeignmodel($param) {
+        $result = is_array($param) ? $param : [];
+        $foreignmodel = (string) filter_input(INPUT_GET, 'foreignmodel');
+
+        if (!empty($foreignmodel)) {
+            $session = new Session;
+            $session->open();
+            $session[$foreignmodel] = array_replace_recursive(isset($session[$foreignmodel]) ? $session[$foreignmodel] : [], ['foreign' => [
+                    'url' => (string) filter_input(INPUT_GET, 'url'),
+                    'field' => (string) filter_input(INPUT_GET, 'field'),
+                    'id' => (string) filter_input(INPUT_GET, 'id'),
+            ]]);
+
+            $session->close();
+            $result = array_replace_recursive($result, [
+                'foreignmodel' => $foreignmodel,
+            ]);
+        }
+
+        return $result;
     }
 
 }

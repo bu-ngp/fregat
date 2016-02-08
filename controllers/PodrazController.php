@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Session;
+use app\func\Proc;
 
 /**
  * PodrazController implements the CRUD actions for Podraz model.
@@ -34,25 +35,14 @@ class PodrazController extends Controller {
         $searchModel = new PodrazSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $foreignmodel = (string) filter_input(INPUT_GET, 'foreignmodel');
-
-        if (!empty($foreignmodel)) {
-            $session = new Session;
-            $session->open();
-            $session[$foreignmodel] = array_replace_recursive(isset($session[$foreignmodel]) ? $session[$foreignmodel] : [], ['foreign' => [
-                    'url' => (string) filter_input(INPUT_GET, 'url'),
-                    'field' => (string) filter_input(INPUT_GET, 'field'),
-                    'id' => (string) filter_input(INPUT_GET, 'id'),
-            ]]);
-
-            $session->close();
-        }
-
-        return $this->render('index', [
+        return $this->render('index', Proc::SetForeignmodel([
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-                    'foreignmodel' => $foreignmodel,
-        ]);
+        ]));
+    }
+    
+    public function actionSelectinput($field, $q = null) {
+        return Proc::select2request(new Podraz, $field, $q);
     }
 
     /**
