@@ -21,27 +21,31 @@ use app\func\Proc;
 
     <?=
     $form->field($model, 'id_dolzh')->widget(Select2::classname(), Proc::DGselect2([
-        'model' => $model,
-        'resultmodel' => new Dolzh,
-        'keyfield' => 'id_dolzh',
-        'resultfield' => 'dolzh_name',
-        'placeholder' => 'Выберете должность',
-        'fromgridroute' => 'dolzh/index',
-        'resultrequest' => 'dolzh/selectinput',
-        'thisroute' => $this->context->module->requestedRoute,
+                'model' => $model,
+                'resultmodel' => new Dolzh,
+                'fields' => [
+                    'keyfield' => 'id_dolzh',
+                    'resultfield' => 'dolzh_name',
+                ],
+                'placeholder' => 'Выберете должность',
+                'fromgridroute' => 'dolzh/index',
+                'resultrequest' => 'dolzh/selectinput',
+                'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
 
     <?=
     $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([
-        'model' => $model,
-        'resultmodel' => new Podraz,
-        'keyfield' => 'id_podraz',
-        'resultfield' => 'podraz_name',
-        'placeholder' => 'Выберете подразделение',
-        'fromgridroute' => 'podraz/index',
-        'resultrequest' => 'podraz/selectinput',
-        'thisroute' => $this->context->module->requestedRoute,
+                'model' => $model,
+                'resultmodel' => new Podraz,
+                'fields' => [
+                    'keyfield' => 'id_podraz',
+                    'resultfield' => 'podraz_name',
+                ],
+                'placeholder' => 'Выберете подразделение',
+                'fromgridroute' => 'podraz/index',
+                'resultrequest' => 'podraz/selectinput',
+                'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
 
@@ -49,8 +53,10 @@ use app\func\Proc;
     $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2([
                 'model' => $model,
                 'resultmodel' => new Build,
-                'keyfield' => 'id_build',
-                'resultfield' => 'build_name',
+                'fields' => [
+                    'keyfield' => 'id_build',
+                    'resultfield' => 'build_name',
+                ],
                 'placeholder' => 'Выберете здание',
                 'fromgridroute' => 'build/index',
                 'resultrequest' => 'build/selectinput',

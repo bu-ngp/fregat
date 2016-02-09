@@ -57,7 +57,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            echo '<pre style="max-height: 350px; font-size: 15px;">';
+            echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
             $s1 = $_SESSION;
             unset($s1['__flash']);
             print_r($s1);
@@ -134,7 +134,7 @@ class Proc {
         }
     }
 
-    public static function DGselect2($params) {
+    public static function DGselect2t($params) {
         if (isset($params) && is_array($params)) {
             $model = $params['model'];
             $resultmodel = $params['resultmodel'];
@@ -177,71 +177,64 @@ class Proc {
         //}
     }
 
-    public static function DGselect2t($params) {
+    public static function DGselect2($params) {
         if (isset($params) && is_array($params)) {
             $model = $params['model'];
             $resultmodel = $params['resultmodel'];
             $resultrequest = $params['resultrequest'];
-            $keyfield = $params['keyfield'];
-            $resultfield = $params['resultfield'];
-            $showresultfields = $params['showresultfields'];
             $placeholder = $params['placeholder'];
             $fromgridroute = $params['fromgridroute'];
             $thisroute = $params['thisroute'];
+            $fields = $params['fields'];
 
-            //if (!empty($model) && !empty($resultmodel) && !empty($keyfield) && !empty($resultfield) && !empty($fromgridroute) && !empty($$thisroute)) {
+            if (!isset($fields['showresultfields']))
+                $fields['showresultfields'] = [$fields['resultfield']];
 
-            $initValueText = empty($model->$keyfield) ? '' : $resultmodel::findOne($model->$keyfield);
-            $data = ArrayHelper::toArray($initValueText, $showresultfields); // ------------------------------------------------------------------------------
+            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !empty($fields['resultfield']) && !empty($fromgridroute) && !empty($thisroute)) {
 
-            return [
-                'initValueText' => empty($model->$keyfield) ? '' : implode(', ', $data),
-                'options' => ['placeholder' => $placeholder],
-                'theme' => Select2::THEME_BOOTSTRAP,
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 3,
-                    'ajax' => [
-                        'url' => Url::to([$resultrequest]),
-                        'dataType' => 'json',
-                        'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $resultfield . '", showresultfields: ' . json_encode($showresultfields) . ' } }')
+                $initrecord = empty($model->$fields['keyfield']) ? '' : $resultmodel::find()
+                                ->select($fields['showresultfields'])
+                                ->where([$resultmodel->primarykey()[0] => $model->$fields['keyfield']])
+                                ->asArray()
+                                ->one();
+
+                return [
+                    'initValueText' => empty($model->$fields['keyfield']) ? '' : implode(', ', $initrecord),
+                    'options' => ['placeholder' => $placeholder],
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 3,
+                        'ajax' => [
+                            'url' => Url::to([$resultrequest]),
+                            'dataType' => 'json',
+                            'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . ' } }')
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                     ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                ],
-                'addon' => [
-                    'append' => [
-                        'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
-                            'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                            'url' => $thisroute,
-                            'field' => $keyfield,
-                            'id' => $model->primaryKey,
-                                ], ['class' => 'btn btn-success']),
-                        'asButton' => true
+                    'addon' => [
+                        'append' => [
+                            'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
+                                'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                'url' => $thisroute,
+                                'field' => $fields['keyfield'],
+                                'id' => $model->primaryKey,
+                                    ], ['class' => 'btn btn-success']),
+                            'asButton' => true
+                        ]
                     ]
-                ]
-            ];
+                ];
+            } else
+                throw new \Exception('Ошибка в Proc::DGselect2()');
         }
-        //}
     }
 
-    public static function select2request($model, $field, $q = null) {
+    public static function select2request($model, $field, $q = null, $showresultfields = null) {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $m = new $model;
-            $out['results'] = $model::find()
-                    ->select([$m->primaryKey()[0] . ' AS id', $field . ' AS text'])
-                    ->where(['like', $field, $q])
-                    ->limit(20)
-                    ->asArray()
-                    ->all();
-        }
-        return $out;
-    }
+        if (!isset($showresultfields))
+            $showresultfields = [$field];
 
-    public static function select2request2($model, $field, $q = null, $showresultfields = null) {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
         $showresultfields = implode(', ', $showresultfields);
         if (!is_null($q)) {
             $m = new $model;
@@ -292,7 +285,7 @@ class Proc {
             $model->load($session[$fmodel], 'attributes');
         } else {
             $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
-                'attributes' => $model->isNewRecord ? $model->load($session[$fmodel], 'attributes') : $model->attributes,
+                'attributes' => $model->isNewRecord && isset($session[$fmodel]) ? $model->load($session[$fmodel], 'attributes') : $model->attributes,
             ]);
         }
 

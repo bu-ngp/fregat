@@ -28,8 +28,10 @@ use yii\web\Session;
     $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([
                 'model' => $model,
                 'resultmodel' => new Podraz,
-                'keyfield' => 'id_podraz',
-                'resultfield' => 'podraz_name',
+                'fields' => [
+                    'keyfield' => 'id_podraz',
+                    'resultfield' => 'podraz_name',
+                ],
                 'placeholder' => 'Выберете подразделение',
                 'fromgridroute' => 'podraz/index',
                 'resultrequest' => 'podraz/selectinput',
@@ -38,15 +40,17 @@ use yii\web\Session;
     ?>
 
     <?=
-    $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2t([
+    $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2([
                 'model' => $model,
                 'resultmodel' => new Build,
-                'keyfield' => 'id_build',
-                'resultfield' => 'build_name',
-                'showresultfields' => ['build_id', 'build_name'],
+                'fields' => [
+                    'keyfield' => 'id_build',
+                    'resultfield' => 'build_name',
+                //    'showresultfields' => ['build_id', 'build_name'],
+                ],
                 'placeholder' => 'Выберете здание',
                 'fromgridroute' => 'build/index',
-                'resultrequest' => 'build/selectinput2',
+                'resultrequest' => 'build/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>

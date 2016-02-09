@@ -44,7 +44,7 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 
 function SetSession(thiselem) {
     var field = $(thiselem).attr("name");
-
+    
     $.ajax({
         url: "?r=site%2Fsetsession",
         type: "post",

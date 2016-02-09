@@ -40,15 +40,11 @@ class BuildController extends Controller {
                             'dataProvider' => $dataProvider,
         ]));
     }
-
-    public function actionSelectinput($field, $q = null) {
-        return Proc::select2request(new Build, $field, $q);
-    }
     
-    public function actionSelectinput2($field, $q = null) {
-        $showresultfields = $_GET['showresultfields'];
+    public function actionSelectinput($field, $q = null) {
+        //$showresultfields = $_GET['showresultfields'];
         
-        return Proc::select2request2(new Build, $field, $q, $showresultfields);
+        return Proc::select2request(new Build, $field, $q);
     }
 
     /**
