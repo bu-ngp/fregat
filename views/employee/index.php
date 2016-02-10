@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use app\func\Proc;
 use kartik\dynagrid\DynaGrid;
 use yii\web\Session;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EmployeeSearch */
@@ -28,8 +29,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $result = $session['breadcrumbs'];
     end($result);
     $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
-    //var_dump($foreign);
-
 
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([

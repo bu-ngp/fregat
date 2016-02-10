@@ -98,9 +98,10 @@ class ImpemployeeController extends Controller
      */
     public function actionDelete($id)
     {
+        $id_importemployee = $this->findModel($id)->id_importemployee;
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['importemployee/update','id'=>$id_importemployee]);
     }
      
     /**

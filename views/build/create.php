@@ -7,7 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Build */
 
 $this->title = 'Создать здание';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="build-create">
 

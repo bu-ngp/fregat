@@ -7,7 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Dolzh */
 
 $this->title = 'Создать Должность';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="dolzh-create">
 

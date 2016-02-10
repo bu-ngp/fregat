@@ -83,7 +83,7 @@ use yii\web\Session;
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
                             'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee', 
-                                'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                'foreignmodel' => 'Impemployee', //substr($model->className(), strrpos($model->className(), '\\') + 1),
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_employee',
                                 'id' => $model->primaryKey,

@@ -7,7 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Employee */
 
 $this->title = 'Новый сотрудник';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="employee-create">
 

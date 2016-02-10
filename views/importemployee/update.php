@@ -8,7 +8,7 @@ use app\func\Proc;
 
 $this->title = 'Обновить словосочетание';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => $model,
+    'model' => [$model, $Impemployee],
 ]);
 ?>
 <div class="importemployee-update">

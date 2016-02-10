@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Importemployee;
 use app\models\ImportemployeeSearch;
+use app\models\Impemployee;
 use app\models\ImpemployeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -60,10 +61,10 @@ class ImportemployeeController extends Controller {
     public function actionCreate() {
         $model = new Importemployee();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {            
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
             return $this->redirect(['update', 'id' => $model->importemployee_id]);
-        } else {            
+        } else {
             return $this->render('create', [
                         'model' => $model,
             ]);
@@ -78,15 +79,23 @@ class ImportemployeeController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
+        $Impemployee = new Impemployee;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
+            $Impemployee->load(Yii::$app->request->get(), 'Impemployee');
+            $Impemployee->id_importemployee = $model->primaryKey;
+            if ($Impemployee->validate())
+                $Impemployee->save(false);
+         /*   else
+                var_dump($Impemployee->errors);*/
 
             $searchModel = new ImpemployeeSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                         'model' => $model,
+                        'Impemployee' => $Impemployee,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
             ]);

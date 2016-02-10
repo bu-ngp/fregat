@@ -27,49 +27,68 @@ class Proc {
 
             $result = $session['breadcrumbs'];
 
+            if (!isset($result[$id]))
+                $result[$id] = [];
 
-            $fmodel = isset($param['model']) ? substr($param['model']->className(), strrpos($param['model']->className(), '\\') + 1) : '';
+            $params = Yii::$app->getRequest()->getQueryParams();
+            unset($params['r']);
+            $result[$id] = array_replace_recursive($result[$id], [
+                'label' => empty($view->title) ? '-' : $view->title,
+                'url' => Url::toRoute(array_merge([$view->context->module->requestedRoute], $params)),
+                'dopparams' => isset($_GET['foreignmodel']) ? [
+                    'foreign' => [
+                        'url' => (string) filter_input(INPUT_GET, 'url'),
+                        'model' => (string) filter_input(INPUT_GET, 'foreignmodel'),
+                        'field' => (string) filter_input(INPUT_GET, 'field'),
+                        'id' => (string) filter_input(INPUT_GET, 'id'),
+                    ]
+                        ] : []
+            ]);
 
-            if (!isset($result[$id])) {
-                $params = Yii::$app->getRequest()->getQueryParams();
-                unset($params['r']);
-                $result[$id] = [
-                    'label' => empty($view->title) ? '-' : $view->title,
-                    'url' => Url::toRoute(array_merge([$view->context->module->requestedRoute], $params)),
-                    'dopparams' => array_merge(isset($param['model']) ? [
-                                $fmodel => $param['model']->attributes
-                                    ] : [], isset($_GET['foreignmodel']) ? [
-                                'foreign' => [
-                                    'url' => (string) filter_input(INPUT_GET, 'url'),
-                                    'model' => $_GET['foreignmodel'],
-                                    'field' => (string) filter_input(INPUT_GET, 'field'),
-                                    'id' => (string) filter_input(INPUT_GET, 'id'),
-                                ]
-                                    ] : []
-                    ),
-                ];
-            } else {
+            if (isset($param['model']) && !is_array($param['model']))
+                $param['model'] = [$param['model']];
+
+            if (isset($param['model']) && is_array($param['model']))
+                foreach ($param['model'] as $model) {
+                    $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+
+                    if (!isset($result[$id]['dopparams'][$fmodel])) {
+                        $result[$id] = array_replace_recursive($result[$id], [
+                            'dopparams' => [$fmodel => $model->attributes],
+                        ]);
+                    } else {
+                        end($result);
+
+                        $value = '';
+
+                        $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+                        if (isset($result[key($result)]['dopparams']['foreign']['model']))
+                            $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
+                        $field = $result[key($result)]['dopparams']['foreign']['field'];
+
+                        while (count($result) > 0 && $id !== key($result)) {
+                            if (isset($result[key($result)]['dopparams']['foreign']))
+                                $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
+                            unset($result[key($result)]);
+                            end($result);
+                        }
+
+                        if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                            $value = Yii::$app->request->get()[$fmodel][$field];
+                        elseif (isset($result[key($result)]['dopparams'][$fmodel][$field]))
+                            $value = $result[key($result)]['dopparams'][$fmodel][$field];
+                      
+                        if (isset($result[key($result)]['dopparams'][$fmodel])) {
+                            if (isset($result[key($result)]['dopparams'][$fmodel][$field]))
+                                $result[key($result)]['dopparams'][$fmodel][$field] = $value;
+                            $model->load($result[key($result)]['dopparams'], $fmodel);
+                        }
+                    }
+                } else {
                 end($result);
-
-                $value = '';
-                $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
-                $field = $result[key($result)]['dopparams']['foreign']['field'];
-
                 while (count($result) > 0 && $id !== key($result)) {
-                    if (isset($result[key($result)]['dopparams']['foreign']))
-                        $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
                     unset($result[key($result)]);
                     end($result);
-                }
-
-                if (isset(Yii::$app->request->get()[$fmodel][$field]))
-                    $value = Yii::$app->request->get()[$fmodel][$field];
-                elseif (isset($result[key($result)]['dopparams'][$fmodel][$field]))
-                    $value = $result[key($result)]['dopparams'][$fmodel][$field];
-                
-                if (isset($result[key($result)]['dopparams'][$fmodel])) {
-                    $result[key($result)]['dopparams'][$fmodel][$field] = $value;
-                    $param['model']->load($result[key($result)]['dopparams'], $fmodel);
                 }
             }
 

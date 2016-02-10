@@ -7,7 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Podraz */
 
 $this->title = 'Создать Подразделение';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="podraz-create">
 

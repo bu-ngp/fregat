@@ -31,7 +31,8 @@ class Impemployee extends \yii\db\ActiveRecord
     {
         return [
             [['id_importemployee', 'id_employee'], 'required'],
-            [['id_importemployee', 'id_employee'], 'integer']
+            [['id_importemployee', 'id_employee'], 'integer'],
+            ['id_importemployee', 'unique', 'targetAttribute' => ['id_importemployee', 'id_employee'], 'message' => 'Этот сотрудник уже ассоциирован с данным словосочетанием'],
         ];
     }
 

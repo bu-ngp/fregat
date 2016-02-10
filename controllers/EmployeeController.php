@@ -72,7 +72,6 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
 
             return $this->render('create', [
                         'model' => $model,
@@ -92,8 +91,7 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
-
+            
             return $this->render('update', [
                         'model' => $model,
             ]);
