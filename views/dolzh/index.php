@@ -25,19 +25,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <?php
     $session = new Session;
     $session->open();
-    
+
+    $result = $session['breadcrumbs'];
+    end($result);
+    $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
+
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'dolzh_name',
                     ],
                     'buttons' => array_merge(
-                            isset($session[$foreignmodel]['foreign']) ? [
-                                'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
-                                    $field = $session[$foreignmodel]['foreign']['field'];
-                                    $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['dolzh_id']]]);
+                            empty($foreign) ? [] : [
+                                'choose' => function ($url, $model, $key) use ($foreign) {
+                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['dolzh_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
-                                }] : [], [
+                                }], [
                                 'update' => ['dolzh/update', 'dolzh_id'],
                                 'delete' => ['dolzh/delete', 'dolzh_id'],
                                     ]

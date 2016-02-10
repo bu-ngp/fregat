@@ -7,7 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Importemployee */
 
 $this->title = 'Создать словосочетание';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="importemployee-create">
 

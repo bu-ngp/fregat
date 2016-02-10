@@ -35,10 +35,10 @@ class PodrazController extends Controller {
         $searchModel = new PodrazSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', Proc::SetForeignmodel([
+        return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-        ]));
+        ]);
     }
     
     public function actionSelectinput($field, $q = null) {

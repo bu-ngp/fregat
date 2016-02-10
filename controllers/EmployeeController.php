@@ -44,10 +44,10 @@ class EmployeeController extends Controller {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->searchforimportemployee(Yii::$app->request->queryParams);
 
-        return $this->render('index', Proc::SetForeignmodel([
+        return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-        ]));
+        ]);
     }
     
     /**

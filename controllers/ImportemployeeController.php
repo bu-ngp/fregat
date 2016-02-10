@@ -63,9 +63,7 @@ class ImportemployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {            
             Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
             return $this->redirect(['update', 'id' => $model->importemployee_id]);
-        } else {
-            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
-            
+        } else {            
             return $this->render('create', [
                         'model' => $model,
             ]);
@@ -83,7 +81,6 @@ class ImportemployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            Proc::LoadFormFromCache($model); // Грузим атрибуты из сессии
 
             $searchModel = new ImpemployeeSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

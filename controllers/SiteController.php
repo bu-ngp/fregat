@@ -100,14 +100,28 @@ class SiteController extends Controller {
         if (!empty($modelclass) && !empty($field)) {
             $session = new Session;
             $session->open();
-            if (isset($session[$modelclass])) {
-                $session[$modelclass] = array_replace_recursive($session[$modelclass], [
-                    'attributes' => [
-                        $field => $value,
-                    ],
-                ]);
+
+            $res = $session['breadcrumbs'];
+            end($res);
+
+
+            if (isset($res[key($res)]['dopparams'][$modelclass])) {
+                $res[key($res)]['dopparams'][$modelclass][$field] = $value;
                 $result = '1';
             }
+
+            /*   if (isset($session[$modelclass])) {
+              $session[$modelclass] = array_replace_recursive($session[$modelclass], [
+              'attributes' => [
+              $field => $value,
+              ],
+              ]);
+              $result = '1';
+              } */
+
+
+            $session['breadcrumbs'] = $res;
+
             $session->close();
         }
 

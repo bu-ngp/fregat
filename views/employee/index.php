@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use app\func\Proc;
 use kartik\dynagrid\DynaGrid;
+use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EmployeeSearch */
@@ -20,8 +21,17 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?=
-    DynaGrid::widget(Proc::DGopts([
+    <?php
+    $session = new Session;
+    $session->open();
+
+    $result = $session['breadcrumbs'];
+    end($result);
+    $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
+    //var_dump($foreign);
+
+
+    echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'employee_id',
@@ -31,15 +41,21 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'idbuild.build_name',
                     ],
                     'buttons' => array_merge(
-                                isset($session[$foreignmodel]['foreign']) ? [
-                                    'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
-                                        $field = $session[$foreignmodel]['foreign']['field'];
-                                        $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['employee_id']]]);
-                                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
-                                    }] : [], [
-                                    'update' => ['employee/update', 'employee_id'],
-                                    'delete' => ['employee/delete', 'employee_id'],])
-                            ,
+                            empty($foreign) ? [] : [
+                                'choose' => function ($url, $model, $key) use ($foreign) {
+                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
+                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
+                                }]
+
+                                    /*  isset($session[$foreignmodel]['foreign']) ? [
+                                      'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
+                                      $field = $session[$foreignmodel]['foreign']['field'];
+                                      $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['employee_id']]]);
+                                      return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
+                                      }] : [] */, [
+                                'update' => ['employee/update', 'employee_id'],
+                                'delete' => ['employee/delete', 'employee_id'],])
+                                ,
                         ]),
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
@@ -47,6 +63,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'options' => ['id' => 'employeegrid'],
                         ]
             ]));
+
+            $session->close();
             ?>
 
 </div>

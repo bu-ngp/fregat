@@ -26,32 +26,50 @@ class Proc {
                 $session['breadcrumbs'] = [];
 
             $result = $session['breadcrumbs'];
-            $IDs = $session['breadcrumbs'];
-
-            array_walk($IDs, function(&$value) {
-                $value = $value['dopparams']['id'];
-            });
 
 
-            $key = array_search($id, $IDs);
-            VAR_DUMP($id);
-            VAR_DUMP($IDs);
-            var_dump($key);
-            if ($key === false) {
+            $fmodel = isset($param['model']) ? substr($param['model']->className(), strrpos($param['model']->className(), '\\') + 1) : '';
+
+            if (!isset($result[$id])) {
                 $params = Yii::$app->getRequest()->getQueryParams();
                 unset($params['r']);
-                array_push($result, [
+                $result[$id] = [
                     'label' => empty($view->title) ? '-' : $view->title,
                     'url' => Url::toRoute(array_merge([$view->context->module->requestedRoute], $params)),
-                    //   'url' => $view->context->module->requestedRoute,
-                    'dopparams' => [
-                        'id' => $id,
-                    ],
-                ]);
+                    'dopparams' => array_merge(isset($param['model']) ? [
+                                $fmodel => $param['model']->attributes
+                                    ] : [], isset($_GET['foreignmodel']) ? [
+                                'foreign' => [
+                                    'url' => (string) filter_input(INPUT_GET, 'url'),
+                                    'model' => $_GET['foreignmodel'],
+                                    'field' => (string) filter_input(INPUT_GET, 'field'),
+                                    'id' => (string) filter_input(INPUT_GET, 'id'),
+                                ]
+                                    ] : []
+                    ),
+                ];
             } else {
                 end($result);
-                if ($key !== key($result)) {
-                    array_splice($result, $key + 1, count($result) - $key);
+
+                $value = '';
+                $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
+                $field = $result[key($result)]['dopparams']['foreign']['field'];
+
+                while (count($result) > 0 && $id !== key($result)) {
+                    if (isset($result[key($result)]['dopparams']['foreign']))
+                        $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
+                    unset($result[key($result)]);
+                    end($result);
+                }
+
+                if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                    $value = Yii::$app->request->get()[$fmodel][$field];
+                elseif (isset($result[key($result)]['dopparams'][$fmodel][$field]))
+                    $value = $result[key($result)]['dopparams'][$fmodel][$field];
+                
+                if (isset($result[key($result)]['dopparams'][$fmodel])) {
+                    $result[key($result)]['dopparams'][$fmodel][$field] = $value;
+                    $param['model']->load($result[key($result)]['dopparams'], $fmodel);
                 }
             }
 
@@ -63,13 +81,10 @@ class Proc {
             print_r($s1);
             echo '</pre>';
 
-            //  unset($session['breadcrumbs']);
             $session->close();
 
             end($result);
-            /*  var_Dump(Url::toRoute($view->context->module->requestedRoute));
-              var_Dump($view->context->module->requestedRoute);
-              var_dump($result); */
+
             unset($result[key($result)]['url']);
 
             return $result;
@@ -256,62 +271,6 @@ class Proc {
         unset($bc[key($bc)]);
         $session['breadcrumbs'] = $bc;
         $session->close();
-    }
-
-    public static function LoadFormFromCache(&$model) {
-        $session = new Session;
-        $session->open();
-        $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
-
-        if (is_array($session[$fmodel]['foreign']) && count($session[$fmodel]['foreign']) > 0) {
-            $field = $session[$fmodel]['foreign']['field'];
-            $value = '';
-
-            if (isset(Yii::$app->request->get()[$fmodel][$field]))
-                $value = Yii::$app->request->get()[$fmodel][$field];
-            elseif (isset($session[$fmodel]['attributes'][$field]))
-                $value = $session[$fmodel]['attributes'][$field];
-
-            $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                'attributes' => [
-                    $field => $value,
-                ]
-            ]);
-
-            $session[$fmodel] = array_replace_recursive($session[$fmodel], [
-                'foreign' => NULL,
-            ]);
-
-            $model->load($session[$fmodel], 'attributes');
-        } else {
-            $session[$fmodel] = array_replace_recursive(isset($session[$fmodel]) ? $session[$fmodel] : [], [
-                'attributes' => $model->isNewRecord && isset($session[$fmodel]) ? $model->load($session[$fmodel], 'attributes') : $model->attributes,
-            ]);
-        }
-
-        $session->close();
-    }
-
-    public static function SetForeignmodel($param) {
-        $result = is_array($param) ? $param : [];
-        $foreignmodel = (string) filter_input(INPUT_GET, 'foreignmodel');
-
-        if (!empty($foreignmodel)) {
-            $session = new Session;
-            $session->open();
-            $session[$foreignmodel] = array_replace_recursive(isset($session[$foreignmodel]) ? $session[$foreignmodel] : [], ['foreign' => [
-                    'url' => (string) filter_input(INPUT_GET, 'url'),
-                    'field' => (string) filter_input(INPUT_GET, 'field'),
-                    'id' => (string) filter_input(INPUT_GET, 'id'),
-            ]]);
-
-            $session->close();
-            $result = array_replace_recursive($result, [
-                'foreignmodel' => $foreignmodel,
-            ]);
-        }
-
-        return $result;
     }
 
 }

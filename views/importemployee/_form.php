@@ -82,7 +82,17 @@ use yii\web\Session;
                         'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
-                            'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee', 'id' => $_GET['id']], ['class' => 'btn btn-success']),
+                            'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee', 
+                                'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                'url' => $this->context->module->requestedRoute,
+                                'field' => 'id_employee',
+                                'id' => $model->primaryKey,
+                                
+                                
+                               // 'id' => $_GET['id'],
+                                    
+                                    
+                                    ], ['class' => 'btn btn-success']),
                         ],
                     ]
         ]));
