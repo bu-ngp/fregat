@@ -9,7 +9,6 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
-use yii\helpers\ArrayHelper;
 
 class Proc {
 
@@ -48,8 +47,9 @@ class Proc {
             if (isset($param['model']) && !is_array($param['model']))
                 $param['model'] = [$param['model']];
 
-            if (isset($param['model']) && is_array($param['model']))
+            if (isset($param['model']) && is_array($param['model'])) {
                 foreach ($param['model'] as $model) {
+
                     $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
 
                     if (!isset($result[$id]['dopparams'][$fmodel])) {
@@ -61,30 +61,23 @@ class Proc {
 
                         $value = '';
 
-                        $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
-                        if (isset($result[key($result)]['dopparams']['foreign']['model']))
-                            $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
                         $field = $result[key($result)]['dopparams']['foreign']['field'];
 
                         while (count($result) > 0 && $id !== key($result)) {
-                            if (isset($result[key($result)]['dopparams']['foreign']))
-                                $fmodel = $result[key($result)]['dopparams']['foreign']['model'];
                             unset($result[key($result)]);
                             end($result);
                         }
 
-                        if (isset(Yii::$app->request->get()[$fmodel][$field]))
+                        $model->load($result[key($result)]['dopparams'], $fmodel);
+
+                        if (isset(Yii::$app->request->get()[$fmodel][$field])) {
                             $value = Yii::$app->request->get()[$fmodel][$field];
-                        elseif (isset($result[key($result)]['dopparams'][$fmodel][$field]))
-                            $value = $result[key($result)]['dopparams'][$fmodel][$field];
-                      
-                        if (isset($result[key($result)]['dopparams'][$fmodel])) {
-                            if (isset($result[key($result)]['dopparams'][$fmodel][$field]))
-                                $result[key($result)]['dopparams'][$fmodel][$field] = $value;
-                            $model->load($result[key($result)]['dopparams'], $fmodel);
+                            $result[key($result)]['dopparams'][$fmodel][$field] = $value;
+                            $model->$field = $value;
                         }
                     }
-                } else {
+                }
+            } else {
                 end($result);
                 while (count($result) > 0 && $id !== key($result)) {
                     unset($result[key($result)]);
@@ -94,11 +87,11 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+        /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
             $s1 = $_SESSION;
             unset($s1['__flash']);
             print_r($s1);
-            echo '</pre>';
+            echo '</pre>';*/
 
             $session->close();
 
@@ -139,7 +132,7 @@ class Proc {
             if (isset($params['buttons']['update']) && is_array($params['buttons']['update'])) {
                 $params['buttons']['update'] = function ($url, $model) use ($params) {
                     $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['update'][0], 'id' => $model[$params['buttons']['update'][1]]]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning']);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                 };
             }
 
@@ -168,49 +161,7 @@ class Proc {
         }
     }
 
-    public static function DGselect2t($params) {
-        if (isset($params) && is_array($params)) {
-            $model = $params['model'];
-            $resultmodel = $params['resultmodel'];
-            $resultrequest = $params['resultrequest'];
-            $keyfield = $params['keyfield'];
-            $resultfield = $params['resultfield'];
-            $placeholder = $params['placeholder'];
-            $fromgridroute = $params['fromgridroute'];
-            $thisroute = $params['thisroute'];
-
-            //if (!empty($model) && !empty($resultmodel) && !empty($keyfield) && !empty($resultfield) && !empty($fromgridroute) && !empty($$thisroute)) {
-
-            return [
-                'initValueText' => empty($model->$keyfield) ? '' : $resultmodel::findOne($model->$keyfield)->$resultfield,
-                'options' => ['placeholder' => $placeholder],
-                'theme' => Select2::THEME_BOOTSTRAP,
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 3,
-                    'ajax' => [
-                        'url' => Url::to([$resultrequest]),
-                        'dataType' => 'json',
-                        'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $resultfield . '" } }')
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                ],
-                'addon' => [
-                    'append' => [
-                        'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
-                            'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                            'url' => $thisroute,
-                            'field' => $keyfield,
-                            'id' => $model->primaryKey,
-                                ], ['class' => 'btn btn-success']),
-                        'asButton' => true
-                    ]
-                ]
-            ];
-        }
-        //}
-    }
-
+    // Возвращает параметры для элемента Select2
     public static function DGselect2($params) {
         if (isset($params) && is_array($params)) {
             $model = $params['model'];
@@ -263,6 +214,11 @@ class Proc {
         }
     }
 
+    // Выводит массив данных для Select2 элемента
+    // $model - Модель из которой берутся данные
+    // $field - Поле по которому осуществляется поиск
+    // $q - Текстовая строка поиска
+    // $showresultfields - Массив полей, которые возвращаются, как результат поиска
     public static function select2request($model, $field, $q = null, $showresultfields = null) {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => ['id' => '', 'text' => '']];
@@ -282,6 +238,7 @@ class Proc {
         return $out;
     }
 
+    // Удаляет последний элемент массива хлебных крошек из сессии
     public static function RemoveLastBreadcrumbsFromSession() {
         $session = new Session;
         $session->open();
@@ -290,6 +247,15 @@ class Proc {
         unset($bc[key($bc)]);
         $session['breadcrumbs'] = $bc;
         $session->close();
+    }
+    
+    // Возвращает массив хлебных крошек из сессии
+    public static function GetBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        $session->close();
+        return $bc;
     }
 
 }

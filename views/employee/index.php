@@ -43,15 +43,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             empty($foreign) ? [] : [
                                 'choose' => function ($url, $model, $key) use ($foreign) {
                                     $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
-                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
-                                }]
-
-                                    /*  isset($session[$foreignmodel]['foreign']) ? [
-                                      'choose' => function ($url, $model, $key) use ($session, $foreignmodel) {
-                                      $field = $session[$foreignmodel]['foreign']['field'];
-                                      $customurl = Url::to([$session[$foreignmodel]['foreign']['url'], 'id' => $session[$foreignmodel]['foreign']['id'], $foreignmodel => [$field => $model['employee_id']]]);
-                                      return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success']);
-                                      }] : [] */, [
+                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                                }], [
                                 'update' => ['employee/update', 'employee_id'],
                                 'delete' => ['employee/delete', 'employee_id'],])
                                 ,

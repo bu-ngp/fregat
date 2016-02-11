@@ -83,6 +83,9 @@ class EmployeeSearch extends Employee {
                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
 
+                                if (empty($query->orderBy))
+                                    $query->orderBy('employee_fio');
+
                                 $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
                                     'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
                                     'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
@@ -141,15 +144,18 @@ class EmployeeSearch extends Employee {
                                                                     'id_podraz' => $this->id_podraz,
                                                                     'id_build' => $this->id_build,
                                                                 ]);
-                                                                
+
                                                                 $query->where('(impemployees.id_importemployee <> :id_importemployee or impemployees.id_importemployee is null)', [
                                                                     'id_importemployee' => $params['id'],
                                                                 ]);
-                                                                
+
                                                                 $query->andFilterWhere(['like', 'employee_fio', $this->employee_fio]);
                                                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
                                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
+
+                                                                if (empty($query->orderBy))
+                                                                    $query->orderBy('employee_fio');
 
                                                                 $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
                                                                     'asc' => ['iddolzh.dolzh_name' => SORT_ASC],

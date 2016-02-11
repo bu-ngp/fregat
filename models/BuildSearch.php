@@ -10,13 +10,12 @@ use app\models\Build;
 /**
  * BuildSearch represents the model behind the search form about `app\models\Build`.
  */
-class BuildSearch extends Build
-{
+class BuildSearch extends Build {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['build_id'], 'integer'],
             [['build_name'], 'safe'],
@@ -26,8 +25,7 @@ class BuildSearch extends Build
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class BuildSearch extends Build
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Build::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -60,7 +57,10 @@ class BuildSearch extends Build
         ]);
 
         $query->andFilterWhere(['like', 'build_name', $this->build_name]);
+        if (empty($query->orderBy))
+            $query->orderBy('build_name');
 
         return $dataProvider;
     }
+
 }

@@ -39,7 +39,7 @@ class EmployeeController extends Controller {
                     'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     public function actionForimportemployee() {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->searchforimportemployee(Yii::$app->request->queryParams);
@@ -49,7 +49,7 @@ class EmployeeController extends Controller {
                     'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     /**
      * Displays a single Employee model.
      * @param integer $id
@@ -68,11 +68,15 @@ class EmployeeController extends Controller {
      */
     public function actionCreate() {
         $model = new Employee();
+      
+        $result =  Proc::GetBreadcrumbsFromSession();
+        end($result);
+        prev($result);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect($result[key($result)]['url']);
         } else {
-
+            
             return $this->render('create', [
                         'model' => $model,
             ]);
@@ -87,11 +91,15 @@ class EmployeeController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
+            
+        $result =  Proc::GetBreadcrumbsFromSession();
+        end($result);
+        prev($result);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect($result[key($result)]['url']);
         } else {
-            
+
             return $this->render('update', [
                         'model' => $model,
             ]);
@@ -107,7 +115,10 @@ class EmployeeController extends Controller {
     public function actionDelete($id) {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        $result =  Proc::GetBreadcrumbsFromSession();
+        end($result);
+
+        return $this->redirect($result[key($result)]['url']);
     }
 
     /**

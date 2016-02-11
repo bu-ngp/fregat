@@ -10,13 +10,12 @@ use app\models\Podraz;
 /**
  * PodrazSearch represents the model behind the search form about `app\models\Podraz`.
  */
-class PodrazSearch extends Podraz
-{
+class PodrazSearch extends Podraz {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['podraz_id'], 'integer'],
             [['podraz_name'], 'safe'],
@@ -26,8 +25,7 @@ class PodrazSearch extends Podraz
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class PodrazSearch extends Podraz
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Podraz::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -60,7 +57,10 @@ class PodrazSearch extends Podraz
         ]);
 
         $query->andFilterWhere(['like', 'podraz_name', $this->podraz_name]);
+        if (empty($query->orderBy))
+            $query->orderBy('podraz_name');
 
         return $dataProvider;
     }
+
 }

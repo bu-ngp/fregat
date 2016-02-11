@@ -59,7 +59,8 @@ $config = [
             ],
             'defaultTheme' => 'panel-default',
             'dynaGridOptions' => [
-                'gridOptions' => [                    
+                'gridOptions' => [
+                    'pjax'=>true,
                     'exportConfig' => [
                         \kartik\grid\GridView::EXCEL => [
                             'label' => 'EXCEL',

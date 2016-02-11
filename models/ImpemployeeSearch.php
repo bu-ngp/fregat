@@ -168,6 +168,9 @@ class ImpemployeeSearch extends Impemployee {
                                                                         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
                                                                         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
 
+                                                                        if (empty($query->orderBy))
+                                                                            $query->orderBy('idemployee.employee_fio');
+
                                                                         $dataProvider->sort->attributes['idemployee.employee_id'] = [
                                                                             'asc' => ['idemployee.employee_id' => SORT_ASC],
                                                                             'desc' => ['idemployee.employee_id' => SORT_DESC],

@@ -92,7 +92,7 @@ use yii\web\Session;
                                // 'id' => $_GET['id'],
                                     
                                     
-                                    ], ['class' => 'btn btn-success']),
+                                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],
                     ]
         ]));

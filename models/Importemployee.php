@@ -34,7 +34,8 @@ class Importemployee extends \yii\db\ActiveRecord
         return [
             [['importemployee_combination', 'id_podraz'], 'required'],
             [['id_build', 'id_podraz'], 'integer'],
-            [['importemployee_combination'], 'string', 'max' => 255]
+            [['importemployee_combination'], 'string', 'max' => 255],
+            ['importemployee_combination', 'unique'],
         ];
     }
 

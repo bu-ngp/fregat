@@ -77,6 +77,9 @@ class ImportemployeeSearch extends Importemployee {
                         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
 
+                        if (empty($query->orderBy))
+                            $query->orderBy('importemployee_combination');
+
                         $dataProvider->sort->attributes['idbuild.build_name'] = [
                             'asc' => ['idbuild.build_name' => SORT_ASC],
                             'desc' => ['idbuild.build_name' => SORT_DESC],

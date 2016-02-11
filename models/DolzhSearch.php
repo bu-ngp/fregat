@@ -60,6 +60,8 @@ class DolzhSearch extends Dolzh
         ]);
 
         $query->andFilterWhere(['like', 'dolzh_name', $this->dolzh_name]);
+        if (empty($query->orderBy))
+            $query->orderBy('dolzh_name');
 
         return $dataProvider;
     }

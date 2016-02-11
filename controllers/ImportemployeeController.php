@@ -87,8 +87,6 @@ class ImportemployeeController extends Controller {
             $Impemployee->id_importemployee = $model->primaryKey;
             if ($Impemployee->validate())
                 $Impemployee->save(false);
-         /*   else
-                var_dump($Impemployee->errors);*/
 
             $searchModel = new ImpemployeeSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
