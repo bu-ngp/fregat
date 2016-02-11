@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\web\Session;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
@@ -22,13 +21,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     </p>
 
     <?php
-    $session = new Session;
-    $session->open();
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
     
-    $result = $session['breadcrumbs'];
-    end($result);
-    $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
-
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
                     'columns' => [
@@ -51,8 +46,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'options' => ['id' => 'podrazgrid'],
                         ]
             ]));
-
-            $session->close();
             ?>
 
 </div>

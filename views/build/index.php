@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
-use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\BuildSearch */
@@ -22,12 +21,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     </div>
 
     <?php
-    $session = new Session;
-    $session->open();
-    
-    $result = $session['breadcrumbs'];
-    end($result);
-    $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
@@ -39,8 +34,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'choose' => function ($url, $model, $key) use ($foreign) {
                                     $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['build_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }] , [
-                                    
+                                }], [
+
                                 'update' => ['build/update', 'build_id'],
                                 'delete' => ['build/delete', 'build_id'],
                                     ]
@@ -52,8 +47,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'options' => ['id' => 'buildgrid'],
                         ]
             ]));
-
-            $session->close();
             ?>
 
 </div>

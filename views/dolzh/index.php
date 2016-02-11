@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
-use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\DolzhSearch */
@@ -23,12 +22,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     </p>
 
     <?php
-    $session = new Session;
-    $session->open();
-
-    $result = $session['breadcrumbs'];
-    end($result);
-    $foreign = isset($result[key($result)]['dopparams']['foreign']) ? $result[key($result)]['dopparams']['foreign'] : '';
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
@@ -52,8 +47,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'options' => ['id' => 'dolzhgrid'],
                         ]
             ]));
-
-            $session->close();
             ?>
 
 </div>

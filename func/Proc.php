@@ -87,11 +87,11 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-        /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-            $s1 = $_SESSION;
-            unset($s1['__flash']);
-            print_r($s1);
-            echo '</pre>';*/
+            /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+              $s1 = $_SESSION;
+              unset($s1['__flash']);
+              print_r($s1);
+              echo '</pre>'; */
 
             $session->close();
 
@@ -248,7 +248,7 @@ class Proc {
         $session['breadcrumbs'] = $bc;
         $session->close();
     }
-    
+
     // Возвращает массив хлебных крошек из сессии
     public static function GetBreadcrumbsFromSession() {
         $session = new Session;
@@ -256,6 +256,16 @@ class Proc {
         $bc = $session['breadcrumbs'];
         $session->close();
         return $bc;
+    }
+
+    // Возвращает последний элемент хлебных крошек из сессии
+    public static function GetLastBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        end($bc);
+        $session->close();
+        return $bc[key($bc)];
     }
 
 }
