@@ -22,7 +22,7 @@ use yii\web\Session;
     ]);
     ?>
 
-    <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
 
     <?=
     $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([
@@ -82,16 +82,12 @@ use yii\web\Session;
                         'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
-                            'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee', 
+                            'before' => Html::a('Добавить сотрудника', ['employee/forimportemployee',
                                 'foreignmodel' => 'Impemployee', //substr($model->className(), strrpos($model->className(), '\\') + 1),
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_employee',
                                 'id' => $model->primaryKey,
-                                
-                                
-                               // 'id' => $_GET['id'],
-                                    
-                                    
+                                    // 'id' => $_GET['id'],
                                     ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],
                     ]
@@ -102,7 +98,7 @@ use yii\web\Session;
     ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
+    <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
     </div>
 
 </div>

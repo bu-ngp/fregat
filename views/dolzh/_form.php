@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'dolzh_name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'dolzh_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -185,7 +185,7 @@ class Proc {
 
                 return [
                     'initValueText' => empty($model->$fields['keyfield']) ? '' : implode(', ', $initrecord),
-                    'options' => ['placeholder' => $placeholder],
+                    'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession'],
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'pluginOptions' => [
                         'allowClear' => true,

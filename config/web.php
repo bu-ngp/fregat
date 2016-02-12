@@ -48,7 +48,10 @@ $config = [
             //  'encodeParams' => FALSE,
             // my rules
             ],
-        ]
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
     ],
     'modules' => [
         'dynagrid' => [
@@ -60,7 +63,7 @@ $config = [
             'defaultTheme' => 'panel-default',
             'dynaGridOptions' => [
                 'gridOptions' => [
-                    'pjax'=>true,
+                    'pjax' => true,
                     'exportConfig' => [
                         \kartik\grid\GridView::EXCEL => [
                             'label' => 'EXCEL',

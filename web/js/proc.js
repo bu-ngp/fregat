@@ -57,11 +57,11 @@ function SetSession(thiselem) {
 }
 
 $(function () {
-    $("input.form-control").focusout(function () {
+    $("input.form-control.setsession").focusout(function () {
         SetSession(this);
     });
 
-    $("select.form-control").change(function () {
+    $("select.form-control.setsession").change(function () {
         SetSession(this);
     });
 });
