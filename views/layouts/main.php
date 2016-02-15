@@ -37,11 +37,11 @@ AppAsset::register($this);
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
                     ['label' => 'Главная', 'url' => ['/site/index']],
-                    ['label' => 'Сотрудники', 'url' => ['/importemployee/index']],
+                    ['label' => 'Сотрудники', 'url' => ['Fregat/importemployee/index']],
                     Yii::$app->user->isGuest ?
                             ['label' => 'Вход', 'url' => ['/site/login']] :
                             [
-                        'label' => 'Выход (' . Yii::$app->user->identity->username . ')',
+                        'label' => 'Выход (' . Yii::$app->user->identity->auth_user_fullname . ')',
                         'url' => ['/site/logout'],
                         'linkOptions' => ['data-method' => 'post']
                             ],

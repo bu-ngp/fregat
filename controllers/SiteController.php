@@ -67,9 +67,17 @@ class SiteController extends Controller {
 
     public function actionLogin() {
         if (!\Yii::$app->user->isGuest) {
+   
             return $this->goHome();
-        }
+            
 
+        }
+        
+       /*             $auth = Yii::$app->authManager;
+        $author = $auth->createRole('Administrator');
+        $auth->add($author);
+        $auth->assign($author, 1);  */
+        
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();

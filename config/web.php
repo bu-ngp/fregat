@@ -45,6 +45,7 @@ $config = [
             //  'enableStrictParsing' => true,
             //  'showScriptName' => false,
             'rules' => [
+                'Fregat/<controller:\w+>/<action:\w+>' => 'Fregat/<controller>/<action>',
             //  'encodeParams' => FALSE,
             // my rules
             ],
