@@ -24,7 +24,6 @@ use yii\helpers\Security;
  */
 class User extends ActiveRecord implements IdentityInterface {
 
-    public $auth_key;
 
     /**
      * @inheritdoc
@@ -117,7 +116,7 @@ class User extends ActiveRecord implements IdentityInterface {
      * @inheritdoc
      */
     public function getAuthKey() {
-        return $this->auth_key;
+        return $this->auth_user_id;
     }
 
     /**

@@ -35,22 +35,42 @@ AppAsset::register($this);
             ]);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
-                'items' => [
+                'items' => array_merge([
                     ['label' => 'Главная', 'url' => ['/site/index']],
-                    ['label' => 'Сотрудники', 'url' => ['Fregat/importemployee/index']],
-                    Yii::$app->user->isGuest ?
+                        ], Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [], [Yii::$app->user->isGuest ?
                             ['label' => 'Вход', 'url' => ['/site/login']] :
                             [
                         'label' => 'Выход (' . Yii::$app->user->identity->auth_user_fullname . ')',
                         'url' => ['/site/logout'],
                         'linkOptions' => ['data-method' => 'post']
-                            ],
-                ],
+                    ]]),
             ]);
             NavBar::end();
             ?>
 
             <div class="container">
+                <?php
+                $controller = Yii::$app->controller;
+                $default_controller = Yii::$app->defaultRoute;
+                $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
+
+                if (!$isHome) {
+                    NavBar::begin([
+                        'options' => [
+                            'class' => 'navbar-default',
+                        ],
+                    ]);
+                    echo Nav::widget([
+                        'options' => ['class' => 'navbar-nav'],
+                        'items' => array_merge(
+                                Yii::$app->user->can('Administrator') ? [['label' => 'Материальные ценности', 'url' => ['Fregat/fregat/index']]] : [], 
+                                Yii::$app->user->can('Administrator') ? [['label' => 'Настройки', 'url' => ['Fregat/fregat/config']]] : []
+                        ),
+                    ]);
+                    NavBar::end();
+                }
+                ?>
+
                 <?=
                 Breadcrumbs::widget([
                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
@@ -62,7 +82,7 @@ AppAsset::register($this);
                     $session = new Session;
                     $session->open();
                     $session->removeAll();
-                   // unset($session['breadcrumbs']);
+                    // unset($session['breadcrumbs']);
                     $session->close();
                 }
                 ?>
