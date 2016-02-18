@@ -25,6 +25,7 @@ class FregatController extends Controller {
     }
     
     public function actionIndex() {
+          Proc::SetMenuButtons('fregat');
           return $this->render('//Fregat/index');
     }
     

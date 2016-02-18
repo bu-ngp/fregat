@@ -15,6 +15,10 @@ class Proc {
     public static function Breadcrumbs($view, $param = null) {
         if (isset($view)) {
             $param = $param === null ? [] : $param;
+
+            $clearbefore = isset($param['clearbefore']) && is_bool($param['clearbefore']) ? $param['clearbefore'] : false;
+            $addfirst = isset($param['addfirst']) && is_array($param['addfirst']) ? $param['addfirst'] : [];
+
             $postfix = isset($param['postfix']) ? $param['postfix'] : '';
             $id = $view->context->module->controller->id . '/' . $view->context->module->requestedRoute . '/' . $postfix;
 
@@ -25,6 +29,15 @@ class Proc {
                 $session['breadcrumbs'] = [];
 
             $result = $session['breadcrumbs'];
+
+            if ($clearbefore)
+                $result = [];
+
+            if (count($addfirst) > 0) {
+                $result = array_replace_recursive([
+                    'addfirst' => $addfirst,
+                        ], $result);
+            }
 
             if (!isset($result[$id]))
                 $result[$id] = [];
@@ -266,6 +279,41 @@ class Proc {
         end($bc);
         $session->close();
         return $bc[key($bc)];
+    }
+
+    public static function GetMenuButtons() {
+        $controller = Yii::$app->controller;
+        $default_controller = Yii::$app->defaultRoute;
+        $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
+        $session = new Session;
+        $session->open();
+        $result = [];
+        if (!$isHome) {
+            $menubuttons = isset($session['menubuttons']) ? $session['menubuttons'] : null;
+
+            switch ($menubuttons) {
+                case 'fregat':
+                    $result = array_merge(
+                            Yii::$app->user->can('Administrator') ? [['label' => 'Материальные ценности', 'url' => ['Fregat/fregat/index']]] : [], Yii::$app->user->can('Administrator') ? [['label' => 'Настройки', 'url' => ['Fregat/fregat/config']]] : []
+                    );
+                    break;
+                case 'config':
+                    $result = array_merge(
+                            Yii::$app->user->can('Administrator') ? [['label' => 'Настройки портала', 'url' => ['Config/config/index']]] : []
+                    );
+                    break;
+            }
+        } else
+            $session->remove('menubuttons');
+        $session->close();
+        return $result;
+    }
+
+    public static function SetMenuButtons($ButtonsGroup) {
+        $session = new Session;
+        $session->open();
+        $session['menubuttons'] = $ButtonsGroup;
+        $session->close();
     }
 
 }

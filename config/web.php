@@ -46,6 +46,7 @@ $config = [
             //  'showScriptName' => false,
             'rules' => [
                 'Fregat/<controller:\w+>/<action:\w+>' => 'Fregat/<controller>/<action>',
+                'Config/<controller:\w+>/<action:\w+>' => 'Config/<controller>/<action>',
             //  'encodeParams' => FALSE,
             // my rules
             ],

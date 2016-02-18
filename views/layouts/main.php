@@ -8,6 +8,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use yii\web\Session;
+use app\func\Proc;
 
 AppAsset::register($this);
 ?>
@@ -37,7 +38,13 @@ AppAsset::register($this);
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => array_merge([
                     ['label' => 'Главная', 'url' => ['/site/index']],
-                        ], Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [], [Yii::$app->user->isGuest ?
+                        ],
+                        
+                        Proc::GetMenuButtons(),
+                        
+                       // Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [],
+                        
+    [Yii::$app->user->isGuest ?
                             ['label' => 'Вход', 'url' => ['/site/login']] :
                             [
                         'label' => 'Выход (' . Yii::$app->user->identity->auth_user_fullname . ')',
@@ -50,14 +57,14 @@ AppAsset::register($this);
 
             <div class="container">
                 <?php
-                $controller = Yii::$app->controller;
+             /*   $controller = Yii::$app->controller;
                 $default_controller = Yii::$app->defaultRoute;
                 $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
 
                 if (!$isHome) {
                     NavBar::begin([
                         'options' => [
-                            'class' => 'navbar-default',
+                            'class' => 'navbar-default container-fluid',
                         ],
                     ]);
                     echo Nav::widget([
@@ -68,7 +75,7 @@ AppAsset::register($this);
                         ),
                     ]);
                     NavBar::end();
-                }
+                }*/
                 ?>
 
                 <?=
@@ -80,9 +87,8 @@ AppAsset::register($this);
                 <?php
                 if (!isset($this->params['breadcrumbs'])) {
                     $session = new Session;
-                    $session->open();
-                    $session->removeAll();
-                    // unset($session['breadcrumbs']);
+                    $session->open();                    
+                    $session->remove('breadcrumbs');
                     $session->close();
                 }
                 ?>
