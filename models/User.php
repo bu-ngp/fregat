@@ -116,7 +116,7 @@ class User extends ActiveRecord implements IdentityInterface {
      * @inheritdoc
      */
     public function getAuthKey() {
-        return $this->auth_user_id;
+        return \Yii::$app->security->generateRandomString();
     }
 
     /**
@@ -166,5 +166,5 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-
+    
 }

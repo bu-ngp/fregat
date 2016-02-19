@@ -32,7 +32,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge([
                         'changepassword' => function ($url, $model, $key) {
-                            $customurl = Url::to(['changepasswordurl', 'id' => $model['auth_user_id']]);
+                            $customurl = Url::to(['Config/authuser/changepassword', 'id' => $model['auth_user_id']]);
                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-lock"></i>', $customurl, ['title' => 'Изменить пароль', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                         },
                                 'update' => ['Config/authuser/update', 'auth_user_id'],

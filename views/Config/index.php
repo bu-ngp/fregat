@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use app\func\Proc;
 use yii\helpers\Url;
@@ -12,5 +13,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             ],
             'clearbefore' => true,
         ]);
+?>
 
-echo Html::a('Менеджер пользователей', ['Config/authuser/index'], ['class' => 'btn btn-primary']);
+<p>
+    <?= Html::a('Менеджер пользователей', ['Config/authuser/index'], ['class' => 'btn btn-primary']) ?>
+</p>
+<p>
+    <?= Html::a('Менеджер ролей', ['Config/authitem/index'], ['class' => 'btn btn-primary']) ?>
+</p>

@@ -51,8 +51,10 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
+            
+            $dbUser = Config\Authuser::findOne(['auth_user_login'=>$this->username]);
 
-            if (!$user || !$user->validatePassword($this->password)) {
+            if (!$user || !Yii::$app->getSecurity()->validatePassword($this->password, $dbUser->auth_user_password)) {
                 $this->addError($attribute, 'Неверный логин или пароль.');
             }
         }

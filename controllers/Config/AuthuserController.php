@@ -68,7 +68,7 @@ class AuthuserController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-            return $this->redirect(['view', 'id' => $model->auth_user_id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -106,6 +106,27 @@ class AuthuserController extends Controller
                         'Authassignment' => $Authassignment,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
+            ]);
+        }
+    }
+    
+    public function actionChangepassword($id)
+    {        
+        $model = $this->findModel($id);
+        $model->auth_user_password = '';
+        $model->auth_user_password2 = '';
+        $model->scenario = 'Changepassword';
+        
+        $result =  Proc::GetBreadcrumbsFromSession();
+        end($result);
+        prev($result);
+        
+        $Authassignment = new Authassignment;
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+             return $this->redirect($result[key($result)]['url']);
+        } else {
+            return $this->render('changepassword', [
+                        'model' => $model,
             ]);
         }
     }

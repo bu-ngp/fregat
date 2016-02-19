@@ -21,38 +21,38 @@ use Yii;
  * @property AuthItemChild[] $authItemChildren
  * @property AuthItemChild[] $authItemChildren0
  */
-class Authitem extends \yii\db\ActiveRecord
-{
+class Authitem extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'auth_item';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['name', 'type'], 'required'],
-            [['type', 'created_at', 'updated_at'], 'integer'],
+            [['name', 'type', 'description'], 'required'],
+            ['name', 'unique', 'message' => '{attribute} уже существует'],
+            [['type'], 'integer', 'min' => 1, 'max' => 2],
+            [['created_at', 'updated_at'], 'integer'],
             [['description', 'data'], 'string'],
-            [['name', 'rule_name'], 'string', 'max' => 64]
+            [['name', 'rule_name'], 'string', 'max' => 64],
+            ['name', 'match', 'pattern' => '/^\w+$/ui', 'message' => '{attribute} может состоять только из латинских букв']
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
-            'name' => 'Name',
-            'type' => 'Type',
-            'description' => 'Description',
+            'name' => 'Идентификатор',
+            'type' => 'Тип',
+            'description' => 'Наименование',
             'rule_name' => 'Rule Name',
             'data' => 'Data',
             'created_at' => 'Created At',
@@ -63,40 +63,58 @@ class Authitem extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthAssignments()
-    {
-        return $this->hasMany(AuthAssignment::className(), ['item_name' => 'name']);
+    public function getauthassignments() {
+        return $this->hasMany(Authassignment::className(), ['item_name' => 'name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUsers()
-    {
-        return $this->hasMany(AuthUser::className(), ['auth_user_id' => 'user_id'])->viaTable('auth_assignment', ['item_name' => 'name']);
+    public function getusers() {
+        return $this->hasMany(Authuser::className(), ['auth_user_id' => 'user_id'])->viaTable('auth_assignment', ['item_name' => 'name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRuleName()
-    {
+    public function getRuleName() {
         return $this->hasOne(AuthRule::className(), ['name' => 'rule_name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthItemChildren()
-    {
-        return $this->hasMany(AuthItemChild::className(), ['parent' => 'name']);
+    public function getauthitemchildrenparent() {
+        return $this->hasMany(Authitemchild::className(), ['parent' => 'name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthItemChildren0()
-    {
+    public function getAuthitemchildrenchild() {
         return $this->hasMany(AuthItemChild::className(), ['child' => 'name']);
     }
+
+    public function save($runValidation = true, $attributeNames = null) {
+        if ($runValidation && !$this->validate())
+            return false;
+
+        $auth = Yii::$app->authManager;
+        if ($this->getIsNewRecord()) {
+            $authitem = $this->type == 1 ? $auth->createRole($this->name) : $auth->createPermission($this->name);
+            $authitem->description = $this->description;
+            return $auth->add($authitem);
+        } else {
+            $authitem = $this->type == 1 ? $auth->getRole($this->name) : $auth->getPermission($this->name);
+            $authitem->description = $this->description;
+            return $auth->update($authitem->name, $authitem);
+        }
+    }
+
+    public function delete() {
+        $auth = Yii::$app->authManager;
+        $authitem = $this->type == 1 ? $auth->getRole($this->name) : $auth->getPermission($this->name);
+        return $auth->remove($authitem);
+    }
+
 }

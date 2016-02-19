@@ -51,7 +51,7 @@ class Authassignment extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getItemName()
+    public function getitemname()
     {
         return $this->hasOne(Authitem::className(), ['name' => 'item_name']);
     }
