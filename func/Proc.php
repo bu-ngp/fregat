@@ -128,6 +128,11 @@ class Proc {
                 'allowThemeSetting' => false,
                 'allowFilterSetting' => false,
                 'allowSortSetting' => false,
+                'gridOptions' => [
+                    'panel' => [
+                        'type' => 'info',
+                        'headingOptions' => ['class' => 'panel-heading panel-info'],
+                    ]],
                     ], $Options);
     }
 
@@ -299,7 +304,7 @@ class Proc {
                     break;
                 case 'config':
                     $result = array_merge(
-                            Yii::$app->user->can('Administrator') ? [['label' => 'Настройки портала', 'url' => ['Config/config/index']]] : []
+                            Yii::$app->user->can('UserEdit') || Yii::$app->user->can('RoleEdit') ? [['label' => 'Настройки портала', 'url' => ['Config/config/index']]] : []
                     );
                     break;
             }

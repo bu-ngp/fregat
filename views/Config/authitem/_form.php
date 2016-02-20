@@ -61,7 +61,7 @@ use yii\web\Session;
                         'buttons' => [
                             'deletecustom' => function ($url, $model) {
                                 $customurl = Yii::$app->getUrlManager()->createUrl(['Config/authitemchild/delete', 'parent' => $model->parent, 'child' => $model->child]);
-                                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить'/*, 'data-pjax' => '0'*/, 'class' => 'btn btn-xs btn-danger', 'data' => [
+                                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить'/* , 'data-pjax' => '0' */, 'class' => 'btn btn-xs btn-danger', 'data' => [
                                                 'confirm' => "Вы уверены, что хотите удалить запись?",
                                                 'method' => 'post',
                                 ]]);
@@ -89,8 +89,10 @@ use yii\web\Session;
             }
             ?>
 
-            <div class="form-group">
-                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Authitemform']) ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Authitemform']) ?>
+        </div>
     </div>
 
 </div>

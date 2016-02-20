@@ -15,9 +15,20 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         ]);
 ?>
 
-<p>
-    <?= Html::a('Менеджер пользователей', ['Config/authuser/index'], ['class' => 'btn btn-primary']) ?>
-</p>
-<p>
-    <?= Html::a('Менеджер ролей', ['Config/authitem/index'], ['class' => 'btn btn-primary']) ?>
-</p>
+<div class="panel panel-info">
+    <div class="panel-heading">Настройки портала</div>
+    <div class="panel-body">     
+        <ul class="nav nav-pills nav-stacked">
+            <?php if (Yii::$app->user->can('UserEdit')): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-user"></i> Менеджер пользователей', ['Config/authuser/index'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
+            <?php if (Yii::$app->user->can('RoleEdit')): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-align-justify"></i> Менеджер ролей', ['Config/authitem/index'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</div>

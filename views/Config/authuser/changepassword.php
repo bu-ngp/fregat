@@ -4,18 +4,19 @@ use yii\helpers\Html;
 use app\func\Proc;
 
 $this->title = 'Изменить пароль пользователя';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => $model,
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="authuser-changepassword">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?=
-    $this->render('_form', [
-        'model' => $model,
-    ])
-    ?>
-
+    <div class="panel panel-info">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

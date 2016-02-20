@@ -3,15 +3,26 @@
 namespace app\controllers\Config;
 
 use Yii;
-use app\models\Fregat\Build;
-use app\models\Fregat\BuildSearch;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\web\Session;
 use app\func\Proc;
+use yii\filters\AccessControl;
 
 class ConfigController extends Controller {
+    
+    public function behaviors() {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['RoleEdit','UserEdit'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionIndex() {
         Proc::SetMenuButtons('config');

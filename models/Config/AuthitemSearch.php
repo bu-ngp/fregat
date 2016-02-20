@@ -91,7 +91,7 @@ class AuthitemSearch extends Authitem {
                     'updated_at' => $this->updated_at,
                 ]);
 
-                $query->where('(name <> :parent and authitemchildrenchild.parent is null)', [
+                $query->where('(name <> :parent) and (parent <> :parent or parent is null)', [
                     'parent' => $params['id'],
                 ]);
 
@@ -118,35 +118,41 @@ class AuthitemSearch extends Authitem {
                         $query->from(['authassignments' => 'auth_assignment']);
                     }]);
 
-                        $this->load($params);
+                        $query->joinWith(['authitemchildrenchild' => function($query) {
+                                $query->from(['authitemchildrenchild' => 'auth_item_child']);
+                            }]);
 
-                        if (!$this->validate()) {
-                            // uncomment the following line if you do not want to return any records when validation fails
-                            // $query->where('0=1');
-                            return $dataProvider;
+                                $this->load($params);
+
+                                if (!$this->validate()) {
+                                    // uncomment the following line if you do not want to return any records when validation fails
+                                    // $query->where('0=1');
+                                    return $dataProvider;
+                                }
+
+                                $query->andFilterWhere([
+                                    'type' => $this->type,
+                                    'created_at' => $this->created_at,
+                                    'updated_at' => $this->updated_at,
+                                ]);
+
+                                //      $query->where('auth_item.type = 1 and (authassignments.user_id <> :user_id or authassignments.user_id is null) and  (not auth_item.name in (select b.child from auth_item_child b))', [
+
+                                $query->where('auth_item.type = 1 and (authassignments.user_id <> :user_id or authassignments.user_id is null) and (not authitemchildrenchild.parent in (select a.item_name from auth_assignment a where a.user_id = :user_id) or authitemchildrenchild.parent is null)', [
+                                    'user_id' => $params['id'],
+                                ]);
+
+                                $query->andFilterWhere(['like', 'name', $this->name])
+                                        ->andFilterWhere(['like', 'description', $this->description])
+                                        ->andFilterWhere(['like', 'rule_name', $this->rule_name])
+                                        ->andFilterWhere(['like', 'data', $this->data]);
+
+                                if (empty($query->orderBy))
+                                    $query->orderBy('description');
+
+
+                                return $dataProvider;
+                            }
+
                         }
-
-                        $query->andFilterWhere([
-                            'type' => $this->type,
-                            'created_at' => $this->created_at,
-                            'updated_at' => $this->updated_at,
-                        ]);
-
-                        $query->where('auth_item.type = 1 and (authassignments.user_id <> :user_id or authassignments.user_id is null) and  (not auth_item.name in (select b.child from auth_item_child b))', [
-                            'user_id' => $params['id'],
-                        ]);
-
-                        $query->andFilterWhere(['like', 'name', $this->name])
-                                ->andFilterWhere(['like', 'description', $this->description])
-                                ->andFilterWhere(['like', 'rule_name', $this->rule_name])
-                                ->andFilterWhere(['like', 'data', $this->data]);
-
-                        if (empty($query->orderBy))
-                            $query->orderBy('description');
-
-
-                        return $dataProvider;
-                    }
-
-                }
-                
+                        

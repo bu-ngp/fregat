@@ -4,18 +4,21 @@ use yii\helpers\Html;
 use app\func\Proc;
 
 $this->title = 'Обновить авторизационную единицу';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => [$model, $Authitemchild],    
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => [$model, $Authitemchild],
+        ]);
 ?>
 <div class="authitem-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-        'searchModel' => $searchModel,
-        'dataProvider' => $dataProvider,
-    ]) ?>
-
+    <div class="panel panel-info">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

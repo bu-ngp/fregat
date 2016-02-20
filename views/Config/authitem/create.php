@@ -7,18 +7,19 @@ use app\func\Proc;
 /* @var $model app\models\Fregat\Build */
 
 $this->title = 'Создать авторизационную единицу';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => $model,
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="authitem-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?=
-    $this->render('_form', [
-        'model' => $model,
-    ])
-    ?>
-
+    <div class="panel panel-info">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

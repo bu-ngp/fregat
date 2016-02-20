@@ -13,13 +13,6 @@ $this->title = 'Пользователи';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="authuser-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <div class="btn-group">
-        <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success']); ?>
-    </div>
-
     <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
@@ -44,6 +37,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
                             'options' => ['id' => 'authusergrid'],
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
+                                'before' => Yii::$app->user->can('UserEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                            ],
                         ]
             ]));
             ?>

@@ -92,13 +92,22 @@ a.desc:after {
 }
 
 select.form-control.inactive {
-  -moz-appearance: none;
-   -webkit-appearance: none;
-   appearance: none;
-   cursor: default;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: default;
 }
 
 div.required label.control-label:after {
     content: " *";
     color: red;
+}
+
+/* Hover для кнопок меню */
+/*.btn-primary:hover {
+    background-color: #286090 !important;
+} */
+
+ul.breadcrumb {
+    background-color: #d9edf7;
 }

@@ -8,87 +8,56 @@ use app\models\Config\AuthassignmentSearch;
 use app\models\Config\Authuser;
 use app\models\Config\AuthuserSearch;
 use Yii;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 
 /**
  * AuthuserController implements the CRUD actions for Authuser model.
  */
-class AuthuserController extends Controller
-{
-    public function behaviors()
-    {
+class AuthuserController extends Controller {
+
+    public function behaviors() {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'create', 'update', 'delete', 'changepassword'],
+                        'allow' => true,
+                        'roles' => ['UserEdit'],
+                    ],
                 ],
             ],
         ];
     }
 
-    /**
-     * Lists all Authuser models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new AuthuserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
-    /**
-     * Displays a single Authuser model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Authuser model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Authuser();
         $model->scenario = 'Newuser';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-            return $this->redirect(['index']);
-        } else {
+            return $this->redirect(['update', 'id' => $model->auth_user_id]);
+        } else
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
-        }
     }
 
-    /**
-     * Updates an existing Authuser model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {        
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
-        $model->auth_user_password = '';
-        $model->auth_user_password2 = '';
-        $model->scenario = 'Newuser';
-        
+
         $Authassignment = new Authassignment;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
@@ -109,39 +78,30 @@ class AuthuserController extends Controller
             ]);
         }
     }
-    
-    public function actionChangepassword($id)
-    {        
+
+    public function actionDelete($id) {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    public function actionChangepassword($id) {
         $model = $this->findModel($id);
         $model->auth_user_password = '';
         $model->auth_user_password2 = '';
         $model->scenario = 'Changepassword';
-        
-        $result =  Proc::GetBreadcrumbsFromSession();
+
+        $result = Proc::GetBreadcrumbsFromSession();
         end($result);
         prev($result);
-        
-        $Authassignment = new Authassignment;
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-             return $this->redirect($result[key($result)]['url']);
+            return $this->redirect($result[key($result)]['url']);
         } else {
             return $this->render('changepassword', [
                         'model' => $model,
             ]);
         }
-    }
-
-    /**
-     * Deletes an existing Authuser model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
@@ -151,12 +111,12 @@ class AuthuserController extends Controller
      * @return Authuser the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Authuser::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }
