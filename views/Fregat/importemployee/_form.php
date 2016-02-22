@@ -72,8 +72,7 @@ use yii\web\Session;
                             'idemployee.idbuild.build_name',
                         ],
                         'buttons' => [
-                            'delete' => ['Fregat/impemployee/delete', 'impemployee_id',
-                            ]
+                            'delete' => ['Fregat/impemployee/delete', 'impemployee_id']
                         ],
                     ]),
                     'gridOptions' => [
@@ -82,7 +81,7 @@ use yii\web\Session;
                         'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
-                            'before' => Html::a('Добавить сотрудника', ['Fregat/employee/forimportemployee',
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить сотрудника', ['Fregat/employee/forimportemployee',
                                 'foreignmodel' => 'Impemployee', //substr($model->className(), strrpos($model->className(), '\\') + 1),
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_employee',
@@ -98,7 +97,11 @@ use yii\web\Session;
     ?>
 
     <div class="form-group">
-    <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
+            </div>
+        </div>
     </div>
 
 </div>

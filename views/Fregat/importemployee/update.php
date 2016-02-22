@@ -7,20 +7,21 @@ use app\func\Proc;
 /* @var $model app\models\Fregat\Importemployee */
 
 $this->title = 'Обновить словосочетание';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => [$model, $Impemployee],
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => [$model, $Impemployee],
+        ]);
 ?>
 <div class="importemployee-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?=
-    $this->render('_form', [
-        'model' => $model,
-        'searchModel' => $searchModel,
-        'dataProvider' => $dataProvider,
-    ])
-    ?>
-
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

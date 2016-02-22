@@ -7,16 +7,19 @@ use app\func\Proc;
 /* @var $model app\models\Fregat\Importemployee */
 
 $this->title = 'Создать словосочетание';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => $model,
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="importemployee-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-    
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div>    
 </div>

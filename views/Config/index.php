@@ -15,7 +15,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         ]);
 ?>
 
-<div class="panel panel-info">
+<div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
     <div class="panel-heading">Настройки портала</div>
     <div class="panel-body">     
         <ul class="nav nav-pills nav-stacked">

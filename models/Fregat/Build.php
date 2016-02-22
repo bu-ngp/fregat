@@ -13,32 +13,31 @@ use Yii;
  * @property Employee[] $employees
  * @property Importemployee[] $importemployees
  */
-class Build extends \yii\db\ActiveRecord
-{
+class Build extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'build';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['build_name'], 'required'],
-            [['build_name'], 'string', 'max' => 100]
+            [['build_name'], 'string', 'max' => 100],
+            [['build_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
+            [['build_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'build_id' => 'Build ID',
             'build_name' => 'Здание',
@@ -48,16 +47,15 @@ class Build extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmployees()
-    {
+    public function getEmployees() {
         return $this->hasMany(Employee::className(), ['id_build' => 'build_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportemployees()
-    {
+    public function getImportemployees() {
         return $this->hasMany(Importemployee::className(), ['id_build' => 'build_id']);
     }
+
 }

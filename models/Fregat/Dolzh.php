@@ -29,7 +29,9 @@ class Dolzh extends \yii\db\ActiveRecord
     {
         return [
             [['dolzh_name'], 'required'],
-            [['dolzh_name'], 'string', 'max' => 100]
+            [['dolzh_name'], 'string', 'max' => 100],
+            [['dolzh_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
+            [['dolzh_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
         ];
     }
 

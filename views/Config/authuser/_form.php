@@ -20,10 +20,9 @@ use yii\web\Session;
     ?>
 
     <?php
-    if ($model->scenario !== 'Changepassword') {
-        echo $form->field($model, 'auth_user_fullname')->textInput(['maxlength' => true, 'class' => 'form-control setsession']);
-        echo $form->field($model, 'auth_user_login')->textInput(['maxlength' => true, 'class' => 'form-control setsession']);
-    }
+    echo $form->field($model, 'auth_user_fullname')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $model->scenario === 'Changepassword']);
+    echo $form->field($model, 'auth_user_login')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $model->scenario === 'Changepassword']);
+
 
     if ($model->isNewRecord || $model->scenario === 'Changepassword') {
         echo $form->field($model, 'auth_user_password')->passwordInput(['maxlength' => true, 'autocomplete' => 'off']);

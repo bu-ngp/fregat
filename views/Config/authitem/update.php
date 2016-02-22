@@ -9,7 +9,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         ]);
 ?>
 <div class="authitem-update">
-    <div class="panel panel-info">
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=

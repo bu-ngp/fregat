@@ -40,7 +40,7 @@ AppAsset::register($this);
                     ['label' => 'Главная', 'url' => ['/site/index']],
                         ],
                         
-                        Proc::GetMenuButtons(),
+                        Proc::GetMenuButtons($this),
                         
                        // Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [],
                         
@@ -90,7 +90,7 @@ AppAsset::register($this);
                     $session->open();                    
                     $session->remove('breadcrumbs');
                     $session->close();
-                }
+                }                
                 ?>
                 <?= $content ?>
             </div>

@@ -22,7 +22,7 @@ use yii\web\Session;
     ]);
     ?>
 
-    <?= $form->field($model, 'description')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+    <?= $form->field($model, 'description')->textInput(['maxlength' => true, 'class' => 'form-control setsession','autofocus'=>'']) ?>
 
     <?=
     $form->field($model, 'type')->widget(Select2::classname(), [

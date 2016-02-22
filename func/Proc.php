@@ -111,7 +111,7 @@ class Proc {
             end($result);
 
             unset($result[key($result)]['url']);
-
+            
             return $result;
         } else
             throw new HttpException(500, 'Ошибка при передачи параметров в function Breadcrumbs');
@@ -130,8 +130,8 @@ class Proc {
                 'allowSortSetting' => false,
                 'gridOptions' => [
                     'panel' => [
-                        'type' => 'info',
-                        'headingOptions' => ['class' => 'panel-heading panel-info'],
+                        'type' => Yii::$app->params['GridHeadingStyle'],
+                        'headingOptions' => ['class' => 'panel-heading panel-'.Yii::$app->params['GridHeadingStyle']],
                     ]],
                     ], $Options);
     }
@@ -286,12 +286,26 @@ class Proc {
         return $bc[key($bc)];
     }
 
-    public static function GetMenuButtons() {
+    public static function GetMenuButtons($view) {
         $controller = Yii::$app->controller;
         $default_controller = Yii::$app->defaultRoute;
         $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
+
+        $urls = [
+            'fregat_matcen' => 'Fregat/fregat/index',
+            'fregat_conf' => 'Fregat/fregat/config',
+            'config_conf' => 'Config/config/index',
+        ];
+
         $session = new Session;
         $session->open();
+
+        foreach ($urls as $url) // Записываем в сессию url меню
+            if ($url === $view->context->module->requestedRoute) {
+                $session['currentmenuurl'] = $url;
+                break;
+            }
+
         $result = [];
         if (!$isHome) {
             $menubuttons = isset($session['menubuttons']) ? $session['menubuttons'] : null;
@@ -299,17 +313,25 @@ class Proc {
             switch ($menubuttons) {
                 case 'fregat':
                     $result = array_merge(
-                            Yii::$app->user->can('Administrator') ? [['label' => 'Материальные ценности', 'url' => ['Fregat/fregat/index']]] : [], Yii::$app->user->can('Administrator') ? [['label' => 'Настройки', 'url' => ['Fregat/fregat/config']]] : []
+                            Yii::$app->user->can('FregatUserPermission') ? [['label' => 'Материальные ценности', 'url' => [$urls['fregat_matcen']],
+                            'options' => $session['currentmenuurl'] === $urls['fregat_matcen'] ? ['class' => 'active'] : []
+                                ]] : [], Yii::$app->user->can('FregatUserPermission') ? [['label' => 'Настройки', 'url' => [$urls['fregat_conf']],
+                            'options' => $session['currentmenuurl'] === $urls['fregat_conf'] ? ['class' => 'active'] : []
+                                ]] : []
                     );
                     break;
                 case 'config':
                     $result = array_merge(
-                            Yii::$app->user->can('UserEdit') || Yii::$app->user->can('RoleEdit') ? [['label' => 'Настройки портала', 'url' => ['Config/config/index']]] : []
+                            Yii::$app->user->can('UserEdit') || Yii::$app->user->can('RoleEdit') ? [['label' => 'Настройки портала', 'url' => [$urls['config_conf']],
+                            'options' => $session['currentmenuurl'] === $urls['config_conf'] ? ['class' => 'active'] : [],
+                                ]] : []
                     );
                     break;
             }
-        } else
+        } else {
             $session->remove('menubuttons');
+            $session->remove('currentmenuurl');
+        }
         $session->close();
         return $result;
     }

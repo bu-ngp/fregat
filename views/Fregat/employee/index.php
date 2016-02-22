@@ -13,14 +13,6 @@ $this->title = 'Сотрудники';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="employee-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
@@ -39,15 +31,19 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'choose' => function ($url, $model, $key) use ($foreign) {
                                     $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }], [
-                                'update' => ['Fregat/employee/update', 'employee_id'],
-                                'delete' => ['Fregat/employee/delete', 'employee_id'],])
-                                ,
+                                }], Yii::$app->user->can('EmployeeEdit') ? [
+                                        'update' => ['Fregat/employee/update', 'employee_id'],
+                                        'delete' => ['Fregat/employee/delete', 'employee_id'],] : []
+                            ),
                         ]),
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
                             'options' => ['id' => 'employeegrid'],
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
+                                'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                            ],
                         ]
             ]));
             ?>

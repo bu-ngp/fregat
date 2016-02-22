@@ -35,7 +35,7 @@ class Importemployee extends \yii\db\ActiveRecord
             [['importemployee_combination', 'id_podraz'], 'required'],
             [['id_build', 'id_podraz'], 'integer'],
             [['importemployee_combination'], 'string', 'max' => 255],
-            ['importemployee_combination', 'unique'],
+            [['importemployee_combination'], 'unique', 'message' => '{attribute} = {value} уже существует'],
         ];
     }
 

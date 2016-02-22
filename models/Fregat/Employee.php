@@ -40,7 +40,8 @@ class Employee extends \yii\db\ActiveRecord
         return [
             [['employee_fio', 'id_dolzh', 'id_podraz'], 'required'],
             [['id_dolzh', 'id_podraz', 'id_build'], 'integer'],
-            [['employee_fio'], 'string', 'max' => 255]
+            [['employee_fio'], 'string', 'max' => 255],
+            [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
         ];
     }
 

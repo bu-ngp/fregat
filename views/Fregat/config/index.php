@@ -11,8 +11,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             ],
             'clearbefore' => true,
         ]);
-
-echo Html::a('Импорт данных', ['import'], ['class' => 'btn btn-primary']);
-
 ?>
 
+<div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+    <div class="panel-heading">Настройки системы "Фрегат"</div>
+    <div class="panel-body">     
+        <ul class="nav nav-pills nav-stacked">
+            <?php if (Yii::$app->user->can('FregatImport')): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-import"></i> Импорт данных', ['import'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
+            <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-list-alt"></i> Справочники', ['sprav'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</div>

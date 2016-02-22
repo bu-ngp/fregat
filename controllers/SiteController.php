@@ -17,15 +17,15 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'setsession','index'],
+                'only' => ['logout', 'setsession', 'index', 'setwindowguid'],
                 'rules' => [
                     [
-                        'actions' => ['logout','index'],
+                        'actions' => ['logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['setsession'],
+                        'actions' => ['setsession', 'setwindowguid'],
                         'allow' => true,
                     ],
                 ],
@@ -52,14 +52,14 @@ class SiteController extends Controller {
     }
 
     public function actionIndex() {
-      /*  if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+        /*  if (!\Yii::$app->user->isGuest) {
+          return $this->goHome();
+          }
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-         //   return $this->goBack();
-        }*/
+          $model = new LoginForm();
+          if ($model->load(Yii::$app->request->post()) && $model->login()) {
+          //   return $this->goBack();
+          } */
         return $this->render('index', [
                     'model' => $model,
         ]);
@@ -67,17 +67,15 @@ class SiteController extends Controller {
 
     public function actionLogin() {
         if (!\Yii::$app->user->isGuest) {
-   
-            return $this->goHome();
-            
 
+            return $this->goHome();
         }
-        
-       /*             $auth = Yii::$app->authManager;
-        $author = $auth->createRole('Administrator');
-        $auth->add($author);
-        $auth->assign($author, 1);  */
-        
+
+        /*             $auth = Yii::$app->authManager;
+          $author = $auth->createRole('Administrator');
+          $auth->add($author);
+          $auth->assign($author, 1); */
+
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
@@ -124,6 +122,27 @@ class SiteController extends Controller {
 
             $session['breadcrumbs'] = $res;
 
+            $session->close();
+        }
+
+        echo $result;
+    }
+
+    public function actionSetwindowguid() {
+        $result = '0';
+        $guid = (string) filter_input(INPUT_POST, 'guid');
+
+        if (!empty($guid)) {
+            $session = new Session;
+            $session->open();
+            
+            $res = $session['WindowsGUIDs'];
+            if (!isset($res))
+                $res = [];
+            array_push($res, $guid);
+            $session['WindowsGUIDs'] = $res;
+            $session['WindowsGUIDCurrent'] = $guid;
+            $result = '1';
             $session->close();
         }
 

@@ -44,7 +44,7 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 
 function SetSession(thiselem) {
     var field = $(thiselem).attr("name");
-    
+
     $.ajax({
         url: "?r=site%2Fsetsession",
         type: "post",
@@ -52,6 +52,19 @@ function SetSession(thiselem) {
         async: false,
         error: function (data) {
             console.error("Ошибка SetSession");
+        }
+    });
+}
+
+function InitWindowGUID() {
+    var guid = Math.floor(Math.random() * 0x10000 /* 65536 */).toString(16);
+    window.name = guid;
+    $.ajax({
+        url: "?r=site%2Fsetwindowguid",
+        type: "post",
+        data: {guid: guid},
+        error: function (data) {
+            console.error("Ошибка setWindowGUID");
         }
     });
 }
@@ -64,4 +77,7 @@ $(function () {
     $("select.form-control.setsession").change(function () {
         SetSession(this);
     });
+
+   // if (window.name === '')
+     //   InitWindowGUID();
 });

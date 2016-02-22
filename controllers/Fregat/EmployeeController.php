@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
+use yii\filters\AccessControl;
 
 /**
  * EmployeeController implements the CRUD actions for Employee model.
@@ -17,6 +18,21 @@ class EmployeeController extends Controller {
 
     public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'selectinput', 'forimportemployee'],
+                        'allow' => true,
+                        'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['EmployeeEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -26,10 +42,6 @@ class EmployeeController extends Controller {
         ];
     }
 
-    /**
-     * Lists all Employee models.
-     * @return mixed
-     */
     public function actionIndex() {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -50,49 +62,27 @@ class EmployeeController extends Controller {
         ]);
     }
 
-    /**
-     * Displays a single Employee model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id) {
-        return $this->render('index', [
-                    'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Employee model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate() {
         $model = new Employee();
-      
-        $result =  Proc::GetBreadcrumbsFromSession();
+
+        $result = Proc::GetBreadcrumbsFromSession();
         end($result);
         prev($result);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect($result[key($result)]['url']);
         } else {
-            
+
             return $this->render('create', [
                         'model' => $model,
             ]);
         }
     }
 
-    /**
-     * Updates an existing Employee model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
-            
-        $result =  Proc::GetBreadcrumbsFromSession();
+
+        $result = Proc::GetBreadcrumbsFromSession();
         end($result);
         prev($result);
 
@@ -106,16 +96,10 @@ class EmployeeController extends Controller {
         }
     }
 
-    /**
-     * Deletes an existing Employee model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionDelete($id) {
         $this->findModel($id)->delete();
 
-        $result =  Proc::GetBreadcrumbsFromSession();
+        $result = Proc::GetBreadcrumbsFromSession();
         end($result);
 
         return $this->redirect($result[key($result)]['url']);
