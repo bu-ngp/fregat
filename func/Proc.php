@@ -111,7 +111,7 @@ class Proc {
             end($result);
 
             unset($result[key($result)]['url']);
-            
+
             return $result;
         } else
             throw new HttpException(500, 'Ошибка при передачи параметров в function Breadcrumbs');
@@ -131,7 +131,7 @@ class Proc {
                 'gridOptions' => [
                     'panel' => [
                         'type' => Yii::$app->params['GridHeadingStyle'],
-                        'headingOptions' => ['class' => 'panel-heading panel-'.Yii::$app->params['GridHeadingStyle']],
+                        'headingOptions' => ['class' => 'panel-heading panel-' . Yii::$app->params['GridHeadingStyle']],
                     ]],
                     ], $Options);
     }
@@ -341,6 +341,46 @@ class Proc {
         $session->open();
         $session['menubuttons'] = $ButtonsGroup;
         $session->close();
+    }
+
+    static function mb_preg_match_all($ps_pattern, $ps_subject, &$pa_matches, $pn_flags = PREG_PATTERN_ORDER, $pn_offset = 0, $ps_encoding = NULL) {
+        // WARNING! - All this function does is to correct offsets, nothing else:
+
+        if (is_null($ps_encoding))
+            $ps_encoding = mb_internal_encoding();
+
+        $pn_offset = strlen(mb_substr($ps_subject, 0, $pn_offset, $ps_encoding));
+        $ret = preg_match_all($ps_pattern, $ps_subject, $pa_matches, $pn_flags, $pn_offset);
+
+        if ($ret && ($pn_flags & PREG_OFFSET_CAPTURE))
+            foreach ($pa_matches as &$ha_match)
+                foreach ($ha_match as &$ha_match)
+                    $ha_match[1] = mb_strlen(substr($ps_subject, 0, $ha_match[1]), $ps_encoding);
+        //
+        // (code is independent of PREG_PATTER_ORDER / PREG_SET_ORDER)
+
+        return $ret;
+    }
+
+    /**
+     * Функция проверяет имя файла, если оно существует, в название добавляется порядковый номер, например Список.xls переходит в Список(1).xls
+     * 
+     * $fileroot - путь к файлу
+     * возвращает новое имя файла
+     */
+    static function SaveFileIfExists($fileroot) {
+        $counter = 1;
+        $filename = substr($fileroot, strpos($fileroot, '/') + 1);
+
+        while (file_exists($fileroot)) {
+            preg_match('/(.+\/)(.+?)((\(.+)?\.)(.+)/i', $fileroot, $file_arr);
+            // $file_arr[1] - Директория, $file_arr[2] - Имя файла, end($file_arr) - Расширение файла
+            $fileroot = $file_arr[1] . $file_arr[2] . '(' . $counter . ')' . '.' . end($file_arr);
+            $filename = $file_arr[2] . '(' . $counter . ')' . '.' . end($file_arr);
+            $counter++;
+        }
+
+        return $filename;
     }
 
 }

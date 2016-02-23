@@ -66,7 +66,7 @@ class Traflog extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdEmployeelog()
+    public function getIdemployeelog()
     {
         return $this->hasOne(Employeelog::className(), ['employeelog_id' => 'id_employeelog']);
     }
@@ -74,7 +74,7 @@ class Traflog extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdLogreport()
+    public function getIdlogreport()
     {
         return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport']);
     }
@@ -82,7 +82,7 @@ class Traflog extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMatlog()
+    public function getIdmatlog()
     {
         return $this->hasOne(Matlog::className(), ['matlog_id' => 'id_matlog']);
     }

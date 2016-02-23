@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bf2d6219b5c06b31ca3b6c17bb668ce3",
-    "content-hash": "644cd2d3df12bc37f33cc839c567733b",
+    "hash": "2cccdc9008996eec62c7691ac5f1b872",
+    "content-hash": "cf1b8b03c7d01f21d790f5d084301c33",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -58,16 +58,16 @@
         },
         {
             "name": "bower-asset/jquery",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jquery/jquery-dist.git",
-                "reference": "6fc01e29bdad0964f62ef56d01297039cdcadbe5"
+                "reference": "788eaba2f83e7b7445c7a83a50c81c0704423874"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/6fc01e29bdad0964f62ef56d01297039cdcadbe5",
-                "reference": "6fc01e29bdad0964f62ef56d01297039cdcadbe5",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/788eaba2f83e7b7445c7a83a50c81c0704423874",
+                "reference": "788eaba2f83e7b7445c7a83a50c81c0704423874",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -597,26 +597,22 @@
         },
         {
             "name": "phpoffice/phpexcel",
-            "version": "dev-develop",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "6ae1056fb2145f599434c831b645adff35ebfc1a"
+                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/6ae1056fb2145f599434c831b645adff35ebfc1a",
-                "reference": "6ae1056fb2145f599434c831b645adff35ebfc1a",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+                "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
                 "shasum": ""
             },
             "require": {
-                "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
-                "php": "^5.2|^7.0"
-            },
-            "require-dev": {
-                "squizlabs/php_codesniffer": "2.*"
+                "php": ">=5.2.0"
             },
             "type": "library",
             "autoload": {
@@ -626,7 +622,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-2.1"
+                "LGPL"
             ],
             "authors": [
                 {
@@ -637,11 +633,11 @@
                     "name": "Mark Baker"
                 },
                 {
-                    "name": "Erik Tilt"
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
                 },
                 {
-                    "name": "Franck Lefevre",
-                    "homepage": "http://rootslabs.net"
+                    "name": "Erik Tilt"
                 }
             ],
             "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
@@ -654,7 +650,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2016-01-13 22:38:20"
+            "time": "2014-03-02 15:22:49"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -1261,8 +1257,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "kartik-v/yii2-dynagrid": 0,
-        "phpoffice/phpexcel": 20
+        "kartik-v/yii2-dynagrid": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,

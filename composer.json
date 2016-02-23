@@ -19,7 +19,7 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "kartik-v/yii2-dynagrid": "@stable",
-        "phpoffice/phpexcel": "dev-develop"
+        "phpoffice/phpexcel": "1.8.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -47,7 +47,7 @@ class Logreport extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'logreport_id' => 'Logreport ID',
+            'logreport_id' => 'Номер',
             'logreport_date' => 'Дата импорта',
             'logreport_errors' => 'Количество ошибок',
             'logreport_updates' => 'Записей изменено',

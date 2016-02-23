@@ -80,7 +80,7 @@ class Matlog extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdLogreport() {
+    public function getIdlogreport() {
         return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport']);
     }
 

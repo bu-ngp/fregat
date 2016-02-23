@@ -20,25 +20,26 @@ use Yii;
  * @property TrOsnov[] $trOsnovs
  * @property Writeoffakt[] $writeoffakts
  */
-class Mattraffic extends \yii\db\ActiveRecord
-{
+class Mattraffic extends \yii\db\ActiveRecord {
+
+    public $recordapply;
+    public $diff_number;
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'mattraffic';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['mattraffic_date', 'id_material', 'id_mol'], 'required'],
             [['mattraffic_date'], 'safe'],
-            ['mattraffic_number', 'double', 'min'=>0, 'max' => 10000000000],
+            ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer']
         ];
     }
@@ -46,8 +47,7 @@ class Mattraffic extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'mattraffic_id' => 'Mattraffic ID',
             'mattraffic_date' => 'Дата операции',
@@ -60,48 +60,43 @@ class Mattraffic extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMol()
-    {
+    public function getIdMol() {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_mol']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMaterial()
-    {
+    public function getIdMaterial() {
         return $this->hasOne(Material::className(), ['material_id' => 'id_material']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts()
-    {
+    public function getOsmotrakts() {
         return $this->hasMany(Osmotrakt::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrMats()
-    {
+    public function getTrMats() {
         return $this->hasMany(TrMat::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrOsnovs()
-    {
+    public function getTrOsnovs() {
         return $this->hasMany(TrOsnov::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getWriteoffakts()
-    {
+    public function getWriteoffakts() {
         return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
+
 }

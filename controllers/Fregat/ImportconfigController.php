@@ -3,17 +3,17 @@
 namespace app\controllers\Fregat;
 
 use Yii;
-use app\models\Fregat\Import\Logreport;
-use app\models\Fregat\Import\LogreportSearch;
+use app\models\Fregat\Import\Importconfig;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
 /**
- * LogreportController implements the CRUD actions for Logreport model.
+ * ImportconfigController implements the CRUD actions for Importconfig model.
  */
-class LogreportController extends Controller {
+class ImportconfigController extends Controller {
 
     public function behaviors() {
         return [
@@ -21,7 +21,7 @@ class LogreportController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'clear', 'downloadreport'],
+                        'actions' => ['update'],
                         'allow' => true,
                         'roles' => ['FregatImport'],
                     ],
@@ -35,36 +35,28 @@ class LogreportController extends Controller {
             ],
         ];
     }
+    
+    public function actionUpdate() {
+        $model = $this->findModel(1);
 
-    public function actionIndex() {
-        $searchModel = new LogreportSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    public function actionClear($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    public function actionDownloadreport($id) {
-        
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['//Fregat/fregat/import']);
+        } else {
+            return $this->render('update', [
+                        'model' => $model,
+            ]);
+        }
     }
 
     /**
-     * Finds the Logreport model based on its primary key value.
+     * Finds the Importconfig model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return Logreport the loaded model
+     * @param integer $id
+     * @return Importconfig the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id) {
-        if (($model = Logreport::findOne($id)) !== null) {
+        if (($model = Importconfig::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
