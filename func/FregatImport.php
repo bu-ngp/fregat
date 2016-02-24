@@ -602,6 +602,7 @@ class FregatImport {
         $Importconfig = Importconfig::findOne(1);
         self::$os_start = $Importconfig->os_startrow;
         self::$mat_start = $Importconfig->mat_startrow;
+        $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
 
@@ -742,8 +743,12 @@ class FregatImport {
             }
         }
 
-        if ($doreport)
+        if ($doreport) {
             self::MakeReport();
+            $endtime = microtime(true);
+            $logreport->logreport_executetime = gmdate('H:i:s', $endtime - $starttime);
+            $logreport->save();
+        }
 
         echo 'ImportDo success<BR>';
     }
@@ -883,40 +888,50 @@ class FregatImport {
             )
         );
 
+        $Matlog = new Matlog;
+        $Employeelog = new Employeelog;
+        $Traflog = new Traflog;
+
+        $attributeslabels = array_merge(
+                $Matlog->attributeLabels(), $Employeelog->attributeLabels(), $Traflog->attributeLabels()
+        );
+
         if (count($rows) > 0) {
             $col = 0;
             foreach (array_keys($rows[0]) as $attr) {
-                $sheet->setCellValueByColumnAndRow($col, 1, $attr);
-                $sheet->getStyleByColumnAndRow($col, 1)->applyFromArray($ramka);
-                $sheet->getStyleByColumnAndRow($col, 1)->applyFromArray($font);
-                $col++;
+                if (!in_array($attr, ['idmatlog', 'idemployeelog'])) {
+                    $sheet->setCellValueByColumnAndRow($col, 1, $attributeslabels[$attr]);
+                    $sheet->getStyleByColumnAndRow($col, 1)->applyFromArray($ramka);
+                    $sheet->getStyleByColumnAndRow($col, 1)->applyFromArray($font);
+                    $col++;
+                }
             }
         }
 
         if (count($rows) > 0) {
-            $i = 1;
             foreach ($rows as $i => $row) {
                 $col = 0;
-                foreach ($row as $attr => $value) {
-                    if (isset($params['date']) && in_array($attr, $params['date']) && $value !== NULL)
-                        $rows[$i][$attr] = date('d.m.Y', strtotime($value));
+                if (!in_array($attr, ['idmatlog', 'idemployeelog'])) {
+                    foreach ($row as $attr => $value) {
+                        if (isset($params['date']) && in_array($attr, $params['date']) && $value !== NULL)
+                            $rows[$i][$attr] = date('d.m.Y', strtotime($value));
 
-                    if (isset($params['datetime']) && in_array($attr, $params['datetime']) && $value !== NULL)
-                        $rows[$i][$attr] = date('d.m.Y H:i:s', strtotime($value));
+                        if (isset($params['datetime']) && in_array($attr, $params['datetime']) && $value !== NULL)
+                            $rows[$i][$attr] = date('d.m.Y H:i:s', strtotime($value));
 
-                    if (isset($params['case']) && in_array($attr, array_keys($params['case'])))
-                        $rows[$i][$attr] = $params['case'][$attr][$value];
+                        if (isset($params['case']) && in_array($attr, array_keys($params['case'])))
+                            $rows[$i][$attr] = $params['case'][$attr][$value];
 
-                    $sheet->getStyleByColumnAndRow($col, $i + 2)->applyFromArray($ramka);
+                        $sheet->getStyleByColumnAndRow($col, $i + 2)->applyFromArray($ramka);
 
-                    if (isset($params['string']) && in_array($attr, $params['string'])) {
-                        $sheet->getStyleByColumnAndRow($col, $i + 2)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-                        $sheet->setCellValueExplicitByColumnAndRow($col, $i + 2, $rows[$i][$attr], \PHPExcel_Cell_DataType::TYPE_STRING);
-                    } else
-                        $sheet->setCellValueByColumnAndRow($col, $i + 2, $rows[$i][$attr]);
-                    $col++;
+                        if (isset($params['string']) && in_array($attr, $params['string'])) {
+                            $sheet->getStyleByColumnAndRow($col, $i + 2)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+                            $sheet->setCellValueExplicitByColumnAndRow($col, $i + 2, $rows[$i][$attr], \PHPExcel_Cell_DataType::TYPE_STRING);
+                        } else
+                            $sheet->setCellValueByColumnAndRow($col, $i + 2, $rows[$i][$attr]);
+                        $col++;
+                    }
                 }
-                $i++;
             }
         }
 
@@ -937,8 +952,10 @@ class FregatImport {
     }
 
     private static function MakeReport() {
-        ini_set('max_execution_time', 1000);  // 1000 seconds
-        ini_set('memory_limit', 1073741824); // 1Gbyte Max Memory
+        $Importconfig = Importconfig::findOne(1);
+
+        ini_set('max_execution_time', $Importconfig->max_execution_time);  // 1000 seconds
+        ini_set('memory_limit', $Importconfig->memory_limit); // 1Gbyte Max Memory
 
         /* Загружаем PHPExcel */
         $objPHPExcel = new \PHPExcel();

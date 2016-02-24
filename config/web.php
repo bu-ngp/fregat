@@ -75,7 +75,7 @@ $config = [
                     ],
                     'toolbar' => [
                         ['content' => '{export} {dynagrid}'],
-                    ], 
+                    ],
                 ],
             ]
         // other module settings

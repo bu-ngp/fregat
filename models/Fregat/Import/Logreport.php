@@ -19,33 +19,34 @@ use Yii;
  * @property Matlog[] $matlogs
  * @property Traflog[] $traflogs
  */
-class Logreport extends \yii\db\ActiveRecord
-{
+class Logreport extends \yii\db\ActiveRecord {
+
+    public $maxfilelastdate;
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'logreport';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['logreport_date'], 'required'],
             [['logreport_date'], 'date', 'format' => 'yyyy-MM-dd'],
-            [['logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed'], 'integer']
+            [['logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed'], 'integer'],
+            [['maxfilelastdate'], 'safe'],
+            [['logreport_executetime'], 'date', 'format' => 'php:H:i:s'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'logreport_id' => 'Номер',
             'logreport_date' => 'Дата импорта',
@@ -54,30 +55,30 @@ class Logreport extends \yii\db\ActiveRecord
             'logreport_additions' => 'Записей добавлено',
             'logreport_amount' => 'Количество записей',
             'logreport_missed' => 'Записей пропущено',
+            'maxfilelastdate' => 'Последнее изменение импортируемых файлов',
+            'logreport_executetime' => 'Время выполнения импорта',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmployeelogs()
-    {
+    public function getEmployeelogs() {
         return $this->hasMany(Employeelog::className(), ['id_logreport' => 'logreport_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMatlogs()
-    {
+    public function getMatlogs() {
         return $this->hasMany(Matlog::className(), ['id_logreport' => 'logreport_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTraflogs()
-    {
+    public function getTraflogs() {
         return $this->hasMany(Traflog::className(), ['id_logreport' => 'logreport_id']);
     }
+
 }

@@ -29,7 +29,24 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'logreport_id',
-                        'logreport_date',
+                        [
+                            'attribute' => 'logreport_executetime',
+                            'value' => function ($model, $key, $index, $column) {
+                                return date("H:i:s", strtotime($model->logreport_executetime));
+                            }
+                        ],
+                        [
+                            'attribute' => 'logreport_date',
+                            'value' => function ($model, $key, $index, $column) {
+                                return date("d.m.Y", strtotime($model->logreport_date));
+                            }
+                        ],
+                        [
+                            'attribute' => 'maxfilelastdate',
+                            'value' => function ($model, $key, $index, $column) {
+                                return date("d.m.Y H:i:s", strtotime($model->maxfilelastdate));
+                            }
+                        ],
                         'logreport_errors',
                         'logreport_updates',
                         'logreport_additions',
@@ -39,8 +56,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'buttons' =>
                     [
                         'download' => function ($url, $model, $key) {
-                            $customurl = Url::to(['Fregat/logreport/downloadreport', 'id' => $model['logreport_id']]);
-                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-download-alt"></i>', $customurl, ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info'/*, 'data-pjax' => '0'*/]);
+                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-download-alt"></i>', 'importreports/Отчет импорта в систему Фрегат N' . $model['logreport_id'] . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                         },
                             ],
                         ]),
@@ -50,10 +66,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'options' => ['id' => 'logreportgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-inbox"></i> ' . $this->title,
-                                'before' => Html::a('<i class="glyphicon glyphicon-flash"></i> Очистить отчеты', ['Fregat/logreport/clear'], ['class' => 'btn btn-danger'/*, 'data-pjax' => '0'*/, 'data' => [
-                                                'confirm' => "Вы уверены, что хотите очистить все отчеты?",
-                                                'method' => 'post',
-                                ]]),
+                                'before' => Html::a('<i class="glyphicon glyphicon-flash"></i> Очистить отчеты', ['Fregat/logreport/clear'], ['class' => 'btn btn-danger'/* , 'data-pjax' => '0' */, 'data' => [
+                                        'confirm' => "Вы уверены, что хотите очистить все отчеты?",
+                                        'method' => 'post',
+                            ]]),
                             ],
                         ]
             ]));

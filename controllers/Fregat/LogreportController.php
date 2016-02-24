@@ -9,6 +9,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\models\Fregat\Import\Matlog;
+use app\models\Fregat\Import\Traflog;
+use app\models\Fregat\Import\Employeelog;
 
 /**
  * LogreportController implements the CRUD actions for Logreport model.
@@ -21,7 +24,7 @@ class LogreportController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'clear', 'downloadreport'],
+                        'actions' => ['index', 'clear'],
                         'allow' => true,
                         'roles' => ['FregatImport'],
                     ],
@@ -30,7 +33,7 @@ class LogreportController extends Controller {
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'clear' => ['post'],
                 ],
             ],
         ];
@@ -38,7 +41,7 @@ class LogreportController extends Controller {
 
     public function actionIndex() {
         $searchModel = new LogreportSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->searchreport(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
@@ -46,14 +49,13 @@ class LogreportController extends Controller {
         ]);
     }
 
-    public function actionClear($id) {
-        $this->findModel($id)->delete();
+    public function actionClear() {
+        Traflog::deleteAll();
+        Matlog::deleteAll();
+        Employeelog::deleteAll();
+        Logreport::deleteAll();
 
         return $this->redirect(['index']);
-    }
-
-    public function actionDownloadreport($id) {
-        
     }
 
     /**

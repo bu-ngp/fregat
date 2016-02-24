@@ -383,4 +383,19 @@ class Proc {
         return $filename;
     }
 
+    static function WhereCunstruct($modelsearch, $field, $type = '') {
+        preg_match('/(>=|<=|>|<|=)?(.*)/', $modelsearch->$field, $matches);
+        $operator = $matches[1];
+        $value = $matches[2];
+
+        if ($type === 'date')
+            $value = !empty($value) ? date("Y-m-d", strtotime($value)) : $value;
+        elseif ($type === 'datetime')
+            $value = !empty($value) ? date("Y-m-d H:i:s", strtotime($value)) : $value;
+        elseif ($type === 'time')
+            $value = !empty($value) ? date("H:i:s", strtotime($value)) : $value;
+
+        return [empty($operator) ? '=' : $operator, $field, $value];
+    }
+
 }
