@@ -911,8 +911,8 @@ class FregatImport {
         if (count($rows) > 0) {
             foreach ($rows as $i => $row) {
                 $col = 0;
-                if (!in_array($attr, ['idmatlog', 'idemployeelog'])) {
-                    foreach ($row as $attr => $value) {
+                foreach ($row as $attr => $value) {
+                    if (!in_array($attr, ['idmatlog', 'idemployeelog'])) {
                         if (isset($params['date']) && in_array($attr, $params['date']) && $value !== NULL)
                             $rows[$i][$attr] = date('d.m.Y', strtotime($value));
 
