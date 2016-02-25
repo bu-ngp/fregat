@@ -58,6 +58,8 @@ class GrupavidSearch extends Grupavid {
                 ]);
 
                 $this->load($params);
+                
+                $this->id_grupa = $params['id'];
 
                 if (!$this->validate()) {
                     // uncomment the following line if you do not want to return any records when validation fails

@@ -50,6 +50,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'heading' => '<i class="glyphicon glyphicon-align-justify"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('RoleEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                             ],
+                            'toolbar' => [
+                                'base' => ['content' => \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-filter"></i>', [
+                                        'type' => 'button',
+                                        'title' => 'Дополнительный фильтр',
+                                        'class' => 'btn btn-default'
+                                    ]) . '{export}{dynagrid}',
+                                ],
+                            ],
                         ]
             ]));
             ?>

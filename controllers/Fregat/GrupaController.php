@@ -16,10 +16,9 @@ use app\func\Proc;
 /**
  * GrupaController implements the CRUD actions for Grupa model.
  */
-class GrupaController extends Controller
-{
-    public function behaviors()
-    {
+class GrupaController extends Controller {
+
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -45,19 +44,17 @@ class GrupaController extends Controller
         ];
     }
 
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new GrupaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Grupa();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -65,21 +62,27 @@ class GrupaController extends Controller
             return $this->redirect(['update', 'id' => $model->grupa_id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        $Grupavid = new Grupavid;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
+            $Grupavid = new Grupavid;
             $Grupavid->load(Yii::$app->request->get(), 'Grupavid');
+
+            $count = Grupavid::find()
+                    ->where(['id_grupa' => $model->primaryKey])
+                    ->one();
+
             $Grupavid->id_grupa = $model->primaryKey;
+            $Grupavid->grupavid_main = isset($count) ? 0 : 1;
+
             if ($Grupavid->validate())
                 $Grupavid->save(false);
 
@@ -95,8 +98,9 @@ class GrupaController extends Controller
         }
     }
 
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
+
+        Grupavid::deleteAll(['id_grupa' => $id]);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -109,12 +113,12 @@ class GrupaController extends Controller
      * @return Grupa the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Grupa::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

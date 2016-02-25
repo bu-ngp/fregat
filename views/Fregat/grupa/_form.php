@@ -27,23 +27,22 @@ use app\func\Proc;
         echo DynaGrid::widget(Proc::DGopts([
                     'columns' => Proc::DGcols([
                         'columns' => [
+                            'idmatvid.matvid_name',
                             [
-                                'class' => '\kartik\grid\RadioColumn',
-                                'showClear' => false,
-                                'radioOptions' => function($model, $key, $index, $column) {
-                                    return $model['grupavid_main'] == 1 ? ['checked' => 'checked'] : [];
-                                }
-                                    ],
-                                    'idmatvid.matvid_name',
-                                    [
-                                        'attribute' => 'grupavid_main',
-                                        'filter' => [0 => 'Нет', 1 => 'Да'],
-                                        'value' => function ($model) {
-                                    return $model->grupavid_main == 0 ? 'Нет' : 'Да';
-                                },
-                                    ],
-                                ],
-                                'buttons' => [
+                                'attribute' => 'grupavid_main',
+                                'filter' => [0 => 'Нет', 1 => 'Да'],
+                                'value' => function ($model) {
+                            return $model->grupavid_main == 0 ? 'Нет' : 'Да';
+                        },
+                            ],
+                        ],
+                        'buttons' => [
+                            'createmain' => function ($url, $model) {
+                                $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/grupavid/createmain', 'grupavid_id' => $model->grupavid_id, 'id_grupa' =>  $model->id_grupa]);
+                                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-magnet"></i>', $customurl, ['title' => 'Сделать основной'/* , 'data-pjax' => '0' */, 'class' => 'btn btn-xs btn-info', 'data' => [
+                                                'method' => 'post',
+                                ]]);
+                            },
                                     'delete' => ['Fregat/grupavid/delete', 'grupavid_id']
                                 ],
                             ]),

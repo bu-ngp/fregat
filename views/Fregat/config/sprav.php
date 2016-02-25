@@ -16,7 +16,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     <?= Html::a('<i class="glyphicon glyphicon-user"></i> Сотрудники', ['//Fregat/employee/index'], ['class' => 'btn btn-default']) ?>
                 </li>
                 <li>
-                    <?= Html::a('<i class="glyphicon glyphicon-education"></i> должности', ['//Fregat/dolzh/index'], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="glyphicon glyphicon-education"></i> Должности', ['//Fregat/dolzh/index'], ['class' => 'btn btn-default']) ?>
                 </li>
                 <li>
                     <?= Html::a('<i class="glyphicon glyphicon-briefcase"></i> Подразделения', ['//Fregat/podraz/index'], ['class' => 'btn btn-default']) ?>

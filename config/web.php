@@ -66,6 +66,7 @@ $config = [
             'dynaGridOptions' => [
                 'gridOptions' => [
                     'pjax' => true,
+                    'export' => false,
                     'exportConfig' => [
                         \kartik\grid\GridView::EXCEL => [
                             'label' => 'EXCEL',
@@ -74,7 +75,7 @@ $config = [
                         ],
                     ],
                     'toolbar' => [
-                        ['content' => '{export} {dynagrid}'],
+                        'base' => ['content' => '{export}{dynagrid}'],
                     ],
                 ],
             ]

@@ -70,7 +70,7 @@ use yii\bootstrap\ActiveForm;
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Сотрудники') ?></div>
         <div class="panel-body">
-            <?= $form->field($model, 'emp_filname')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'emp_filename')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -78,9 +78,18 @@ use yii\bootstrap\ActiveForm;
         <div class="panel-body">
             <?= $form->field($model, 'logreport_reportcount')->textInput() ?>
 
-            <?= $form->field($model, 'max_execution_time')->textInput() ?>
+            <?=
+            $form->field($model, 'max_execution_time', [
+                'inputTemplate' => '<div class="input-group">{input}<span class="input-group-addon">' . Yii::$app->formatter->asDuration($model->max_execution_time) . '</span></div>'
+            ])->textInput()
+            ?>
 
-            <?= $form->field($model, 'memory_limit')->textInput(['maxlength' => true]) ?>
+            <?php Yii::$app->formatter->sizeFormatBase = 1000; ?>
+            <?=
+            $form->field($model, 'memory_limit', [
+                'inputTemplate' => '<div class="input-group">{input}<span class="input-group-addon">' . Yii::$app->formatter->asShortSize($model->memory_limit) . '</span></div>'
+            ])->textInput(['maxlength' => true])
+            ?>
         </div>
     </div>
 

@@ -51,9 +51,9 @@ class Importconfig extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['os_startrow', 'mat_startrow', 'os_filename', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filname', 'max_execution_time', 'memory_limit'], 'required'],
+            [['os_startrow', 'mat_startrow', 'os_filename', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filename', 'max_execution_time', 'memory_limit'], 'required'],
             [['os_startrow', 'mat_startrow', 'logreport_reportcount', 'max_execution_time', 'memory_limit'], 'integer'],
-            [['os_filename', 'mat_filename', 'emp_filname'], 'string', 'max' => 255],
+            [['os_filename', 'mat_filename', 'emp_filename'], 'string', 'max' => 255],
             [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'string', 'max' => 5],
             [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'match', 'pattern' => '/^[a-z]$/iu', 'message' => '"{attribute}" Может состоять только из латинских букв'],
             [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'filter', 'filter' => function($value) {
@@ -93,7 +93,7 @@ class Importconfig extends \yii\db\ActiveRecord {
             'mat_podraz_name' => 'Позиция колонки "Подразделение Материально-ответственного лица" материалов',
             'mat_material_tip_nomenklaturi' => 'Позиция колонки "Тип номенклатуры" материалов',
             'logreport_reportcount' => 'Количество хранящихся отчетов импорта',
-            'emp_filname' => 'Имя файла сотрудников (.txt в директории "imp")',
+            'emp_filename' => 'Имя файла сотрудников (.txt в директории "imp")',
             'max_execution_time' => 'Максимальное время выполнения загрузки файлов импорта (в секундах)',
             'memory_limit' => 'Максимальное потребление оперативной памяти при импорте (в Байтах)',
         ];

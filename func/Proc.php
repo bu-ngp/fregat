@@ -132,7 +132,8 @@ class Proc {
                     'panel' => [
                         'type' => Yii::$app->params['GridHeadingStyle'],
                         'headingOptions' => ['class' => 'panel-heading panel-' . Yii::$app->params['GridHeadingStyle']],
-                    ]],
+                    ],
+                ],
                     ], $Options);
     }
 

@@ -22,34 +22,32 @@ use Yii;
  * @property Osmotrakt[] $osmotrakts
  * @property Osmotrakt[] $osmotrakts0
  */
-class Employee extends \yii\db\ActiveRecord
-{
+class Employee extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'employee';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['employee_fio', 'id_dolzh', 'id_podraz'], 'required'],
             [['id_dolzh', 'id_podraz', 'id_build'], 'integer'],
             [['employee_fio'], 'string', 'max' => 255],
             [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            ['employee_fio', 'unique', 'targetAttribute' => ['employee_fio', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'Этот сотрудник уже существует'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'employee_id' => 'Код',
             'employee_fio' => 'Фамилия Имя Отчество',
@@ -62,64 +60,57 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdbuild()
-    {
+    public function getIdbuild() {
         return $this->hasOne(Build::className(), ['build_id' => 'id_build']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIddolzh()
-    {
+    public function getIddolzh() {
         return $this->hasOne(Dolzh::className(), ['dolzh_id' => 'id_dolzh']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdpodraz()
-    {
+    public function getIdpodraz() {
         return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getimpemployees()
-    {
+    public function getimpemployees() {
         return $this->hasMany(Impemployee::className(), ['id_employee' => 'employee_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getInstallakts()
-    {
+    public function getInstallakts() {
         return $this->hasMany(Installakt::className(), ['id_installer' => 'employee_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMattraffics()
-    {
+    public function getMattraffics() {
         return $this->hasMany(Mattraffic::className(), ['id_mol' => 'employee_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts()
-    {
+    public function getOsmotrakts() {
         return $this->hasMany(Osmotrakt::className(), ['id_user' => 'employee_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts0()
-    {
+    public function getOsmotrakts0() {
         return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id']);
     }
+
 }
