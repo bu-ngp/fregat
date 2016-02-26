@@ -21,6 +21,7 @@ use app\models\Fregat\Matvid;
 use app\models\Fregat\Podraz;
 use app\models\Fregat\Writeoffakt;
 use yii\base\Exception;
+use PDO;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -68,31 +69,49 @@ class FregatImport {
     private static $material_price_xls; // Пишется цена материальной ценности из файла Excel
     private static $rownum_xls; // Номер строки в файле Excel
     private static $mattraffic_exist; // Проверка, найден ли у материальнной ценности сотрудник
+    private static $xls;
+
+    private static function Setxls() {
+        $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
+
+        self::$xls = [
+            'mattraffic_date' => 'A',
+            'material_1c' => self::$os ? $Importconfig['os_material_1c'] : $Importconfig['mat_material_1c'],
+            'material_inv' => self::$os ? $Importconfig['os_material_inv'] : $Importconfig['mat_material_inv'],
+            'material_name1c' => self::$os ? $Importconfig['os_material_name1c'] : $Importconfig['mat_material_name1c'],
+            'material_number' => self::$os ? '' : $Importconfig['mat_material_number'],
+            'material_price' => self::$os ? $Importconfig['os_material_price'] : $Importconfig['mat_material_price'],
+            'izmer_name' => self::$os ? '' : $Importconfig['mat_izmer_name'],
+            'employee_fio' => self::$os ? $Importconfig['os_employee_fio'] : $Importconfig['mat_employee_fio'],
+            'dolzh_name' => self::$os ? $Importconfig['os_dolzh_name'] : $Importconfig['mat_dolzh_name'],
+            'podraz_name' => self::$os ? $Importconfig['os_podraz_name'] : $Importconfig['mat_podraz_nam'],
+            'material_serial' => self::$os ? $Importconfig['os_material_serial'] : '',
+            'material_release' => self::$os ? $Importconfig['os_material_release'] : '',
+            'material_status' => self::$os ? $Importconfig['os_material_status'] : '',
+            'material_tip_nomenklaturi' => self::$os ? '' : $Importconfig['mat_material_tip_nomenklaturi'], // Колонка "ТипНоменклатуры" в файле Материалов
+        ];
+    }
 
     // Массив с координатами колонок в Excel
 
     private static function xls($field) {
-        $Importconfig = Importconfig::findOne(1);
-        $xls = [
-            'mattraffic_date' => 'A',
-            'material_1c' => self::$os ? $Importconfig->os_material_1c : $Importconfig->mat_material_1c,
-            'material_inv' => self::$os ? $Importconfig->os_material_inv : $Importconfig->mat_material_inv,
-            'material_name1c' => self::$os ? $Importconfig->os_material_name1c : $Importconfig->mat_material_name1c,
-            'material_number' => self::$os ? '' : $Importconfig->mat_material_number,
-            'material_price' => self::$os ? $Importconfig->os_material_price : $Importconfig->mat_material_price,
-            'izmer_name' => self::$os ? '' : $Importconfig->mat_izmer_name,
-            'employee_fio' => self::$os ? $Importconfig->os_employee_fio : $Importconfig->mat_employee_fio,
-            'dolzh_name' => self::$os ? $Importconfig->os_dolzh_name : $Importconfig->mat_dolzh_name,
-            'podraz_name' => self::$os ? $Importconfig->os_podraz_name : $Importconfig->mat_podraz_name,
-            'material_serial' => self::$os ? $Importconfig->os_material_serial : '',
-            'material_release' => self::$os ? $Importconfig->os_material_release : '',
-            'material_status' => self::$os ? $Importconfig->os_material_status : '',
-            'material_tip_nomenklaturi' => self::$os ? '' : $Importconfig->mat_material_tip_nomenklaturi, // Колонка "ТипНоменклатуры" в файле Материалов
-        ];
-        if (isset($xls[$field]))
-            return $xls[$field];
+        if (array_key_exists($field, self::$xls))
+            return self::$xls[$field];
         else
             throw new Exception('Не существует FregatImport::xls("' . $field . '")');
+    }
+
+    private static function GetRowsPDO($sql, $params = null, $all = false) {
+        try {
+            if (empty($params))
+                $params = [];
+            $dbh = new PDO(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
+            $rows = $dbh->prepare($sql);
+            $rows->execute($params);
+            return $all ? $rows->fetchAll(PDO::FETCH_ASSOC) : $rows->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $rows = [];
+        }
     }
 
     // Определяем вид материальной ценности
@@ -109,10 +128,7 @@ class FregatImport {
             $word = $match_arr[0][$i];
             $str = mb_substr($material_name1c, 0, $word[1], 'UTF-8') . $word[0];
 
-            $rows = Importmaterial::find()
-                    ->where(['like', 'importmaterial_combination', $str . '%', false])
-                    ->orderBy('CHAR_LENGTH(importmaterial_combination)')
-                    ->all();
+            $rows = self::GetRowsPDO('select importmaterial_combination, id_matvid from importmaterial where importmaterial_combination like :importmaterial_combination order by CHAR_LENGTH(importmaterial_combination)', ['importmaterial_combination' => $str . '%'], true);
 
             if (count($rows) === 1 && mb_stripos($material_name1c, $rows[0]['importmaterial_combination'], 0, 'UTF-8') === 0 || count($rows) > 1)
                 $tmpmin = [$rows[0]['id_matvid'], $rows[0]['importmaterial_combination']];
@@ -121,6 +137,8 @@ class FregatImport {
 
             $i++;
         }
+        unset($match_arr);
+        unset($rows);
 
         // Если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
         return $tmpmin[0];
@@ -129,17 +147,16 @@ class FregatImport {
     // Определяем Единицу измерения
     // Если единица измерения не найдена в справочнике, она добавляется.
     private static function AssignIzmer($value) {
-        $izmer_id = Izmer::find()
-                ->where(['like', 'izmer_name', $value, false])
-                ->one();
+        $izmer_id = self::GetRowsPDO('select izmer_id, izmer_name from izmer where izmer_name like :izmer_name', ['izmer_name' => $value]);
 
         if (empty($izmer_id)) {
             $Izmer = new Izmer;
             $Izmer->izmer_name = $value;
             if ($Izmer->Save())
                 $izmer_id = $Izmer->izmer_id;
+            unset($Izmer);
         } else
-            $izmer_id = $izmer_id->izmer_id;
+            $izmer_id = $izmer_id['izmer_id'];
         return $izmer_id;
     }
 
@@ -147,9 +164,7 @@ class FregatImport {
     // Если должность не найдена в справочнике, она добавляется
     private static function AssignDolzh($value) {
         if (trim($value) !== '') {
-            $dolzh_id = Dolzh::find()
-                    ->where(['like', 'dolzh_name', $value, false])
-                    ->one();
+            $dolzh_id = self::GetRowsPDO('select dolzh_id, dolzh_name from dolzh where dolzh_name like :dolzh_name', ['dolzh_name' => $value]);
 
             if (empty($dolzh_id)) {
                 $Dolzh = new Dolzh;
@@ -157,7 +172,7 @@ class FregatImport {
                 if ($Dolzh->Save())
                     $dolzh_id = $Dolzh->dolzh_id;
             } else
-                $dolzh_id = $dolzh_id->dolzh_id;
+                $dolzh_id = $dolzh_id['dolzh_id'];
         }
 
         return $dolzh_id;
@@ -175,42 +190,32 @@ class FregatImport {
                     'id_build' => NULL
         ];
 
-        $importemployee = Importemployee::find()
-                ->where(['like', 'importemployee_combination', $podraz_name, false])
-                ->one();
+        $importemployee = self::GetRowsPDO('select importemployee_id, id_podraz, id_build  from importemployee where importemployee_combination like :importemployee_combination', ['importemployee_combination' => $podraz_name]);
 
         if (empty($importemployee)) {
-            $currentpodraz = Podraz::find()
-                    ->where(['like', 'podraz_name', $podraz_name, false])
-                    ->one();
+            $currentpodraz = self::GetRowsPDO('select podraz_id, podraz_name  from podraz where podraz_name like :podraz_name', ['podraz_name' => $podraz_name]);
 
             if (empty($currentpodraz)) {
                 $Podraz = new Podraz;
                 $Podraz->podraz_name = $podraz_name;
                 if ($Podraz->Save())
                     $result->id_podraz = $Podraz->podraz_id;
-            } else {
-                $result->id_podraz = $currentpodraz->podraz_id;
-            }
+            } else
+                $result->id_podraz = $currentpodraz['podraz_id'];
         } else {
-            $Impemployee = Impemployee::find()
-                    ->joinWith(['idemployee'])
-                    ->where([
-                        'id_importemployee' => $importemployee->importemployee_id,
-                    ])
-                    ->andWhere(['like', 'employee_fio', $employee_fio])
-                    ->one();
-
+            $Impemployee = self::GetRowsPDO('select id_podraz, id_build from impemployee left join importemployee on impemployee.id_importemployee = importemployee.importemployee_id where id_importemployee = :id_importemployee  and employee_fio like :employee_fio ', [
+                        'employee_fio' => $employee_fio,
+                        'id_importemployee' => $importemployee['importemployee_id']
+            ]);
 
             if (empty($Impemployee)) {
-                $result->id_podraz = $importemployee->id_podraz;
-                $result->id_build = $importemployee->id_build;
+                $result->id_podraz = $importemployee['id_podraz'];
+                $result->id_build = $importemployee['id_build'];
             } else {
-                $result->id_podraz = $Impemployee->idemployee->id_podraz;
-                $result->id_build = $Impemployee->idemployee->id_build;
+                $result->id_podraz = $Impemployee['id_podraz'];
+                $result->id_build = $Impemployee['id_build'];
             }
         }
-
 
         return $result;
     }
@@ -223,9 +228,7 @@ class FregatImport {
         ];
 
         if (trim($podraz_name) !== '') {
-            $currentpodraz = Podraz::find()
-                    ->where(['like', 'podraz_name', $podraz_name, false])
-                    ->one();
+            $currentpodraz = self::GetRowsPDO('select podraz_id, podraz_name  from podraz where podraz_name like :podraz_name', ['podraz_name' => $podraz_name]);
 
             if (empty($currentpodraz)) {
                 $Podraz = new Podraz;
@@ -233,12 +236,10 @@ class FregatImport {
                 if ($Podraz->Save())
                     $result->id_podraz = $Podraz->podraz_id;
             } else
-                $result->id_podraz = $currentpodraz->podraz_id;
+                $result->id_podraz = $currentpodraz['podraz_id'];
 
             if (trim($build_name) !== '') {
-                $currentbuild = Build::find()
-                        ->where(['like', 'build_name', $build_name, false])
-                        ->one();
+                $currentbuild = self::GetRowsPDO('select build_id, build_name from build where build_name like :build_name', ['build_name' => $build_name]);
 
                 if (empty($currentbuild)) {
                     $Build = new Build;
@@ -246,7 +247,7 @@ class FregatImport {
                     if ($Build->Save())
                         $result->id_build = $Build->build_id;
                 } else
-                    $result->id_build = $currentbuild->build_id;
+                    $result->id_build = $currentbuild['build_id'];
             }
         }
 
@@ -361,8 +362,11 @@ class FregatImport {
 
     // Выводит актуальное количество материала у сотрудника
     private static function GetCountMaterialByID($MaterialID) {
-        $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
-        $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne();
+        $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
+                    'materialID' => $materialID
+        ]);
+        /*  $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
+          $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne(); */
         if (empty($dataReader))
             return '-1';
         else
@@ -371,12 +375,24 @@ class FregatImport {
 
     // Выводи последнюю дату изменения загруженных файлов
     private static function GetMaxFileLastDate() {
-        $sql = 'select CASE WHEN MAX(matlog_filelastdate) > MAX(employeelog_filelastdate) THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate from matlog, employeelog where matlog_filename = :filename or employeelog_filename = :filename';
-        $dataReader = Yii::$app->db->createCommand($sql, [':filename' => self::$filename])->queryOne();
+        /*   $sql = 'select CASE WHEN MAX(matlog_filelastdate) > MAX(employeelog_filelastdate) THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate from matlog, employeelog where matlog_filename = :filename or employeelog_filename = :filename';
+          $dataReader = Yii::$app->db->createCommand($sql, [':filename' => self::$filename])->queryOne();
+         */
+        $dataReader = self::GetRowsPDO('select CASE WHEN MAX(matlog_filelastdate) > MAX(employeelog_filelastdate) THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate from matlog, employeelog where matlog_filename = :filename or employeelog_filename = :filename', [
+                    'filename' => self::$filename
+        ]);
         if (empty($dataReader))
             return NULL;
         else
             return $dataReader['maxfilelastdate'];
+    }
+
+    private static function GetNameByID($Table, $Field, $ID) {
+        $row = self::GetRowsPDO('select ' . $Field . ' from `' . $Table . '` where  ', [
+                    'var' => $ID
+        ]);
+
+        return empty($row) ? null : $row;
     }
 
     // Применяем изменения в атрибутах материальной ценности или создаем новую
@@ -390,12 +406,13 @@ class FregatImport {
 
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
-            $find_ar = Material::find()
-                    ->where(['material_1c' => $xls_attributes_material['material_1c'], 'material_tip' => self::$os ? 1 : 2])
-                    ->one();
+            $search = self::GetRowsPDO('select material_id from material where material_1c = :material_1c and material_tip = :material_tip ', [
+                        'material_1c' => $xls_attributes_material['material_1c'],
+                        'material_tip' => self::$os ? 1 : 2
+            ]);
 
-            if (!empty($find_ar))
-                $Material = $find_ar;
+            if (!empty($search))
+                $Material = Material::findOne($search['material_id']);
 
             self::$material_number_xls = $xls_attributes_material['material_number'];
             self::$material_price_xls = $xls_attributes_material['material_price'];
@@ -425,8 +442,8 @@ class FregatImport {
                 $Matlog->material_number = self::$material_number_xls;
                 $Matlog->material_price = self::$material_price_xls;
 
-                $Matlog->matvid_name = Matvid::findOne($Material->id_matvid)->matvid_name;
-                $Matlog->izmer_name = Izmer::findOne($Material->id_izmer)->izmer_name;
+                $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
+                $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
                 $Matlog->material_writeoff = 'Нет';
 
                 $Matlog->matlog_message = $Material->isNewRecord ? 'Запись добавлена' : 'Запись изменена: ';
@@ -438,8 +455,8 @@ class FregatImport {
                 $result = self::ImportValidate($Material, $Matlog);
             } else { // Если изменения не внесены пишем в лог
                 $Matlog->attributes = $Material->attributes;
-                $Matlog->matvid_name = Matvid::findOne($Material->id_matvid)->matvid_name;
-                $Matlog->izmer_name = Izmer::findOne($Material->id_izmer)->izmer_name;
+                $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
+                $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
                 $Matlog->material_writeoff = $Material->material_writeoff === '1' ? 'Да' : 'Нет';
 
                 // Добавляем в лог не измененные значения ActiveRecord
@@ -457,42 +474,39 @@ class FregatImport {
         $xls_attributes_employee = self::xls_attributes_employee($row);
 
         // Находим сотрудника в базе, если не находим создаем новую запись
-        $find_ar = Employee::find()
-                ->where(['like', 'employee_fio', $xls_attributes_employee['employee_fio'], false])
-                ->andWhere(['id_dolzh' => $xls_attributes_employee['id_dolzh']])
-                ->andWhere(['id_podraz' => $xls_attributes_employee['id_podraz']])
-                ->andWhere(['id_build' => empty($xls_attributes_employee['id_build']) ? null : $xls_attributes_employee['id_build']])
-                ->one();
+        $search = self::GetRowsPDO('select employee_id from employee where id_dolzh = :id_dolzh and id_podraz = :id_podraz and id_build = :id_build', [
+                    'id_dolzh' => $xls_attributes_employee['id_dolzh'],
+                    'id_podraz' => $xls_attributes_employee['id_podraz'],
+                    'id_build' => empty($xls_attributes_employee['id_build']) ? null : $xls_attributes_employee['id_build']
+        ]);
 
-        if (!empty($find_ar))
-            $Employee = $find_ar;
-
-        /*  var_dump($xls_attributes_employee['employee_fio']);
-          var_dump($xls_attributes_employee['id_dolzh']);
-          var_dump($xls_attributes_employee['id_podraz']);
-          var_dump($xls_attributes_employee['id_build']);
-
-          var_dump($find_ar); */
+        if (!empty($search))
+            $Employee = Employee::findOne($search['employee_id']);
 
         if ($Employee->isNewRecord) { //Если новая запись (Нет соответствия по ФИО, Должности, Подразделению, Зданию)
             $Employee->attributes = $xls_attributes_employee;
 
             $Employeelog->employee_fio = $Employee->employee_fio;
-            $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
-            $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+            $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+            $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
-                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-            // Валидируем значения модели и пишем в лог
+// Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
             $Employeelog->attributes = $Employee->attributes;
-            $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
-            $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+            $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+            $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
-                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-            // Добавляем в лог не измененные значения ActiveRecord
+
+
+
+
+
+// Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
 
@@ -525,18 +539,18 @@ class FregatImport {
         // Ищем Материальную ценность закрепленную за сотрудником
         // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
         // diff_number - Определяет текущее актуальное количество материальной ценности
-        $find_ar = Mattraffic::find()
-                ->select('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number')
-                ->where(['id_material' => $xls_attributes_mattraffic['id_material'], 'id_mol' => $xls_attributes_mattraffic['id_mol']])
-                ->params([
+        $search = self::GetRowsPDO('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number from mattraffic where id_material = :id_material and id_mol = :id_mol order by mattraffic_date desc', [
+                    'id_material' => $xls_attributes_mattraffic['id_material'],
+                    'id_mol' => $xls_attributes_mattraffic['id_mol'],
                     ':date_xls' => $xls_attributes_mattraffic['mattraffic_date'],
                     ':mattraffic_number' => $xls_attributes_mattraffic['mattraffic_number']
-                ])
-                ->orderBy('mattraffic_date desc')
-                ->one();
+        ]);
 
-        if (!empty($find_ar))
-            $Mattraffic = $find_ar;
+
+        if (!empty($search))
+            $Mattraffic = Mattraffic::find()->select('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number from mattraffic where mattraffic_id = :mattraffic_id order by mattraffic_date desc')
+                    ->where(['mattraffic_id' => $search['mattraffic_id']])
+                    ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
@@ -612,17 +626,18 @@ class FregatImport {
     static function ImportDo() {
         // Делаем запись в таблицу отчетов импорта
         $logreport = new Logreport;
-        $Importconfig = Importconfig::findOne(1);
-        self::$os_start = $Importconfig->os_startrow;
-        self::$mat_start = $Importconfig->mat_startrow;
+        $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
+        self::$os_start = $Importconfig['os_startrow'];
+        self::$mat_start = $Importconfig['mat_startrow'];
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
 
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
-        foreach ([$Importconfig->emp_filename . '.txt', $Importconfig->os_filename . '.xls', $Importconfig->mat_filename . '.xls'] as $filename) {
+        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xls', $Importconfig['mat_filename'] . '.xls'] as $filename) {
             self::$filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
             self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/os.xls' ? true : false;
+            self::Setxls();
 
             if (file_exists(self::$filename)) {
                 self::$filelastdate = date("Y-m-d H:i:s", filemtime(self::$filename));
@@ -630,8 +645,8 @@ class FregatImport {
                 //  $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
 
                 if (/* strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
-                    ini_set('max_execution_time', $Importconfig->max_execution_time);  // 1000 seconds
-                    ini_set('memory_limit', $Importconfig->memory_limit); // 1Gbyte Max Memory
+                    ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+                    ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
                     $logreport->save();
                     self::$logreport_id = $logreport->logreport_id;
                     $doreport = true;
@@ -642,7 +657,7 @@ class FregatImport {
                     self::$logreport_missed = 0; // Записей пропущено (исключены из обработки)
                     self::$logreport_amount = 0; // Всего записей
 
-                    if ($filename === $Importconfig->emp_filename . '.txt')
+                    if ($filename === $Importconfig['emp_filename'] . '.txt')
                         self::$employee = true;
 
                     if (self::$employee) {
@@ -671,32 +686,12 @@ class FregatImport {
 
                                     $id_dolzh = self::AssignDolzh($matches[4]);
 
-                                    // Находим сотрудника в базе, если не находим создаем новую запись                            
-                                    $Employee = Employee::find()
-                                            ->where(['like', 'employee_fio', $employee_fio, false])
-                                            ->andWhere(['id_dolzh' => $id_dolzh])
-                                            ->andWhere(['id_podraz' => $location->id_podraz])
-                                            ->andWhere(['id_build' => empty($location->id_build) ? null : $location->id_build])
-                                            ->one();
-
-                                    //   var_dump($Employee);
-
-                                /*    if ($employee_fio === 'Кузьмина Ольга Владимировна') {
-                                        $string = Employee::findone(1)->employee_fio;
-                                        var_dump($string);
-                                        $ascii = '';
-                                        for ($i = 0; $i < strlen($string); $i++)
-                                            $ascii = $ascii . ' - ' . ord($string[$i]);
-                                        var_dump($ascii);
-
-                                        $string = $employee_fio;
-                                        var_dump($string);
-                                        $ascii = '';
-                                        for ($i = 0; $i < strlen($string); $i++)
-                                            $ascii = $ascii . ' - ' . ord($string[$i]);
-                                        var_dump($ascii);
-                                    }*/
-
+                                    $Employee = self::GetRowsPDO('select employee_id, employee_fio, id_dolzh, id_podraz, id_build from employee where employee_fio like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz and id_build = :id_build', [
+                                                'employee_fio' => $employee_fio,
+                                                'id_dolzh' => $id_dolzh,
+                                                'id_podraz' => $location->id_podraz,
+                                                'id_build' => empty($location->id_build) ? null : $location->id_build
+                                    ]);
 
                                     if (empty($Employee)) {
                                         /*   var_dump('ok');
@@ -735,10 +730,10 @@ class FregatImport {
                                         }
 
                                         $Employeelog->employee_fio = $Employee->employee_fio;
-                                        $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
-                                        $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+                                        $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+                                        $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
                                         if (!empty($Employee->id_build))
-                                            $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+                                            $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
 
                                         $Employeelog->save(false);
                                     }
@@ -759,15 +754,21 @@ class FregatImport {
                         $logreport->logreport_amount += $i;
                         self::$employee = false;
                     } else {
-                        $chunkSize = 1000;  //размер считываемых строк за раз
+
                         $startRow = self::$os ? self::$os_start : self::$mat_start;   //начинаем читать с определенной строки
                         $exit = false;   //флаг выхода
                         $empty_value = 0;  //счетчик пустых знаений
                         // Загружаем данные из файла Excel   
+                        //        $inputFileType = 'Excel5';
+                        //       $inputFileName = self::$filename;
+                        $chunkSize = 1000;  //размер считываемых строк за раз
+                        //
                         $objReader = \PHPExcel_IOFactory::createReaderForFile(self::$filename);
-                        $objReader->setReadDataOnly(true);
+                        //     $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+
                         $chunkFilter = new chunkReadFilter();
                         $objReader->setReadFilter($chunkFilter);
+                        $objReader->setReadDataOnly(true);
 
                         while (!$exit) {
                             // Инициализируем переменные
@@ -860,7 +861,7 @@ class FregatImport {
                             }
                             $objPHPExcel->disconnectWorksheets();     //чистим 
                             unset($objPHPExcel);       //память
-                                                        
+
                             unset($material);
                             unset($employee);
                             unset($mattraffic);
@@ -868,7 +869,8 @@ class FregatImport {
                             unset($employeelog);
                             unset($traflog);
                             unset($objWorksheet);
-                            
+
+                            echo '<BR>Память использована с ' . $startRow . ' по ' . ($startRow + $chunkSize) . ' : ' . Yii::$app->formatter->asShortSize(memory_get_usage(true));
                             $startRow += $chunkSize;     //переходим на следующий шаг цикла, увеличивая строку, с которой будем читать файл
                         }
                         $logreport->logreport_amount += self::$rownum_xls - (self::$os ? self::$os_start : self::$mat_start);
@@ -891,6 +893,7 @@ class FregatImport {
         }
 
         echo 'ImportDo success<BR>';
+        echo 'Использовано памяти: ' . Yii::$app->formatter->asShortSize(memory_get_usage(true)) . '; Время выполнения: ' . gmdate('H:i:s', $endtime - $starttime);
     }
 
     private static function ExcelApplyValues($sheet, $rows, $params = []) {
