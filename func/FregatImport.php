@@ -84,7 +84,7 @@ class FregatImport {
             'izmer_name' => self::$os ? '' : $Importconfig['mat_izmer_name'],
             'employee_fio' => self::$os ? $Importconfig['os_employee_fio'] : $Importconfig['mat_employee_fio'],
             'dolzh_name' => self::$os ? $Importconfig['os_dolzh_name'] : $Importconfig['mat_dolzh_name'],
-            'podraz_name' => self::$os ? $Importconfig['os_podraz_name'] : $Importconfig['mat_podraz_nam'],
+            'podraz_name' => self::$os ? $Importconfig['os_podraz_name'] : $Importconfig['mat_podraz_name'],
             'material_serial' => self::$os ? $Importconfig['os_material_serial'] : '',
             'material_release' => self::$os ? $Importconfig['os_material_release'] : '',
             'material_status' => self::$os ? $Importconfig['os_material_status'] : '',
@@ -388,11 +388,19 @@ class FregatImport {
     }
 
     private static function GetNameByID($Table, $Field, $ID) {
-        $row = self::GetRowsPDO('select ' . $Field . ' from `' . $Table . '` where  ', [
+        $row = self::GetRowsPDO('select ' . $Field . ' from `' . $Table . '` where ' . $Table . '_id = :var', [
                     'var' => $ID
         ]);
 
-        return empty($row) ? null : $row;
+        return empty($row) ? null : $row[$Field];
+    }
+
+    private static function ngp_array_diff_assoc($source, $arr) {
+        $result = [];
+        foreach ($source as $key => $value)
+            if (!(array_key_exists($key, $arr) && $value == $arr[$key]))
+                $result[$key] = $value;
+        return $result;
     }
 
     // Применяем изменения в атрибутах материальной ценности или создаем новую
@@ -401,6 +409,8 @@ class FregatImport {
         $result = false;
         // Присваиваем значения свойств материальной ценности из Excel в массив атрибутов
         $xls_attributes_material = self::xls_attributes_material($row);
+        var_dump(self::$rownum_xls);
+        var_dump($xls_attributes_material);
         // Проверяем, что ТипНоменклатуры Материалов принадлежат к "Продукты питания" или "Прочие материальные запасы"
         $material_assigned = (self::$os || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Продукты питания', 'Прочие материальные запасы']))) ? true : false;
 
@@ -427,12 +437,24 @@ class FregatImport {
                 unset($xls_attributes_material['material_price']);
 
                 // Массив заполняется измененными значениями атрибутов материальной ценности
-                $diff_attr = array_diff_assoc($xls_attributes_material, $Material->attributes);
+                // $diff_attr = array_diff_assoc($xls_attributes_material, $Material->attributes);
+                $diff_attr = self::ngp_array_diff_assoc($xls_attributes_material, $Material->attributes);
             }
 
+            //   var_dump($diff_attr);
             // Если новая запись или произошли изменения в текущей
             if ($Material->isNewRecord || count((array) $diff_attr) > 0) {
                 $Material->attributes = $xls_attributes_material;
+                echo '<br>begin------------------------------------------';
+
+                var_dump($xls_attributes_material);
+                var_dump($Material->attributes);
+                var_dump($Material->isNewRecord ? 'New' : 'Edit');
+                var_dump($diff_attr);
+
+                var_dump($xls_attributes_material['material_serial'] === $Material->material_serial ? 'Ok' : 'Fail');
+
+                echo '<br>end------------------------------------------';
 
                 // material_name1с - Наименование из Excel файла. material_name - Изменяемое наименование пользователем в БД
                 if ($Material->material_name === '' || $Material->material_name === NULL)
@@ -473,12 +495,13 @@ class FregatImport {
         $result = false;
         $xls_attributes_employee = self::xls_attributes_employee($row);
 
+        $sqlstr = empty($xls_attributes_employee['id_build']) ? ' and id_build is null' : ' and id_build = :id_build';
+
         // Находим сотрудника в базе, если не находим создаем новую запись
-        $search = self::GetRowsPDO('select employee_id from employee where id_dolzh = :id_dolzh and id_podraz = :id_podraz and id_build = :id_build', [
+        $search = self::GetRowsPDO('select employee_id from employee where id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
                     'id_dolzh' => $xls_attributes_employee['id_dolzh'],
-                    'id_podraz' => $xls_attributes_employee['id_podraz'],
-                    'id_build' => empty($xls_attributes_employee['id_build']) ? null : $xls_attributes_employee['id_build']
-        ]);
+                    'id_podraz' => $xls_attributes_employee['id_podraz']
+                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']] ));
 
         if (!empty($search))
             $Employee = Employee::findOne($search['employee_id']);
@@ -492,7 +515,7 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-// Валидируем значения модели и пишем в лог
+            // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
             $Employeelog->attributes = $Employee->attributes;
@@ -501,12 +524,7 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-
-
-
-
-
-// Добавляем в лог не измененные значения ActiveRecord
+            // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
 
@@ -537,24 +555,29 @@ class FregatImport {
         ]);
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
-        // diff_number - Определяет текущее актуальное количество материальной ценности
-        $search = self::GetRowsPDO('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number from mattraffic where id_material = :id_material and id_mol = :id_mol order by mattraffic_date desc', [
+        $search = self::GetRowsPDO('select mattraffic_id from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_date = :mattraffic_date', [
+                    'mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date'],
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
-                    ':date_xls' => $xls_attributes_mattraffic['mattraffic_date'],
-                    ':mattraffic_number' => $xls_attributes_mattraffic['mattraffic_number']
         ]);
 
-
+        // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
+        // diff_number - Определяет текущее актуальное количество материальной ценности
         if (!empty($search))
-            $Mattraffic = Mattraffic::find()->select('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number from mattraffic where mattraffic_id = :mattraffic_id order by mattraffic_date desc')
-                    ->where(['mattraffic_id' => $search['mattraffic_id']])
+            $Mattraffic = Mattraffic::find()->select('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number')
+                    ->where([
+                        'mattraffic_id' => $search['mattraffic_id'],
+                    ])
+                    ->params([
+                        ':date_xls' => $xls_attributes_mattraffic['mattraffic_date'],
+                        ':mattraffic_number' => $xls_attributes_mattraffic['mattraffic_number']
+                    ])
+                    ->orderBy('mattraffic_date desc')
                     ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
-        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply) { // Если у материальной ценности найден сотрудник и запись актуальна
+        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
             $diff_number = $Mattraffic->diff_number;
             self::$mattraffic_exist = true;
@@ -686,15 +709,16 @@ class FregatImport {
 
                                     $id_dolzh = self::AssignDolzh($matches[4]);
 
-                                    $Employee = self::GetRowsPDO('select employee_id, employee_fio, id_dolzh, id_podraz, id_build from employee where employee_fio like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz and id_build = :id_build', [
+                                    $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
+
+                                    $Employee = self::GetRowsPDO('select employee_id, employee_fio, id_dolzh, id_podraz, id_build from employee where employee_fio like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
                                                 'employee_fio' => $employee_fio,
                                                 'id_dolzh' => $id_dolzh,
                                                 'id_podraz' => $location->id_podraz,
-                                                'id_build' => empty($location->id_build) ? null : $location->id_build
-                                    ]);
+                                                            ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]));
 
                                     if (empty($Employee)) {
-                                        /*   var_dump('ok');
+                                        /*  var_dump('ok');
                                           var_dump($Employee);
                                           var_dump($employee_fio);
                                           var_dump($location);
@@ -809,10 +833,10 @@ class FregatImport {
                                 if ($MaterialDo) {
                                     // Применяем значения атрубутов Сотрудника
                                     $EmployeeDo = self::EmployeeDo($employee, $employeelog, $row);
-
-                                    if ($EmployeeDo)
-                                    // Применяем значения атрубутов "Операции над материальной ценностью"
+                                    if ($EmployeeDo) {
+                                        // Применяем значения атрубутов "Операции над материальной ценностью"
                                         $MattrafficDo = self::MattrafficDo($mattraffic, $traflog, $row, $material, $employee->employee_id);
+                                    }
                                 }
 
                                 // Начинаем транзакцию

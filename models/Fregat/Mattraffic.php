@@ -40,7 +40,8 @@ class Mattraffic extends \yii\db\ActiveRecord {
             [['mattraffic_date', 'id_material', 'id_mol'], 'required'],
             [['mattraffic_date'], 'safe'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
-            [['id_material', 'id_mol'], 'integer']
+            [['id_material', 'id_mol'], 'integer'],
+            ['mattraffic_date', 'unique', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом'],
         ];
     }
 
