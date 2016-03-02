@@ -79,13 +79,13 @@ class LogreportSearch extends Logreport {
         
         
 
-        $query->select(['logreport_id', 'logreport_executetime', 'logreport_date', 'logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed', 'maxfilelastdate']);
+  /*      $query->select(['logreport_id', 'logreport_executetime', 'logreport_date', 'logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed', 'maxfilelastdate']);
 
         $query->from(['(select logreport_id, logreport_executetime, logreport_date, logreport_errors, logreport_updates, logreport_additions, logreport_amount, logreport_missed, CASE WHEN (MAX(matlog_filelastdate) > MAX(employeelog_filelastdate)) or employeelog_filelastdate is null THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate
 from logreport left join matlog on logreport.logreport_id = matlog.id_logreport left join employeelog on logreport.logreport_id = employeelog.id_logreport
 group by logreport_id) logreport']);
 
-
+*/
         $this->load($params);
 
         if (!$this->validate()) {
@@ -97,17 +97,17 @@ group by logreport_id) logreport']);
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_id'));        
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_executetime', 'time'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_date', 'date'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'maxfilelastdate', 'datetime'));
+       // $query->andFilterWhere(Proc::WhereCunstruct($this, 'maxfilelastdate', 'datetime'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_errors'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_updates'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_additions'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_amount'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_missed'));
 
-        $dataProvider->sort->attributes['maxfilelastdate'] = [
+    /*    $dataProvider->sort->attributes['maxfilelastdate'] = [
             'asc' => ['maxfilelastdate' => SORT_ASC],
             'desc' => ['maxfilelastdate' => SORT_DESC],
-        ];
+        ];*/
 
         if (empty($_GET['sort']))
             $query->orderBy('logreport_id desc');

@@ -52,7 +52,11 @@ class chunkReadFilter implements \PHPExcel_Reader_IReadFilter {
 }
 
 class pdo_row {
-	public function __construct() { }
+
+    public function __construct() {
+        
+    }
+
 }
 
 class FregatImport {
@@ -110,16 +114,16 @@ class FregatImport {
             if (empty($params))
                 $params = [];
             $dbh = new PDO(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
-           // $dbh->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+            // $dbh->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             $rows = $dbh->prepare($sql);
-        //    $rows->setFetchMode(PDO::FETCH_ASSOC);
+            //    $rows->setFetchMode(PDO::FETCH_ASSOC);
             $rows->execute($params);
             $res = $all ? $rows->fetchAll(PDO::FETCH_ASSOC) : $rows->fetch(PDO::FETCH_ASSOC);
             $rows = null;
             $dbh = null;
-        //    unset($rows);
+            //    unset($rows);
             return $res;
-           // return $rows;
+            // return $rows;
         } catch (PDOException $e) {
             $rows = [];
         }
@@ -468,6 +472,12 @@ class FregatImport {
                 // material_name1с - Наименование из Excel файла. material_name - Изменяемое наименование пользователем в БД
                 if ($Material->material_name === '' || $Material->material_name === NULL)
                     $Material->material_name = $Material->material_name1c;
+
+                if (!empty($Material->material_1c) && empty($Material->material_inv)) {
+                    preg_match('/^(00-)?(.*)/ui', $Material->material_1c, $matches);
+                    if (!empty($matches[2]))
+                        $Material->material_inv = $matches[2];
+                }
 
                 $Matlog->attributes = $xls_attributes_material;
                 $Matlog->material_number = self::$material_number_xls;
@@ -1017,8 +1027,8 @@ class FregatImport {
     private static function MakeReport() {
         $Importconfig = Importconfig::findOne(1);
 
-     /*   ini_set('max_execution_time', $Importconfig->max_execution_time);  // 1000 seconds
-        ini_set('memory_limit', $Importconfig->memory_limit); // 1Gbyte Max Memory   */
+        /*   ini_set('max_execution_time', $Importconfig->max_execution_time);  // 1000 seconds
+          ini_set('memory_limit', $Importconfig->memory_limit); // 1Gbyte Max Memory */
 
         /* Загружаем PHPExcel */
         $objPHPExcel = new \PHPExcel();
@@ -1046,13 +1056,13 @@ class FregatImport {
 
         $itog = $objPHPExcel->getActiveSheet();
         $itog->setTitle('Итоги');
-    /*    $matsheet = $objPHPExcel->createSheet(1);
-        $matsheet->setTitle('Материальные ценности');
-        $empsheet = $objPHPExcel->createSheet(2);
-        $empsheet->setTitle('Сотрудники');
-        $trafsheet = $objPHPExcel->createSheet(3);
-        $trafsheet->setTitle('Операции над мат. ценностями');*/
-        
+        /*    $matsheet = $objPHPExcel->createSheet(1);
+          $matsheet->setTitle('Материальные ценности');
+          $empsheet = $objPHPExcel->createSheet(2);
+          $empsheet->setTitle('Сотрудники');
+          $trafsheet = $objPHPExcel->createSheet(3);
+          $trafsheet->setTitle('Операции над мат. ценностями'); */
+
         $itog->setCellValueByColumnAndRow(0, 1, 'Отчет импорта №' . $logreport['logreport_id']);
         $itog->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y', strtotime($logreport['logreport_date'])));
         $itog->getStyle('A2')->applyFromArray(array(
@@ -1106,7 +1116,7 @@ class FregatImport {
             $matsheet = $objPHPExcel->createSheet(1);
             $matsheet->setTitle('Материальные ценности');
 
-             self::ExcelApplyValues($matsheet, $rows, [
+            self::ExcelApplyValues($matsheet, $rows, [
                 'date' => ['material_release'],
                 'datetime' => ['matlog_filelastdate'],
                 'string' => ['material_1c', 'material_inv', 'material_serial'],
@@ -1119,7 +1129,7 @@ class FregatImport {
 
         // ----------------------- Сотрудники -------------------------------
 
-      $rows = Employeelog::find()
+        $rows = Employeelog::find()
                 ->select(['employeelog_filename', 'employeelog_filelastdate', 'employeelog_rownum', 'employeelog_message', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
                 ->where(['id_logreport' => $logreport['logreport_id']])
                 ->asArray()
@@ -1134,7 +1144,7 @@ class FregatImport {
         }
 
         // ---------------------- Операции над материальными ценностями -------------------------------------------
-         $rows = Traflog::find()
+        $rows = Traflog::find()
                 ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
                 ->joinWith(['idmatlog', 'idemployeelog'])
                 ->where(['traflog.id_logreport' => $logreport['logreport_id']])
@@ -1142,7 +1152,7 @@ class FregatImport {
                 ->all();
 
         if (count($rows) > 0) {
-           $trafsheet = $objPHPExcel->createSheet(3);
+            $trafsheet = $objPHPExcel->createSheet(3);
             $trafsheet->setTitle('Операции над мат. ценностями');
             self::ExcelApplyValues($trafsheet, $rows, [
                 'string' => ['material_1c', 'material_inv']]

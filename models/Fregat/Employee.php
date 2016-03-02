@@ -3,6 +3,7 @@
 namespace app\models\Fregat;
 
 use Yii;
+use app\models\Config\Authuser;
 
 /**
  * This is the model class for table "employee".
@@ -57,6 +58,14 @@ class Employee extends \yii\db\ActiveRecord {
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdperson()
+    {
+        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'id_person']);
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */

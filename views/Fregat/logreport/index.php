@@ -41,12 +41,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 return date("d.m.Y", strtotime($model->logreport_date));
                             }
                         ],
-                        [
+                    /*    [
                             'attribute' => 'maxfilelastdate',
                             'value' => function ($model, $key, $index, $column) {
                                 return date("d.m.Y H:i:s", strtotime($model->maxfilelastdate));
                             }
-                        ],
+                        ],*/
                         'logreport_errors',
                         'logreport_updates',
                         'logreport_additions',

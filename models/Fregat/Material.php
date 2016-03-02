@@ -26,46 +26,44 @@ use Yii;
  * @property Mattraffic[] $mattraffics
  * @property TrMat[] $trMats
  */
-class Material extends \yii\db\ActiveRecord
-{
+class Material extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'material';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['material_name1c', 'material_inv', 'material_tip', 'id_matvid', 'id_izmer'], 'required'],
-            [['material_release'], 'safe'],
-            [['material_number', 'material_price'], 'number'],
-            [['material_writeoff', 'id_matvid', 'id_izmer'], 'integer'],
-            [['material_name', 'material_name1c'], 'string', 'max' => 400],
-            [['material_1c'], 'string', 'max' => 20],
-            [['material_inv'], 'string', 'max' => 50],
-            [['material_serial'], 'string', 'max' => 255],
-            [['material_tip'], 'integer','min'=>1,'max'=>2],// 1 - Основное средство, 2 - Материалы
-            [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
-            [['material_inv'], 'unique', 'message' => '{attribute} = {value} уже существует'],
-            [['material_1c'], 'required', 'on' => 'import1c'],            
-            [['material_serial'], 'match', 'pattern' => '/^null$|^б\/н$|^б\н$|^б\/н\.$|^б\н\.$|^-$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "null", "б/н", "б\н", "б/н.", "б\н.", "-"'],
-            ['material_price', 'double', 'min'=>0, 'max' => 1000000000],
-            ['material_number', 'double', 'min'=>0, 'max' => 10000000000],
-            ['material_release', 'date', 'format' => 'yyyy-MM-dd'],
+        [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer'], 'required'],
+        [['material_inv'], 'required', 'except' => 'import1c'],
+        [['material_release'], 'safe'],
+        [['material_number', 'material_price'], 'number'],
+        [['material_writeoff', 'id_matvid', 'id_izmer'], 'integer'],
+        [['material_name', 'material_name1c'], 'string', 'max' => 400],
+        [['material_1c'], 'string', 'max' => 20],
+        [['material_inv'], 'string', 'max' => 50],
+        [['material_serial'], 'string', 'max' => 255],
+        [['material_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Основное средство, 2 - Материалы
+        [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+        ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
+        [['material_1c'], 'required', 'on' => 'import1c'],
+        [['material_serial'], 'match', 'pattern' => '/^null$|^б\/н$|^б\н$|^б\/н\.$|^б\н\.$|^-$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "null", "б/н", "б\н", "б/н.", "б\н.", "-"'],
+        ['material_price', 'double', 'min' => 0, 'max' => 1000000000],
+        ['material_number', 'double', 'min' => 0, 'max' => 10000000000],
+        ['material_release', 'date', 'format' => 'yyyy-MM-dd'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'material_id' => 'Material ID',
             'material_name' => 'Наименование',
@@ -86,32 +84,29 @@ class Material extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdIzmer()
-    {
+    public function getIdIzmer() {
         return $this->hasOne(Izmer::className(), ['izmer_id' => 'id_izmer']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMatv()
-    {
+    public function getIdMatv() {
         return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMattraffics()
-    {
+    public function getMattraffics() {
         return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrMats()
-    {
+    public function getTrMats() {
         return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id']);
     }
+
 }

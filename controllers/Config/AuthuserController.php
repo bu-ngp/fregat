@@ -7,6 +7,8 @@ use app\models\Config\Authassignment;
 use app\models\Config\AuthassignmentSearch;
 use app\models\Config\Authuser;
 use app\models\Config\AuthuserSearch;
+use app\models\Fregat\Employee;
+use app\models\Fregat\EmployeeSearch;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -58,23 +60,33 @@ class AuthuserController extends Controller {
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        $Authassignment = new Authassignment;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
+            $Authassignment = new Authassignment;
+            $Employee = new Employee;
             $Authassignment->load(Yii::$app->request->get(), 'Authassignment');
+            $Employee->load(Yii::$app->request->get(), 'Employee');
             $Authassignment->user_id = $model->primaryKey;
+            $Employee->id_person = $model->primaryKey;
             if ($Authassignment->validate())
                 $Authassignment->save(false);
+            if ($Employee->validate())
+                $Employee->save(false);
 
             $searchModel = new AuthassignmentSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+            $searchModelEmp = new EmployeeSearch();
+            $dataProviderEmp = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                         'model' => $model,
                         'Authassignment' => $Authassignment,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
+                        'searchModelEmp' => $searchModelEmp,
+                        'dataProviderEmp' => $dataProviderEmp,
             ]);
         }
     }
@@ -102,6 +114,16 @@ class AuthuserController extends Controller {
                         'model' => $model,
             ]);
         }
+    }
+
+    public function actionIndexemployee() {
+        $searchModel = new AuthuserSearch();
+        $dataProvider = $searchModel->searchemployee(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

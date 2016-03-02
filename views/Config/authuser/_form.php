@@ -69,32 +69,68 @@ use yii\web\Session;
                             ]
                 ]));
 
-                $session->close();
-            }
-            ?>
+                echo DynaGrid::widget(Proc::DGopts([
+                            'columns' => Proc::DGcols([
+                                'columns' => [
+                                    'employees.employee_id',
+                                    'employees.iddolzh.dolzh_name',
+                                    'employees.idpodraz.podraz_name',
+                                    'employees.idbuild.build_name',
+                                ],
+                                'buttons' => [
+                                    'deletecustomemp' => function ($url, $model) {
+                                        $customurl = Yii::$app->getUrlManager()->createUrl(['Config/authassignment/delete', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
+                                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить'/* , 'data-pjax' => '0' */, 'class' => 'btn btn-xs btn-danger', 'data' => [
+                                                        'confirm' => "Вы уверены, что хотите удалить запись?",
+                                                        'method' => 'post',
+                                        ]]);
+                                    }
+                                        ],
+                                    ]),
+                                    'gridOptions' => [
+                                        'dataProvider' => $dataProviderEmp,
+                                        'filterModel' => $searchModelEmp,
+                                        'options' => ['id' => 'employeegrid'],
+                                        'panel' => [
+                                            'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Привязать к специальности</h3>',
+                                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить специальность', ['Config/authitem/forauthassignment',
+                                                'foreignmodel' => 'Employee', //substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                                'url' => $this->context->module->requestedRoute,
+                                                'field' => 'employee_id',
+                                                'id' => $model->primaryKey,
+                                                    // 'id' => $_GET['id'],
+                                                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
+                                        ],
+                                    ]
+                        ]));
 
-            <div class="form-group">
 
-                <?php
-                $label = '<i class="glyphicon glyphicon-plus"></i> Создать';
-                $class = 'btn btn-success';
-
-                if (!$model->isNewRecord) {
-                    if ($model->scenario === 'Changepassword') {
-                        $label = '<i class="glyphicon glyphicon-lock"></i> Сменить пароль';
-                        $class = 'btn btn-info';
-                    } else {
-                        $label = '<i class="glyphicon glyphicon-edit"></i> Обновить';
-                        $class = 'btn btn-primary';
+                        $session->close();
                     }
-                }
-                ?>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <?= Html::submitButton($label, ['class' => $class, 'form' => 'Authassignmentform']) ?>
-                        <?php if (!$model->isNewRecord && $model->scenario !== 'Changepassword'): ?>
-                            <?= Html::a('<i class="glyphicon glyphicon-lock"></i> Сменить пароль', ['Config/authuser/changepassword', 'id' => $model['auth_user_id']], ['class' => 'btn btn-info']) ?>
-                        <?php endif; ?>
+                    ?>
+
+                    <div class="form-group">
+
+                        <?php
+                        $label = '<i class="glyphicon glyphicon-plus"></i> Создать';
+                        $class = 'btn btn-success';
+
+                        if (!$model->isNewRecord) {
+                            if ($model->scenario === 'Changepassword') {
+                                $label = '<i class="glyphicon glyphicon-lock"></i> Сменить пароль';
+                                $class = 'btn btn-info';
+                            } else {
+                                $label = '<i class="glyphicon glyphicon-edit"></i> Обновить';
+                                $class = 'btn btn-primary';
+                            }
+                        }
+                        ?>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <?= Html::submitButton($label, ['class' => $class, 'form' => 'Authassignmentform']) ?>
+                                <?php if (!$model->isNewRecord && $model->scenario !== 'Changepassword'): ?>
+                                    <?= Html::a('<i class="glyphicon glyphicon-lock"></i> Сменить пароль', ['Config/authuser/changepassword', 'id' => $model['auth_user_id']], ['class' => 'btn btn-info']) ?>
+                                <?php endif; ?>
             </div>
         </div>
 

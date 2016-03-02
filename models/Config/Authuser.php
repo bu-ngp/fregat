@@ -3,6 +3,7 @@
 namespace app\models\Config;
 
 use Yii;
+use app\models\Fregat\Employee;
 
 /**
  * This is the model class for table "auth_user".
@@ -65,6 +66,14 @@ class Authuser extends \yii\db\ActiveRecord {
      */
     public function getitemnames() {
         return $this->hasMany(Authitem::className(), ['name' => 'item_name'])->viaTable('auth_assignment', ['user_id' => 'auth_user_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEmployees()
+    {
+        return $this->hasMany(Employee::className(), ['id_person' => 'auth_user_id']);
     }
 
     public function save($runValidation = true, $attributeNames = null) {
