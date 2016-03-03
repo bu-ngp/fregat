@@ -62,12 +62,13 @@ class EmployeeController extends Controller {
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate($iduser) {
         $model = new Employee();
+        $model->id_person = $iduser;
 
         $result = Proc::GetBreadcrumbsFromSession();
         end($result);
-        prev($result);
+        prev($result);        
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect($result[key($result)]['url']);

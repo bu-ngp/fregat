@@ -70,6 +70,8 @@ class AuthuserSearch extends Authuser {
             'query' => $query,
         ]);
 
+        $query->joinWith('employees', true, 'INNER JOIN');
+
         $this->load($params);
 
         if (!$this->validate()) {

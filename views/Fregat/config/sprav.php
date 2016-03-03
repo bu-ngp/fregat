@@ -13,7 +13,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         <ul class="nav nav-pills nav-stacked">
             <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
                 <li>
-                    <?= Html::a('<i class="glyphicon glyphicon-user"></i> Сотрудники', ['//Fregat/employee/index'], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="glyphicon glyphicon-user"></i> Сотрудники', ['//Config/authuser/index', 'emp' => true], ['class' => 'btn btn-default']) ?>
                 </li>
                 <li>
                     <?= Html::a('<i class="glyphicon glyphicon-education"></i> Должности', ['//Fregat/dolzh/index'], ['class' => 'btn btn-default']) ?>

@@ -17,8 +17,6 @@ use app\func\Proc;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'employee_fio')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
-
     <?=
     $form->field($model, 'id_dolzh')->widget(Select2::classname(), Proc::DGselect2([
                 'model' => $model,

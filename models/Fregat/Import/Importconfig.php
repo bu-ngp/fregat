@@ -51,12 +51,12 @@ class Importconfig extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['os_startrow', 'mat_startrow', 'os_filename', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filename', 'max_execution_time', 'memory_limit'], 'required'],
+            [['os_startrow', 'mat_startrow', 'os_filename', 'os_mattraffic_date', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filename', 'max_execution_time', 'memory_limit'], 'required'],
             [['os_startrow', 'mat_startrow', 'logreport_reportcount', 'max_execution_time', 'memory_limit'], 'integer'],
             [['os_filename', 'mat_filename', 'emp_filename'], 'string', 'max' => 255],
-            [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'string', 'max' => 5],
-            [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'match', 'pattern' => '/^[a-z]$/iu', 'message' => '"{attribute}" Может состоять только из латинских букв'],
-            [['os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'filter', 'filter' => function($value) {
+            [['os_material_1c', 'os_mattraffic_date', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'string', 'max' => 5],
+            [['os_material_1c', 'os_mattraffic_date', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'match', 'pattern' => '/^[a-z]$/iu', 'message' => '"{attribute}" Может состоять только из латинских букв'],
+            [['os_material_1c', 'os_mattraffic_date', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi'], 'filter', 'filter' => function($value) {
             return trim(strtoupper($value));
         }],
         ];
@@ -68,8 +68,9 @@ class Importconfig extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'importconfig_id' => 'Importconfig ID',
-            'os_filename' => 'Имя файла основных средств (.xls в директории "imp")',
+            'os_filename' => 'Имя файла основных средств (.xlsx в директории "imp")',
             'os_startrow' => 'Номер строки файла Excel, с которой считываются основные средства',
+            'os_mattraffic_date' => 'Позиция колонки "Период" основных средств',
             'os_material_1c' => 'Позиция колонки "Код 1С" основных средств',
             'os_material_inv' => 'Позиция колонки "Инвентарный номер" основных средств',
             'os_material_name1c' => 'Позиция колонки "Наименование" основных средств',
@@ -80,7 +81,7 @@ class Importconfig extends \yii\db\ActiveRecord {
             'os_material_serial' => 'Позиция колонки "Серийный номер" основных средств',
             'os_material_release' => 'Позиция колонки "Дата выпуска" основных средств',
             'os_material_status' => 'Позиция колонки "Состояние" основных средств',
-            'mat_filename' => 'Имя файла материалов (.xls в директории "imp")',
+            'mat_filename' => 'Имя файла материалов (.xlsx в директории "imp")',
             'mat_startrow' => 'Номер строки файла Excel, с которой считываются материалы',
             'mat_material_1c' => 'Позиция колонки "Код 1С" материалов',
             'mat_material_inv' => 'Позиция колонки "Инвентарный номер" материалов',

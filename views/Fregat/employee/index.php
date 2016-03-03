@@ -20,8 +20,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     echo DynaGrid::widget(Proc::DGopts([
                 'columns' => Proc::DGcols([
                     'columns' => [
-                        'mployees.employee_id',
-                        'employee_fio',
+                        'employee_id',
+                        'idperson.auth_user_fullname',
                         'iddolzh.dolzh_name',
                         'idpodraz.podraz_name',
                         'idbuild.build_name',

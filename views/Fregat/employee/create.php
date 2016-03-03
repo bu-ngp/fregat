@@ -6,7 +6,7 @@ use app\func\Proc;
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Employee */
 
-$this->title = 'Новый сотрудник';
+$this->title = 'Новая специальность';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
     'model' => $model,
 ]);

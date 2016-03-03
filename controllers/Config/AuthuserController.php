@@ -36,11 +36,12 @@ class AuthuserController extends Controller {
 
     public function actionIndex() {
         $searchModel = new AuthuserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = isset($_GET['emp']) && $_GET['emp'] ? $searchModel->searchemployee(Yii::$app->request->queryParams) : $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'emp' => isset($_GET['emp']) && $_GET['emp']
         ]);
     }
 
@@ -61,7 +62,11 @@ class AuthuserController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            $result = Proc::GetBreadcrumbsFromSession();
+            end($result);
+            prev($result);
+
+            return $this->redirect($result[key($result)]['url']);
         } else {
             $Authassignment = new Authassignment;
             $Employee = new Employee;
@@ -78,10 +83,11 @@ class AuthuserController extends Controller {
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             $searchModelEmp = new EmployeeSearch();
-            $dataProviderEmp = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProviderEmp = $searchModelEmp->searchforauthuser(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                         'model' => $model,
+                        'emp' => isset($_GET['emp']) && $_GET['emp'],
                         'Authassignment' => $Authassignment,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,

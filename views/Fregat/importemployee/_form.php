@@ -66,7 +66,7 @@ use yii\web\Session;
                     'columns' => Proc::DGcols([
                         'columns' => [
                             'idemployee.employee_id',
-                            'idemployee.employee_fio',
+                            'idemployee.idperson.auth_user_fullname',
                             'idemployee.iddolzh.dolzh_name',
                             'idemployee.idpodraz.podraz_name',
                             'idemployee.idbuild.build_name',

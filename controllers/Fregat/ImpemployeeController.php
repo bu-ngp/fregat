@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use Yii;
+use app\models\Fregat\Impemployee;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -55,4 +56,5 @@ class ImpemployeeController extends Controller {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

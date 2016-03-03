@@ -399,4 +399,61 @@ class Proc {
         return [empty($operator) ? '=' : $operator, $field, $value];
     }
 
+    static function Translit($string) {
+        $replace = array(
+            "'" => "",
+            "`" => "",
+            "а" => "a", "А" => "a",
+            "б" => "b", "Б" => "b",
+            "в" => "v", "В" => "v",
+            "г" => "g", "Г" => "g",
+            "д" => "d", "Д" => "d",
+            "е" => "e", "Е" => "e",
+            "ж" => "zh", "Ж" => "zh",
+            "з" => "z", "З" => "z",
+            "и" => "i", "И" => "i",
+            "й" => "y", "Й" => "y",
+            "к" => "k", "К" => "k",
+            "л" => "l", "Л" => "l",
+            "м" => "m", "М" => "m",
+            "н" => "n", "Н" => "n",
+            "о" => "o", "О" => "o",
+            "п" => "p", "П" => "p",
+            "р" => "r", "Р" => "r",
+            "с" => "s", "С" => "s",
+            "т" => "t", "Т" => "t",
+            "у" => "u", "У" => "u",
+            "ф" => "f", "Ф" => "f",
+            "х" => "h", "Х" => "h",
+            "ц" => "c", "Ц" => "c",
+            "ч" => "ch", "Ч" => "ch",
+            "ш" => "sh", "Ш" => "sh",
+            "щ" => "sch", "Щ" => "sch",
+            "ъ" => "", "Ъ" => "",
+            "ы" => "y", "Ы" => "y",
+            "ь" => "", "Ь" => "",
+            "э" => "e", "Э" => "e",
+            "ю" => "yu", "Ю" => "yu",
+            "я" => "ya", "Я" => "ya",
+            "і" => "i", "І" => "i",
+            "ї" => "yi", "Ї" => "yi",
+            "є" => "e", "Є" => "e"
+        );
+        return $str = iconv("UTF-8", "UTF-8//IGNORE", strtr($string, $replace));
+    }
+
+    public static function CreateLogin($Fullname) {
+        preg_match('/(\w+)\s?(\w+)?\s?(\w+)?/ui', $Fullname, $matches);
+        $result = '';
+
+        if (!empty($matches[1]))
+            $result .= ucfirst(Proc::Translit($matches[1]));
+        if (!empty($matches[2]))
+            $result .= ucfirst(Proc::Translit(mb_substr($matches[2], 0, 1, 'UTF-8')));
+        if (!empty($matches[3]))
+            $result .= ucfirst(Proc::Translit(mb_substr($matches[3], 0, 1, 'UTF-8')));
+
+        return $result;
+    }
+
 }

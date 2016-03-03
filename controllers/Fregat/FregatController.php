@@ -72,18 +72,7 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
-        $rows = \app\models\Config\Authuser::find()
-                ->all();
-
-        foreach ($rows as $row) {
-            preg_match('/(\w+)\-(\w).+\-(\w).+/ui', $row['auth_user_login'], $matches);
-
-            $str = ucfirst($matches[1] . strtoupper($matches[2]) . strtoupper($matches[3]));
-
-            $Authuser = new \app\models\Config\Authuser;
-            if (!\app\models\Config\Authuser::updateAll(['auth_user_login' => $str], ['auth_user_id' => $row['auth_user_id']]))
-                var_dump($row['auth_user_id']);
-        }
+        var_dump(self::CreateLogin('Петров Щепот'));
     }
 
 }

@@ -37,11 +37,11 @@ class Employee extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['employee_fio', 'id_dolzh', 'id_podraz'], 'required'],
-            [['id_dolzh', 'id_podraz', 'id_build'], 'integer'],
-            [['employee_fio'], 'string', 'max' => 255],
-            [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
-            ['employee_fio', 'unique', 'targetAttribute' => ['employee_fio', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'Этот сотрудник уже существует'],
+            [['id_dolzh', 'id_podraz', 'id_person'], 'required'],
+            [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
+            //   [['employee_fio'], 'string', 'max' => 255],
+            //  [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            ['id_person', 'unique', 'targetAttribute' => ['id_person', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'На этого сотрудника уже есть такая специальность'],
         ];
     }
 
@@ -51,21 +51,20 @@ class Employee extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'employee_id' => 'Код',
-            'employee_fio' => 'Фамилия Имя Отчество',
             'id_dolzh' => 'Должность',
             'id_podraz' => 'Подразделение',
             'id_build' => 'Здание',
+            'id_person' => 'Сотрудник'
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdperson()
-    {
+    public function getIdperson() {
         return $this->hasOne(Authuser::className(), ['auth_user_id' => 'id_person']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */

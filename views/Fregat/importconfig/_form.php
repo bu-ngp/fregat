@@ -19,6 +19,8 @@ use yii\bootstrap\ActiveForm;
             <?= $form->field($model, 'os_startrow')->textInput() ?>
 
             <?= $form->field($model, 'os_material_1c')->textInput(['maxlength' => true]) ?>
+            
+            <?= $form->field($model, 'os_mattraffic_date')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'os_material_inv')->textInput(['maxlength' => true]) ?>
 

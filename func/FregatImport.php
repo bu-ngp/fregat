@@ -3,6 +3,7 @@
 namespace app\func;
 
 use Yii;
+use app\models\Config\Authuser;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Import\Employeelog;
 use app\models\Fregat\Import\Logreport;
@@ -51,14 +52,6 @@ class chunkReadFilter implements \PHPExcel_Reader_IReadFilter {
 
 }
 
-class pdo_row {
-
-    public function __construct() {
-        
-    }
-
-}
-
 class FregatImport {
 
     private static $filename = ''; // Имя файла 'imp/os.xls' - (Основные средства); 'imp/mat.xls' = (Материалы);
@@ -78,12 +71,13 @@ class FregatImport {
     private static $rownum_xls; // Номер строки в файле Excel
     private static $mattraffic_exist; // Проверка, найден ли у материальнной ценности сотрудник
     private static $xls;
+    private static $materialexists; // Если количество материалов больше 0, то True, иначе False
 
     private static function Setxls() {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
 
         self::$xls = [
-            'mattraffic_date' => 'A',
+            'mattraffic_date' => self::$os ? $Importconfig['os_mattraffic_date'] : '',
             'material_1c' => self::$os ? $Importconfig['os_material_1c'] : $Importconfig['mat_material_1c'],
             'material_inv' => self::$os ? $Importconfig['os_material_inv'] : $Importconfig['mat_material_inv'],
             'material_name1c' => self::$os ? $Importconfig['os_material_name1c'] : $Importconfig['mat_material_name1c'],
@@ -218,7 +212,7 @@ class FregatImport {
             } else
                 $result->id_podraz = $currentpodraz['podraz_id'];
         } else {
-            $Impemployee = self::GetRowsPDO('select employee.id_podraz, employee.id_build from impemployee left join importemployee on impemployee.id_importemployee = importemployee.importemployee_id left join employee on impemployee.id_employee = employee.employee_id where id_importemployee = :id_importemployee and employee_fio like :employee_fio', [
+            $Impemployee = self::GetRowsPDO('select employee.id_podraz, employee.id_build from impemployee left join importemployee on impemployee.id_importemployee = importemployee.importemployee_id left join employee on impemployee.id_employee = employee.employee_id left join auth_user on employee.id_person = auth_user.auth_user_id where id_importemployee = :id_importemployee and auth_user_fullname like :employee_fio', [
                         'employee_fio' => $employee_fio,
                         'id_importemployee' => $importemployee['importemployee_id']
             ]);
@@ -325,7 +319,7 @@ class FregatImport {
     // Читаем значения колонок соответствующие Операции над материальной ценностью в файле Excel
     private static function xls_attributes_mattraffic($row) {
         return [
-            'mattraffic_date' => self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
+            'mattraffic_date' => !self::$mattraffic_exist && self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
             'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
         ];
     }
@@ -517,18 +511,28 @@ class FregatImport {
         $sqlstr = empty($xls_attributes_employee['id_build']) ? ' and id_build is null' : ' and id_build = :id_build';
 
         // Находим сотрудника в базе, если не находим создаем новую запись
-        $search = self::GetRowsPDO('select employee_id from employee where id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
+        /*    $Employee = self::GetRowsPDO('select auth_user_fullname, from employee where id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
+          'id_dolzh' => $xls_attributes_employee['id_dolzh'],
+          'id_podraz' => $xls_attributes_employee['id_podraz']
+          ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']] ));
+         */
+        //  if (!empty($search))
+        $search = Employee::find()
+                ->joinWith('idperson')
+                ->where(array_merge([
                     'id_dolzh' => $xls_attributes_employee['id_dolzh'],
-                    'id_podraz' => $xls_attributes_employee['id_podraz']
-                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']] ));
+                    'id_podraz' => $xls_attributes_employee['id_podraz'],
+                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']]))
+                ->andFilterWhere(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
+                ->one();
 
         if (!empty($search))
-            $Employee = Employee::findOne($search['employee_id']);
+            $Employee = $search;
 
         if ($Employee->isNewRecord) { //Если новая запись (Нет соответствия по ФИО, Должности, Подразделению, Зданию)
             $Employee->attributes = $xls_attributes_employee;
 
-            $Employeelog->employee_fio = $Employee->employee_fio;
+            //    $Employeelog->employee_fio = $Employee->idperson->auth_user_fullname;
             $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
@@ -537,7 +541,8 @@ class FregatImport {
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
-            $Employeelog->attributes = $Employee->attributes;
+            //   $Employeelog->attributes = $Employee->attributes;
+            $Employeelog->employee_fio = self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
             $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
@@ -674,11 +679,12 @@ class FregatImport {
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
+        self::$materialexists = Material::find()->count() > 0;
 
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
-        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xls', $Importconfig['mat_filename'] . '.xls'] as $filename) {
+        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
             self::$filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
-            self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/os.xls' ? true : false;
+            self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx';
             self::Setxls();
 
             if (file_exists(self::$filename)) {
@@ -730,7 +736,7 @@ class FregatImport {
 
                                     $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
 
-                                    $Employee = self::GetRowsPDO('select employee_id, employee_fio, id_dolzh, id_podraz, id_build from employee where employee_fio like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
+                                    $Employee = self::GetRowsPDO('select employee_id, auth_user_fullname, id_dolzh, id_podraz, id_build from employee inner join auth_user on employee.id_person = auth_user.auth_user_id  where auth_user_fullname like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
                                                 'employee_fio' => $employee_fio,
                                                 'id_dolzh' => $id_dolzh,
                                                 'id_podraz' => $location->id_podraz,
@@ -742,9 +748,17 @@ class FregatImport {
                                           var_dump($employee_fio);
                                           var_dump($location);
                                           var_dump($id_dolzh); */
+
+                                        $Authuser = new Authuser;
+                                        $Authuser->auth_user_fullname = $employee_fio;
+                                        $Authuser->auth_user_login = Proc::CreateLogin($employee_fio);
+                                        $Authuser->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
+
+                                        // ------------------------------------===================================|||||||||||||||||||||||||||||||||||||||
+
                                         $Employee = new Employee;
                                         $Employee->attributes = [
-                                            'employee_fio' => $employee_fio,
+                                            //   'employee_fio' => $employee_fio,
                                             'id_dolzh' => $id_dolzh,
                                             'id_podraz' => $location->id_podraz,
                                             'id_build' => $location->id_build
