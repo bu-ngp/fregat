@@ -531,7 +531,7 @@ class FregatImport {
 
         if ($Employee->isNewRecord) { //Если новая запись (Нет соответствия по ФИО, Должности, Подразделению, Зданию)
             $Employee->attributes = $xls_attributes_employee;
-
+              
             //    $Employeelog->employee_fio = $Employee->idperson->auth_user_fullname;
             $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
@@ -754,8 +754,6 @@ class FregatImport {
                                         $Authuser->auth_user_login = Proc::CreateLogin($employee_fio);
                                         $Authuser->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
 
-                                        // ------------------------------------===================================|||||||||||||||||||||||||||||||||||||||
-
                                         $Employee = new Employee;
                                         $Employee->attributes = [
                                             //   'employee_fio' => $employee_fio,
@@ -775,9 +773,16 @@ class FregatImport {
                                         if (isset($Employee->scenarios()['import1c']))
                                             $Employee->scenario = 'import1c';
 
-                                        if ($Employee->validate()) {
-                                            self::$logreport_additions++;
-                                            $Employee->save(false);
+                                        if (isset($Authuser->scenarios()['import1c']))
+                                            $Authuser->scenario = 'import1c';
+
+                                        if ($Authuser->validate()) {
+                                            $Authuser->save(false);
+                                            $Employee->id_person = $Authuser->getPrimaryKey();
+                                            if ($Employee->validate()) {
+                                                self::$logreport_additions++;
+                                                $Employee->save(false);
+                                            }
                                         } else {
                                             $Employeelog->employeelog_type = 3;
                                             $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
@@ -786,7 +791,7 @@ class FregatImport {
                                             self::$logreport_errors++;
                                         }
 
-                                        $Employeelog->employee_fio = $Employee->employee_fio;
+                                        $Employeelog->employee_fio = $Authuser->auth_user_fullname;
                                         $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
                                         $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
                                         if (!empty($Employee->id_build))
@@ -847,10 +852,11 @@ class FregatImport {
                                 }
                                 /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
 
-                                $row = $objWorksheet->rangeToArray('A' . $i . ':Q' . $i, null, true, true, true);
+                                $row = $objWorksheet->rangeToArray('A' . $i . ':K' . $i, null, true, true, true);
                                 $row = $row[key($row)];
 
                                 $material = new Material;
+                                $authuser= new Authuser;
                                 $employee = new Employee;
                                 $mattraffic = new Mattraffic;
                                 $matlog = new Matlog;
@@ -903,6 +909,7 @@ class FregatImport {
                                             }
                                             if ($MattrafficDo) {
                                                 $material->save(false);
+                                                
                                                 $employee->save(false);
                                                 $mattraffic->id_material = $material->material_id;
                                                 $mattraffic->id_mol = $employee->employee_id;

@@ -9,10 +9,10 @@ use app\models\Config\Authuser;
  * This is the model class for table "employee".
  *
  * @property integer $employee_id
- * @property string $employee_fio
  * @property integer $id_dolzh
  * @property integer $id_podraz
  * @property integer $id_build
+ * @property integer $id_person
  *
  * @property Build $idBuild
  * @property Dolzh $idDolzh
@@ -37,7 +37,7 @@ class Employee extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['id_dolzh', 'id_podraz', 'id_person'], 'required'],
+            [['id_dolzh', 'id_podraz', 'id_person', 'id_person'], 'required'],
             [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
             //   [['employee_fio'], 'string', 'max' => 255],
             //  [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
