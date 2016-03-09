@@ -420,7 +420,7 @@ class FregatImport {
         $xls_attributes_material = self::xls_attributes_material($row);
 
         // Проверяем, что ТипНоменклатуры Материалов принадлежат к "Продукты питания" или "Прочие материальные запасы"
-        $material_assigned = (self::$os || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Продукты питания', 'Прочие материальные запасы']))) ? true : false;
+        $material_assigned = (self::$os || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
 
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
@@ -526,13 +526,40 @@ class FregatImport {
                 ->andFilterWhere(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
                 ->one();
 
+        var_dump($xls_attributes_employee['employee_fio']);
+
+
         if (!empty($search))
             $Employee = $search;
 
         if ($Employee->isNewRecord) { //Если новая запись (Нет соответствия по ФИО, Должности, Подразделению, Зданию)
             $Employee->attributes = $xls_attributes_employee;
-              
-            //    $Employeelog->employee_fio = $Employee->idperson->auth_user_fullname;
+
+            $search2 = Authuser::find()
+                    ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio']])
+                    ->one();
+
+            $Person = new Authuser;
+            if (!empty($search2))
+                $Person = $search2;
+
+            if ($Person->isNewRecord) {
+                $Person->auth_user_login = Proc::CreateLogin($xls_attributes_employee['employee_fio']);
+                $Person->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
+                $Person->auth_user_fullname = $xls_attributes_employee['employee_fio'];
+                if ($Person->validate()) {
+                    $Person->save(false);
+                    $Employee->id_person = $Person->auth_user_id;
+                } else {
+                    $Employeelog->employeelog_message = 'Этот логин уже существует "' . $xls_attributes_employee['employee_fio'] . '"';
+                }
+            } else {
+                $Employee->id_person = $Person->auth_user_id;
+            }
+
+
+
+            $Employeelog->employee_fio = $xls_attributes_employee['employee_fio'];
             $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
@@ -577,9 +604,11 @@ class FregatImport {
             'id_material' => $material_id,
             'id_mol' => $employee_id,
         ]);
+        
+     /*   var_dump(Mattraffic::find()->max('mattraffic_id'));*/
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select mattraffic_id from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_date = :mattraffic_date', [
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_date = :mattraffic_date', [
                     'mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date'],
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
@@ -600,6 +629,10 @@ class FregatImport {
                     ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
+        
+   /*     var_dump($search);
+        var_dump($xls_attributes_mattraffic['mattraffic_date']);
+        var_dump($xls_attributes_mattraffic['mattraffic_number']);*/
 
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
@@ -619,6 +652,8 @@ class FregatImport {
 
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $diff_number, true);
+            
+           var_dump($Material->attributes);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
@@ -856,7 +891,7 @@ class FregatImport {
                                 $row = $row[key($row)];
 
                                 $material = new Material;
-                                $authuser= new Authuser;
+                                $authuser = new Authuser;
                                 $employee = new Employee;
                                 $mattraffic = new Mattraffic;
                                 $matlog = new Matlog;
@@ -867,20 +902,22 @@ class FregatImport {
                                 $EmployeeDo = false;
                                 $MattrafficDo = false;
 
-                                // Применяем значения атрубутов Материальной ценности
-                                $MaterialDo = self::MaterialDo($material, $matlog, $row);
-                                if ($MaterialDo) {
-                                    // Применяем значения атрубутов Сотрудника
-                                    $EmployeeDo = self::EmployeeDo($employee, $employeelog, $row);
-                                    if ($EmployeeDo) {
-                                        // Применяем значения атрубутов "Операции над материальной ценностью"
-                                        $MattrafficDo = self::MattrafficDo($mattraffic, $traflog, $row, $material, $employee->employee_id);
-                                    }
-                                }
-
                                 // Начинаем транзакцию
                                 $transaction = Yii::$app->db->beginTransaction();
                                 try {
+
+                                    // Применяем значения атрубутов Материальной ценности
+                                    $MaterialDo = self::MaterialDo($material, $matlog, $row);
+                                    if ($MaterialDo) {
+                                        // Применяем значения атрубутов Сотрудника
+                                        $EmployeeDo = self::EmployeeDo($employee, $employeelog, $row);
+                                        if ($EmployeeDo) {
+                                            // Применяем значения атрубутов "Операции над материальной ценностью"
+                                            $MattrafficDo = self::MattrafficDo($mattraffic, $traflog, $row, $material, $employee->employee_id);
+                                        }
+                                    }
+
+
                                     // $matlog->matlog_type !== 5 - Если Запись не изменилась не пишем в лог
                                     if ($matlog->matlog_type !== 5 && ($MaterialDo || (count($material->getErrors()) > 0))) {
                                         $matlog->save(false);
@@ -891,8 +928,10 @@ class FregatImport {
 
                                     if ($MaterialDo) {
                                         // $employeelog->employeelog_type !== 5 - Если Запись не изменилась не пишем в лог
-                                        if ($employeelog->employeelog_type !== 5 && ($EmployeeDo || (count($employee->getErrors()) > 0)))
+                                        if ($employeelog->employeelog_type !== 5 && ($EmployeeDo || (count($employee->getErrors()) > 0))) {
+
                                             $employeelog->save(false);
+                                        }
 
                                         if ($EmployeeDo) {
                                             if ($MattrafficDo || (count($mattraffic->getErrors()) > 0)) {
@@ -907,9 +946,9 @@ class FregatImport {
                                                 $traflog->id_employeelog = $employeelog->employeelog_id;
                                                 $traflog->save(false);
                                             }
-                                            if ($MattrafficDo) {
+                                            var_dump($MattrafficDo);
+                                            if ($MattrafficDo) {                                        
                                                 $material->save(false);
-                                                
                                                 $employee->save(false);
                                                 $mattraffic->id_material = $material->material_id;
                                                 $mattraffic->id_mol = $employee->employee_id;
@@ -920,7 +959,7 @@ class FregatImport {
                                             }
                                         }
                                     }
-
+                                    //    if ($transaction->isActive)
                                     $transaction->commit();
                                 } catch (Exception $e) {
                                     $transaction->rollback();
