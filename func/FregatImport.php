@@ -998,6 +998,7 @@ class FregatImport {
             $logreport->logreport_executetime = gmdate('H:i:s', $endtime - $starttime);
             $logreport->save();
         }
+        $endtime = microtime(true);
 
         echo 'ImportDo success<BR>';
         echo 'Использовано памяти: ' . Yii::$app->formatter->asShortSize(memory_get_usage(true)) . '; Время выполнения: ' . gmdate('H:i:s', $endtime - $starttime);
