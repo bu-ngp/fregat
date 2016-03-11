@@ -72,7 +72,13 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
-        var_dump(self::CreateLogin('Петров Щепот'));
+        $Importconfig = \app\models\Fregat\Import\Importconfig::findOne(1);
+
+        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
+            $filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
+            
+            file_exists($filename) ? var_dump($filename.': File Exist') : var_dump($filename. ': File Not Exist');
+        }
     }
 
 }

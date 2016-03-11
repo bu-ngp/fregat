@@ -722,7 +722,7 @@ class FregatImport {
             self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx';
             self::Setxls();
 
-            if (Proc::file_exists_ci(self::$filename)) {
+            if (file_exists(self::$filename)) {             
                 self::$filelastdate = date("Y-m-d H:i:s", filemtime(self::$filename));
 
                 //  $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
