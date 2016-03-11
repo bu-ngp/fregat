@@ -69,6 +69,45 @@ function InitWindowGUID() {
     });
 }
 
+function ExportExcel(model, url) {
+    var inputarr = $('input[name^="' + model + '"]');
+    var data = {};
+    if (inputarr.length) {
+        inputarr.each(function (index) {
+            if ($(this).attr("name") !== "")
+                data[$(this).attr("name")] = $(this).val();
+        });
+        
+        $.ajax({
+            url: url+'&'+$.param(data),
+            type: "post",
+          //  data: {buttonloadingid: param.buttonelem[0].id}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+            async: true,
+            success: function (response) {
+                /* response - Путь к новому файлу  */
+                window.location.href = "files/" + response; /* Открываем файл */
+                /* Удаляем файл через 5 секунд*/
+             /*   setTimeout(function () {
+                    $.ajax({
+                        url: "?r=Proc/DeleteExcelFile",
+                        type: "post",
+                        data: {filename: response},
+                        async: true
+                    });
+                }, 5000);*/
+            },
+            error: function (data) {
+                console.error('Ошибка');
+            }
+        });
+        
+    }
+    
+    
+    console.debug(url+'&'+$.param(data))
+    console.debug(data)
+}
+
 $(function () {
     $("input.form-control.setsession").focusout(function () {
         SetSession(this);
@@ -78,6 +117,6 @@ $(function () {
         SetSession(this);
     });
 
-   // if (window.name === '')
-     //   InitWindowGUID();
+    // if (window.name === '')
+    //   InitWindowGUID();
 });

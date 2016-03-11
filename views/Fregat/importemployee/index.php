@@ -33,6 +33,15 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
                         'before' => Yii::$app->user->can('FregatImport') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                     ],
+                    'toolbar' => [
+                        'excelexport' => ['content' => \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-export"></i>', [                                
+                                'type' => 'button',
+                                'title' => 'Экспорт в Excel',
+                                'class' => 'btn btn-default button_export',
+                                'onclick' => 'ExportExcel("ImportemployeeSearch","'.\yii\helpers\Url::toRoute('fregat/importemployee/toexcel').'");'
+                            ]),
+                        ],
+                    ],
                 ]
     ]));
     ?>
