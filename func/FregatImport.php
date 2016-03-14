@@ -778,11 +778,11 @@ class FregatImport {
                                                             ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]));
 
                                     if (empty($Employee)) {
-                                        /*  var_dump('ok');
+                                          var_dump('ok');
                                           var_dump($Employee);
                                           var_dump($employee_fio);
                                           var_dump($location);
-                                          var_dump($id_dolzh); */
+                                          var_dump($id_dolzh); 
 
                                         $Authuser = new Authuser;
                                         $Authuser->auth_user_fullname = $employee_fio;
@@ -818,8 +818,7 @@ class FregatImport {
                                                 self::$logreport_additions++;
                                                 $Employee->save(false);
                                             }
-                                        } else {
-                                            var_dump($Employee->attributes);
+                                        } else {                                            
                                             $Employeelog->employeelog_type = 3;
                                             $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
                                             foreach ($Employee->getErrors() as $fields)
