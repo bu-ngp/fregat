@@ -24,7 +24,7 @@ class ImportemployeeController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'create', 'update', 'delete', 'toexcel'],
                         'allow' => true,
                         'roles' => ['FregatImport'],
                     ],
@@ -89,6 +89,85 @@ class ImportemployeeController extends Controller {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionToexcel() {
+        $searchModel = new ImportemployeeSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $objPHPExcel = new \PHPExcel;
+
+        /* Границы таблицы */
+        $ramka = array(
+            'borders' => array(
+                'bottom' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'top' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'left' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'right' => array('style' => \PHPExcel_Style_Border::BORDER_THIN))
+        );
+        /* Жирный шрифт для шапки таблицы */
+        $font = array(
+            'font' => array(
+                'bold' => true
+            ),
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        );
+
+
+        $models = $dataProvider->getModels();
+        $model = reset($models);
+        if (is_array($model) || is_object($model)) {
+            foreach ($model as $name => $value) {
+                var_dump( (string) $name);
+            }
+        }
+        
+        foreach ($dataProvider->getModels() as $ar) {
+
+            //  var_dump($ar->extraFields());
+            //    $mas = $ar::find()->joinWith(array_keys($ar->extraFields()))->asArray()->all();
+            //   var_dump($mas);
+            //     $mas = $ar::find()->asArray()->all();            
+            //   var_dump($ar);
+        }
+
+
+        /*    if (!empty($searchModel)) {
+          foreach ($rows->values as $i => $row)
+          foreach ($rows->fields as $col => $attr) {
+          if ($i == 0) {// заполняем шапку таблицы
+          $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $i + 1, $attr->label);
+          $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($col, $i + 1)->applyFromArray($ramka);
+          $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($col, $i + 1)->applyFromArray($font);
+          }
+
+          $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $i + 2, $rows->values[$i][$attr->fieldname]);
+          $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($col, $i + 2)->applyFromArray($ramka);
+          }
+          } */
+
+        /* присваиваем имя файла от имени модели */
+        $FileName = 'Выгрузка';
+
+        // Устанавливаем имя листа
+        $objPHPExcel->getActiveSheet()->setTitle($FileName);
+
+        // Выбираем первый лист
+        $objPHPExcel->setActiveSheetIndex(0);
+        /* Формируем файл Excel */
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        /* Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows */
+        $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
+        /* Сохраняем файл в папку "files" */
+        //      $objWriter->save('files/' . $fileroot);
+        /* Возвращаем имя файла Excel */
+        if (DIRECTORY_SEPARATOR === '/')
+            echo $fileroot;
+        else
+            echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
     }
 
     /**
