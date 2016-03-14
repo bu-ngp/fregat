@@ -72,13 +72,24 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
-        $Importconfig = \app\models\Fregat\Import\Importconfig::findOne(1);
+        $rows = Traflog::find()
+                ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
+                ->joinWith(['idmatlog', 'idemployeelog'])
+                ->where(['traflog.id_logreport' => 1])
+                ->asArray()
+                ->all();
+        
+        var_dump('ok');
 
-        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
-            $filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
-            
-            file_exists($filename) ? var_dump($filename.': File Exist') : var_dump($filename. ': File Not Exist');
-        }
+
+        /*
+          $Importconfig = \app\models\Fregat\Import\Importconfig::findOne(1);
+
+          foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
+          $filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
+
+          file_exists($filename) ? var_dump($filename.': File Exist') : var_dump($filename. ': File Not Exist');
+          } */
     }
 
 }
