@@ -231,6 +231,9 @@ class FregatImport {
 
     // Определяем ИД Подразделения и Здания по их именам, и добавляем новые, если их нет
     private static function AssignLocationForEmployeeImport($podraz_name, $build_name) {
+        var_dump($podraz_name);
+        var_dump($build_name);
+        
         $result = (object) [
                     'id_podraz' => NULL,
                     'id_build' => NULL
@@ -239,6 +242,8 @@ class FregatImport {
         if (trim($podraz_name) !== '') {
             $currentpodraz = self::GetRowsPDO('select podraz_id, podraz_name  from podraz where podraz_name like :podraz_name', ['podraz_name' => $podraz_name]);
 
+            var_dump($currentpodraz);
+            
             if (empty($currentpodraz)) {
                 $Podraz = new Podraz;
                 $Podraz->podraz_name = $podraz_name;
@@ -778,11 +783,11 @@ class FregatImport {
                                                             ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]));
 
                                     if (empty($Employee)) {
-                                          var_dump('ok');
+                                       /*   var_dump('ok');
                                           var_dump($Employee);
                                           var_dump($employee_fio);
                                           var_dump($location);
-                                          var_dump($id_dolzh); 
+                                          var_dump($id_dolzh); */
 
                                         $Authuser = new Authuser;
                                         $Authuser->auth_user_fullname = $employee_fio;
