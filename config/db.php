@@ -7,7 +7,7 @@ $dbpassword = $file[2];
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=127.0.0.1;dbname='.$dbname,
+    'dsn' => 'mysql:host=127.0.0.1;dbname='.$dbname.';charset=utf-8',
     'username' => $dbuser,
     'password' => $dbpassword,
     'charset' => 'utf8',
