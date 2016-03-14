@@ -233,7 +233,7 @@ class FregatImport {
     private static function AssignLocationForEmployeeImport($podraz_name, $build_name) {
         var_dump($podraz_name);
         var_dump($build_name);
-        
+
         $result = (object) [
                     'id_podraz' => NULL,
                     'id_build' => NULL
@@ -243,7 +243,7 @@ class FregatImport {
             $currentpodraz = self::GetRowsPDO('select podraz_id, podraz_name  from podraz where podraz_name like :podraz_name', ['podraz_name' => $podraz_name]);
 
             var_dump($currentpodraz);
-            
+
             if (empty($currentpodraz)) {
                 $Podraz = new Podraz;
                 $Podraz->podraz_name = $podraz_name;
@@ -376,9 +376,10 @@ class FregatImport {
 
     // Выводит актуальное количество материала у сотрудника
     private static function GetCountMaterialByID($MaterialID) {
-        $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
-                    'materialID' => $materialID
-        ]);
+        if (!empty($MaterialID))
+            $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
+                        'materialID' => $materialID
+            ]);
         /*  $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
           $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne(); */
         if (empty($dataReader))
@@ -609,8 +610,8 @@ class FregatImport {
             'id_material' => $material_id,
             'id_mol' => $employee_id,
         ]);
-        
-     /*   var_dump(Mattraffic::find()->max('mattraffic_id'));*/
+
+        /*   var_dump(Mattraffic::find()->max('mattraffic_id')); */
 
         // Ищем Материальную ценность закрепленную за сотрудником
         $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_date = :mattraffic_date', [
@@ -634,10 +635,10 @@ class FregatImport {
                     ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
-        
-   /*     var_dump($search);
-        var_dump($xls_attributes_mattraffic['mattraffic_date']);
-        var_dump($xls_attributes_mattraffic['mattraffic_number']);*/
+
+        /*     var_dump($search);
+          var_dump($xls_attributes_mattraffic['mattraffic_date']);
+          var_dump($xls_attributes_mattraffic['mattraffic_number']); */
 
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
@@ -657,8 +658,8 @@ class FregatImport {
 
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $diff_number, true);
-            
-           var_dump($Material->attributes);
+
+            var_dump($Material->attributes);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
@@ -727,7 +728,7 @@ class FregatImport {
             self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx';
             self::Setxls();
 
-            if (file_exists(self::$filename)) {             
+            if (file_exists(self::$filename)) {
                 self::$filelastdate = date("Y-m-d H:i:s", filemtime(self::$filename));
 
                 //  $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
@@ -783,7 +784,7 @@ class FregatImport {
                                                             ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]));
 
                                     if (empty($Employee)) {
-                                       /*   var_dump('ok');
+                                        /*   var_dump('ok');
                                           var_dump($Employee);
                                           var_dump($employee_fio);
                                           var_dump($location);
@@ -823,7 +824,7 @@ class FregatImport {
                                                 self::$logreport_additions++;
                                                 $Employee->save(false);
                                             }
-                                        } else {                                            
+                                        } else {
                                             $Employeelog->employeelog_type = 3;
                                             $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
                                             foreach ($Employee->getErrors() as $fields)
@@ -952,7 +953,7 @@ class FregatImport {
                                                 $traflog->save(false);
                                             }
                                             var_dump($MattrafficDo);
-                                            if ($MattrafficDo) {                                        
+                                            if ($MattrafficDo) {
                                                 $material->save(false);
                                                 $employee->save(false);
                                                 $mattraffic->id_material = $material->material_id;
