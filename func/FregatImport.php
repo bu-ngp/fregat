@@ -819,6 +819,7 @@ class FregatImport {
                                                 $Employee->save(false);
                                             }
                                         } else {
+                                            var_dump($Employee->attributes);
                                             $Employeelog->employeelog_type = 3;
                                             $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
                                             foreach ($Employee->getErrors() as $fields)
