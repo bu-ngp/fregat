@@ -76,7 +76,7 @@ class FregatController extends Controller {
         
         
         $rows = \app\models\Fregat\Import\Traflog::find()
-             //   ->joinWith(['idmatlog'])
+                ->joinWith(['idmatlog'])
                 ->where(['traflog.id_logreport' => 1])
                 ->asArray()
                 ->all();
