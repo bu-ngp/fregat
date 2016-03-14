@@ -231,8 +231,6 @@ class FregatImport {
 
     // Определяем ИД Подразделения и Здания по их именам, и добавляем новые, если их нет
     private static function AssignLocationForEmployeeImport($podraz_name, $build_name) {
-        var_dump($podraz_name);
-        var_dump($build_name);
 
         $result = (object) [
                     'id_podraz' => NULL,
@@ -241,8 +239,6 @@ class FregatImport {
 
         if (trim($podraz_name) !== '') {
             $currentpodraz = self::GetRowsPDO('select podraz_id, podraz_name  from podraz where podraz_name like :podraz_name', ['podraz_name' => $podraz_name]);
-
-            var_dump($currentpodraz);
 
             if (empty($currentpodraz)) {
                 $Podraz = new Podraz;
@@ -531,9 +527,6 @@ class FregatImport {
                 ->andFilterWhere(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
                 ->one();
 
-        var_dump($xls_attributes_employee['employee_fio']);
-
-
         if (!empty($search))
             $Employee = $search;
 
@@ -657,8 +650,6 @@ class FregatImport {
 
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $diff_number, true);
-
-            var_dump($Material->attributes);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
@@ -951,7 +942,7 @@ class FregatImport {
                                                 $traflog->id_employeelog = $employeelog->employeelog_id;
                                                 $traflog->save(false);
                                             }
-                                            var_dump($MattrafficDo);
+                                            
                                             if ($MattrafficDo) {
                                                 $material->save(false);
                                                 $employee->save(false);
