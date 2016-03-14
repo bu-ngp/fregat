@@ -376,9 +376,8 @@ class FregatImport {
 
     // Выводит актуальное количество материала у сотрудника
     private static function GetCountMaterialByID($MaterialID) {
-        if (!empty($MaterialID))
             $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
-                        'materialID' => $materialID
+                        'materialID' => $MaterialID
             ]);
         /*  $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
           $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne(); */
