@@ -72,7 +72,7 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
-        $rows = Traflog::find()
+        $rows = \app\models\Fregat\Import\Traflog::find()
                 ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
                 ->joinWith(['idmatlog', 'idemployeelog'])
                 ->where(['traflog.id_logreport' => 1])
