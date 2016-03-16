@@ -453,7 +453,11 @@ class Proc {
         if (!empty($matches[3]))
             $result .= ucfirst(Proc::Translit(mb_substr($matches[3], 0, 1, 'UTF-8')));
 
-        return $result;
+        $count = \app\models\Config\Authuser::find()
+                ->where(['like', 'auth_user_login', $result . '%', false])
+                ->count();
+
+        return $count > 0 ? $result . $count : $result;
     }
 
     public static function file_exists_ci($file) {
