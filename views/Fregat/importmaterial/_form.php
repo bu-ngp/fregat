@@ -15,7 +15,7 @@ use app\func\Proc;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'importmaterial_combination')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+    <?= $form->field($model, 'importmaterial_combination')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
 
     <?=
     $form->field($model, 'id_matvid')->widget(Select2::classname(), Proc::DGselect2([
