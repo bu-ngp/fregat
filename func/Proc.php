@@ -471,25 +471,66 @@ class Proc {
         return FALSE;
     }
 
+    public static function GetAllLabelsFromAR($DataProvider, $fields = null) {
+        $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
+
+        if ($cls_ar instanceof ActiveRecord) {
+
+            if (!is_array($fields))
+                $fields = $cls_ar->attributes;
+
+            $labels = [];
+
+            array_walk($fields, function($value, $key) use (&$labels, $cls_ar) {
+                $keytmp = empty(strpos($key, '.')) ? $key : substr($key, strrpos($key, '.') + 1);
+                $labels[$keytmp] = $cls_ar->getAttributeLabel($key);
+            });
+        }
+
+        return $labels;
+    }
+
     public static function GetAllDataFromAR($Activerecord, $fields = null, $data = null) {
         if (!is_array($fields))
             $fields = [];
 
-        if (!is_array($data))
-            $data = $Activerecord->toArray();
+        if (!is_array($data)) {
+            $data = array_intersect_key($Activerecord->toArray(), $fields);
+            /*    $tmp2 = [];
+              array_walk($data, function(&$value, $key) use (&$tmp2, $Activerecord) {
+              $tmp2[$key] = [
+              'label' => isset($Activerecord[$key]) ? $Activerecord->getAttributeLabel($key) : $key,
+              'value' => $value
+              ];
+              });
+
+              $data = $tmp2; */
+        }
 
         foreach ($Activerecord->getRelatedRecords() as $relat => $ar_relat)
             if ($ar_relat instanceof ActiveRecord) {
-                array_walk($fields, function($value) use ($relat) {
-                    if ($relat === $value) 
-                        $value = substr($value, strlen($value));
-                                      
+                $tmp = [];
+
+                array_walk($fields, function(&$value, $key) use ($relat, &$tmp) {
+                    if (strpos($key, $relat) === 0)
+                        $key = substr($key, strlen($relat) + 1);
+                    $tmp[$key] = $value;
                 });
-                        
-                var_dump($fields);
-                
-                $data = array_merge($data, $ar_relat->toArray());
-                $data = self::GetAllDataFromAR($ar_relat, $fields, $data);
+
+                $dop = array_intersect_key($ar_relat->toArray(), $tmp);
+
+                /*    $tmp3 = [];
+                  array_walk($dop, function(&$value, $key) use (&$tmp3, $ar_relat) {
+                  $tmp3[$key] = [
+                  'label' => isset($ar_relat[$key]) ? $ar_relat->getAttributeLabel($key) : $key,
+                  'value' => $value
+                  ];
+                  });
+
+                  $dop = $tmp3; */
+
+                $data = array_merge($data, $dop);
+                $data = self::GetAllDataFromAR($ar_relat, $tmp, $data);
             }
 
         return $data;

@@ -116,28 +116,59 @@ class ImportemployeeController extends Controller {
         );
 
 
-        /*     $models = $dataProvider->getModels();
-          $model = reset($models);
-          if (is_array($model) || is_object($model)) {
-          foreach ($model as $name => $value) {
-          var_dump( (string) $name);
-          }
-          } */
-
-        var_dump(Yii::$app->request->queryParams);
+        //      var_dump(Yii::$app->request->queryParams);
         $fields = Yii::$app->request->queryParams;
+        $dataProvider->pagination = false;
+        $labels = Proc::GetAllLabelsFromAR($dataProvider, $fields['ImportemployeeSearch']);
 
-        foreach ($dataProvider->getModels() as $ar) {
-            $data = Proc::GetAllDataFromAR($ar, $fields['ImportemployeeSearch']);
-            var_dump($data);
-            //      var_dump($ar->getRelatedRecords());
-            //  var_dump($ar->extraFields());
-            //    $mas = $ar::find()->joinWith(array_keys($ar->extraFields()))->asArray()->all();
-            //   var_dump($mas);
-            //     $mas = $ar::find()->asArray()->all();            
-            //   var_dump($ar);
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, 'Импорт сотрудников');
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ],
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        ]);
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 2)->applyFromArray([
+            'font' => [
+                'italic' => true
+            ]
+        ]);
+
+        $i = -1;
+        $r = 4;
+        foreach ($labels as $attr => $label) {
+            $i++;
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $label);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($font);
         }
 
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
+
+
+        foreach ($dataProvider->getModels() as $ar) {
+            $r++;
+            $data = Proc::GetAllDataFromAR($ar, $fields['ImportemployeeSearch']);
+            $i = -1;
+            foreach (array_keys($labels) as $attr) {
+                $i++;
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
+            }
+        }
+
+        /* Авторазмер колонок Excel */
+        $i = -1;
+        foreach ($labels as $attr => $label) {
+            $i++;
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
+        }
 
 
         /*    if (!empty($searchModel)) {
@@ -155,7 +186,7 @@ class ImportemployeeController extends Controller {
           } */
 
         /* присваиваем имя файла от имени модели */
-        $FileName = 'Выгрузка';
+        $FileName = 'Импорт сотрудников';
 
         // Устанавливаем имя листа
         $objPHPExcel->getActiveSheet()->setTitle($FileName);
@@ -168,7 +199,7 @@ class ImportemployeeController extends Controller {
         /* Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows */
         $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
         /* Сохраняем файл в папку "files" */
-        //      $objWriter->save('files/' . $fileroot);
+        $objWriter->save('files/' . $fileroot);
         /* Возвращаем имя файла Excel */
         if (DIRECTORY_SEPARATOR === '/')
             echo $fileroot;

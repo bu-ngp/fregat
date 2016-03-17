@@ -17,7 +17,7 @@ class SiteController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'setsession', 'index', 'setwindowguid'],
+                //   'only' => ['logout', 'setsession', 'index', 'setwindowguid'],
                 'rules' => [
                     [
                         'actions' => ['logout', 'index'],
@@ -25,7 +25,7 @@ class SiteController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['setsession', 'setwindowguid'],
+                        'actions' => ['setsession', 'setwindowguid', 'delete-excel-file'],
                         'allow' => true,
                     ],
                 ],
@@ -61,7 +61,7 @@ class SiteController extends Controller {
           //   return $this->goBack();
           } */
         return $this->render('index', [
-                  //  'model' => $model,
+                        //  'model' => $model,
         ]);
     }
 
@@ -135,7 +135,7 @@ class SiteController extends Controller {
         if (!empty($guid)) {
             $session = new Session;
             $session->open();
-            
+
             $res = $session['WindowsGUIDs'];
             if (!isset($res))
                 $res = [];
@@ -147,6 +147,11 @@ class SiteController extends Controller {
         }
 
         echo $result;
+    }
+
+    public function actionDeleteExcelFile() {
+        $FileName = DIRECTORY_SEPARATOR === '/' ? 'files/' . (string) filter_input(INPUT_POST, 'filename') : mb_convert_encoding('files/' . (string) filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+        unlink($FileName);
     }
 
 }

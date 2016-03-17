@@ -77,34 +77,34 @@ function ExportExcel(model, url) {
             if ($(this).attr("name") !== "")
                 data[$(this).attr("name")] = $(this).val();
         });
-        
+
         $.ajax({
-            url: url+'&'+$.param(data),
+            url: url + '&' + $.param(data),
             type: "post",
-          //  data: {buttonloadingid: param.buttonelem[0].id}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+            //  data: {buttonloadingid: param.buttonelem[0].id}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
             async: true,
             success: function (response) {
                 /* response - Путь к новому файлу  */
                 window.location.href = "files/" + response; /* Открываем файл */
                 /* Удаляем файл через 5 секунд*/
-             /*   setTimeout(function () {
+                setTimeout(function () {
                     $.ajax({
-                        url: "?r=Proc/DeleteExcelFile",
+                        url: "?r=site%2Fdelete-excel-file",
                         type: "post",
                         data: {filename: response},
                         async: true
                     });
-                }, 5000);*/
+                }, 5000);
             },
             error: function (data) {
                 console.error('Ошибка');
             }
         });
-        
+
     }
-    
-    
-    console.debug(url+'&'+$.param(data))
+
+
+    console.debug(url + '&' + $.param(data))
     console.debug(data)
 }
 
