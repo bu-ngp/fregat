@@ -447,6 +447,10 @@ class FregatImport {
                 unset($xls_attributes_material['material_number']);
                 unset($xls_attributes_material['material_price']);
 
+                // Если в Excel отсутствует инвентарный номер, а в базе он есть, то сделать так, что бы импорт не видел изменения
+                if (empty($xls_attributes_material['material_inv']) && !empty($Material->material_inv))
+                    $xls_attributes_material['material_inv'] = $Material->material_inv;
+
                 // Массив заполняется измененными значениями атрибутов материальной ценности
                 // $diff_attr = array_diff_assoc($xls_attributes_material, $Material->attributes);
                 $diff_attr = self::ngp_array_diff_assoc($xls_attributes_material, $Material->attributes);

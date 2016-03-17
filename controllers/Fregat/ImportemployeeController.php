@@ -116,22 +116,28 @@ class ImportemployeeController extends Controller {
         );
 
 
-        $models = $dataProvider->getModels();
-        $model = reset($models);
-        if (is_array($model) || is_object($model)) {
-            foreach ($model as $name => $value) {
-                var_dump( (string) $name);
-            }
-        }
-        
-        foreach ($dataProvider->getModels() as $ar) {
+        /*     $models = $dataProvider->getModels();
+          $model = reset($models);
+          if (is_array($model) || is_object($model)) {
+          foreach ($model as $name => $value) {
+          var_dump( (string) $name);
+          }
+          } */
 
+        var_dump(Yii::$app->request->queryParams);
+        $fields = Yii::$app->request->queryParams;
+
+        foreach ($dataProvider->getModels() as $ar) {
+            $data = Proc::GetAllDataFromAR($ar, $fields['ImportemployeeSearch']);
+            var_dump($data);
+            //      var_dump($ar->getRelatedRecords());
             //  var_dump($ar->extraFields());
             //    $mas = $ar::find()->joinWith(array_keys($ar->extraFields()))->asArray()->all();
             //   var_dump($mas);
             //     $mas = $ar::find()->asArray()->all();            
             //   var_dump($ar);
         }
+
 
 
         /*    if (!empty($searchModel)) {

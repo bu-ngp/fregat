@@ -38,7 +38,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'type' => 'button',
                                 'title' => 'Экспорт в Excel',
                                 'class' => 'btn btn-default button_export',
-                                'onclick' => 'ExportExcel("ImportemployeeSearch","'.\yii\helpers\Url::toRoute('fregat/importemployee/toexcel').'");'
+                                'onclick' => 'ExportExcel("ImportemployeeSearch","'.\yii\helpers\Url::toRoute('Fregat/importemployee/toexcel').'");'
                             ]),
                         ],
                     ],

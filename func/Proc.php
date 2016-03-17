@@ -9,6 +9,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
+use yii\db\ActiveRecord;
 
 class Proc {
 
@@ -468,6 +469,30 @@ class Proc {
             if (strtolower($file) == $lowerfile)
                 return $file;
         return FALSE;
+    }
+
+    public static function GetAllDataFromAR($Activerecord, $fields = null, $data = null) {
+        if (!is_array($fields))
+            $fields = [];
+
+        if (!is_array($data))
+            $data = $Activerecord->toArray();
+
+        foreach ($Activerecord->getRelatedRecords() as $relat => $ar_relat)
+            if ($ar_relat instanceof ActiveRecord) {
+                array_walk($fields, function($value) use ($relat) {
+                    if ($relat === $value) 
+                        $value = substr($value, strlen($value));
+                                      
+                });
+                        
+                var_dump($fields);
+                
+                $data = array_merge($data, $ar_relat->toArray());
+                $data = self::GetAllDataFromAR($ar_relat, $fields, $data);
+            }
+
+        return $data;
     }
 
 }
