@@ -536,4 +536,101 @@ class Proc {
         return $data;
     }
 
+    public static function Grid2Excel($dataProvider, $modelName, $reportName) {
+        $objPHPExcel = new \PHPExcel;
+
+        /* Границы таблицы */
+        $ramka = array(
+            'borders' => array(
+                'bottom' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'top' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'left' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
+                'right' => array('style' => \PHPExcel_Style_Border::BORDER_THIN))
+        );
+        
+        /* Жирный шрифт для шапки таблицы */
+        $font = array(
+            'font' => array(
+                'bold' => true
+            ),
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        );
+
+        //      var_dump(Yii::$app->request->queryParams);
+        $fields = Yii::$app->request->queryParams;
+        $dataProvider->pagination = false;
+        $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ],
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        ]);
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 2)->applyFromArray([
+            'font' => [
+                'italic' => true
+            ]
+        ]);
+
+        $i = -1;
+        $r = 4;
+        foreach ($labels as $attr => $label) {
+            $i++;
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $label);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($font);
+        }
+
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
+
+        foreach ($dataProvider->getModels() as $ar) {
+            $r++;
+            $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
+            $i = -1;
+            foreach (array_keys($labels) as $attr) {
+                $i++;
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
+            }
+        }
+
+        /* Авторазмер колонок Excel */
+        $i = -1;
+        foreach ($labels as $attr => $label) {
+            $i++;
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
+        }
+
+        /* присваиваем имя файла от имени модели */
+        $FileName = $reportName;
+
+        // Устанавливаем имя листа
+        $objPHPExcel->getActiveSheet()->setTitle($FileName);
+
+        // Выбираем первый лист
+        $objPHPExcel->setActiveSheetIndex(0);
+        /* Формируем файл Excel */
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        /* Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows */
+        $fileroot = self::SaveFileIfExists('files/' . $FileName . '.xlsx');
+        /* Сохраняем файл в папку "files" */
+        $objWriter->save('files/' . $fileroot);
+        /* Возвращаем имя файла Excel */
+        if (DIRECTORY_SEPARATOR === '/')
+            echo $fileroot;
+        else
+            echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+    }
+
 }
