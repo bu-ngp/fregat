@@ -321,8 +321,8 @@ class FregatImport {
 
     // Читаем значения колонок соответствующие Операции над материальной ценностью в файле Excel
     private static function xls_attributes_mattraffic($row) {
-        return [
-            'mattraffic_date' => !self::$mattraffic_exist && self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
+        return [//--------------------????????????????????------------------------------------------------------------------------
+            'mattraffic_date' => /* !self::$mattraffic_exist && */ self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
             'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
         ];
     }
@@ -630,12 +630,11 @@ class FregatImport {
         /*   var_dump(Mattraffic::find()->max('mattraffic_id')); */
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_date = :mattraffic_date', [
-                    'mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date'],
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : ''), array_merge([
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
-        ]);
-
+                                ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
+        
         // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
         // diff_number - Определяет текущее актуальное количество материальной ценности
         if (!empty($search))
@@ -656,7 +655,7 @@ class FregatImport {
           var_dump($xls_attributes_mattraffic['mattraffic_date']);
           var_dump($xls_attributes_mattraffic['mattraffic_number']); */
 
-        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply) { // Если у материальной ценности найден сотрудник и запись актуальна       
+        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && (!self::$os && $Mattraffic->diff_number != '0' || self::$os)) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
             $diff_number = $Mattraffic->diff_number;
             self::$mattraffic_exist = true;
