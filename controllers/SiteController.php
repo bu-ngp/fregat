@@ -20,12 +20,17 @@ class SiteController extends Controller {
                 //   'only' => ['logout', 'setsession', 'index', 'setwindowguid'],
                 'rules' => [
                     [
+                        'actions' => ['login'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['setsession', 'setwindowguid', 'delete-excel-file'],
+                        'actions' => ['error','setsession', 'setwindowguid', 'delete-excel-file'],
                         'allow' => true,
                     ],
                 ],
@@ -43,10 +48,6 @@ class SiteController extends Controller {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
     }
