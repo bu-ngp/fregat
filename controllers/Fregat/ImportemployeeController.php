@@ -93,8 +93,12 @@ class ImportemployeeController extends Controller {
 
     public function actionToexcel() {
         $searchModel = new ImportemployeeSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        Proc::Grid2Excel($dataProvider, 'ImportemployeeSearch', 'Импорт сотрудников');
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('ImportemployeeSearch', $inputdata));
+        $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
+        
+        Proc::Grid2Excel($dataProvider, $modelname, 'Импорт сотрудников');
     }
 
     /**

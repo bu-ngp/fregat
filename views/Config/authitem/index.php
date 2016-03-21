@@ -55,6 +55,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                         'type' => 'button',
                                         'title' => 'Дополнительный фильтр',
                                         'class' => 'btn btn-default'
+                                    ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-export"></i>', [
+                                        'type' => 'button',
+                                        'title' => 'Экспорт в Excel',
+                                        'class' => 'btn btn-default button_export',
+                                        'onclick' => 'ExportExcel("AuthitemSearch","' . \yii\helpers\Url::toRoute('Config/authitem/toexcel') . '");'
                                     ]) . '{export}{dynagrid}',
                                 ],
                             ],

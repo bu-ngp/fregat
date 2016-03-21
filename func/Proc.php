@@ -536,7 +536,7 @@ class Proc {
         return $data;
     }
 
-    public static function Grid2Excel($dataProvider, $modelName, $reportName) {
+    public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL) {
         $objPHPExcel = new \PHPExcel;
 
         /* Границы таблицы */
@@ -547,7 +547,7 @@ class Proc {
                 'left' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
                 'right' => array('style' => \PHPExcel_Style_Border::BORDER_THIN))
         );
-        
+
         /* Жирный шрифт для шапки таблицы */
         $font = array(
             'font' => array(
@@ -559,10 +559,27 @@ class Proc {
         );
 
         //      var_dump(Yii::$app->request->queryParams);
-        $fields = Yii::$app->request->queryParams;
+
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
+        $selectvalues = (array) $selectvalues;
+
         $dataProvider->pagination = false;
         $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+        $filter = 'Фильтр:';
 
+        foreach ($fields[$modelName] as $attr => $value) {
+            $val_result = $value;
+            if (!empty($value)) {
+                $attrlabel = strpos($attr, '.') === false ? $attr : substr($attr, strrpos($attr, '.') + 1);
+
+                if (isset($selectvalues[$modelName . '[' . $attr . ']']))
+                    $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
+
+                $filter .= ' ' . $labels[$attrlabel] . ': "' . $val_result . '";';
+            }
+        }
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
         $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
@@ -583,7 +600,7 @@ class Proc {
         ]);
 
         $i = -1;
-        $r = 4;
+        $r = 5;
         foreach ($labels as $attr => $label) {
             $i++;
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $label);
@@ -599,6 +616,8 @@ class Proc {
             $i = -1;
             foreach (array_keys($labels) as $attr) {
                 $i++;
+                if (isset($selectvalues[$modelName . '[' . $attr . ']']))
+                    $data[$attr] = $selectvalues[$modelName . '[' . $attr . ']'][$data[$attr]];
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
             }
@@ -611,7 +630,17 @@ class Proc {
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
         }
 
-        /* присваиваем имя файла от имени модели */
+        if ($filter !== 'Фильтр:') {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $filter);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 3, $i, 3);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 3)->applyFromArray([
+                'font' => [
+                    'italic' => true
+                ]
+            ]);
+        }
+
+        // присваиваем имя файла от имени модели 
         $FileName = $reportName;
 
         // Устанавливаем имя листа
@@ -619,18 +648,42 @@ class Proc {
 
         // Выбираем первый лист
         $objPHPExcel->setActiveSheetIndex(0);
-        /* Формируем файл Excel */
+        // Формируем файл Excel
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
-        /* Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows */
+        // Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
         $fileroot = self::SaveFileIfExists('files/' . $FileName . '.xlsx');
-        /* Сохраняем файл в папку "files" */
+        // Сохраняем файл в папку "files"
         $objWriter->save('files/' . $fileroot);
-        /* Возвращаем имя файла Excel */
+        // Возвращаем имя файла Excel
         if (DIRECTORY_SEPARATOR === '/')
             echo $fileroot;
         else
             echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+    }
+
+    // Функция преобразует массив
+    /*
+      AuthitemSearch[description] => string ''
+      AuthitemSearch[type] => string ''
+      AuthitemSearch[name] => string ''
+
+      'description' => string ''
+      'type' => string ''
+      'name' => string ''
+     */
+
+    public static function GetArrayValuesByKeyName($KeyName, $Obj) {
+        $result = [];
+        if (is_string($KeyName) && (is_array($Obj) || is_object($Obj)))
+            foreach ($Obj as $key => $value) {
+                if (strpos($key, $KeyName) === 0) {
+                    preg_match('/\[(.+)\]/', $key, $matches);
+                    if (!empty($matches[1]))
+                        $result[$matches[1]] = $value;
+                }
+            }
+        return [$KeyName => $result];
     }
 
 }

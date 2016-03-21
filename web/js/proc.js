@@ -70,13 +70,27 @@ function InitWindowGUID() {
 }
 
 function ExportExcel(model, url) {
-    var inputarr = $('input[name^="' + model + '"]');
-    var data = {};
-    if (inputarr.length) {
+    var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
+    var inputdata = {};
+    if (inputarr.length || selectarr.length) {
         inputarr.each(function (index) {
             if ($(this).attr("name") !== "")
-                data[$(this).attr("name")] = $(this).val();
+                inputdata[$(this).attr("name")] = $(this).val();
         });
+
+        var selectvalues = {};
+        $('select[name^="' + model + '"]').each(function () {
+            var namekey = $(this).attr("name");
+            selectvalues[namekey] = [];
+            if ($(this).attr("name") !== "") {
+                $(this).children("option").each(function () {
+                    if ($(this).val() !== "")
+                        selectvalues[namekey][$(this).val()] = $(this).text();
+                });
+            }
+        });
+
+        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues),buttonloadingid: "button.button_export"};
 
         $.ajax({
             url: url + '&' + $.param(data),
@@ -101,12 +115,80 @@ function ExportExcel(model, url) {
             }
         });
 
+
     }
-
-
-    console.debug(url + '&' + $.param(data))
-    console.debug(data)
 }
+
+/**
+ * Показываем индикатор ожидания на кнопке
+ * 
+ * param.buttonelem - Кнопка, над которой проводятся манипуляции
+ * 
+ */
+function LoadingButtonShow(param) {
+    if (typeof param !== "undefined" && ("buttonelem" in param)) {
+        param.buttonelem.attr("disabled", true);
+        param.buttonelem.html('<img src="images/progress.gif">');
+    }
+}
+
+/**
+ * Скрываем индикатор ожидания на кнопке
+ * 
+ * param.buttonelem - Кнопка, над которой проводятся манипуляции
+ * param.text - Текст кнопки, который был до показа индикатора
+ */
+function LoadingButtonHide(param) {
+    if (typeof param !== "undefined" && ("buttonelem" in param)) {
+        param.buttonelem.attr("disabled", false);
+        if (("text" in param))
+            param.buttonelem.html(param.text);
+    }
+}
+
+/* Событие до выполнения ajax запроса, изменить состояние кнопки на ожидание */
+$(document).ajaxSend(function (event, xhr, settings) {
+    /* В случае, если передаем форму с файлом в ajax запросе */
+    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object FormData]') {
+        xhr.done(function (data, textStatus, jqXHR) {
+            var buttonloadingid = xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i) === null ? false : "#" + xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i)[1];
+            if (buttonloadingid && $(buttonloadingid).length) {
+                $(buttonloadingid)[0].label = $(buttonloadingid).html();
+                LoadingButtonShow({buttonelem: $(buttonloadingid)});
+            }
+        });
+        /* В остальных случаях */
+    } else if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+        var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
+        if ($(buttonloadingid).length) {
+            $(buttonloadingid)[0].label = $(buttonloadingid).html();
+            LoadingButtonShow({buttonelem: $(buttonloadingid)});
+        }
+    }
+});
+
+/*  Событие после выполнения ajax запроса, изменить состояние кнопки из ожидания в обычное */
+$(document).ajaxComplete(function (event, xhr, settings) {
+    /* В случае, если передаем форму с файлом в ajax запросе */
+    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object FormData]') {
+        xhr.done(function (data, textStatus, jqXHR) {
+            var buttonloadingid = xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i) === null ? false : "#" + xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i)[1];
+            if (buttonloadingid && $(buttonloadingid).length)
+                LoadingButtonHide({buttonelem: $(buttonloadingid), text: $(buttonloadingid)[0].label});
+        });
+        /* В остальных случаях */
+    } else if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+        var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
+        if ($(buttonloadingid).length) {
+            if ($(buttonloadingid).hasClass("wait_label_load_after_ajax"))
+                setTimeout(function () {
+                    LoadingButtonHide({buttonelem: $(buttonloadingid), text: $(buttonloadingid)[0].label});
+                }, 2000);
+            else
+                LoadingButtonHide({buttonelem: $(buttonloadingid), text: $(buttonloadingid)[0].label});
+        }
+    }
+});
 
 $(function () {
     $("input.form-control.setsession").focusout(function () {

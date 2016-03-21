@@ -23,7 +23,7 @@ class AuthitemController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'delete', 'forauthitemchild'],
+                        'actions' => ['index', 'create', 'update', 'delete', 'forauthitemchild', 'toexcel'],
                         'allow' => true,
                         'roles' => ['RoleEdit'],
                     ],
@@ -112,6 +112,17 @@ class AuthitemController extends Controller {
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionToexcel() {
+        $searchModel = new AuthitemSearch();
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('AuthitemSearch', $inputdata));    
+        $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
+        $selectvalues = json_decode($params['selectvalues']);
+
+        Proc::Grid2Excel($dataProvider, $modelname, 'Авторизованные единицы', $selectvalues);
     }
 
     /**

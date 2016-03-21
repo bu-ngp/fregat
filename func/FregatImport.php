@@ -271,7 +271,7 @@ class FregatImport {
         if (preg_match($preg, $value))
             return preg_replace($preg, '$3-$2-$1', $value);
         else
-            return date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($value));
+            return empty($value) ? NULL : date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($value));
 
         //   return PHPExcel_Shared_Date::isDateTime($objPHPExcel->getActiveSheet()->getcell('N' . $r)) ? date('Y-m-d', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getcell('N' . $r)->getValue())) : preg_replace($preg, '$3-$2-$1', $value);
     }
@@ -634,7 +634,7 @@ class FregatImport {
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
                                 ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
-        
+
         // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
         // diff_number - Определяет текущее актуальное количество материальной ценности
         if (!empty($search))
