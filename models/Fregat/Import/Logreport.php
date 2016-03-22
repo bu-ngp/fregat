@@ -37,7 +37,7 @@ class Logreport extends \yii\db\ActiveRecord {
         return [
             [['logreport_date'], 'required'],
             [['logreport_date'], 'date', 'format' => 'yyyy-MM-dd'],
-            [['logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed'], 'integer'],
+            [['logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed', 'logreport_memoryused'], 'integer'],
             [['maxfilelastdate'], 'safe'],
             [['logreport_executetime'], 'date', 'format' => 'php:H:i:s'],
         ];
@@ -57,6 +57,7 @@ class Logreport extends \yii\db\ActiveRecord {
             'logreport_missed' => 'Записей пропущено',
             'maxfilelastdate' => 'Последнее изменение импортируемых файлов',
             'logreport_executetime' => 'Время выполнения импорта',
+            'logreport_memoryused' => 'Выделено памяти',
         ];
     }
 

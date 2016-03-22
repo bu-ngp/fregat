@@ -1040,6 +1040,7 @@ class FregatImport {
             self::MakeReport();
             $endtime = microtime(true);
             $logreport->logreport_executetime = gmdate('H:i:s', $endtime - $starttime);
+            $logreport->logreport_memoryused = memory_get_usage(true);
             $logreport->save();
         }
         $endtime = microtime(true);

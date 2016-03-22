@@ -36,17 +36,24 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             }
                         ],
                         [
+                            'attribute' => 'logreport_memoryused',
+                            'value' => function ($model, $key, $index, $column) {
+                                Yii::$app->formatter->sizeFormatBase = 1000;
+                                return Yii::$app->formatter->asShortSize($model->logreport_memoryused);
+                            }
+                        ],
+                        [
                             'attribute' => 'logreport_date',
                             'value' => function ($model, $key, $index, $column) {
                                 return date("d.m.Y", strtotime($model->logreport_date));
                             }
                         ],
-                    /*    [
-                            'attribute' => 'maxfilelastdate',
-                            'value' => function ($model, $key, $index, $column) {
-                                return date("d.m.Y H:i:s", strtotime($model->maxfilelastdate));
-                            }
-                        ],*/
+                        /*    [
+                          'attribute' => 'maxfilelastdate',
+                          'value' => function ($model, $key, $index, $column) {
+                          return date("d.m.Y H:i:s", strtotime($model->maxfilelastdate));
+                          }
+                          ], */
                         'logreport_errors',
                         'logreport_updates',
                         'logreport_additions',

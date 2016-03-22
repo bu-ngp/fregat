@@ -69,9 +69,12 @@ function InitWindowGUID() {
     });
 }
 
-function ExportExcel(model, url) {
+function ExportExcel(model, url, button) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
     var inputdata = {};
+    if (button == "undefined")
+        button = "";
+
     if (inputarr.length || selectarr.length) {
         inputarr.each(function (index) {
             if ($(this).attr("name") !== "")
@@ -90,12 +93,12 @@ function ExportExcel(model, url) {
             }
         });
 
-        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues),buttonloadingid: "button.button_export"};
+        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues)};
 
         $.ajax({
             url: url + '&' + $.param(data),
             type: "post",
-            //  data: {buttonloadingid: param.buttonelem[0].id}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+            data: {buttonloadingid: button}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
             async: true,
             success: function (response) {
                 /* response - Путь к новому файлу  */
@@ -148,17 +151,7 @@ function LoadingButtonHide(param) {
 
 /* Событие до выполнения ajax запроса, изменить состояние кнопки на ожидание */
 $(document).ajaxSend(function (event, xhr, settings) {
-    /* В случае, если передаем форму с файлом в ajax запросе */
-    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object FormData]') {
-        xhr.done(function (data, textStatus, jqXHR) {
-            var buttonloadingid = xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i) === null ? false : "#" + xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i)[1];
-            if (buttonloadingid && $(buttonloadingid).length) {
-                $(buttonloadingid)[0].label = $(buttonloadingid).html();
-                LoadingButtonShow({buttonelem: $(buttonloadingid)});
-            }
-        });
-        /* В остальных случаях */
-    } else if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
         var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
         if ($(buttonloadingid).length) {
             $(buttonloadingid)[0].label = $(buttonloadingid).html();
@@ -169,15 +162,7 @@ $(document).ajaxSend(function (event, xhr, settings) {
 
 /*  Событие после выполнения ajax запроса, изменить состояние кнопки из ожидания в обычное */
 $(document).ajaxComplete(function (event, xhr, settings) {
-    /* В случае, если передаем форму с файлом в ajax запросе */
-    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object FormData]') {
-        xhr.done(function (data, textStatus, jqXHR) {
-            var buttonloadingid = xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i) === null ? false : "#" + xhr.responseText.match(/buttonloadingid[\s\S]+\"(\w+)\"/i)[1];
-            if (buttonloadingid && $(buttonloadingid).length)
-                LoadingButtonHide({buttonelem: $(buttonloadingid), text: $(buttonloadingid)[0].label});
-        });
-        /* В остальных случаях */
-    } else if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
         var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
         if ($(buttonloadingid).length) {
             if ($(buttonloadingid).hasClass("wait_label_load_after_ajax"))

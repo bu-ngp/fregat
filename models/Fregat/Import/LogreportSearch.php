@@ -22,7 +22,7 @@ class LogreportSearch extends Logreport {
      */
     public function rules() {
         return [
-            [['logreport_id', 'logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed','logreport_executetime'], 'safe'],
+            [['logreport_id', 'logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed','logreport_executetime','logreport_memoryused'], 'safe'],
             [['logreport_date', 'maxfilelastdate'], 'safe'],
         ];
     }
@@ -103,6 +103,8 @@ group by logreport_id) logreport']);
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_additions'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_amount'));
         $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_missed'));
+        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_memoryused'));
+        
 
     /*    $dataProvider->sort->attributes['maxfilelastdate'] = [
             'asc' => ['maxfilelastdate' => SORT_ASC],
