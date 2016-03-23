@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Config\AuthitemFilter;
 
 /**
  * AuthitemController implements the CRUD actions for Authitem model.
@@ -23,7 +24,7 @@ class AuthitemController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'delete', 'forauthitemchild', 'toexcel'],
+                        'actions' => ['index', 'create', 'update', 'delete', 'forauthitemchild', 'toexcel', 'filter'],
                         'allow' => true,
                         'roles' => ['RoleEdit'],
                     ],
@@ -118,11 +119,26 @@ class AuthitemController extends Controller {
         $searchModel = new AuthitemSearch();
         $params = Yii::$app->request->queryParams;
         $inputdata = json_decode($params['inputdata']);
-        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('AuthitemSearch', $inputdata));    
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('AuthitemSearch', $inputdata));
         $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
         $selectvalues = json_decode($params['selectvalues']);
 
         Proc::Grid2Excel($dataProvider, $modelname, 'Авторизованные единицы', $selectvalues);
+    }
+
+    public function actionFilter() {
+        $model = new AuthitemFilter();
+
+        if (Yii::$app->request->isAjax) {
+
+            if (Yii::$app->request->isGet) {   
+                return $this->renderAjax('_filter', [
+                            'model' => $model,
+                ]);
+            } else {
+                echo 'ajax';
+            }
+        };
     }
 
     /**

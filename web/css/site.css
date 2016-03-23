@@ -111,3 +111,12 @@ div.required label.control-label:after {
 ul.breadcrumb {
     background-color: #d9edf7;
 }
+
+div.insideforms {
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+div.modal_filter>div.modal-dialog {
+    width: 700px;
+}

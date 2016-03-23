@@ -22,6 +22,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/proc.js',
+        'js/test.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

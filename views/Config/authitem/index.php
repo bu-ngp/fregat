@@ -51,10 +51,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'before' => Yii::$app->user->can('RoleEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                             ],
                             'toolbar' => [
-                                'base' => ['content' => \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-filter"></i>', [
-                                        'type' => 'button',
+                                'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['filter'], [
+                                        //  'type' => 'button',
                                         'title' => 'Дополнительный фильтр',
-                                        'class' => 'btn btn-default'
+                                        'class' => 'btn btn-default filter_button'
                                     ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-floppy-disk"></i>', [
                                         'id' => 'Authitemexcel',
                                         'type' => 'button',
@@ -64,8 +64,72 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     ]) . '{export}{dynagrid}',
                                 ],
                             ],
+                        // 'afterHeader' => '<div class="panel panel-warning"><div class="panel-heading authitemgrid-filter"></div></div>',
                         ]
             ]));
+            ?>
+
+
+            <?php
+            yii\bootstrap\Modal::begin([
+                'header' => 'Дополнительный фильтр',
+                'id' => 'Authitemfilter',
+                'options' => ['class' => 'modal_filter',],
+            ]);
+            yii\bootstrap\Modal::end();
+
+            $this->registerJs(
+                    "$(document).on('ready pjax:success', function() {
+        $('.filter_button').click(function(e){
+           e.preventDefault(); //for prevent default behavior of <a> tag.
+           var tagname = $(this)[0].tagName;      
+           $('#Authitemfilter').modal('show')
+                      .find('.modal-body')
+                      .load($(this).attr('href')); 
+       });
+    });
+");
+            ?>
+
+            <?php
+           /* $this->registerJs(
+                    'jQuery(document).ready(function($){
+                $(document).ready(function () {
+                    $("body").on("beforeSubmit", "form#authitemfilter-form", function () {
+                        var form = $(this);
+                        // return false if form still have some validation errors
+                        if (form.find(".has-error").length) 
+                        {
+                            return false;
+                        }
+                        // submit form
+                        $.ajax({
+                            url    : form.attr("action"),
+                            type   : "post",
+                            data   : form.serialize(),
+                            success: function (response) 
+                            {
+
+                                $("#Authitemfilter").modal("toggle");                               
+           // $.pjax.reload({container:"#dynagrid-1-pjax"});  //Reload GridView
+          $("body").on("beforeFilter", "#authitemgrid" , function(event) {
+            console.debug(event)
+            return true;
+        }); 
+           $("#authitemgrid").yiiGridView("applyFilter");
+
+                            },
+                            error  : function () 
+                            {
+                                console.log("internal server error");
+                            }
+                        });
+                        return false;
+                     });
+                    });
+
+    });'
+            );*/
             ?>
 
 </div>

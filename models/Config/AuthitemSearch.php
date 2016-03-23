@@ -45,7 +45,7 @@ class AuthitemSearch extends Authitem {
         ]);
 
         $this->load($params);
-        
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -62,6 +62,17 @@ class AuthitemSearch extends Authitem {
                 ->andFilterWhere(['like', 'description', $this->description])
                 ->andFilterWhere(['like', 'rule_name', $this->rule_name])
                 ->andFilterWhere(['like', 'data', $this->data]);
+        $ok = '1';
+
+        if (isset($params['AuthitemSearch']['_filter'])) {
+            $ok = '12';
+
+            parse_str($params['AuthitemSearch']['_filter'], $filterparams);
+
+            if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
+                $query->andFilterWhere(['like', 'description', 'фрегат%', false]);
+            }
+        }
 
         return $dataProvider;
     }
