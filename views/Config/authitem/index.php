@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile('/js/authitemfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
@@ -64,7 +65,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     ]) . '{export}{dynagrid}',
                                 ],
                             ],
-                        // 'afterHeader' => '<div class="panel panel-warning"><div class="panel-heading authitemgrid-filter"></div></div>',
+                            'afterHeader' => empty($filter) ? '' : '<div class="panel panel-warning"><div class="panel-heading authitemgrid-filter">' . $filter . '</div></div>',
                         ]
             ]));
             ?>
@@ -77,59 +78,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'options' => ['class' => 'modal_filter',],
             ]);
             yii\bootstrap\Modal::end();
-
-            $this->registerJs(
-                    "$(document).on('ready pjax:success', function() {
-        $('.filter_button').click(function(e){
-           e.preventDefault(); //for prevent default behavior of <a> tag.
-           var tagname = $(this)[0].tagName;      
-           $('#Authitemfilter').modal('show')
-                      .find('.modal-body')
-                      .load($(this).attr('href')); 
-       });
-    });
-");
-            ?>
-
-            <?php
-           /* $this->registerJs(
-                    'jQuery(document).ready(function($){
-                $(document).ready(function () {
-                    $("body").on("beforeSubmit", "form#authitemfilter-form", function () {
-                        var form = $(this);
-                        // return false if form still have some validation errors
-                        if (form.find(".has-error").length) 
-                        {
-                            return false;
-                        }
-                        // submit form
-                        $.ajax({
-                            url    : form.attr("action"),
-                            type   : "post",
-                            data   : form.serialize(),
-                            success: function (response) 
-                            {
-
-                                $("#Authitemfilter").modal("toggle");                               
-           // $.pjax.reload({container:"#dynagrid-1-pjax"});  //Reload GridView
-          $("body").on("beforeFilter", "#authitemgrid" , function(event) {
-            console.debug(event)
-            return true;
-        }); 
-           $("#authitemgrid").yiiGridView("applyFilter");
-
-                            },
-                            error  : function () 
-                            {
-                                console.log("internal server error");
-                            }
-                        });
-                        return false;
-                     });
-                    });
-
-    });'
-            );*/
             ?>
 
 </div>

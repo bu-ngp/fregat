@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile('/js/authitemfiltercontain.js');
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -15,7 +16,7 @@ use yii\bootstrap\ActiveForm;
             <div class="panel-heading"><?= Html::encode('Основные') ?></div>
             <div class="panel-body">
 
-                <?= $form->field($model, 'onlyrootauthitems')->checkbox(); ?>
+                <?= $form->field($model, 'onlyrootauthitems')->checkbox(/* ['uncheck' => null] */); ?>
 
 
             </div>
@@ -26,7 +27,7 @@ use yii\bootstrap\ActiveForm;
         <div class="panel panel-default">
             <div class="panel-heading">
                 <?= Html::submitButton('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary']) ?>
-                <?= Html::Button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger']) ?>
+                <?= Html::Button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => 'authitemfilter_close']) ?>
             </div>
         </div> 
     </div>

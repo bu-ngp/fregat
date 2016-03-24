@@ -40,11 +40,23 @@ class AuthitemController extends Controller {
 
     public function actionIndex() {
         $searchModel = new AuthitemSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $queryParams = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($queryParams);
+
+        $filter = 'Доп фильтр:';
+        if (isset($queryParams['AuthitemSearch']['_filter'])) {
+            parse_str($queryParams['AuthitemSearch']['_filter'], $filterparams);
+            $AuthitemFilter = new AuthitemFilter();
+            if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
+                $filter .= ' ' . $AuthitemFilter->getAttributeLabel('onlyrootauthitems') . ';';
+            }
+        };
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'filter' => mb_strlen($filter, 'UTF-8') === 11 ? '' : $filter,
         ]);
     }
 
@@ -131,7 +143,7 @@ class AuthitemController extends Controller {
 
         if (Yii::$app->request->isAjax) {
 
-            if (Yii::$app->request->isGet) {   
+            if (Yii::$app->request->isGet) {
                 return $this->renderAjax('_filter', [
                             'model' => $model,
                 ]);

@@ -70,7 +70,10 @@ class AuthitemSearch extends Authitem {
             parse_str($params['AuthitemSearch']['_filter'], $filterparams);
 
             if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
-                $query->andFilterWhere(['like', 'description', 'фрегат%', false]);
+                $query->joinWith('authitemchildrenparent')
+                        ->where('(not parent in (select b.child from auth_item_child b) or (parent Is Null))')
+                        ->andFilterWhere(['type' => 1])
+                        ->groupBy(['name', 'type', 'description']);
             }
         }
 
