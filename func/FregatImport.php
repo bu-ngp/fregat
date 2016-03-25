@@ -387,16 +387,20 @@ class FregatImport {
 
     // Выводи последнюю дату изменения загруженных файлов
     private static function GetMaxFileLastDate() {
-        /*   $sql = 'select CASE WHEN MAX(matlog_filelastdate) > MAX(employeelog_filelastdate) THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate from matlog, employeelog where matlog_filename = :filename or employeelog_filename = :filename';
-          $dataReader = Yii::$app->db->createCommand($sql, [':filename' => self::$filename])->queryOne();
-         */
-        $dataReader = self::GetRowsPDO('select CASE WHEN MAX(matlog_filelastdate) > MAX(employeelog_filelastdate) THEN MAX(matlog_filelastdate) ELSE MAX(employeelog_filelastdate) END as maxfilelastdate from matlog, employeelog where matlog_filename = :filename or employeelog_filename = :filename', [
+        $dataReader = self::GetRowsPDO('select max(matlog_filelastdate) as maxfiledate from matlog where matlog_filename like :filename', [
                     'filename' => self::$filename
         ]);
+
+        if (empty($dataReader['maxfiledate'])) {
+            $dataReader = self::GetRowsPDO('select max(employeelog_filelastdate) as maxfiledate from employeelog where employeelog_filename like :filename', [
+                        'filename' => self::$filename
+            ]);
+        }
+
         if (empty($dataReader))
             return NULL;
         else
-            return $dataReader['maxfilelastdate'];
+            return $dataReader['maxfiledate'];
     }
 
     private static function GetNameByID($Table, $Field, $ID) {
@@ -467,7 +471,7 @@ class FregatImport {
 
             //   var_dump($diff_attr);
             // Если новая запись или произошли изменения в текущей
-            if ($Material->isNewRecord || count((array) $diff_attr) > 0) {
+            if ($Material->isNewRecord || (count((array) $diff_attr) > 0 && $Material->material_importdo === 1)) {
                 $Material->attributes = $xls_attributes_material;
 
                 // material_name1с - Наименование из Excel файла. material_name - Изменяемое наименование пользователем в БД
@@ -479,7 +483,9 @@ class FregatImport {
                     if (!empty($matches[2]))
                         $Material->material_inv = $matches[2];
                 }
-
+                
+                $Material->material_username = 'IMPORT';
+                
                 $Matlog->attributes = $xls_attributes_material;
                 $Matlog->material_number = self::$material_number_xls;
                 $Matlog->material_price = self::$material_price_xls;
@@ -744,9 +750,14 @@ class FregatImport {
             if (file_exists(self::$filename)) {
                 self::$filelastdate = date("Y-m-d H:i:s", filemtime(self::$filename));
 
-                //  $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
+                $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
 
-                if (/* strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
+                if (/* empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
+                    /*   var_dump(self::$filename);
+                      var_dump(self::$filelastdate);
+                      var_dump($filelastdateFromDB);
+                      var_dump($_SERVER);
+                      var_dump($_ENV); */
                     ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
                     ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
                     $logreport->save();
@@ -832,7 +843,8 @@ class FregatImport {
                                             //   'employee_fio' => $employee_fio,
                                             'id_dolzh' => $id_dolzh,
                                             'id_podraz' => $location->id_podraz,
-                                            'id_build' => $location->id_build
+                                            'id_build' => $location->id_build,
+                                            'employee_username' => 'IMPORT'
                                         ];
 
                                         $Employeelog = new Employeelog;
@@ -893,6 +905,7 @@ class FregatImport {
                             fclose($handle);
                         }
                         $logreport->logreport_amount += $i;
+                        $logreport->logreport_employeelastdate = self::$filelastdate;
                         self::$employee = false;
                     } else {
 
@@ -1025,6 +1038,10 @@ class FregatImport {
                             $startRow += $chunkSize;     //переходим на следующий шаг цикла, увеличивая строку, с которой будем читать файл
                         }
                         $logreport->logreport_amount += self::$rownum_xls - (self::$os ? self::$os_start : self::$mat_start);
+                        if (self::$os)
+                            $logreport->logreport_oslastdate = self::$filelastdate;
+                        else
+                            $logreport->logreport_matlastdate = self::$filelastdate;
                     }
                     $logreport->logreport_additions += self::$logreport_additions;
                     $logreport->logreport_updates += self::$logreport_updates;

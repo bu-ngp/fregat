@@ -38,7 +38,7 @@ class Logreport extends \yii\db\ActiveRecord {
             [['logreport_date'], 'required'],
             [['logreport_date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed', 'logreport_memoryused'], 'integer'],
-            [['maxfilelastdate'], 'safe'],
+            [['logreport_employeelastdate', 'logreport_oslastdate', 'logreport_matlastdate'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['logreport_executetime'], 'date', 'format' => 'php:H:i:s'],
         ];
     }
@@ -55,9 +55,11 @@ class Logreport extends \yii\db\ActiveRecord {
             'logreport_additions' => 'Записей добавлено',
             'logreport_amount' => 'Количество записей',
             'logreport_missed' => 'Записей пропущено',
-            'maxfilelastdate' => 'Последнее изменение импортируемых файлов',
             'logreport_executetime' => 'Время выполнения импорта',
             'logreport_memoryused' => 'Выделено памяти',
+            'logreport_employeelastdate' => 'Дата последнего изменения файла для импорта сотрудников',
+            'logreport_oslastdate' => 'Дата последнего изменения файла для импорта основных средств',
+            'logreport_matlastdate' => 'Дата последнего изменения файла для импорта материалов',
         ];
     }
 

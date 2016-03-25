@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Employee;
+use app\func\Proc;
 
 /**
  * EmployeeSearch represents the model behind the search form about `app\models\Fregat\Employee`.
@@ -23,7 +24,7 @@ class EmployeeSearch extends Employee {
     public function rules() {
         return [
             [['employee_id', 'id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
-            [['iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name', 'idperson.auth_user_fullname'], 'safe'],
+            [['employee_username', 'employee_lastchange', 'employee_dateinactive', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name', 'idperson.auth_user_fullname'], 'safe'],
         ];
     }
 
@@ -81,6 +82,9 @@ class EmployeeSearch extends Employee {
                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
+                                $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
                                 if (empty($query->orderBy))
                                     $query->orderBy('employee_id');
@@ -157,6 +161,9 @@ class EmployeeSearch extends Employee {
                                                                         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
                                                                         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                                                         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
+                                                                        $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
                                                                         if (empty($query->orderBy))
                                                                             $query->orderBy('employee_id');
@@ -233,6 +240,9 @@ class EmployeeSearch extends Employee {
                                                                                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
                                                                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                                                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
+                                                                                                $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
+                                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
+                                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
                                                                                                 if (empty($query->orderBy))
                                                                                                     $query->orderBy('employee_id');

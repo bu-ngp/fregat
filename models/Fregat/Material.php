@@ -40,23 +40,26 @@ class Material extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-        [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer'], 'required'],
-        [['material_inv'], 'required', 'except' => 'import1c'],
-        [['material_release'], 'safe'],
-        [['material_number', 'material_price'], 'number'],
-        [['material_writeoff', 'id_matvid', 'id_izmer'], 'integer'],
-        [['material_name', 'material_name1c'], 'string', 'max' => 400],
-        [['material_1c'], 'string', 'max' => 20],
-        [['material_inv'], 'string', 'max' => 50],
-        [['material_serial'], 'string', 'max' => 255],
-        [['material_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Основное средство, 2 - Материалы
-        [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
-        ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
-        [['material_1c'], 'required', 'on' => 'import1c'],
-        [['material_serial'], 'match', 'pattern' => '/^null$|^б\/н$|^б\н$|^б\/н\.$|^б\н\.$|^-$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "null", "б/н", "б\н", "б/н.", "б\н.", "-"'],
-        ['material_price', 'double', 'min' => 0, 'max' => 1000000000],
-        ['material_number', 'double', 'min' => 0, 'max' => 10000000000],
-        ['material_release', 'date', 'format' => 'yyyy-MM-dd'],
+            [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username', 'material_lastchange', 'material_importdo'], 'required'],
+            [['material_inv'], 'required', 'except' => 'import1c'],
+            [['material_release'], 'safe'],
+            [['material_number', 'material_price'], 'number'],
+            [['material_writeoff', 'id_matvid', 'id_izmer'], 'integer'],
+            [['material_name', 'material_name1c'], 'string', 'max' => 400],
+            [['material_1c'], 'string', 'max' => 20],
+            [['material_inv'], 'string', 'max' => 50],
+            [['material_serial'], 'string', 'max' => 255],
+            [['material_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Основное средство, 2 - Материалы
+            [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
+            [['material_1c'], 'required', 'on' => 'import1c'],
+            [['material_serial'], 'match', 'pattern' => '/^null$|^б\/н$|^б\н$|^б\/н\.$|^б\н\.$|^-$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "null", "б/н", "б\н", "б/н.", "б\н.", "-"'],
+            ['material_price', 'double', 'min' => 0, 'max' => 1000000000],
+            ['material_number', 'double', 'min' => 0, 'max' => 10000000000],
+            ['material_release', 'date', 'format' => 'yyyy-MM-dd'],
+            [['material_username', 'string', 'max' => 128]],
+            ['material_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность может быть изменена при импорте, 1 - Материальная ценность при импорте не изменяется
         ];
     }
 
@@ -78,6 +81,9 @@ class Material extends \yii\db\ActiveRecord {
             'material_writeoff' => 'Списан',
             'id_matvid' => 'Вид',
             'id_izmer' => 'Единица измерения',
+            'material_username' => 'Пользователь изменивший запись',
+            'material_lastchange' => 'Дата изменения записи',
+            'material_importdo' => 'Запись изменяема при импортировании',
         ];
     }
 
@@ -107,6 +113,21 @@ class Material extends \yii\db\ActiveRecord {
      */
     public function getTrMats() {
         return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id']);
+    }
+
+    public function beforeValidate() {
+        $this->material_username = empty($this->material_username) ? Yii::$app->user->identity->auth_user_login : $this->material_username;
+        $this->material_lastchange = date('Y-m-d H:i:s');
+        return parent::beforeValidate();
+    }
+
+    public function save($runValidation = true, $attributeNames = null) {
+        if (!$runValidation) {
+            $this->material_username = empty($this->material_username) ? Yii::$app->user->identity->auth_user_login : $this->material_username;
+            $this->material_lastchange = date('Y-m-d H:i:s');
+        }
+
+        return parent::save($runValidation, $attributeNames);
     }
 
 }

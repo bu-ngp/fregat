@@ -10,16 +10,15 @@ use app\models\Fregat\Mattraffic;
 /**
  * MattrafficSearch represents the model behind the search form about `app\models\Fregat\Mattraffic`.
  */
-class MattrafficSearch extends Mattraffic
-{
+class MattrafficSearch extends Mattraffic {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['mattraffic_id', 'id_material', 'id_mol'], 'integer'],
-            [['mattraffic_date'], 'safe'],
+            [['mattraffic_id', 'id_material', 'id_mol', 'mattraffic_tip'], 'integer'],
+            [['mattraffic_date', 'mattraffic_username', 'mattraffic_lastchange'], 'safe'],
             [['mattraffic_number'], 'number'],
         ];
     }
@@ -27,8 +26,7 @@ class MattrafficSearch extends Mattraffic
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -40,8 +38,7 @@ class MattrafficSearch extends Mattraffic
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Mattraffic::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -66,4 +63,5 @@ class MattrafficSearch extends Mattraffic
 
         return $dataProvider;
     }
+
 }
