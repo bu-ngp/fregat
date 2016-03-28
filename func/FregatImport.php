@@ -448,7 +448,8 @@ class FregatImport {
                 // Убераем атрибуты, чтобы он не попали в $diff_attr
                 unset($xls_attributes_material['material_tip_nomenklaturi']);
                 unset($xls_attributes_material['material_number']);
-                unset($xls_attributes_material['material_price']);
+                if (!self::$os)
+                    unset($xls_attributes_material['material_price']);
 
                 // Если в Excel отсутствует инвентарный номер, а в базе он есть, то сделать так, что бы импорт не видел изменения
                 if (empty($xls_attributes_material['material_inv']) && !empty($Material->material_inv))
@@ -742,7 +743,7 @@ class FregatImport {
         $doreport = false;
         self::$materialexists = Material::find()->count() > 0;
 
-  //      self::deleteoldreports();
+        self::DeleteOldReports();
 
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
         foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
@@ -1305,16 +1306,17 @@ class FregatImport {
             echo '<BR>' . mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251') . '<BR>';
     }
 
+    // Функция удаляет последние отчеты
     static private function DeleteOldReports() {
         $countreports = Importconfig::findOne(1);
-        var_dump($countreports->logreport_reportcount);
         if (!empty($countreports)) {
             $files = glob('importreports/*.xlsx');
-            if (count($files) > $countreports->logreport_reportcount)
+
+            if (count($files) > $countreports->logreport_reportcount - 1)
                 $ToDelete = Logreport::find()
                         ->select(['logreport_id'])
                         ->orderBy(['logreport_id' => SORT_DESC])
-                        ->limit(count($files) - $countreports->logreport_reportcount)
+                        ->limit(count($files) - $countreports->logreport_reportcount + 1)
                         ->asArray()
                         ->all();
 
@@ -1323,36 +1325,16 @@ class FregatImport {
                     Traflog::deleteAll(['id_logreport' => $row['logreport_id']]);
                     Matlog::deleteAll(['id_logreport' => $row['logreport_id']]);
                     Employeelog::deleteAll(['id_logreport' => $row['logreport_id']]);
+                    Logreport::findOne($row['logreport_id'])->delete();
 
                     $fileroot = 'importreports/Отчет импорта в систему Фрегат N' . $row['logreport_id'] . '.xlsx';
 
                     if (DIRECTORY_SEPARATOR !== '/')
-                        echo '<BR>' . mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251') . '<BR>';
+                        $fileroot = mb_convert_encoding($fileroot, 'Windows-1251', 'UTF-8');
 
                     unlink($fileroot);
                 }
             }
-
-            //select logreport_id from logreport order by logreport_id desc limit 2
-
-
-            /*   foreach ($files as $file) {
-              var_dump($file);
-
-              if (time() - filectime($file) > $countreports->logreport_reportcount * 24 * 60 * 60) {
-              preg_match('/N(\d+)\./i', $file, $matches);
-
-              var_dump($matches);
-              if ($matches[1]) {
-              $logreportid = $matches[1];
-
-              Traflog::deleteAll(['id_logreport' => $logreportid]);
-              Matlog::deleteAll(['id_logreport' => $logreportid]);
-              Employeelog::deleteAll(['id_logreport' => $logreportid]);
-              unlink($file);
-              }
-              }
-              } */
         }
     }
 
