@@ -40,7 +40,13 @@ class Material extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username', 'material_lastchange', 'material_importdo'], 'required'],
+            [['material_username'], 'filter', 'filter' => function($value) {
+                    return Yii::$app->user->identity->auth_user_login;
+                }],
+            [['material_username'], 'filter', 'filter' => function($value) {
+                    return 'IMPORT';
+                }, 'on' => 'import1c'],
+            [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
             [['material_inv'], 'required', 'except' => 'import1c'],
             [['material_release'], 'safe'],
             [['material_number', 'material_price'], 'number'],
@@ -57,9 +63,9 @@ class Material extends \yii\db\ActiveRecord {
             ['material_price', 'double', 'min' => 0, 'max' => 1000000000],
             ['material_number', 'double', 'min' => 0, 'max' => 10000000000],
             ['material_release', 'date', 'format' => 'yyyy-MM-dd'],
-            [['material_username', 'string', 'max' => 128]],
-            ['material_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
-            [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность может быть изменена при импорте, 1 - Материальная ценность при импорте не изменяется
+            [['material_username'], 'string', 'max' => 128],
+            [['material_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность при импорте не изменяется, 1 - Материальная ценность может быть изменена при импорте
         ];
     }
 
@@ -113,21 +119,6 @@ class Material extends \yii\db\ActiveRecord {
      */
     public function getTrMats() {
         return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id']);
-    }
-
-    public function beforeValidate() {
-        $this->material_username = empty($this->material_username) ? Yii::$app->user->identity->auth_user_login : $this->material_username;
-        $this->material_lastchange = date('Y-m-d H:i:s');
-        return parent::beforeValidate();
-    }
-
-    public function save($runValidation = true, $attributeNames = null) {
-        if (!$runValidation) {
-            $this->material_username = empty($this->material_username) ? Yii::$app->user->identity->auth_user_login : $this->material_username;
-            $this->material_lastchange = date('Y-m-d H:i:s');
-        }
-
-        return parent::save($runValidation, $attributeNames);
     }
 
 }

@@ -55,6 +55,9 @@ class LogreportController extends Controller {
         Employeelog::deleteAll();
         Logreport::deleteAll();
 
+        // Удалить все файлы с расширением .xlsx в папке "importreports"
+        array_map('unlink', glob("importreports/*.xlsx"));
+
         return $this->redirect(['index']);
     }
 

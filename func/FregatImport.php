@@ -386,21 +386,20 @@ class FregatImport {
     }
 
     // Выводи последнюю дату изменения загруженных файлов
-    private static function GetMaxFileLastDate() {
-        $dataReader = self::GetRowsPDO('select max(matlog_filelastdate) as maxfiledate from matlog where matlog_filename like :filename', [
-                    'filename' => self::$filename
-        ]);
+    private static function GetMaxFileLastDate($Importconfig) {
+        if (mb_strpos(self::$filename, $Importconfig['emp_filename'], 0, 'UTF-8') > 0)
+            $fieldname = 'logreport_employeelastdate';
+        elseif (mb_strpos(self::$filename, $Importconfig['os_filename'], 0, 'UTF-8') > 0)
+            $fieldname = 'logreport_oslastdate';
+        elseif (mb_strpos(self::$filename, $Importconfig['mat_filename'], 0, 'UTF-8') > 0)
+            $fieldname = 'logreport_matlastdate';
 
-        if (empty($dataReader['maxfiledate'])) {
-            $dataReader = self::GetRowsPDO('select max(employeelog_filelastdate) as maxfiledate from employeelog where employeelog_filename like :filename', [
-                        'filename' => self::$filename
-            ]);
-        }
+        $dataReader = self::GetRowsPDO('select max(logreport_employeelastdate) as logreport_employeelastdate, max(logreport_oslastdate) as logreport_oslastdate, max(logreport_matlastdate) as logreport_matlastdate from logreport');
 
-        if (empty($dataReader))
+        if (empty($dataReader[$fieldname]))
             return NULL;
         else
-            return $dataReader['maxfiledate'];
+            return $dataReader[$fieldname];
     }
 
     private static function GetNameByID($Table, $Field, $ID) {
@@ -483,9 +482,7 @@ class FregatImport {
                     if (!empty($matches[2]))
                         $Material->material_inv = $matches[2];
                 }
-                
-                $Material->material_username = 'IMPORT';
-                
+
                 $Matlog->attributes = $xls_attributes_material;
                 $Matlog->material_number = self::$material_number_xls;
                 $Matlog->material_price = self::$material_price_xls;
@@ -631,6 +628,7 @@ class FregatImport {
         $xls_attributes_mattraffic = array_merge(self::xls_attributes_mattraffic($row), [
             'id_material' => $material_id,
             'id_mol' => $employee_id,
+            'mattraffic_tip' => 1,
         ]);
 
         /*   var_dump(Mattraffic::find()->max('mattraffic_id')); */
@@ -709,7 +707,7 @@ class FregatImport {
         // Если Материал списан (Сумма = 0)
         if ((!self::$os && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
                 // Или Основное средство списано (Статус = "Списан")
-                || (self::$os && $Material->material_writeoff === '0' && trim($row[self::xls('material_status')]) === 'Списан')) {
+                || (self::$os && $Material->material_writeoff == 0 && trim($row[self::xls('material_status')]) === 'Списан')) {
 
             $Material->material_writeoff = 1;
             if (!self::$os)
@@ -719,6 +717,9 @@ class FregatImport {
 
             $Matlog->material_writeoff = 'Да';
             $Matlog->save(false);
+
+            $Mattraffic->mattraffic_tip = 2; // Списание
+            $Mattraffic->save(false);
 
             $writeoffakt = new Writeoffakt();
             $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
@@ -741,6 +742,8 @@ class FregatImport {
         $doreport = false;
         self::$materialexists = Material::find()->count() > 0;
 
+  //      self::deleteoldreports();
+
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
         foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
             self::$filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
@@ -750,9 +753,9 @@ class FregatImport {
             if (file_exists(self::$filename)) {
                 self::$filelastdate = date("Y-m-d H:i:s", filemtime(self::$filename));
 
-                $filelastdateFromDB = self::GetMaxFileLastDate(self::$filename);
+                $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
-                if (/* empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
+                if (empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
                     /*   var_dump(self::$filename);
                       var_dump(self::$filelastdate);
                       var_dump($filelastdateFromDB);
@@ -844,7 +847,7 @@ class FregatImport {
                                             'id_dolzh' => $id_dolzh,
                                             'id_podraz' => $location->id_podraz,
                                             'id_build' => $location->id_build,
-                                            'employee_username' => 'IMPORT'
+                                                // 'employee_username' => 'IMPORT'
                                         ];
 
                                         $Employeelog = new Employeelog;
@@ -1300,6 +1303,57 @@ class FregatImport {
             echo '<BR>' . $fileroot . '<BR>';
         else
             echo '<BR>' . mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251') . '<BR>';
+    }
+
+    static private function DeleteOldReports() {
+        $countreports = Importconfig::findOne(1);
+        var_dump($countreports->logreport_reportcount);
+        if (!empty($countreports)) {
+            $files = glob('importreports/*.xlsx');
+            if (count($files) > $countreports->logreport_reportcount)
+                $ToDelete = Logreport::find()
+                        ->select(['logreport_id'])
+                        ->orderBy(['logreport_id' => SORT_DESC])
+                        ->limit(count($files) - $countreports->logreport_reportcount)
+                        ->asArray()
+                        ->all();
+
+            if (!empty($ToDelete)) {
+                foreach ($ToDelete as $row) {
+                    Traflog::deleteAll(['id_logreport' => $row['logreport_id']]);
+                    Matlog::deleteAll(['id_logreport' => $row['logreport_id']]);
+                    Employeelog::deleteAll(['id_logreport' => $row['logreport_id']]);
+
+                    $fileroot = 'importreports/Отчет импорта в систему Фрегат N' . $row['logreport_id'] . '.xlsx';
+
+                    if (DIRECTORY_SEPARATOR !== '/')
+                        echo '<BR>' . mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251') . '<BR>';
+
+                    unlink($fileroot);
+                }
+            }
+
+            //select logreport_id from logreport order by logreport_id desc limit 2
+
+
+            /*   foreach ($files as $file) {
+              var_dump($file);
+
+              if (time() - filectime($file) > $countreports->logreport_reportcount * 24 * 60 * 60) {
+              preg_match('/N(\d+)\./i', $file, $matches);
+
+              var_dump($matches);
+              if ($matches[1]) {
+              $logreportid = $matches[1];
+
+              Traflog::deleteAll(['id_logreport' => $logreportid]);
+              Matlog::deleteAll(['id_logreport' => $logreportid]);
+              Employeelog::deleteAll(['id_logreport' => $logreportid]);
+              unlink($file);
+              }
+              }
+              } */
+        }
     }
 
 }

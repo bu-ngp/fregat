@@ -37,12 +37,18 @@ class Mattraffic extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_lastchange', 'mattraffic_tip'], 'required'],
+            ['mattraffic_username', 'filter', 'filter' => function($value) {
+                    return Yii::$app->user->identity->auth_user_login;
+                }],
+            ['mattraffic_username', 'filter', 'filter' => function($value) {
+                    return 'IMPORT';
+                }, 'on' => 'import1c'],
+            [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip'], 'required'],
             [['mattraffic_date'], 'safe'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer'],
             ['mattraffic_date', 'unique', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом'],
-            [['mattraffic_username', 'string', 'max' => 128]],
+            [['mattraffic_username'], 'string', 'max' => 128],
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Приход, 2 - Списание
         ];
@@ -104,21 +110,6 @@ class Mattraffic extends \yii\db\ActiveRecord {
      */
     public function getWriteoffakts() {
         return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id']);
-    }
-
-    public function beforeValidate() {
-        $this->mattraffic_username = empty($this->mattraffic_username) ? Yii::$app->user->identity->auth_user_login : $this->mattraffic_username;
-        $this->mattraffic_lastchange = date('Y-m-d H:i:s');
-        return parent::beforeValidate();
-    }
-
-    public function save($runValidation = true, $attributeNames = null) {
-        if (!$runValidation) {
-            $this->mattraffic_username = empty($this->mattraffic_username) ? Yii::$app->user->identity->auth_user_login : $this->mattraffic_username;
-            $this->mattraffic_lastchange = date('Y-m-d H:i:s');
-        }
-
-        return parent::save($runValidation, $attributeNames);
     }
 
 }

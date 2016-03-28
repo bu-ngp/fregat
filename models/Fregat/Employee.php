@@ -37,7 +37,13 @@ class Employee extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['id_dolzh', 'id_podraz', 'id_person', 'employee_username', 'employee_lastchange'], 'required'],
+            ['employee_username', 'filter', 'filter' => function($value) {
+                    return Yii::$app->user->identity->auth_user_login;
+                }],
+            ['employee_username', 'filter', 'filter' => function($value) {
+                    return 'IMPORT';
+                }, 'on' => 'import1c'],
+            [['id_dolzh', 'id_podraz', 'id_person', 'employee_username'], 'required'],
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],
@@ -126,21 +132,6 @@ class Employee extends \yii\db\ActiveRecord {
      */
     public function getOsmotrakts0() {
         return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id']);
-    }
-
-    public function beforeValidate() {
-        $this->employee_username = empty($this->employee_username) ? Yii::$app->user->identity->auth_user_login : $this->employee_username;
-        $this->employee_lastchange = date('Y-m-d H:i:s');
-        return parent::beforeValidate();
-    }
-
-    public function save($runValidation = true, $attributeNames = null) {
-        if (!$runValidation) {
-            $this->employee_username = empty($this->employee_username) ? Yii::$app->user->identity->auth_user_login : $this->employee_username;
-            $this->employee_lastchange = date('Y-m-d H:i:s');
-        }
-
-        return parent::save($runValidation, $attributeNames);
     }
 
 }
