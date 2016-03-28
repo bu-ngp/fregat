@@ -90,7 +90,7 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect($result[key($result)]['url']);
         } else {
-
+            
             return $this->render('update', [
                         'model' => $model,
             ]);

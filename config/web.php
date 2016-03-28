@@ -54,6 +54,10 @@ $config = [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'dateFormat' => 'dd.MM.yyyy',
+        ],
     ],
     'modules' => [
         'dynagrid' => [

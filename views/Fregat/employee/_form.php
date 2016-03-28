@@ -7,6 +7,8 @@ use app\models\Fregat\Podraz;
 use app\models\Fregat\Build;
 use kartik\select2\Select2;
 use app\func\Proc;
+use kartik\date\DatePicker;
+use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Employee */
@@ -14,6 +16,8 @@ use app\func\Proc;
 ?>
 
 <div class="employee-form">
+
+    <?php $model->employee_dateinactive = Yii::$app->formatter->asDate($model->employee_dateinactive); ?>
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -60,6 +64,18 @@ use app\func\Proc;
                 'resultrequest' => 'Fregat/build/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
     ]));
+    ?>
+
+    <?=
+    $form->field($model, 'employee_dateinactive')->widget(DateTimePicker::classname(), [
+        'options' => ['placeholder' => 'Выберите дату ...'],
+        'pluginOptions' => [
+            'format' => 'dd.mm.yyyy',
+            'minView' => 2,
+            'maxView' => 3,
+            'autoclose' => true,
+        ]
+    ])
     ?>
 
     <div class="form-group">

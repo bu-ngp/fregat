@@ -77,6 +77,12 @@ use yii\web\Session;
                                     'iddolzh.dolzh_name',
                                     'idpodraz.podraz_name',
                                     'idbuild.build_name',
+                                    [
+                                        'attribute' => 'employee_dateinactive',
+                                        'value' => function ($model, $key, $index, $column) {
+                                            return date("d.m.Y", strtotime($model->employee_dateinactive));
+                                        }
+                                    ],
                                 ],
                                 'buttons' => [
                                     'update' => ['Fregat/employee/update', 'employee_id'],
