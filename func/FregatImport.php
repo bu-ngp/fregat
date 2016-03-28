@@ -1053,6 +1053,14 @@ class FregatImport {
                     $logreport->logreport_missed += self::$logreport_missed;
 
                     $logreport->save();
+                } else {
+                    if (self::$os)
+                        $logreport->logreport_oslastdate = self::$filelastdate;
+                    else
+                        $logreport->logreport_matlastdate = self::$filelastdate;
+
+                    if ($filename === $Importconfig['emp_filename'] . '.txt')
+                        $logreport->logreport_employeelastdate = self::$filelastdate;
                 }
             }
         }
@@ -1312,11 +1320,11 @@ class FregatImport {
         if (!empty($countreports)) {
             $files = glob('importreports/*.xlsx');
 
-            if (count($files) > $countreports->logreport_reportcount - 1)
+            if (count($files) > $countreports->logreport_reportcount)
                 $ToDelete = Logreport::find()
                         ->select(['logreport_id'])
-                        ->orderBy(['logreport_id' => SORT_DESC])
-                        ->limit(count($files) - $countreports->logreport_reportcount + 1)
+                        ->orderBy(['logreport_id' => SORT_ASC])
+                        ->limit(count($files) - $countreports->logreport_reportcount)
                         ->asArray()
                         ->all();
 
