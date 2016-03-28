@@ -38,7 +38,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             ['mattraffic_username', 'filter', 'filter' => function($value) {
-                    return Yii::$app->user->identity->auth_user_login;
+                    return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
                 }],
             ['mattraffic_username', 'filter', 'filter' => function($value) {
                     return 'IMPORT';

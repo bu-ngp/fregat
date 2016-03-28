@@ -41,7 +41,7 @@ class Material extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['material_username'], 'filter', 'filter' => function($value) {
-                    return Yii::$app->user->identity->auth_user_login;
+                    return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
                 }],
             [['material_username'], 'filter', 'filter' => function($value) {
                     return 'IMPORT';
