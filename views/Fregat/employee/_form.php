@@ -17,7 +17,7 @@ use kartik\datetime\DateTimePicker;
 
 <div class="employee-form">
 
-    <?php $model->employee_dateinactive = Yii::$app->formatter->asDate($model->employee_dateinactive); ?>
+    <?php $model->employee_dateinactive = empty($model->employee_dateinactive) ? null : Yii::$app->formatter->asDate($model->employee_dateinactive); ?>
 
     <?php $form = ActiveForm::begin(); ?>
 
