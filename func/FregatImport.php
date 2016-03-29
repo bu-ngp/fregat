@@ -169,10 +169,41 @@ class FregatImport {
         return $izmer_id;
     }
 
+    // Конвертирует наименования должностей
+    private static function DolzhConvert($value) {
+        switch ($value) {
+            case 'мед.сестра':
+                $value = 'Медицинская сестра';
+                break;
+            case 'Медицинская сестра *регистратуры*':
+                $value = 'Медицинская сестра [регистратуры]';
+                break;
+            case 'Ст. медсестра поликлиники':
+                $value = 'Старшая медицинская сестра поликлиники';
+                break;
+            case 'Ст.мед.сестра':
+                $value = 'Старшая медицинская сестра';
+                break;
+            case 'старшая мед. сестра':
+                $value = 'Старшая медицинская сестра';
+                break;
+            case 'Старшая медицинская сестра *регистратуры*':
+                $value = 'Старшая медицинская сестра [регистратуры]';
+                break;
+            case 'Уборщик производственных и служебных  помещений':
+                $value = 'Уборщик производственных и служебных помещений';
+                break;
+        }
+
+        return $value;
+    }
+
     // Определяем должность сотрудника
     // Если должность не найдена в справочнике, она добавляется
     private static function AssignDolzh($value) {
         if (trim($value) !== '') {
+            $value = self::DolzhConvert($value);
+
             $dolzh_id = self::GetRowsPDO('select dolzh_id, dolzh_name from dolzh where dolzh_name like :dolzh_name', ['dolzh_name' => $value]);
 
             if (empty($dolzh_id)) {
@@ -478,6 +509,11 @@ class FregatImport {
                 if ($Material->material_name === '' || $Material->material_name === NULL)
                     $Material->material_name = $Material->material_name1c;
 
+                if (!$Material->isNewRecord && $Material->material_name !== $Material->material_name1c && $Material->material_importdo === 1) {
+                    $Material->material_name = $Material->material_name1c;
+                    $diff_attr['material_name'] = $Material->material_name1c;
+                }
+
                 if (!empty($Material->material_1c) && empty($Material->material_inv)) {
                     preg_match('/^(00-)?(.*)/ui', $Material->material_1c, $matches);
                     if (!empty($matches[2]))
@@ -731,6 +767,44 @@ class FregatImport {
         }
     }
 
+    // Делает специальности сотрудников неактивными, если они не найдены в файле сотрудников для импорта
+    static private function InactiveEmployee() {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], ['employee_forinactive' => NULL]);
+
+            $Forlog = Employee::find()
+                    ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
+                    ->andWhere(['employee_forinactive' => NULL])
+                    ->all();
+
+            if (!empty($Forlog)) {
+                foreach ($Forlog as $i => $ar) {
+                    $Employeelog = new Employeelog;
+                    $Employeelog->id_logreport = self::$logreport_id;
+                    $Employeelog->employeelog_type = 2;
+                    $Employeelog->employeelog_filename = self::$filename;
+                    $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                    $Employeelog->employeelog_rownum = 0;
+                    $Employeelog->employeelog_message = 'Запись изменена. Специальность сотрудника неактивна с "' . Yii::$app->formatter->asDate($ar->employee_dateinactive) . '"';
+                    $Employeelog->employee_fio = $ar->idperson->auth_user_fullname;
+                    $Employeelog->dolzh_name = $ar->iddolzh->dolzh_name;
+                    $Employeelog->podraz_name = $ar->idpodraz->podraz_name;
+                    $Employeelog->build_name = $ar->idbuild->build_name;
+
+                    $Employeelog->save(false);
+                }
+            }
+
+            Employee::updateAll(['employee_forinactive' => NULL], ['employee_forinactive' => 1]);
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            Employee::updateAll(['employee_forinactive' => NULL], ['employee_forinactive' => 1]);
+            throw new Exception($e->getMessage() . ' InactiveEmployee(), $filename = ' . self::$filename);
+        }
+    }
+
     // Производим импорт материальных ценностей
     static function ImportDo() {
         // Делаем запись в таблицу отчетов импорта
@@ -756,7 +830,7 @@ class FregatImport {
 
                 $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
-                if (empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
+                if (/* empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
                     /*   var_dump(self::$filename);
                       var_dump(self::$filelastdate);
                       var_dump($filelastdateFromDB);
@@ -783,130 +857,145 @@ class FregatImport {
 
                         if ($handle) {
                             while (($subject = fgets($handle, 4096)) !== false) {
+                                $transaction = Yii::$app->db->beginTransaction();
                                 $i++;
-                                $pattern = '/^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
-                                preg_match($pattern, $subject, $matches);
+                                try {
+                                    $pattern = '/^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
+                                    preg_match($pattern, $subject, $matches);
 
-                                if ($matches[0] !== NULL) {
-                                    $pattern = '/(^Поликлиника №)\s?([1,2,3])\s?$/ui';
-                                    $matches[2] = preg_replace($pattern, 'Взрослая $1$2', mb_strtolower($matches[2], 'UTF-8'));
+                                    if ($matches[0] !== NULL) {
+                                        $pattern = '/(^Поликлиника №)\s?([1,2,3])\s?$/ui';
+                                        $matches[2] = preg_replace($pattern, 'Взрослая $1$2', mb_strtolower($matches[2], 'UTF-8'));
 
-                                    if ($matches[3] === 'Поликлиника профилактических осмотров')
-                                        $matches[2] = $matches[3];
+                                        if ($matches[3] === 'Поликлиника профилактических осмотров')
+                                            $matches[2] = $matches[3];
 
-                                    $pattern = '/^(.+) БУ "Нижневартовская городская поликлиника"$/ui';
-                                    $matches[3] = preg_replace($pattern, '$1', $matches[3]);
+                                        $pattern = '/^(.+) БУ "Нижневартовская городская поликлиника"$/ui';
+                                        $matches[3] = preg_replace($pattern, '$1', $matches[3]);
 
-                                    $employee_fio = $matches[1];
-                                    $location = self::AssignLocationForEmployeeImport($matches[3], $matches[2]);
+                                        $employee_fio = $matches[1];
+                                        $location = self::AssignLocationForEmployeeImport($matches[3], $matches[2]);
 
-                                    $id_dolzh = self::AssignDolzh($matches[4]);
+                                        $id_dolzh = self::AssignDolzh($matches[4]);
 
-                                    //            $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
+                                        //            $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
 
-                                    $Employee = Employee::find()
-                                            ->joinWith('idperson')
-                                            ->where(array_merge([
+                                        $Employee = Employee::find()
+                                                ->joinWith('idperson')
+                                                ->where(array_merge([
+                                                    'id_dolzh' => $id_dolzh,
+                                                    'id_podraz' => $location->id_podraz,
+                                                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $location->id_build]))
+                                                ->andFilterWhere(['like', 'auth_user_fullname', $employee_fio, false])
+                                                ->one();
+
+
+                                        /*  $Employee = self::GetRowsPDO('select employee_id, auth_user_fullname, id_dolzh, id_podraz, id_build from employee inner join auth_user on employee.id_person = auth_user.auth_user_id  where auth_user_fullname like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
+                                          'employee_fio' => $employee_fio,
+                                          'id_dolzh' => $id_dolzh,
+                                          'id_podraz' => $location->id_podraz,
+                                          ], empty($location->id_build) ? [] : ['id_build' => $location->id_build])); */
+
+                                        if (empty($Employee)) {
+                                            /*  var_dump('ok');
+                                              var_dump($Employee);
+                                              var_dump($employee_fio);
+                                              var_dump($location);
+                                              var_dump($id_dolzh); */
+
+                                            $AuthuserCount = Authuser::find()
+                                                    ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                                                    ->count();
+
+                                            $Authuser = $AuthuserCount == 1 ? Authuser::find()
+                                                            ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                                                            ->one() : false;
+
+                                            if (empty($Authuser) || $AuthuserCount > 1) {
+                                                $Authuser = new Authuser;
+                                                $Authuser->auth_user_fullname = $employee_fio;
+                                                $Authuser->auth_user_login = Proc::CreateLogin($employee_fio);
+                                                $Authuser->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
+                                            }
+
+                                            $Employee = new Employee;
+                                            $Employee->attributes = [
+                                                //   'employee_fio' => $employee_fio,
                                                 'id_dolzh' => $id_dolzh,
                                                 'id_podraz' => $location->id_podraz,
-                                                            ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $location->id_build]))
-                                            ->andFilterWhere(['like', 'auth_user_fullname', $employee_fio, false])
-                                            ->one();
+                                                'id_build' => $location->id_build,
+                                                'employee_forinactive' => 1,
+                                                    // 'employee_username' => 'IMPORT'
+                                            ];
 
+                                            $Employeelog = new Employeelog;
+                                            $Employeelog->id_logreport = self::$logreport_id;
+                                            $Employeelog->employeelog_type = 1;
+                                            $Employeelog->employeelog_filename = self::$filename;
+                                            $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                                            $Employeelog->employeelog_rownum = $i;
+                                            $Employeelog->employeelog_message = 'Запись добавлена.';
 
-                                    /*  $Employee = self::GetRowsPDO('select employee_id, auth_user_fullname, id_dolzh, id_podraz, id_build from employee inner join auth_user on employee.id_person = auth_user.auth_user_id  where auth_user_fullname like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
-                                      'employee_fio' => $employee_fio,
-                                      'id_dolzh' => $id_dolzh,
-                                      'id_podraz' => $location->id_podraz,
-                                      ], empty($location->id_build) ? [] : ['id_build' => $location->id_build])); */
+                                            if (isset($Employee->scenarios()['import1c']))
+                                                $Employee->scenario = 'import1c';
 
-                                    if (empty($Employee)) {
-                                        /*  var_dump('ok');
-                                          var_dump($Employee);
-                                          var_dump($employee_fio);
-                                          var_dump($location);
-                                          var_dump($id_dolzh); */
+                                            if (isset($Authuser->scenarios()['import1c']))
+                                                $Authuser->scenario = 'import1c';
 
-                                        $AuthuserCount = Authuser::find()
-                                                ->where(['like', 'auth_user_fullname', $employee_fio, false])
-                                                ->count();
-
-                                        $Authuser = $AuthuserCount == 1 ? Authuser::find()
-                                                        ->where(['like', 'auth_user_fullname', $employee_fio, false])
-                                                        ->one() : false;
-
-                                        if (empty($Authuser) || $AuthuserCount > 1) {
-                                            $Authuser = new Authuser;
-                                            $Authuser->auth_user_fullname = $employee_fio;
-                                            $Authuser->auth_user_login = Proc::CreateLogin($employee_fio);
-                                            $Authuser->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
-                                        }
-
-                                        $Employee = new Employee;
-                                        $Employee->attributes = [
-                                            //   'employee_fio' => $employee_fio,
-                                            'id_dolzh' => $id_dolzh,
-                                            'id_podraz' => $location->id_podraz,
-                                            'id_build' => $location->id_build,
-                                                // 'employee_username' => 'IMPORT'
-                                        ];
-
-                                        $Employeelog = new Employeelog;
-                                        $Employeelog->id_logreport = self::$logreport_id;
-                                        $Employeelog->employeelog_type = 1;
-                                        $Employeelog->employeelog_filename = self::$filename;
-                                        $Employeelog->employeelog_filelastdate = self::$filelastdate;
-                                        $Employeelog->employeelog_rownum = $i;
-                                        $Employeelog->employeelog_message = 'Запись добавлена.';
-
-                                        if (isset($Employee->scenarios()['import1c']))
-                                            $Employee->scenario = 'import1c';
-
-                                        if (isset($Authuser->scenarios()['import1c']))
-                                            $Authuser->scenario = 'import1c';
-
-                                        if ($Authuser->validate()) {
-                                            $Authuser->save(false);
-                                            $Employee->id_person = $Authuser->getPrimaryKey();
-                                            if ($Employee->validate()) {
-                                                self::$logreport_additions++;
-                                                $Employee->save(false);
+                                            if ($Authuser->validate()) {
+                                                $Authuser->save(false);
+                                                $Employee->id_person = $Authuser->getPrimaryKey();
+                                                if ($Employee->validate()) {
+                                                    self::$logreport_additions++;
+                                                    $Employee->save(false);
+                                                } else {
+                                                    $Employeelog->employeelog_type = 3;
+                                                    $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
+                                                    foreach ($Employee->getErrors() as $fields)
+                                                        $Employeelog->employeelog_message .= implode(' ', $fields) . ' ';
+                                                    self::$logreport_errors++;
+                                                }
                                             } else {
                                                 $Employeelog->employeelog_type = 3;
                                                 $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
-                                                foreach ($Employee->getErrors() as $fields)
+                                                foreach ($Authuser->getErrors() as $fields)
                                                     $Employeelog->employeelog_message .= implode(' ', $fields) . ' ';
                                                 self::$logreport_errors++;
                                             }
+
+                                            $Employeelog->employee_fio = $Authuser->auth_user_fullname;
+                                            $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+                                            $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
+                                            if (!empty($Employee->id_build))
+                                                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+                                            $Employeelog->save(false);
                                         } else {
-                                            $Employeelog->employeelog_type = 3;
-                                            $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
-                                            foreach ($Authuser->getErrors() as $fields)
-                                                $Employeelog->employeelog_message .= implode(' ', $fields) . ' ';
-                                            self::$logreport_errors++;
+                                            if ($Employee->employee_importdo === 1) {
+                                                $Employee->employee_forinactive = 1;
+                                                $Employee->save(false);
+                                            }
                                         }
-
-                                        $Employeelog->employee_fio = $Authuser->auth_user_fullname;
-                                        $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
-                                        $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
-                                        if (!empty($Employee->id_build))
-                                            $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
-
+                                    } elseif (trim($subject) !== '') {
+                                        $Employeelog = new Employeelog;
+                                        $Employeelog->id_logreport = self::$logreport_id;
+                                        $Employeelog->employeelog_type = 3;
+                                        $Employeelog->employeelog_filename = self::$filename;
+                                        $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                                        $Employeelog->employeelog_rownum = $i;
+                                        $Employeelog->employeelog_message = 'Ошибка при добавлении записи: Не пройдено регулярное выражение /^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
                                         $Employeelog->save(false);
+                                        self::$logreport_errors++;
                                     }
-                                } elseif (trim($subject) !== '') {
-                                    $Employeelog = new Employeelog;
-                                    $Employeelog->id_logreport = self::$logreport_id;
-                                    $Employeelog->employeelog_type = 3;
-                                    $Employeelog->employeelog_filename = self::$filename;
-                                    $Employeelog->employeelog_filelastdate = self::$filelastdate;
-                                    $Employeelog->employeelog_rownum = $i;
-                                    $Employeelog->employeelog_message = 'Ошибка при добавлении записи: Не пройдено регулярное выражение /^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
-                                    $Employeelog->save(false);
-                                    self::$logreport_errors++;
+                                    $transaction->commit();
+                                } catch (Exception $e) {
+                                    $transaction->rollback();
+                                    throw new Exception($e->getMessage() . ' $i = ' . $i . '; $filename = ' . self::$filename);
                                 }
                             }
                             fclose($handle);
+
+                            self::InactiveEmployee();
                         }
                         $logreport->logreport_amount += $i;
                         $logreport->logreport_employeelastdate = self::$filelastdate;

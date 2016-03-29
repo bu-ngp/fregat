@@ -56,6 +56,8 @@ class Employee extends \yii\db\ActiveRecord {
             //   [['employee_fio'], 'string', 'max' => 255],
             //  [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
             ['id_person', 'unique', 'targetAttribute' => ['id_person', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'На этого сотрудника уже есть такая специальность'],
+            [['employee_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Специальность при импорте не изменяется, 1 - Специальность может быть изменена при импорте  
+            [['employee_forinactive'], 'integer', 'min' => 1, 'max' => 1], // 1 - Сотрудник не найдет в файле импорта сотрудников, т.е. не работает по данной специальности, NULL по умолчанию
         ];
     }
 
