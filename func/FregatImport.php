@@ -790,7 +790,7 @@ class FregatImport {
                     $Employeelog->employee_fio = $ar->idperson->auth_user_fullname;
                     $Employeelog->dolzh_name = $ar->iddolzh->dolzh_name;
                     $Employeelog->podraz_name = $ar->idpodraz->podraz_name;
-                    $Employeelog->build_name = $ar->idbuild->build_name;
+                    $Employeelog->build_name = $ar->isRelationPopulated('idbuild') ? $ar->idbuild->build_name : '';
 
                     $Employeelog->save(false);
                 }
