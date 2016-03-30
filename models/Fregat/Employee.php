@@ -74,6 +74,7 @@ class Employee extends \yii\db\ActiveRecord {
             'employee_username' => 'Пользователь изменивший запись',
             'employee_lastchange' => 'Дата изменения записи',
             'employee_dateinactive' => 'Дата с которой специальность неактивна',
+            'employee_importdo' => 'Изменять данные специальности при импорте из 1С',
         ];
     }
 

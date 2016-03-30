@@ -196,6 +196,9 @@ class FregatImport {
             case 'Заведующий фельдшерским здравпунктом-фельдшер':
                 $value = 'Фельдшер';
                 break;
+            case 'Медицинская сестра кабинета (инфекционных заболеваний)':
+                $value = 'Медицинская сестра (кабинета инфекционных заболеваний)';
+                break;
         }
 
         return $value;
@@ -773,12 +776,15 @@ class FregatImport {
     // Делает специальности сотрудников неактивными, если они не найдены в файле сотрудников для импорта
     static private function InactiveEmployee() {
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], ['employee_forinactive' => NULL]);
+        try {            
+          //  Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], 'employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(id_person) = 1)');
 
+            Yii::$app->db->createCommand('UPDATE employee inner join (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1) e2 on employee.id_person = e2.id_person SET employee_dateinactive=NOW() WHERE employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null')
+                    ->execute();
+            
             $Forlog = Employee::find()
                     ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
-                    ->andWhere(['employee_forinactive' => NULL])
+                    ->where('employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
                     ->all();
 
             if (!empty($Forlog))
@@ -832,7 +838,7 @@ class FregatImport {
 
                 $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
-                if (/* empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
+                if (empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
                     /*   var_dump(self::$filename);
                       var_dump(self::$filelastdate);
                       var_dump($filelastdateFromDB);

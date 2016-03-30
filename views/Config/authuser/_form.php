@@ -69,8 +69,8 @@ use yii\web\Session;
                                     ],
                                 ]
                     ]));
-                                    
-                                  
+
+
 
                 echo DynaGrid::widget(Proc::DGopts([
                             'columns' => Proc::DGcols([
@@ -82,7 +82,14 @@ use yii\web\Session;
                                     [
                                         'attribute' => 'employee_dateinactive',
                                         'value' => function ($model, $key, $index, $column) {
-                                            return empty($model->employee_dateinactive) ? '' : date("d.m.Y", strtotime($model->employee_dateinactive));
+                                            return empty($model->employee_dateinactive) ? NULL : Yii::$app->formatter->asDate($model->employee_dateinactive); //date("d.m.Y", strtotime());
+                                        }
+                                    ],
+                                    [
+                                        'attribute' => 'employee_importdo',
+                                        'visible' => false,
+                                        'value' => function ($model, $key, $index, $column) {
+                                            return $model->employee_importdo === 1 ? 'Да' : 'Нет';
                                         }
                                     ],
                                 ],

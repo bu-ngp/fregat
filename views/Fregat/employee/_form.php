@@ -78,6 +78,10 @@ use kartik\datetime\DateTimePicker;
     ])
     ?>
 
+    <?=
+    $form->field($model, 'employee_importdo')->checkbox();
+    ?>
+
     <div class="form-group">
         <div class="form-group">
             <div class="panel panel-default">
