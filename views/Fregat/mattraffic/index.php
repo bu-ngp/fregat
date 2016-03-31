@@ -148,12 +148,24 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'gridOptions' => [
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
-                    'options' => ['id' => 'mattrafficgrid'],
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-th-large"></i> ' . $this->title,
-                    ],
-                ]
-    ]));
-    ?>
+                    'rowOptions' => function ($model, $index, $widget, $grid) {
+                        $class = [];
+                        if ($model->idMaterial->material_tip == 1) {
+                            $class = ['class' => 'warning'];
+                        } else {
+                            $class = ['class' => 'danger'];
+                        }
+                        if ($model->idMaterial->material_writeoff == 1) {
+                            $class = ['class' => 'spisanie'];
+                        }
+                        return $class;
+                    },
+                            'options' => ['id' => 'mattrafficgrid'],
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-th-large"></i> ' . $this->title,
+                            ],
+                        ]
+            ]));
+            ?>
 
 </div>

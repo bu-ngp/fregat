@@ -125,3 +125,7 @@ div.modal_filter>div.modal-dialog {
 .container {
     width: 80%;
 }
+
+tr.spisanie>td {
+    background-color: #D4D4D4;
+}
