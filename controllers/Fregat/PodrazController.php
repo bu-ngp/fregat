@@ -44,14 +44,16 @@ class PodrazController extends Controller {
 
     public function actionIndex() {
         $searchModel = new PodrazSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $Request = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($Request);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'iduser' => $Request['iduser'],
         ]);
     }
-    
+
     public function actionSelectinput($field, $q = null) {
         return Proc::select2request(new Podraz, $field, $q);
     }

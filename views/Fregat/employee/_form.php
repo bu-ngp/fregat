@@ -7,7 +7,6 @@ use app\models\Fregat\Podraz;
 use app\models\Fregat\Build;
 use kartik\select2\Select2;
 use app\func\Proc;
-use kartik\date\DatePicker;
 use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
@@ -33,6 +32,9 @@ use kartik\datetime\DateTimePicker;
                 'fromgridroute' => 'Fregat/dolzh/index',
                 'resultrequest' => 'Fregat/dolzh/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
+                'dopparams' => [
+                    'iduser' => $iduser,
+                ],
     ]));
     ?>
 
@@ -48,6 +50,9 @@ use kartik\datetime\DateTimePicker;
                 'fromgridroute' => 'Fregat/podraz/index',
                 'resultrequest' => 'Fregat/podraz/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
+                'dopparams' => [
+                    'iduser' => $iduser,
+                ],
     ]));
     ?>
 
@@ -63,6 +68,9 @@ use kartik\datetime\DateTimePicker;
                 'fromgridroute' => 'Fregat/build/index',
                 'resultrequest' => 'Fregat/build/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
+                'dopparams' => [
+                    'iduser' => $iduser,
+                ],
     ]));
     ?>
 

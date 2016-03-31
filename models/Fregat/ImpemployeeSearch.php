@@ -99,7 +99,7 @@ class ImpemployeeSearch extends Impemployee {
                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idemployee.idperson.auth_user_fullname')]);
-                                                
+
 
                                                 $dataProvider->sort->attributes['idemployee.employee_id'] = [
                                                     'asc' => ['idemployee.employee_id' => SORT_ASC],
@@ -125,7 +125,7 @@ class ImpemployeeSearch extends Impemployee {
                                                     'asc' => ['idpodraz.podraz_name' => SORT_ASC],
                                                     'desc' => ['idpodraz.podraz_name' => SORT_DESC],
                                                 ];
-                                                
+
                                                 $dataProvider->sort->attributes['idemployee.idperson.auth_user_fullname'] = [
                                                     'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
                                                     'desc' => ['idperson.auth_user_fullname' => SORT_DESC],

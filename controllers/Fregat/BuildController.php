@@ -44,11 +44,13 @@ class BuildController extends Controller {
 
     public function actionIndex() {
         $searchModel = new BuildSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $Request = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($Request);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'iduser' => $Request['iduser'],
         ]);
     }
 

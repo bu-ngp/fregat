@@ -7,9 +7,9 @@ use app\func\Proc;
 /* @var $model app\models\Fregat\Employee */
 
 $this->title = 'Новая специальность';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
-    'model' => $model,
-]);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="employee-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -18,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
             <?=
             $this->render('_form', [
                 'model' => $model,
+                'iduser' => $iduser,
             ])
             ?>
         </div>

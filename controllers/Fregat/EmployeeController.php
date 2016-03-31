@@ -68,7 +68,7 @@ class EmployeeController extends Controller {
 
         $result = Proc::GetBreadcrumbsFromSession();
         end($result);
-        prev($result);        
+        prev($result);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect($result[key($result)]['url']);
@@ -76,6 +76,7 @@ class EmployeeController extends Controller {
 
             return $this->render('create', [
                         'model' => $model,
+                        'iduser' => $iduser,
             ]);
         }
     }
@@ -90,7 +91,7 @@ class EmployeeController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect($result[key($result)]['url']);
         } else {
-            
+
             return $this->render('update', [
                         'model' => $model,
             ]);

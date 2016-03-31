@@ -171,13 +171,13 @@ class Proc {
                 ['class' => 'kartik\grid\SerialColumn',
                     'header' => Html::encode('№'),
                 ]
-                    ], isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [], [
-                [ 'class' => 'kartik\grid\ActionColumn',
-                    'header' => Html::encode('Действия'),
-                    'contentOptions' => ['style' => 'white-space: nowrap;'],
-                    'template' => $tmpl,
-                    'buttons' => isset($params['buttons']) && is_array($params['buttons']) ? $params['buttons'] : [],]
-            ]);
+                    ], isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [], is_array($params['buttons']) && count($params['buttons'] > 0) ? [
+                        [ 'class' => 'kartik\grid\ActionColumn',
+                            'header' => Html::encode('Действия'),
+                            'contentOptions' => ['style' => 'white-space: nowrap;'],
+                            'template' => $tmpl,
+                            'buttons' => is_array($params['buttons']) ? $params['buttons'] : [],]
+                            ] : []);
         }
     }
 
@@ -191,6 +191,7 @@ class Proc {
             $fromgridroute = $params['fromgridroute'];
             $thisroute = $params['thisroute'];
             $fields = $params['fields'];
+            $dopparams = $params['dopparams'];
 
             if (!isset($fields['showresultfields']))
                 $fields['showresultfields'] = [$fields['resultfield']];
@@ -219,12 +220,12 @@ class Proc {
                     ],
                     'addon' => [
                         'append' => [
-                            'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', [$fromgridroute,
+                            'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
                                 'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
                                 'url' => $thisroute,
                                 'field' => $fields['keyfield'],
                                 'id' => $model->primaryKey,
-                                    ], ['class' => 'btn btn-success']),
+                                            ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
                             'asButton' => true
                         ]
                     ]
@@ -294,7 +295,7 @@ class Proc {
         $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
 
         $urls = [
-            'fregat_matcen' => 'Fregat/fregat/index',
+            'fregat_matcen' => 'Fregat/mattraffic/index',
             'fregat_conf' => 'Fregat/fregat/config',
             'config_conf' => 'Config/config/index',
         ];
