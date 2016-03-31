@@ -148,6 +148,7 @@ class MattrafficSearch extends Mattraffic {
                                         $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
                                         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMaterial.idMatv.matvid_name')]);
                                         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
+                                        $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
                                         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
                                         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
                                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMaterial.material_release', 'date'));
