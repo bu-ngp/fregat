@@ -853,6 +853,7 @@ class FregatImport {
                     $Traflog->save(false);
                 }
 
+            Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollback();
