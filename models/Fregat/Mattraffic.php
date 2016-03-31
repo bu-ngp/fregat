@@ -51,6 +51,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
             [['mattraffic_username'], 'string', 'max' => 128],
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Приход, 2 - Списание
+            [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
         ];
     }
 

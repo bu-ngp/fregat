@@ -721,6 +721,9 @@ class FregatImport {
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $diff_number, true);
 
+            if (!self::$os)
+                $Mattraffic->mattraffic_forimport = 1;
+
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         } elseif ($Mattraffic->isNewRecord) { // Если у материальной ценности не найден сотрудник, создаем новую операцию
@@ -737,6 +740,9 @@ class FregatImport {
 
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $mat_number, false);
+
+            if (!self::$os)
+                $Mattraffic->mattraffic_forimport = 1;
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
@@ -776,12 +782,12 @@ class FregatImport {
     // Делает специальности сотрудников неактивными, если они не найдены в файле сотрудников для импорта
     static private function InactiveEmployee() {
         $transaction = Yii::$app->db->beginTransaction();
-        try {            
-          //  Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], 'employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(id_person) = 1)');
+        try {
+            //  Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], 'employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(id_person) = 1)');
 
             Yii::$app->db->createCommand('UPDATE employee inner join (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1) e2 on employee.id_person = e2.id_person SET employee_dateinactive=NOW() WHERE employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null')
                     ->execute();
-            
+
             $Forlog = Employee::find()
                     ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
                     ->where('employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
@@ -810,6 +816,48 @@ class FregatImport {
             $transaction->rollback();
             Employee::updateAll(['employee_forinactive' => NULL], ['employee_forinactive' => 1]);
             throw new Exception($e->getMessage() . ' InactiveEmployee(), $filename = ' . self::$filename);
+        }
+    }
+
+    // Списание материала
+    static private function MaterialSpisanie() {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $SP = Mattraffic::find()
+                    ->joinWith('idMaterial')
+                    ->andWhere(['mattraffic_forimport' => NULL, 'mattraffic_tip' => 2, 'material_tip' => 2])
+                    ->all();
+
+            if (!empty($SP))
+                foreach ($SP as $i => $ar) {
+                    $Mattraffic = new Mattraffic;
+                    $Mattraffic->attributes = $ar->attributes;
+                    $Mattraffic->mattraffic_date = date('Y-m-d');
+                    $Mattraffic->mattraffic_number = 0;
+                    $Mattraffic->mattraffic_tip = 2; // Списание
+                    $Mattraffic->save(false);
+
+                    $writeoffakt = new Writeoffakt();
+                    $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
+                    $writeoffakt->save(false);
+
+                    $Traflog = new Traflog;
+                    $Traflog->id_logreport = self::$logreport_id;
+                    $Traflog->traflog_type = 1;
+                    $Traflog->traflog_filename = self::$filename;
+                    $Traflog->traflog_rownum = 0;
+                    $Traflog->traflog_message = '';
+                    $Traflog->id_matlog = 1;
+                    $Traflog->id_employeelog = 1;
+                    $Traflog->traflog_message = 'Запись добавлена. Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
+                    $Traflog->save(false);
+                }
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
+            throw new Exception($e->getMessage() . ' MaterialSpisanie(), $filename = ' . self::$filename);
         }
     }
 
@@ -980,6 +1028,8 @@ class FregatImport {
                                             $Employeelog->save(false);
                                         } else {
                                             if ($Employee->employee_importdo === 1) {
+                                                if (isset($Employee->scenarios()['import1c']))
+                                                    $Employee->scenario = 'import1c';
                                                 $Employee->employee_forinactive = 1;
                                                 $Employee->save(false);
                                             }
@@ -1010,6 +1060,9 @@ class FregatImport {
                         self::$employee = false;
                     } else {
 
+                        if (!self::$os)
+                            Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
+
                         $startRow = self::$os ? self::$os_start : self::$mat_start;   //начинаем читать с определенной строки
                         $exit = false;   //флаг выхода
                         $empty_value = 0;  //счетчик пустых знаений
@@ -1024,6 +1077,7 @@ class FregatImport {
                         $chunkFilter = new chunkReadFilter();
                         $objReader->setReadFilter($chunkFilter);
                         $objReader->setReadDataOnly(true);
+
 
                         while (!$exit) {
                             // Инициализируем переменные
@@ -1143,6 +1197,9 @@ class FregatImport {
                             $logreport->logreport_oslastdate = self::$filelastdate;
                         else
                             $logreport->logreport_matlastdate = self::$filelastdate;
+
+                        if (!self::$os)
+                            self::MaterialSpisanie();
                     }
                     $logreport->logreport_additions += self::$logreport_additions;
                     $logreport->logreport_updates += self::$logreport_updates;
