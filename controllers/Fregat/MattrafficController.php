@@ -39,6 +39,7 @@ class MattrafficController extends Controller
 
     public function actionIndex()
     {
+        Proc::SetMenuButtons('fregat');
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

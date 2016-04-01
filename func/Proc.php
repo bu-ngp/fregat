@@ -101,7 +101,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+          /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -312,7 +312,7 @@ class Proc {
         $result = [];
         if (!$isHome) {
             $menubuttons = isset($session['menubuttons']) ? $session['menubuttons'] : null;
-
+            
             switch ($menubuttons) {
                 case 'fregat':
                     $result = array_merge(

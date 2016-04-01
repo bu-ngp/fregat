@@ -10,7 +10,13 @@ use yii\helpers\Url;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Движение материальных ценностей';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'addfirst' => [
+                'label' => 'Фрегат',
+                'url' => Url::toRoute('Fregat/mattraffic/index'),
+            ],
+            'clearbefore' => true,
+        ]);
 ?>
 <div class="mattraffic-index">
     <?php
