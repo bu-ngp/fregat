@@ -1223,6 +1223,7 @@ class FregatImport {
 
                                                 if ($employeelog->IsNewRecord)
                                                     $employeelog->save(false);
+                                                $traflog->id_logreport = self::$logreport_id;
                                                 $traflog->id_matlog = $matlog->matlog_id;
                                                 $traflog->id_employeelog = $employeelog->employeelog_id;
                                                 $traflog->save(false);
