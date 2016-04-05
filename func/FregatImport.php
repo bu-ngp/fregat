@@ -675,7 +675,7 @@ class FregatImport {
         ]);
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol order by mattraffic_date desc limit 1' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : ''), array_merge([
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc limit 1', array_merge([
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
                                 ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
@@ -695,8 +695,8 @@ class FregatImport {
                     ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
-
-        if (!self::$os) 
+   
+        if (!self::$os)
             $Mattraffic->mattraffic_forimport = 1;
 
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && (!self::$os && $Mattraffic->diff_number != '0' || self::$os)) { // Если у материальной ценности найден сотрудник и запись актуальна       
@@ -742,10 +742,10 @@ class FregatImport {
             $Mattraffic->save(false);
         }
 
-    /*    if (!self::$os) {
-            var_dump($Material->material_name);
-            var_dump($Mattraffic->attributes);
-        }*/
+        /*   if (!self::$os) {
+          var_dump($Material->material_name);
+          var_dump($Mattraffic->attributes);
+          } */
 
         return $result;
     }
