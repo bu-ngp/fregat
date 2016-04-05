@@ -742,7 +742,7 @@ class FregatImport {
             // Для $Mattraffic->mattraffic_forimport = 1;
             $Mattraffic->save(false);
         } else
-            $Mattraffic->errors = [];
+            $Mattraffic->clearErrors();
         //var_dump($Mattraffic->errors);
 
         /*   if (!self::$os) {
