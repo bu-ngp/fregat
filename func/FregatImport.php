@@ -677,7 +677,7 @@ class FregatImport {
         /*   var_dump(Mattraffic::find()->max('mattraffic_id')); */
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : ''), array_merge([
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol order by mattraffic_date desc limit 1' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : ''), array_merge([
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
                                 ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
@@ -698,9 +698,18 @@ class FregatImport {
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
+        if (!self::$os) {
+            var_dump($Material->material_name);
+            var_dump($Mattraffic->attributes);
+        }
+
+
         /*     var_dump($search);
           var_dump($xls_attributes_mattraffic['mattraffic_date']);
           var_dump($xls_attributes_mattraffic['mattraffic_number']); */
+
+
+
 
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && (!self::$os && $Mattraffic->diff_number != '0' || self::$os)) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
@@ -718,11 +727,11 @@ class FregatImport {
                 $Mattraffic->mattraffic_number = self::$material_number_xls;
             }
 
-            // Определяем количество материальной ценности с учетом изменения
-            self::MatNumberChanging($Material, $Traflog, $diff_number, true);
-
             if (!self::$os)
                 $Mattraffic->mattraffic_forimport = 1;
+
+            // Определяем количество материальной ценности с учетом изменения
+            self::MatNumberChanging($Material, $Traflog, $diff_number, true);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
@@ -738,15 +747,22 @@ class FregatImport {
             else
                 $mat_number += self::$material_number_xls;
 
-            // Определяем количество материальной ценности с учетом изменения
-            self::MatNumberChanging($Material, $Traflog, $mat_number, false);
 
             if (!self::$os)
                 $Mattraffic->mattraffic_forimport = 1;
 
+            // Определяем количество материальной ценности с учетом изменения
+            self::MatNumberChanging($Material, $Traflog, $mat_number, false);
+
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         }
+
+        /*    if (!self::$os && $Mattraffic->validate()) {
+          $Mattraffic->mattraffic_forimport = 1;
+          $Mattraffic->save(false);
+          } */
+
         return $result;
     }
 
@@ -819,14 +835,43 @@ class FregatImport {
         }
     }
 
+    // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
+    static private function SpisatMaterial($MaterialID) {
+        $return = false;
+
+        $result = Mattraffic::find()
+                ->from(['m1' => 'mattraffic'])
+                ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                ->andWhere('m1.mattraffic_tip <> 2')
+                ->andWhere(['m2.mattraffic_date' => NULL])
+                ->andWhere(['m1.id_material' => $MaterialID])
+                ->count();
+
+        if (empty($result)) {
+            $Material = Material::findOne($MaterialID);
+            $Material->material_writeoff = 1;
+            $Material->save(false);
+            $return = true;
+        }
+        return $return;
+    }
+
     // Списание материала
     static private function MaterialSpisanie() {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $SP = Mattraffic::find()
-                    ->joinWith('idMaterial')
-                    ->andWhere(['mattraffic_forimport' => NULL, 'mattraffic_tip' => 2, 'material_tip' => 2])
+                    //     ->joinWith('idMaterial')
+                    ->from(['m1' => 'mattraffic'])
+                    ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                    ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                    ->andWhere('m1.mattraffic_tip <> 2')
+                    ->andWhere(['m2.mattraffic_date' => NULL])
                     ->all();
+
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
@@ -841,15 +886,54 @@ class FregatImport {
                     $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
                     $writeoffakt->save(false);
 
+                    $spismat = self::SpisatMaterial($ar->id_material);
+
+                    $Material = Material::findOne($ar->id_material);
+
+                    $Matlog = new Matlog;
+                    $Matlog->attributes = $Material->attributes;
+                    $Matlog->id_logreport = self::$logreport_id;
+                    $Matlog->matlog_filename = self::$filename;
+                    $Matlog->matlog_filelastdate = self::$filelastdate;
+                    $Matlog->matlog_rownum = 0;
+                    $Matlog->matlog_type = $spismat ? 4 : 2;
+                    $Matlog->matlog_message = $spismat ? 'Материал списан' : 'Запись не изменилась';
+                    $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
+                    $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                    $Matlog->material_writeoff = $Material->material_writeoff === 1 ? 'Да' : 'Нет';
+                    $Matlog->material_release = isset($Material->material_release) ? Yii::$app->formatter->asDate($Material->material_release) : $Material->material_release;
+                    $Matlog->save(false);
+
+                    $Employee = Employee::find()
+                            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
+                            ->where(['employee_id' => $ar->id_mol])
+                            ->one();
+
+                    $Employeelog = new Employeelog;
+                    $Employeelog->attributes = $Employee->attributes;
+                    $Employeelog->id_logreport = self::$logreport_id;
+                    $Employeelog->employeelog_filename = self::$filename;
+                    $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                    $Employeelog->employeelog_rownum = 0;
+                    $Employeelog->employeelog_type = 2;
+                    $Employeelog->employeelog_message = 'Запись не изменилась';
+                    $Employeelog->employee_fio = $Employee->idperson->auth_user_fullname;
+                    $Employeelog->dolzh_name = $Employee->iddolzh->dolzh_name;
+                    $Employeelog->podraz_name = $Employee->idpodraz->podraz_name;
+                    $Employeelog->build_name = $Employee->isRelationPopulated('idbuild') ? $Employee->idbuild['build_name'] : '';
+                    $Employeelog->save(false);
+
+
                     $Traflog = new Traflog;
                     $Traflog->id_logreport = self::$logreport_id;
                     $Traflog->traflog_type = 1;
                     $Traflog->traflog_filename = self::$filename;
                     $Traflog->traflog_rownum = 0;
                     $Traflog->traflog_message = '';
-                    $Traflog->id_matlog = 1;
-                    $Traflog->id_employeelog = 1;
+                    $Traflog->id_matlog = $Matlog->primaryKey;
+                    $Traflog->id_employeelog = $Employeelog->primaryKey;
                     $Traflog->traflog_message = 'Запись добавлена. Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
+                    $Traflog->mattraffic_number = $ar->mattraffic_number;
                     $Traflog->save(false);
                 }
 
