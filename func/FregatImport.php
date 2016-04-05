@@ -698,10 +698,10 @@ class FregatImport {
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
-        if (!self::$os) {
+    /*    if (!self::$os) {
             var_dump($Material->material_name);
             var_dump($Mattraffic->attributes);
-        }
+        }*/
 
 
         /*     var_dump($search);
