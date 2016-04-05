@@ -695,7 +695,7 @@ class FregatImport {
                     ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
-   
+
         if (!self::$os)
             $Mattraffic->mattraffic_forimport = 1;
 
@@ -738,9 +738,12 @@ class FregatImport {
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         } elseif (!self::$os && $Mattraffic->validate()) {
+
             // Для $Mattraffic->mattraffic_forimport = 1;
             $Mattraffic->save(false);
-        }
+        } else
+            $Mattraffic->errors = [];
+        //var_dump($Mattraffic->errors);
 
         /*   if (!self::$os) {
           var_dump($Material->material_name);
@@ -1223,7 +1226,7 @@ class FregatImport {
 
                                                 if ($employeelog->IsNewRecord)
                                                     $employeelog->save(false);
-                                                $traflog->id_logreport = self::$logreport_id;
+                                                $traflog->id_logreport = self::$logreport_id; //??????????????????????
                                                 $traflog->id_matlog = $matlog->matlog_id;
                                                 $traflog->id_employeelog = $employeelog->employeelog_id;
                                                 $traflog->save(false);
