@@ -674,8 +674,6 @@ class FregatImport {
             'mattraffic_tip' => 1,
         ]);
 
-        /*   var_dump(Mattraffic::find()->max('mattraffic_id')); */
-
         // Ищем Материальную ценность закрепленную за сотрудником
         $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol order by mattraffic_date desc limit 1' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : ''), array_merge([
                     'id_material' => $xls_attributes_mattraffic['id_material'],
@@ -698,18 +696,8 @@ class FregatImport {
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
-    /*    if (!self::$os) {
-            var_dump($Material->material_name);
-            var_dump($Mattraffic->attributes);
-        }*/
-
-
-        /*     var_dump($search);
-          var_dump($xls_attributes_mattraffic['mattraffic_date']);
-          var_dump($xls_attributes_mattraffic['mattraffic_number']); */
-
-
-
+        if (!self::$os) 
+            $Mattraffic->mattraffic_forimport = 1;
 
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && (!self::$os && $Mattraffic->diff_number != '0' || self::$os)) { // Если у материальной ценности найден сотрудник и запись актуальна       
             // Разница в количестве (Количество из Excel - количество из БД)
@@ -726,9 +714,6 @@ class FregatImport {
                 $Mattraffic->mattraffic_date = $xls_attributes_mattraffic['mattraffic_date'];
                 $Mattraffic->mattraffic_number = self::$material_number_xls;
             }
-
-            if (!self::$os)
-                $Mattraffic->mattraffic_forimport = 1;
 
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $diff_number, true);
@@ -747,21 +732,20 @@ class FregatImport {
             else
                 $mat_number += self::$material_number_xls;
 
-
-            if (!self::$os)
-                $Mattraffic->mattraffic_forimport = 1;
-
             // Определяем количество материальной ценности с учетом изменения
             self::MatNumberChanging($Material, $Traflog, $mat_number, false);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
+        } elseif (!self::$os && $Mattraffic->validate()) {
+            // Для $Mattraffic->mattraffic_forimport = 1;
+            $Mattraffic->save(false);
         }
 
-        /*    if (!self::$os && $Mattraffic->validate()) {
-          $Mattraffic->mattraffic_forimport = 1;
-          $Mattraffic->save(false);
-          } */
+    /*    if (!self::$os) {
+            var_dump($Material->material_name);
+            var_dump($Mattraffic->attributes);
+        }*/
 
         return $result;
     }
