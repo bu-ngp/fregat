@@ -743,7 +743,7 @@ class FregatImport {
                 $Mattraffic->scenario = 'import1c';
             $Mattraffic->save(false);
         } else {
-             var_dump('$Mattraffic->clearErrors();');
+             var_dump($Mattraffic->errors);
         $Mattraffic->clearErrors();
         
         }
