@@ -738,8 +738,8 @@ class FregatImport {
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         } elseif (!self::$os && $Mattraffic->validate()) {
-
-            // Для $Mattraffic->mattraffic_forimport = 1;
+            if (isset($Mattraffic->scenarios()['import1c']))
+                $Mattraffic->scenario = 'import1c';
             $Mattraffic->save(false);
         } else
             $Mattraffic->clearErrors();
@@ -770,6 +770,8 @@ class FregatImport {
             $Matlog->material_writeoff = 'Да';
             $Matlog->save(false);
 
+            if (isset($Mattraffic->scenarios()['import1c']))
+                $Mattraffic->scenario = 'import1c';
             $Mattraffic->mattraffic_tip = 2; // Списание
             $Mattraffic->save(false);
 
@@ -867,6 +869,8 @@ class FregatImport {
                     $Mattraffic->mattraffic_date = date('Y-m-d');
                     $Mattraffic->mattraffic_number = 0;
                     $Mattraffic->mattraffic_tip = 2; // Списание
+                    if (isset($Mattraffic->scenarios()['import1c']))
+                        $Mattraffic->scenario = 'import1c';
                     $Mattraffic->save(false);
 
                     $writeoffakt = new Writeoffakt();
