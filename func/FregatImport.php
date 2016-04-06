@@ -737,22 +737,22 @@ class FregatImport {
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
-        } elseif (!self::$os && $Mattraffic->validate()) {
+        } elseif (!self::$os) {
             var_dump('!self::$os && $Mattraffic->validate()');
             if (isset($Mattraffic->scenarios()['import1c']))
                 $Mattraffic->scenario = 'import1c';
-            $Mattraffic->save(false);
+            if ($Mattraffic->validate())
+                $Mattraffic->save(false);
         } else {
-             var_dump($Mattraffic->errors);
-        $Mattraffic->clearErrors();
-        
+            var_dump($Mattraffic->errors);
+            $Mattraffic->clearErrors();
         }
         //var_dump($Mattraffic->errors);
 
-      /* if (!self::$os) {
-            var_dump($Material->material_name);
-            var_dump($Mattraffic->attributes);
-        } */
+        /* if (!self::$os) {
+          var_dump($Material->material_name);
+          var_dump($Mattraffic->attributes);
+          } */
 
         return $result;
     }
@@ -1250,11 +1250,9 @@ class FregatImport {
                                                 self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
                                             }
                                         }
-                                        
+
                                         var_dump($material->material_name);
                                         var_dump($mattraffic->attributes);
-                                        
-                                        
                                     }
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
