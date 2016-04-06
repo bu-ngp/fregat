@@ -745,10 +745,10 @@ class FregatImport {
             $Mattraffic->clearErrors();
         //var_dump($Mattraffic->errors);
 
-        if (!self::$os) {
+      /* if (!self::$os) {
             var_dump($Material->material_name);
             var_dump($Mattraffic->attributes);
-        }
+        } */
 
         return $result;
     }
@@ -1248,7 +1248,7 @@ class FregatImport {
                                         }
                                         
                                         var_dump($material->material_name);
-                                        var_dump($MattrafficDo);
+                                        var_dump($mattraffic->attributes);
                                         
                                     }
                                     //    if ($transaction->isActive)
