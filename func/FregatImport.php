@@ -1246,6 +1246,10 @@ class FregatImport {
                                                 self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
                                             }
                                         }
+                                        
+                                        var_dump($material->material_name);
+                                        var_dump($MattrafficDo);
+                                        
                                     }
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
