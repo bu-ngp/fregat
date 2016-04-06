@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('/js/authitemfiltercontain.js');
+//\Yii::$app->getView()->registerJsFile('/js/authitemfiltercontain.js');
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;

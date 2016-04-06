@@ -129,3 +129,12 @@ div.modal_filter>div.modal-dialog {
 tr.spisanie>td {
     background-color: #D4D4D4;
 }
+
+table.kv-grid-table {
+    font-size: 11px;
+}
+
+table.kv-grid-table>thead>tr>td>input.form-control, table.kv-grid-table>thead>tr>td>select.form-control {
+    font-size: 11px;
+    height: 25px;
+}
