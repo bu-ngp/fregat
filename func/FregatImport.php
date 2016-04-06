@@ -745,10 +745,10 @@ class FregatImport {
             $Mattraffic->clearErrors();
         //var_dump($Mattraffic->errors);
 
-        /*   if (!self::$os) {
-          var_dump($Material->material_name);
-          var_dump($Mattraffic->attributes);
-          } */
+        if (!self::$os) {
+            var_dump($Material->material_name);
+            var_dump($Mattraffic->attributes);
+        }
 
         return $result;
     }
@@ -864,9 +864,6 @@ class FregatImport {
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
-                
-                    var_dump($ar->attributes);
-                
                     $Mattraffic = new Mattraffic;
                     $Mattraffic->attributes = $ar->attributes;
                     $Mattraffic->mattraffic_date = date('Y-m-d');
