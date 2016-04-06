@@ -738,15 +738,13 @@ class FregatImport {
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         } elseif (!self::$os) {
-            var_dump('!self::$os && $Mattraffic->validate()');
             if (isset($Mattraffic->scenarios()['import1c']))
                 $Mattraffic->scenario = 'import1c';
             if ($Mattraffic->validate())
                 $Mattraffic->save(false);
-        } else {
-            var_dump($Mattraffic->errors);
+        } else
             $Mattraffic->clearErrors();
-        }
+
         //var_dump($Mattraffic->errors);
 
         /* if (!self::$os) {
@@ -930,6 +928,8 @@ class FregatImport {
                     $Traflog->traflog_message = 'Запись добавлена. Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
                     $Traflog->mattraffic_number = $ar->mattraffic_number;
                     $Traflog->save(false);
+                    
+                    self::$logreport_additions++;
                 }
 
             Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
@@ -1250,13 +1250,9 @@ class FregatImport {
                                                 self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
                                             }
                                         }
-
-                                        var_dump($material->material_name);
-                                        var_dump($mattraffic->attributes);
-                                    }
+                                    }                                   
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
-                                    var_dump(Mattraffic::findOne($mattraffic->mattraffic_id));
                                 } catch (Exception $e) {
                                     $transaction->rollback();
                                     throw new Exception($e->getMessage() . ' $rownum_xls = ' . self::$rownum_xls . '; $filename = ' . self::$filename);
