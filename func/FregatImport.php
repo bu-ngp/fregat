@@ -738,11 +738,15 @@ class FregatImport {
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
         } elseif (!self::$os && $Mattraffic->validate()) {
+            var_dump('!self::$os && $Mattraffic->validate()');
             if (isset($Mattraffic->scenarios()['import1c']))
                 $Mattraffic->scenario = 'import1c';
             $Mattraffic->save(false);
-        } else
-            $Mattraffic->clearErrors();
+        } else {
+             var_dump('$Mattraffic->clearErrors();');
+        $Mattraffic->clearErrors();
+        
+        }
         //var_dump($Mattraffic->errors);
 
       /* if (!self::$os) {
