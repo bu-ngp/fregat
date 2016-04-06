@@ -1249,6 +1249,7 @@ class FregatImport {
                                         
                                         var_dump($material->material_name);
                                         var_dump($mattraffic->attributes);
+                                        var_dump(Mattraffic::findOne($mattraffic->mattraffic_id));
                                         
                                     }
                                     //    if ($transaction->isActive)
