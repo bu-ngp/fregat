@@ -1249,11 +1249,12 @@ class FregatImport {
                                         
                                         var_dump($material->material_name);
                                         var_dump($mattraffic->attributes);
-                                        var_dump(Mattraffic::findOne($mattraffic->mattraffic_id));
+                                        
                                         
                                     }
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
+                                    var_dump(Mattraffic::findOne($mattraffic->mattraffic_id));
                                 } catch (Exception $e) {
                                     $transaction->rollback();
                                     throw new Exception($e->getMessage() . ' $rownum_xls = ' . self::$rownum_xls . '; $filename = ' . self::$filename);
