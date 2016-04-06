@@ -864,11 +864,14 @@ class FregatImport {
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
+                
+                    var_dump($ar->attributes);
+                
                     $Mattraffic = new Mattraffic;
                     $Mattraffic->attributes = $ar->attributes;
                     $Mattraffic->mattraffic_date = date('Y-m-d');
                     $Mattraffic->mattraffic_number = 0;
-                    $Mattraffic->mattraffic_tip = 2; // Списание
+                    $Mattraffic->mattraffic_tip = 2; // Списание                    
                     if (isset($Mattraffic->scenarios()['import1c']))
                         $Mattraffic->scenario = 'import1c';
                     $Mattraffic->save(false);
