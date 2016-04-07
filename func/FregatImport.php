@@ -713,6 +713,8 @@ class FregatImport {
                 $Mattraffic->attributes = $xls_attributes_mattraffic;
                 $Mattraffic->mattraffic_date = $xls_attributes_mattraffic['mattraffic_date'];
                 $Mattraffic->mattraffic_number = self::$material_number_xls;
+                if (!self::$os)
+                    $Mattraffic->mattraffic_forimport = 1;                
             }
 
             // Определяем количество материальной ценности с учетом изменения
@@ -747,10 +749,10 @@ class FregatImport {
 
         //var_dump($Mattraffic->errors);
 
-        /* if (!self::$os) {
-          var_dump($Material->material_name);
-          var_dump($Mattraffic->attributes);
-          } */
+      /*  if (!self::$os) {
+            var_dump($Material->material_name);
+            var_dump($Mattraffic->attributes);
+        }*/
 
         return $result;
     }
@@ -928,7 +930,7 @@ class FregatImport {
                     $Traflog->traflog_message = 'Запись добавлена. Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
                     $Traflog->mattraffic_number = $ar->mattraffic_number;
                     $Traflog->save(false);
-                    
+
                     self::$logreport_additions++;
                 }
 
@@ -1250,7 +1252,7 @@ class FregatImport {
                                                 self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
                                             }
                                         }
-                                    }                                   
+                                    }
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
                                 } catch (Exception $e) {
