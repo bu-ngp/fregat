@@ -14,11 +14,20 @@ class AuthitemFilter extends Model {
             ['onlyrootauthitems', 'safe'],
         ];
     }
-    
+
     public function attributeLabels() {
         return [
             'onlyrootauthitems' => 'Только основные авторизационные единицы',
         ];
+    }
+
+    public function SetFilter($FilterAttributes) {
+        parse_str($FilterAttributes, $filterparams);
+        if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {            
+            $filter .= ' ' . $this->attributeLabels()['onlyrootauthitems'] . ';';
+        }
+
+        return $filter;
     }
 
 }

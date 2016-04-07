@@ -26,7 +26,8 @@ use yii\bootstrap\ActiveForm;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::submitButton('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary']) ?>
+                <?php //echo Html::submitButton('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary']) ?>
+                <?= Html::Button('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary', 'id' => 'authitemfilter_apply']) ?>
                 <?= Html::Button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => 'authitemfilter_close']) ?>
             </div>
         </div> 

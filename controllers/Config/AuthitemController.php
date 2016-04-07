@@ -46,11 +46,14 @@ class AuthitemController extends Controller {
 
         $filter = 'Доп фильтр:';
         if (isset($queryParams['AuthitemSearch']['_filter'])) {
-            parse_str($queryParams['AuthitemSearch']['_filter'], $filterparams);
             $AuthitemFilter = new AuthitemFilter();
-            if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
-                $filter .= ' ' . $AuthitemFilter->getAttributeLabel('onlyrootauthitems') . ';';
-            }
+            $filter = $AuthitemFilter->SetFilter($queryParams['AuthitemSearch']['_filter']);
+
+            /*     parse_str($queryParams['AuthitemSearch']['_filter'], $filterparams);
+              $AuthitemFilter = new AuthitemFilter();
+              if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
+              $filter .= ' ' . $AuthitemFilter->getAttributeLabel('onlyrootauthitems') . ';';
+              } */
         };
 
         return $this->render('index', [

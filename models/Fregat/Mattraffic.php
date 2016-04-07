@@ -114,7 +114,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
     }
     
     public function beforeValidate() {
-        if (empty($this->mattraffic_lastchange) || empty($this->mattraffic_forimport))
+        if ((empty($this->mattraffic_lastchange) || empty($this->mattraffic_forimport)) && $this->isAttributeRequired('mattraffic_lastchange'))
             $this->mattraffic_lastchange = date('Y-m-d H:i:s');
 
         return parent::beforeValidate();
