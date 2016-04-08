@@ -627,21 +627,21 @@ class FregatImport {
             }
 
 
-            $Employeelog->employee_fio = $xls_attributes_employee['employee_fio'];
-            $Employeelog->dolzh_name = $xls_attributes_employee['dolzh_name'];
-            $Employeelog->podraz_name = $xls_attributes_employee['podraz_name'];
+            $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname; //self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
+            $Employeelog->dolzh_name =  Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+            $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
-                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
+                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
             //   $Employeelog->attributes = $Employee->attributes;
-            $Employeelog->employee_fio = self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
-            $Employeelog->dolzh_name = $xls_attributes_employee['dolzh_name'];
-            $Employeelog->podraz_name = $xls_attributes_employee['podraz_name'];
+            $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname; //self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
+            $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+            $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
-                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
+                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
             // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
@@ -1100,12 +1100,12 @@ class FregatImport {
                                                     $Employeelog->employeelog_message .= implode(' ', $fields) . ' ';
                                                 self::$logreport_errors++;
                                             }
-
+                                            
                                             $Employeelog->employee_fio = $Authuser->auth_user_fullname;
-                                            $Employeelog->dolzh_name = self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
-                                            $Employeelog->podraz_name = self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
+                                            $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+                                            $Employeelog->podraz_name =  Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
                                             if (!empty($Employee->id_build))
-                                                $Employeelog->build_name = self::GetNameByID('build', 'build_name', $Employee->id_build);
+                                                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;  //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
                                             $Employeelog->save(false);
                                         } else {

@@ -43,7 +43,7 @@ class Employee extends \yii\db\ActiveRecord {
             ['employee_username', 'filter', 'filter' => function($value) {
                     return 'IMPORT';
                 }, 'on' => 'import1c'],
-            [['id_dolzh', 'id_podraz', 'id_person', 'employee_username'], 'required'],
+            [['id_dolzh', 'id_podraz', 'id_person', 'employee_username', 'employee_forinactive'], 'required'],
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['employee_dateinactive'], 'date', 'format' => 'dd.MM.yyyy'],
@@ -139,6 +139,20 @@ class Employee extends \yii\db\ActiveRecord {
      */
     public function getOsmotrakts0() {
         return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id']);
+    }
+
+    public function beforeValidate() {
+        if ((empty($this->employee_lastchange) || empty($this->employee_forinactive)) && $this->isAttributeRequired('employee_lastchange'))
+            $this->employee_lastchange = date('Y-m-d H:i:s');
+
+        return parent::beforeValidate();
+    }
+
+    public function beforeSave($insert) {
+        if (empty($this->employee_lastchange) || empty($this->employee_forinactive))
+            $this->employee_lastchange = date('Y-m-d H:i:s');
+
+        return parent::beforeSave($insert);
     }
 
 }
