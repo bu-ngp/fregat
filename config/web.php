@@ -83,6 +83,10 @@ $config = [
                     'toolbar' => [
                         'base' => ['content' => '{export}{dynagrid}'],
                     ],
+                    'pager' => [
+                        'firstPageLabel' => 'Первая',
+                        'lastPageLabel' => 'Последняя',
+                    ],
                 ],
             ]
         // other module settings
