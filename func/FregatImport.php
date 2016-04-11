@@ -628,12 +628,13 @@ class FregatImport {
 
 
             $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname; //self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
-            $Employeelog->dolzh_name =  Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
+            $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-            // Валидируем значения модели и пишем в лог
+                
+// Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
             //   $Employeelog->attributes = $Employee->attributes;
@@ -643,7 +644,8 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-            // Добавляем в лог не измененные значения ActiveRecord
+                
+// Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
 
@@ -714,7 +716,7 @@ class FregatImport {
                 $Mattraffic->mattraffic_date = $xls_attributes_mattraffic['mattraffic_date'];
                 $Mattraffic->mattraffic_number = self::$material_number_xls;
                 if (!self::$os)
-                    $Mattraffic->mattraffic_forimport = 1;                
+                    $Mattraffic->mattraffic_forimport = 1;
             }
 
             // Определяем количество материальной ценности с учетом изменения
@@ -749,10 +751,10 @@ class FregatImport {
 
         //var_dump($Mattraffic->errors);
 
-      /*  if (!self::$os) {
-            var_dump($Material->material_name);
-            var_dump($Mattraffic->attributes);
-        }*/
+        /*  if (!self::$os) {
+          var_dump($Material->material_name);
+          var_dump($Mattraffic->attributes);
+          } */
 
         return $result;
     }
@@ -829,7 +831,7 @@ class FregatImport {
     }
 
     // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
-    static private function SpisatMaterial($MaterialID) {
+    static private function SpisatMaterial($MaterialID,$MOLID) {
         $return = false;
 
         $result = Mattraffic::find()
@@ -844,9 +846,26 @@ class FregatImport {
 
         if (empty($result)) {
             $Material = Material::findOne($MaterialID);
-            $Material->material_writeoff = 1;
-            $Material->save(false);
-            $return = true;
+            
+            $matmol = Mattraffic::find()
+                ->from(['m1' => 'mattraffic'])
+                ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                ->andWhere('m1.mattraffic_tip <> 2')
+                ->andWhere(['m2.mattraffic_date' => NULL])
+                ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol'=>$MOLID])
+                ->one();
+            
+            // Если материл не найден у мола в файле импорта, то вычитаем общее количество материала
+            if (!empty($matmol)) 
+                $Material->material_number -= $matmol->mattraffic_number;            
+            
+            if ($Material->material_number === 0) {
+                $Material->material_writeoff = 1;
+                $Material->save(false);
+                $return = true;
+            }
         }
         return $return;
     }
@@ -881,7 +900,7 @@ class FregatImport {
                     $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
                     $writeoffakt->save(false);
 
-                    $spismat = self::SpisatMaterial($ar->id_material);
+                    $spismat = self::SpisatMaterial($ar->id_material,$ar->id_mol);
 
                     $Material = Material::findOne($ar->id_material);
 
@@ -1100,10 +1119,10 @@ class FregatImport {
                                                     $Employeelog->employeelog_message .= implode(' ', $fields) . ' ';
                                                 self::$logreport_errors++;
                                             }
-                                            
+
                                             $Employeelog->employee_fio = $Authuser->auth_user_fullname;
                                             $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
-                                            $Employeelog->podraz_name =  Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
+                                            $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
                                             if (!empty($Employee->id_build))
                                                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;  //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
