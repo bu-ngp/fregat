@@ -19,6 +19,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'authitemgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => array_merge(
                             ['description'], !isset($foreign['model']) || (isset($foreign['model']) && $foreign['model'] !== 'Authassignment') ? [
@@ -46,7 +47,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
-                            'options' => ['id' => 'authitemgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-align-justify"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('RoleEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
@@ -65,7 +65,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     ]) . '{export}{dynagrid}',
                                 ],
                             ],
-                            'afterHeader' => empty($filter) ? '' : '<div class="panel panel-warning"><div class="panel-heading authitemgrid-filter">' . $filter . '</div></div>',
+                            'afterHeader' => $filter,
                         ]
             ]));
             ?>
@@ -74,7 +74,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             <?php
             yii\bootstrap\Modal::begin([
                 'header' => 'Дополнительный фильтр',
-                'id' => 'Authitemfilter',
+                'id' => 'AuthitemFilter',
                 'options' => ['class' => 'modal_filter',],
             ]);
             yii\bootstrap\Modal::end();

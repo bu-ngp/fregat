@@ -63,6 +63,7 @@ use yii\web\Session;
         $session->open();
 
         echo DynaGrid::widget(Proc::DGopts([
+                    'options' => ['id' => 'impemployeegrid'],
                     'columns' => Proc::DGcols([
                         'columns' => [
                             'idemployee.employee_id',
@@ -78,7 +79,6 @@ use yii\web\Session;
                     'gridOptions' => [
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
-                        'options' => ['id' => 'impemployeegrid'],
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
                             'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить сотрудника', ['Fregat/employee/forimportemployee',

@@ -38,8 +38,6 @@ class MattrafficSearch extends Mattraffic {
             'idMol.employee_username',
             'idMol.employee_lastchange',
             'idMol.employee_importdo',
-            'mattraffic_username',
-            'mattraffic_lastchange',
         ]);
     }
 
@@ -141,6 +139,7 @@ class MattrafficSearch extends Mattraffic {
                                             'mattraffic_id' => $this->mattraffic_id,
                                             'mattraffic_date' => $this->mattraffic_date,
                                             'mattraffic_number' => $this->mattraffic_number,
+                                            'mattraffic_tip' => $this->mattraffic_tip,
                                             'id_material' => $this->id_material,
                                             'id_mol' => $this->id_mol,
                                         ]);
@@ -282,18 +281,8 @@ class MattrafficSearch extends Mattraffic {
                                             'desc' => ['idMol.employee_importdo' => SORT_DESC],
                                         ];
 
-                                        $dataProvider->sort->attributes['mattraffic_username'] = [
-                                            'asc' => ['mattraffic_username' => SORT_ASC],
-                                            'desc' => ['mattraffic_username' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['mattraffic_lastchange'] = [
-                                            'asc' => ['mattraffic_lastchange' => SORT_ASC],
-                                            'desc' => ['mattraffic_lastchange' => SORT_DESC],
-                                        ];
-
-                                        if (empty($query->orderBy))
-                                            $query->orderBy('mattraffic_date desc');
+                                        if (empty($params['sort']))
+                                            $query->orderBy('mattraffic_date desc, mattraffic_id desc');
 
                                         return $dataProvider;
                                     }

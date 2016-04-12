@@ -18,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'authusergrid'],
                 'columns' => Proc::DGcols([
                     'columns' => array_merge([
                         'auth_user_id',
@@ -41,7 +42,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'gridOptions' => [
                                     'dataProvider' => $dataProvider,
                                     'filterModel' => $searchModel,
-                                    'options' => ['id' => 'authusergrid'],
                                     'panel' => [
                                         'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
                                         'before' => Yii::$app->user->can('UserEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

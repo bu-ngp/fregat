@@ -26,6 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'logreportgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'logreport_id',
@@ -70,7 +71,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
-                            'options' => ['id' => 'logreportgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-inbox"></i> ' . $this->title,
                                 'before' => Html::a('<i class="glyphicon glyphicon-flash"></i> Очистить отчеты', ['Fregat/logreport/clear'], ['class' => 'btn btn-danger'/* , 'data-pjax' => '0' */, 'data' => [

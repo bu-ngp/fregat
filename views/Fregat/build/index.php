@@ -18,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'buildgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'build_name',
@@ -28,15 +29,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'iduser' => $iduser, $foreign['model'] => [$foreign['field'] => $model['build_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
                                 }], Yii::$app->user->can('BuildEdit') ? [
-                                'update' => ['Fregat/build/update', 'build_id'],
-                                'delete' => ['Fregat/build/delete', 'build_id'],
-                                    ] : []
+                                        'update' => ['Fregat/build/update', 'build_id'],
+                                        'delete' => ['Fregat/build/delete', 'build_id'],
+                                            ] : []
                             ),
                         ]),
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
-                            'options' => ['id' => 'buildgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-home"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('BuildEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

@@ -1,3 +1,5 @@
+bootbox.setDefaults({locale: "ru"});
+
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
             sURLVariables = sPageURL.split('&'),
@@ -174,6 +176,28 @@ $(document).ajaxComplete(function (event, xhr, settings) {
         }
     }
 });
+
+/* Диалог подтверждения перед выполнением Ajax запроса*/
+function ConfirmDialogToAjax(message, url, data) {
+    if (data == "undefined")
+        data = {};
+    if (message == "undefined")
+        message = "Вы уверены что хотите выполнить это действие?";
+    if (url != "undefined") {
+        bootbox.confirm(message, function (result) {
+            if (result) {
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: data,
+                    error: function () {
+                        console.error("ConfirmDialogToAjax: " + url);
+                    }
+                });
+            }
+        });
+    }
+}
 
 $(function () {
     $("input.form-control.setsession").focusout(function () {

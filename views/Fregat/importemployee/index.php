@@ -14,6 +14,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 <div class="importemployee-index">
     <?=
     DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'importemployeegrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'importemployee_combination',
@@ -28,7 +29,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'gridOptions' => [
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
-                    'options' => ['id' => 'importemployeegrid'],
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
                         'before' => Yii::$app->user->can('FregatImport') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

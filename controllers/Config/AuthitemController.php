@@ -40,26 +40,14 @@ class AuthitemController extends Controller {
 
     public function actionIndex() {
         $searchModel = new AuthitemSearch();
-
         $queryParams = Yii::$app->request->queryParams;
+        $filter = Proc::SetFilter('AuthitemSearch', new AuthitemFilter);
         $dataProvider = $searchModel->search($queryParams);
-
-        $filter = 'Доп фильтр:';
-        if (isset($queryParams['AuthitemSearch']['_filter'])) {
-            $AuthitemFilter = new AuthitemFilter();
-            $filter = $AuthitemFilter->SetFilter($queryParams['AuthitemSearch']['_filter']);
-
-            /*     parse_str($queryParams['AuthitemSearch']['_filter'], $filterparams);
-              $AuthitemFilter = new AuthitemFilter();
-              if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
-              $filter .= ' ' . $AuthitemFilter->getAttributeLabel('onlyrootauthitems') . ';';
-              } */
-        };
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-                    'filter' => mb_strlen($filter, 'UTF-8') === 11 ? '' : $filter,
+                    'filter' => $filter,
         ]);
     }
 
@@ -138,22 +126,19 @@ class AuthitemController extends Controller {
         $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
         $selectvalues = json_decode($params['selectvalues']);
 
-        Proc::Grid2Excel($dataProvider, $modelname, 'Авторизованные единицы', $selectvalues);
+        Proc::Grid2Excel($dataProvider, $modelname, 'Авторизованные единицы', $selectvalues, new AuthitemFilter);
     }
 
     public function actionFilter() {
         $model = new AuthitemFilter();
 
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('AuthitemSearch', $model);
 
-            if (Yii::$app->request->isGet) {
-                return $this->renderAjax('_filter', [
-                            'model' => $model,
-                ]);
-            } else {
-                echo 'ajax';
-            }
-        };
+            return $this->renderAjax('_filter', [
+                        'model' => $model,
+            ]);
+        }
     }
 
     /**

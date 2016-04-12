@@ -18,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'grupagrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'grupa_name',
@@ -35,7 +36,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
-                            'options' => ['id' => 'grupagrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-duplicate"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('GrupaEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

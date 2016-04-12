@@ -39,6 +39,7 @@ use yii\web\Session;
 
         if (!$emp)
             echo DynaGrid::widget(Proc::DGopts([
+                        'options' => ['id' => 'authassignmentgrid'],
                         'columns' => Proc::DGcols([
                             'columns' => [
                                 'itemname.description',
@@ -56,7 +57,6 @@ use yii\web\Session;
                                 'gridOptions' => [
                                     'dataProvider' => $dataProvider,
                                     'filterModel' => $searchModel,
-                                    'options' => ['id' => 'authassignmentgrid'],
                                     'panel' => [
                                         'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Привязать к роли</h3>',
                                         'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить роль', ['Config/authitem/forauthassignment',
@@ -73,6 +73,7 @@ use yii\web\Session;
 
 
                 echo DynaGrid::widget(Proc::DGopts([
+                            'options' => ['id' => 'employeeauthusergrid'],
                             'columns' => Proc::DGcols([
                                 'columns' => [
                                     'employee_id',
@@ -107,7 +108,6 @@ use yii\web\Session;
                             'gridOptions' => [
                                 'dataProvider' => $dataProviderEmp,
                                 'filterModel' => $searchModelEmp,
-                                'options' => ['id' => 'employeegrid'],
                                 'panel' => [
                                     'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Привязать к специальности</h3>',
                                     'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить специальность', ['Fregat/employee/create',

@@ -10,6 +10,7 @@ use yii\helpers\Html;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 use yii\db\ActiveRecord;
+use yii\base\Model;
 
 class Proc {
 
@@ -101,7 +102,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-          /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            /*  echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -130,6 +131,7 @@ class Proc {
                 'allowFilterSetting' => false,
                 'allowSortSetting' => false,
                 'gridOptions' => [
+                    'options' => ['id' => $Options['options']['id'] . '_gw'],
                     'panel' => [
                         'type' => Yii::$app->params['GridHeadingStyle'],
                         'headingOptions' => ['class' => 'panel-heading panel-' . Yii::$app->params['GridHeadingStyle']],
@@ -160,10 +162,13 @@ class Proc {
             if (isset($params['buttons']['delete']) && is_array($params['buttons']['delete'])) {
                 $params['buttons']['delete'] = function ($url, $model) use ($params) {
                     $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['delete'][0], 'id' => $model[$params['buttons']['delete'][1]]]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger', 'data' => [
-                                    'confirm' => "Вы уверены, что хотите удалить запись?",
-                                    'method' => 'post',
-                    ]]);
+                    return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
+                                'id' => 'Authitemexcel',
+                                'type' => 'button',
+                                'title' => 'Удалить',
+                                'class' => 'btn btn-xs btn-danger',
+                                'onclick' => 'ConfirmDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '")'
+                    ]);
                 };
             }
 
@@ -312,7 +317,7 @@ class Proc {
         $result = [];
         if (!$isHome) {
             $menubuttons = isset($session['menubuttons']) ? $session['menubuttons'] : null;
-            
+
             switch ($menubuttons) {
                 case 'fregat':
                     $result = array_merge(
@@ -537,7 +542,7 @@ class Proc {
         return $data;
     }
 
-    public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL) {
+    public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL, $ModelFilter = NULL) {
         $objPHPExcel = new \PHPExcel;
 
         /* Границы таблицы */
@@ -580,6 +585,12 @@ class Proc {
 
                 $filter .= ' ' . $labels[$attrlabel] . ': "' . $val_result . '";';
             }
+        }
+
+        if ($ModelFilter instanceof Model) {
+            $dopfilter = self::ConstructFilterOutput($ModelFilter);
+            if (!empty($dopfilter))
+                $filter .= ' ' . $dopfilter;
         }
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
@@ -685,6 +696,95 @@ class Proc {
                 }
             }
         return [$KeyName => $result];
+    }
+
+    // ФИЛЬТР в DYNAGRID-----------------------------------------------------------------------------------------------------------------
+    // Устанавливаем фильтр из переденных параметров запроса и сохраняем в сессию, выводим строку фильтра для отображения в гриде
+    public static function SetFilter($ModelGridName, $ModelFilter) {
+        if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
+            $filter = '';
+            $dofilterstring = false;
+            $session = new Session;
+            $session->open();
+            $fmodel = substr($ModelFilter->className(), strrpos($ModelFilter->className(), '\\') + 1);
+            if (isset(Yii::$app->request->queryParams[$ModelGridName]['_filter'])) {
+                $filterfield = Yii::$app->request->queryParams[$ModelGridName]['_filter'];
+                parse_str($filterfield, $filterparams);
+                if (is_array($filterparams)) {
+                    unset($filterparams['_csrf']);
+                    $sestmp[$ModelGridName] = $filterparams;
+                    $session['_filter'] = $sestmp;
+                    $dofilterstring = true;
+                }
+            } elseif (isset(Yii::$app->request->queryParams[$ModelGridName]) && !isset(Yii::$app->request->queryParams[$ModelGridName]['_filter'])) {
+                unset($session['_filter']);
+            } elseif (isset($session['_filter']))
+                $dofilterstring = true;
+
+            if ($dofilterstring) {
+                $filter = self::ConstructFilterOutput($ModelFilter);
+                if (!empty($filter))
+                    $filter = '<div class="panel panel-warning"><div class="panel-heading">Доп фильтр:' . $filter . '<button id="' . $fmodel . '_resetfilter" type="button" class="close" aria-hidden="true">&times;</button></div></div>';
+            }
+
+            $session->close();
+            return $filter;
+        } else
+            throw new HttpException(500, 'Ошибка при передачи параметров в function SetFilter');
+    }
+
+    // Заполняем форму Фильтра из сессии
+    public static function PopulateFilterForm($ModelGridName, &$ModelFilter) {
+        if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
+            $ModelFilterName = substr($ModelFilter->className(), strrpos($ModelFilter->className(), '\\') + 1);
+            $session = new Session;
+            $session->open();
+            if (isset($session['_filter'][$ModelGridName][$ModelFilterName]))
+                $ModelFilter->load($session['_filter'][$ModelGridName]);
+            $session->close();
+        } else
+            throw new HttpException(500, 'Ошибка при передачи параметров в function PopulateFilterForm');
+    }
+
+    // Получаем значения полей фильтра
+    public static function GetFilter($ModelGridName, $ModelFilterName) {
+        if (is_string($ModelGridName) && is_string($ModelFilterName)) {
+            $result = [];
+            $session = new Session;
+            $session->open();
+            if (isset($session['_filter'][$ModelGridName][$ModelFilterName]) && is_array($session['_filter'][$ModelGridName][$ModelFilterName]))
+                $result = $session['_filter'][$ModelGridName][$ModelFilterName];
+
+            $session->close();
+            return $result;
+        } else
+            throw new HttpException(500, 'Ошибка при передачи параметров в function GetFilter');
+    }
+
+    // Функция выводит строку фильтра для отображения в гриде
+    private static function ConstructFilterOutput($AR) {
+        $session = new Session;
+        $session->open();
+        $filter = '';
+
+        if (isset($session['_filter'])) {
+            foreach ($session['_filter'] as $filtform) {
+                foreach ($filtform as $filtformname => $fields) {
+                    $fmodel = substr($AR->className(), strrpos($AR->className(), '\\') + 1);
+                    if ($filtformname === $fmodel) {
+                        foreach ($fields as $attr => $value)
+                            if (strpos($attr, '_mark') === strlen($attr) - 5) {
+                                if ($value === '1')
+                                    $filter .= ' ' . $AR->attributeLabels()[$attr] . ';';
+                            } else
+                                $filter .= ' ' . $AR->attributeLabels()[$attr] . ' = "' . $value . '"';
+                    }
+                }
+            }
+        }
+
+        $session->close();
+        return $filter;
     }
 
 }

@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use app\func\Proc;
 use kartik\dynagrid\DynaGrid;
 use yii\helpers\Url;
+use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap\ButtonGroup;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\MattrafficSearch */
@@ -24,6 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'mattrafficgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         [
@@ -166,11 +169,59 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         }
                         return $class;
                     },
-                            'options' => ['id' => 'mattrafficgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-th-large"></i> ' . $this->title,
+                                'before' =>
+                                ButtonGroup::widget([
+                                    'buttons' => [
+                                        true/* Yii::$app->user->can('EmployeeEdit') */ ?
+                                                ButtonDropdown::widget([
+                                                    'label' => '<i class="glyphicon glyphicon-plus"></i> Приход',
+                                                    'encodeLabel' => false,
+                                                    'dropdown' => [
+                                                        'encodeLabels' => false,
+                                                        'items' => [
+                                                            ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал материальных ценностей', 'url' => Url::to(['Fregat/material/index']), 'options' => ['data-pjax' => '0']],
+                                                        ],
+                                                    ],
+                                                    'options' => ['class' => 'btn btn-success']
+                                                ]) : [],
+                                        true/* Yii::$app->user->can('EmployeeEdit') */ ?
+                                                ButtonDropdown::widget([
+                                                    'label' => '<i class="glyphicon glyphicon-random"></i> Движение',
+                                                    'encodeLabel' => false,
+                                                    'dropdown' => [
+                                                         'encodeLabels' => false,
+                                                        'items' => [
+                                                            ['label' => 'Изменить материально ответственное лицо <i class="glyphicon glyphicon-user"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            '<li role="presentation" class="divider"></li>',
+                                                            ['label' => 'Журнал перемещений материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт перемещения материальной ценности <i class="glyphicon glyphicon-random"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            '<li role="presentation" class="divider"></li>',
+                                                            ['label' => 'Журнал восстановления материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт восстановления материальной ценности <i class="glyphicon glyphicon-wrench"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                        ],
+                                                    ],
+                                                    'options' => ['class' => 'btn btn-warning']
+                                                ]) : [],
+                                        true/* Yii::$app->user->can('EmployeeEdit') */ ?
+                                                ButtonDropdown::widget([
+                                                    'label' => '<i class="glyphicon glyphicon-trash"></i> Списание',
+                                                    'encodeLabel' => false,
+                                                    'dropdown' => [
+                                                         'encodeLabels' => false,
+                                                        'items' => [
+                                                            ['label' => 'Составить акт списания материальнной ценности <i class="glyphicon glyphicon-trash"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал списаний материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                        ],
+                                                    ],
+                                                    'options' => ['class' => 'btn btn-danger']
+                                                ]) : [],
+                                    ]
+                                ]),
                             ],
-                        ]
+                        ],
             ]));
             ?>
 

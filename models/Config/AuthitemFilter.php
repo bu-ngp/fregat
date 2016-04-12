@@ -7,27 +7,18 @@ use yii\base\Model;
 
 class AuthitemFilter extends Model {
 
-    public $onlyrootauthitems;
+    public $onlyrootauthitems_mark;
 
     public function rules() {
-        return [
-            ['onlyrootauthitems', 'safe'],
+        return [            
+            ['onlyrootauthitems_mark', 'safe'],
         ];
     }
 
     public function attributeLabels() {
         return [
-            'onlyrootauthitems' => 'Только основные авторизационные единицы',
+            'onlyrootauthitems_mark' => 'Только основные авторизационные единицы',
         ];
-    }
-
-    public function SetFilter($FilterAttributes) {
-        parse_str($FilterAttributes, $filterparams);
-        if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {            
-            $filter .= ' ' . $this->attributeLabels()['onlyrootauthitems'] . ';';
-        }
-
-        return $filter;
     }
 
 }

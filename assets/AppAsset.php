@@ -25,8 +25,9 @@ class AppAsset extends AssetBundle {
         'css/site.css',
     ];
     public $js = [
+        'js/bootbox.min.js',
         'js/proc.js',
-        'js/jquery-deserialize-master/jquery.deserialize.js',
+        'js/jquery-deserialize-master/jquery.deserialize.js',        
             //  'js/test.js',
     ];
     public $depends = [

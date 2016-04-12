@@ -14,6 +14,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 <div class="importmaterial-index">
     <?=
     DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'importmaterialgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'importmaterial_combination',
@@ -27,7 +28,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'gridOptions' => [
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
-                    'options' => ['id' => 'importmaterialgrid'],
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-gift"></i> ' . $this->title,
                         'before' => Yii::$app->user->can('FregatImport') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

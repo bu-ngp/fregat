@@ -18,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'podrazgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'podraz_name',
@@ -36,7 +37,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'gridOptions' => [
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
-                            'options' => ['id' => 'podrazgrid'],
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-briefcase"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('PodrazEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',

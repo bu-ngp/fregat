@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Config\Authitem;
+use app\func\Proc;
 
 /**
  * AuthitemSearch represents the model behind the search form about `app\models\Config\Authitem`.
@@ -64,12 +65,10 @@ class AuthitemSearch extends Authitem {
                 ->andFilterWhere(['like', 'data', $this->data]);
         $ok = '1';
 
-        if (isset($params['AuthitemSearch']['_filter'])) {
-            $ok = '12';
+        $filter = Proc::GetFilter('AuthitemSearch', 'AuthitemFilter');
 
-            parse_str($params['AuthitemSearch']['_filter'], $filterparams);
-
-            if ($filterparams['AuthitemFilter']['onlyrootauthitems'] === '1') {
+        if (!empty($filter)) {
+            if ($filter['onlyrootauthitems_mark'] === '1') {
                 $query->joinWith('authitemchildrenparent')
                         ->where('(not parent in (select b.child from auth_item_child b) or (parent Is Null))')
                         ->andFilterWhere(['type' => 1])
