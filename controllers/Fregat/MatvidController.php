@@ -18,6 +18,7 @@ class MatvidController extends Controller {
 
     public function behaviors() {
         return [
+
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -44,14 +45,16 @@ class MatvidController extends Controller {
 
     public function actionIndex() {
         $searchModel = new MatvidSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $Request = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($Request);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'idmat' => $Request['idmat'],
         ]);
     }
-    
+
     public function actionSelectinput($field, $q = null) {
         return Proc::select2request(new Matvid, $field, $q);
     }
@@ -85,7 +88,7 @@ class MatvidController extends Controller {
 
         return $this->redirect(['index']);
     }
-    
+
     public function actionForgrupavid() {
         $searchModel = new MatvidSearch();
         $dataProvider = $searchModel->searchforgrupavid(Yii::$app->request->queryParams);

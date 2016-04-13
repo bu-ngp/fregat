@@ -1,21 +1,26 @@
 <?php
 
 use yii\helpers\Html;
+use app\func\Proc;
 
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Izmer */
 
-$this->title = 'Create Izmer';
-$this->params['breadcrumbs'][] = ['label' => 'Izmers', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Добавить единицу измерения';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="izmer-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div> 
 </div>

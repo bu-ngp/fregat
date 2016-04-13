@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
+use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap\ButtonGroup;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\MaterialSearch */
@@ -89,7 +91,23 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'filterModel' => $searchModel,
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-picture"></i> ' . $this->title,
-                    //  'before' => Yii::$app->user->can('BuildEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                        'before' =>
+                        ButtonGroup::widget([
+                            'buttons' => [
+                                true/* Yii::$app->user->can('EmployeeEdit') */ ?
+                                        ButtonDropdown::widget([
+                                            'label' => '<i class="glyphicon glyphicon-plus"></i> Приход',
+                                            'encodeLabel' => false,
+                                            'dropdown' => [
+                                                'encodeLabels' => false,
+                                                'items' => [
+                                                    ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => Url::to(['Fregat/material/create']), 'options' => ['data-pjax' => '0']],
+                                                ],
+                                            ],
+                                            'options' => ['class' => 'btn btn-success']
+                                        ]) : [],
+                            ]
+                        ]),
                     ],
                 ]
     ]));

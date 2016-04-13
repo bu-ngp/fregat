@@ -263,7 +263,7 @@ class Proc {
         }
         return $out;
     }
-
+    
     // Удаляет последний элемент массива хлебных крошек из сессии
     public static function RemoveLastBreadcrumbsFromSession() {
         $session = new Session;

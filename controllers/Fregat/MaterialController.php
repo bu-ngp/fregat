@@ -8,7 +8,9 @@ use app\models\Fregat\MaterialSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Fregat\Mattraffic;
 
 /**
  * MaterialController implements the CRUD actions for Material model.
@@ -21,7 +23,7 @@ class MaterialController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'create', 'update'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -56,8 +58,17 @@ class MaterialController extends Controller {
         $model = new Material();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->material_id]);
+            Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+
+            return $this->redirect(['update', 'id' => $model->material_id]);
         } else {
+            $model->material_number = 1;
+            $model->material_price = 0;
+            $model->material_tip = 1;
+            $model->id_matvid = 1;
+            $model->id_izmer = 1;
+            $model->material_importdo = 1;
+
             return $this->render('create', [
                         'model' => $model,
             ]);
@@ -66,10 +77,23 @@ class MaterialController extends Controller {
 
     public function actionUpdate($id) {
         $model = $this->findModel($id);
+        $Mattraffic = new Mattraffic;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->material_id]);
+
+
+
+            return $this->redirect(['index']);
         } else {
+            /*          $Mattraffic->load(Yii::$app->request->get(), 'Mattraffic');
+              $Mattraffic->id_material = $model->primaryKey;
+              $Mattraffic->mattraffic_number = $model->material_number;
+
+
+              if ($Mattraffic->validate())
+              $Mattraffic->save(false);
+             */
+
             return $this->render('update', [
                         'model' => $model,
             ]);

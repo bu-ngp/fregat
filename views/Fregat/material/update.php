@@ -1,21 +1,27 @@
 <?php
 
 use yii\helpers\Html;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Material */
 
-$this->title = 'Update Material: ' . ' ' . $model->material_id;
-$this->params['breadcrumbs'][] = ['label' => 'Materials', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->material_id, 'url' => ['view', 'id' => $model->material_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Акт прихода материальной ценности №' . $model->material_id;
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => [$model, $Mattraffic],
+        ]);
 ?>
 <div class="material-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

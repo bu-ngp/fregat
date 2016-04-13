@@ -41,12 +41,12 @@ class Material extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['material_username'], 'filter', 'filter' => function($value) {
-                    return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
-                }],
+            return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+        }],
             [['material_username'], 'filter', 'filter' => function($value) {
-                    return 'IMPORT';
-                }, 'on' => 'import1c'],
-            [['material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
+            return 'IMPORT';
+        }, 'on' => 'import1c'],
+            [['material_name','material_number','material_price','material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
             [['material_inv'], 'required', 'except' => 'import1c'],
             [['material_release'], 'safe'],
             [['material_number', 'material_price'], 'number'],
@@ -89,7 +89,7 @@ class Material extends \yii\db\ActiveRecord {
             'id_izmer' => 'Единица измерения',
             'material_username' => 'Пользователь изменивший запись',
             'material_lastchange' => 'Дата изменения записи',
-            'material_importdo' => 'Запись изменяема при импортировании',
+            'material_importdo' => 'Запись изменяема при импортировании из 1С',
         ];
     }
 
