@@ -112,7 +112,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
     public function getWriteoffakts() {
         return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
-    
+
     public function beforeValidate() {
         if ((empty($this->mattraffic_lastchange) || empty($this->mattraffic_forimport)) && $this->isAttributeRequired('mattraffic_lastchange'))
             $this->mattraffic_lastchange = date('Y-m-d H:i:s');
@@ -127,4 +127,35 @@ class Mattraffic extends \yii\db\ActiveRecord {
         return parent::beforeSave($insert);
     }
 
-}
+    public function selectinput($params) {
+        $query = self::find()
+                ->select([self::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                ->joinWith([
+                    'idMol' => function($query) {
+                        $query->from(['idMol' => 'employee']);
+                        $query->joinWith([
+                            'idperson' => function($query) {
+                                $query->from(['idperson' => 'auth_user']);
+                            },
+                                    'iddolzh' => function($query) {
+                                $query->from(['iddolzh' => 'dolzh']);
+                            },
+                                    'idpodraz' => function($query) {
+                                $query->from(['idpodraz' => 'podraz']);
+                            },
+                                    'idbuild' => function($query) {
+                                $query->from(['idbuild' => 'build']);
+                            },
+                                ]);
+                            }
+                                ])
+                                ->where(['like', 'idperson.auth_user_fullname', $params['q']])
+                                ->limit(20)
+                                ->asArray()
+                                ->all();
+
+                        return $query;
+                    }
+
+                }
+                

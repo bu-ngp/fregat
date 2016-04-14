@@ -19,6 +19,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?=
             $this->render('_form', [
                 'model' => $model,
+                'Mattraffic' => $Mattraffic,
             ])
             ?>
         </div>

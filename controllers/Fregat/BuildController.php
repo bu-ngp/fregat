@@ -57,7 +57,11 @@ class BuildController extends Controller {
     public function actionSelectinput($field, $q = null) {
         //$showresultfields = $_GET['showresultfields'];
 
-        return Proc::select2request(new Build, $field, $q);
+        return Proc::select2request([
+                    'model' => new Build,
+                    'field' => $field,
+                    'q' => $q,
+        ]);
     }
 
     public function actionCreate() {

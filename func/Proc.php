@@ -197,20 +197,29 @@ class Proc {
             $thisroute = $params['thisroute'];
             $fields = $params['fields'];
             $dopparams = $params['dopparams'];
+            $methodquery = $params['methodquery'];
+            $methodparams = $params['methodparams'];
 
             if (!isset($fields['showresultfields']))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
             if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !empty($fields['resultfield']) && !empty($fromgridroute) && !empty($thisroute)) {
 
-                $initrecord = empty($model->$fields['keyfield']) ? '' : $resultmodel::find()
-                                ->select($fields['showresultfields'])
-                                ->where([$resultmodel->primarykey()[0] => $model->$fields['keyfield']])
-                                ->asArray()
-                                ->one();
+
+                if (!empty($methodquery)) {
+                    $methodparams['q'] = $model->$fields['keyfield'];
+                    $methodparams['init'] = true;
+
+                    $initrecord = isset($methodparams['q']) ? $resultmodel->$methodquery($methodparams) : [];
+                } else
+                    $initrecord = $resultmodel::find()
+                            ->select($fields['showresultfields'])
+                            ->where([$resultmodel->primarykey()[0] => $model->$fields['keyfield']])
+                            ->asArray()
+                            ->one();
 
                 return [
-                    'initValueText' => empty($model->$fields['keyfield']) ? '' : implode(', ', $initrecord),
+                    'initValueText' => implode(', ', $initrecord),
                     'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession'],
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'pluginOptions' => [
@@ -241,29 +250,40 @@ class Proc {
     }
 
     // Выводит массив данных для Select2 элемента
-    // $model - Модель из которой берутся данные
-    // $field - Поле по которому осуществляется поиск
-    // $q - Текстовая строка поиска
-    // $showresultfields - Массив полей, которые возвращаются, как результат поиска
-    public static function select2request($model, $field, $q = null, $showresultfields = null) {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!isset($showresultfields))
-            $showresultfields = [$field];
+    // $params[model] - Модель из которой берутся данные
+    // $params[field] - Поле по которому осуществляется поиск
+    // $params[q] - Текстовая строка поиска
+    // $params[showresultfields] - Массив полей, которые возвращаются, как результат поиска
+    public static function select2request($params) {
+        if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && is_string($params['field'])) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $out = ['results' => ['id' => '', 'text' => '']];
+            $model = $params['model'];
+            if (!isset($params['showresultfields']))
+                $params['showresultfields'] = [$params['field']];
 
-        $showresultfields = implode(', ', $showresultfields);
-        if (!is_null($q)) {
-            $m = new $model;
-            $out['results'] = $model::find()
-                    ->select([$m->primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $showresultfields . ') AS text'])
-                    ->where(['like', $field, $q])
-                    ->limit(20)
-                    ->asArray()
-                    ->all();
-        }
-        return $out;
+            $params['showresultfields'] = implode(', ', $params['showresultfields']);
+            if (isset($params['q'])) {
+                if (isset($params['methodquery']) && (!isset($params['methodparams']) || is_array($params['methodparams'])) && is_string($params['methodquery'])) {
+                    $params['methodparams']['q'] = $params['q'];
+
+                    $out['results'] = $model->$params['methodquery']($params['methodparams']);
+                    if (!is_array($out['results']))
+                        exit;
+                } else {
+                    $out['results'] = $model::find()
+                            ->select([$model::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $params['showresultfields'] . ') AS text'])
+                            ->where(['like', $params['field'], $params['q']])
+                            ->limit(20)
+                            ->asArray()
+                            ->all();
+                }
+            }
+            return $out;
+        } else
+            throw new \Exception('Ошибка в Proc::select2request()');
     }
-    
+
     // Удаляет последний элемент массива хлебных крошек из сессии
     public static function RemoveLastBreadcrumbsFromSession() {
         $session = new Session;

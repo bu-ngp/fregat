@@ -56,21 +56,44 @@ class MaterialController extends Controller {
 
     public function actionCreate() {
         $model = new Material();
+        if (isset($model->scenarios()['prihod']))
+            $model->scenario = 'prihod';
+        $Mattraffic = new Mattraffic;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+        if ($model->load(Yii::$app->request->post())) {
 
-            return $this->redirect(['update', 'id' => $model->material_id]);
+            if (empty($model->material_name1c))
+                $model->material_name1c = $model->material_name;
+
+            if ($model->save()) {
+                $Mattraffic->id_material = empty($Mattraffic->id_material) ? $model->material_id : $Mattraffic->id_material;
+                $Mattraffic->mattraffic_number = empty($Mattraffic->mattraffic_number) ? $model->material_number : $Mattraffic->mattraffic_number;
+                $Mattraffic->mattraffic_tip = empty($Mattraffic->mattraffic_tip) ? 1 : $Mattraffic->mattraffic_tip;
+
+                if ($Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
+                    return $this->redirect(['index']);
+                else
+                    return $this->render('create', [
+                                'model' => $model,
+                                'Mattraffic' => $Mattraffic,
+                    ]);
+            } else
+                return $this->render('create', [
+                            'model' => $model,
+                            'Mattraffic' => $Mattraffic,
+                ]);
         } else {
-            $model->material_number = 1;
-            $model->material_price = 0;
-            $model->material_tip = 1;
-            $model->id_matvid = 1;
-            $model->id_izmer = 1;
-            $model->material_importdo = 1;
+            $model->material_number = empty($model->material_number) ? 1 : $model->material_number;
+            $model->material_price = empty($model->material_price) ? 1 : $model->material_price;
+            $model->material_tip = empty($model->material_tip) ? 1 : $model->material_tip;
+            $model->id_matvid = empty($model->id_matvid) ? 1 : $model->id_matvid;
+            $model->id_izmer = empty($model->id_izmer) ? 1 : $model->id_izmer;
+            $model->material_importdo = empty($model->material_importdo) ? 1 : $model->material_importdo;
+            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
 
             return $this->render('create', [
                         'model' => $model,
+                        'Mattraffic' => $Mattraffic,
             ]);
         }
     }

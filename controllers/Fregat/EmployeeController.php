@@ -22,7 +22,7 @@ class EmployeeController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'forimportemployee'],
+                        'actions' => ['index', 'selectinputformaterial', 'forimportemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -59,6 +59,15 @@ class EmployeeController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    public function actionSelectinputformaterial($field, $q = null) {
+        return Proc::select2request([
+                    'model' => new Employee,
+                    'field' => $field,
+                    'q' => $q,
+                    'methodquery' => 'selectinput',
         ]);
     }
 

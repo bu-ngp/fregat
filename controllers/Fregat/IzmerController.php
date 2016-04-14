@@ -53,7 +53,11 @@ class IzmerController extends Controller {
     }
 
     public function actionSelectinput($field, $q = null) {
-        return Proc::select2request(new Izmer, $field, $q);
+        return Proc::select2request([
+                    'model' => new Izmer,
+                    'field' => $field,
+                    'q' => $q,
+        ]);
     }
 
     public function actionCreate() {

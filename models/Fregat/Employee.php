@@ -155,4 +155,30 @@ class Employee extends \yii\db\ActiveRecord {
         return parent::beforeSave($insert);
     }
 
-}
+    public function selectinput($params) {
+        $query = self::find()
+                ->select([self::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                ->joinWith([
+                    'idperson' => function($query) {
+                        $query->from(['idperson' => 'auth_user']);
+                    },
+                            'iddolzh' => function($query) {
+                        $query->from(['iddolzh' => 'dolzh']);
+                    },
+                            'idpodraz' => function($query) {
+                        $query->from(['idpodraz' => 'podraz']);
+                    },
+                            'idbuild' => function($query) {
+                        $query->from(['idbuild' => 'build']);
+                    },
+                        ])
+                        ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
+                        ->limit(20)
+                        ->asArray()
+                        ->all();
+
+                return $query;
+            }
+
+        }
+        

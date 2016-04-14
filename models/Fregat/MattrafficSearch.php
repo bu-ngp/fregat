@@ -92,10 +92,10 @@ class MattrafficSearch extends Mattraffic {
             'query' => $query,
         ]);
 
-        $query->joinWith([
+   /*     $query->joinWith([
             'idMaterial' => function($query) {
                 $query->from(['idMaterial' => 'material']);
-            }]);
+            }]);*/
 
                 $query->joinWith([
                     'idMaterial' => function($query) {

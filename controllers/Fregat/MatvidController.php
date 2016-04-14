@@ -56,7 +56,11 @@ class MatvidController extends Controller {
     }
 
     public function actionSelectinput($field, $q = null) {
-        return Proc::select2request(new Matvid, $field, $q);
+        return Proc::select2request([
+                    'model' => new Matvid,
+                    'field' => $field,
+                    'q' => $q,
+        ]);
     }
 
     public function actionCreate() {
