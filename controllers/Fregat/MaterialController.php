@@ -89,7 +89,7 @@ class MaterialController extends Controller {
             $model->id_matvid = empty($model->id_matvid) ? 1 : $model->id_matvid;
             $model->id_izmer = empty($model->id_izmer) ? 1 : $model->id_izmer;
             $model->material_importdo = empty($model->material_importdo) ? 1 : $model->material_importdo;
-            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
+            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('d.m.Y') : $Mattraffic->mattraffic_date;
 
             return $this->render('create', [
                         'model' => $model,
@@ -100,25 +100,26 @@ class MaterialController extends Controller {
 
     public function actionUpdate($id) {
         $model = $this->findModel($id);
-        $Mattraffic = new Mattraffic;
+        $Mattraffic = Mattraffic::find()
+                ->andWhere([
+                    'id_material' => $model->material_id,
+                    'mattraffic_tip' => 1,
+                ])
+                ->orderBy('mattraffic_date desc, mattraffic_id desc')
+                ->one();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save()) {
 
 
 
             return $this->redirect(['index']);
-        } else {
-            /*          $Mattraffic->load(Yii::$app->request->get(), 'Mattraffic');
-              $Mattraffic->id_material = $model->primaryKey;
-              $Mattraffic->mattraffic_number = $model->material_number;
-
-
-              if ($Mattraffic->validate())
-              $Mattraffic->save(false);
-             */
+        } else {            
+            $model->material_release  = Yii::$app->formatter->asDate($model->material_release);
+            $Mattraffic->mattraffic_date = Yii::$app->formatter->asDate($Mattraffic->mattraffic_date);
 
             return $this->render('update', [
                         'model' => $model,
+                        'Mattraffic' => $Mattraffic,
             ]);
         }
     }

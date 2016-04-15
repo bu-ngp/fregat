@@ -140,7 +140,7 @@ use app\models\Fregat\Mattraffic;
                         'methodquery' => 'selectinput',
             ]));
             ?>
-
+            
             <?=
             $form->field($Mattraffic, 'mattraffic_date')->widget(DateTimePicker::classname(), [
                 'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],

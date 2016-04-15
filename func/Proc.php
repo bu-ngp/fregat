@@ -78,10 +78,8 @@ class Proc {
 
                         $field = $result[key($result)]['dopparams']['foreign']['field'];
 
-                        while (count($result) > 0 && $id !== key($result)) {
-                            unset($result[key($result)]);
-                            end($result);
-                        }
+                        if (count($result) > 0 && $id !== key($result))
+                            prev($result);
 
                         $model->load($result[key($result)]['dopparams'], $fmodel);
 
@@ -91,6 +89,12 @@ class Proc {
                             $model->$field = $value;
                         }
                     }
+                }
+
+                end($result);
+                while (count($result) > 0 && $id !== key($result)) {
+                    unset($result[key($result)]);
+                    end($result);
                 }
             } else {
                 end($result);
@@ -145,6 +149,7 @@ class Proc {
     // $params['buttons'] - Кнопки для ActionColumn
     // $params['buttons']['update' => [0 => URL для обновления записи, 1 => ID обновляемой записи]]
     // $params['buttons']['delete' => [0 => URL для удаления записи, 1 => ID удаляемой записи]]
+    // $params['buttonsfirst'] - Расположить кнопки в первой колонке
     public static function DGcols($params) {
         if (isset($params) && is_array($params)) {
             // Делаем строку 'template' на основе массива кнопок
@@ -172,17 +177,22 @@ class Proc {
                 };
             }
 
+            $mascolumns = isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [];
+            $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons'] > 0) ? [
+                [ 'class' => 'kartik\grid\ActionColumn',
+                    'header' => Html::encode('Действия'),
+                    'contentOptions' => ['style' => 'white-space: nowrap;'],
+                    'template' => $tmpl,
+                    'buttons' => is_array($params['buttons']) ? $params['buttons'] : [],]
+                    ] : [];
+
+            $masitog = (isset($params['buttonsfirst']) && $params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
+
             return array_merge([
                 ['class' => 'kartik\grid\SerialColumn',
                     'header' => Html::encode('№'),
                 ]
-                    ], isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [], isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons'] > 0) ? [
-                        [ 'class' => 'kartik\grid\ActionColumn',
-                            'header' => Html::encode('Действия'),
-                            'contentOptions' => ['style' => 'white-space: nowrap;'],
-                            'template' => $tmpl,
-                            'buttons' => is_array($params['buttons']) ? $params['buttons'] : [],]
-                            ] : []);
+                    ], $masitog);
         }
     }
 

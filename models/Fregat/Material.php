@@ -46,6 +46,9 @@ class Material extends \yii\db\ActiveRecord {
             [['material_username'], 'filter', 'filter' => function($value) {
             return 'IMPORT';
         }, 'on' => 'import1c'],
+       /*     ['mattraffic_date', 'filter', 'filter' => function($value) {
+                    return preg_replace('/(\d{2})\.(\d{2})\.(\d{4})/', '$3-$2-$1', $value);
+                }, 'except' => 'import1c'],*/
             [['material_name','material_number','material_price','material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
             [['material_inv'], 'required', 'except' => 'import1c'],
             [['material_release'], 'safe'],

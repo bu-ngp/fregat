@@ -22,6 +22,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'materialgrid'],
                 'columns' => Proc::DGcols([
+                    'buttonsfirst' => true,
                     'columns' => [
                         [
                             'attribute' => 'material_tip',
@@ -75,16 +76,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     },
                         ],
                     ],
-                        /*   'buttons' => array_merge(
-                          empty($foreign) ? [] : [
-                          'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
-                          $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'iduser' => $iduser, $foreign['model'] => [$foreign['field'] => $model['material_id']]]);
-                          return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                          }], Yii::$app->user->can('BuildEdit') ? [
-                          'update' => ['Fregat/material/update', 'material_id'],
-                          'delete' => ['Fregat/material/delete', 'material_id'],
-                          ] :  []
-                          ), */
+                    'buttons' => array_merge(
+                            /* empty($foreign) ? [] : [
+                              'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
+                              $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'iduser' => $iduser, $foreign['model'] => [$foreign['field'] => $model['material_id']]]);
+                              return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                              }], */ /* Yii::$app->user->can('MaterialEdit') */ true ? [
+                                'update' => ['Fregat/material/update', 'material_id'],
+                                    //'delete' => ['Fregat/material/delete', 'material_id'],
+                                    ] : []
+                    ),
                 ]),
                 'gridOptions' => [
                     'dataProvider' => $dataProvider,

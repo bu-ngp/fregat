@@ -3,13 +3,12 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Material */
 
 $this->title = 'Составить акт прихода материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => $model,
+            'model' => [$model, $Mattraffic],
         ]);
 ?>
 <div class="material-create">

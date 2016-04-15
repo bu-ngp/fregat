@@ -156,8 +156,10 @@ class Employee extends \yii\db\ActiveRecord {
     }
 
     public function selectinput($params) {
+        $method = isset($params['init']) ? 'one' : 'all';
+
         $query = self::find()
-                ->select([self::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                 ->joinWith([
                     'idperson' => function($query) {
                         $query->from(['idperson' => 'auth_user']);
@@ -175,7 +177,7 @@ class Employee extends \yii\db\ActiveRecord {
                         ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
                         ->limit(20)
                         ->asArray()
-                        ->all();
+                        ->$method();
 
                 return $query;
             }
