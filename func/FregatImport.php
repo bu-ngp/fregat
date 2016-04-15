@@ -633,6 +633,7 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -643,6 +644,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
 
                 
 // Добавляем в лог не измененные значения ActiveRecord
@@ -831,7 +833,7 @@ class FregatImport {
     }
 
     // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
-    static private function SpisatMaterial($MaterialID,$MOLID) {
+    static private function SpisatMaterial($MaterialID, $MOLID) {
         $return = false;
 
         $result = Mattraffic::find()
@@ -846,26 +848,28 @@ class FregatImport {
 
         if (empty($result)) {
             $Material = Material::findOne($MaterialID);
-            
+
             $matmol = Mattraffic::find()
-                ->from(['m1' => 'mattraffic'])
-                ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
-                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
-                ->andWhere('m1.mattraffic_tip <> 2')
-                ->andWhere(['m2.mattraffic_date' => NULL])
-                ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol'=>$MOLID])
-                ->one();
-            
+                    ->from(['m1' => 'mattraffic'])
+                    ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                    ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                    ->andWhere('m1.mattraffic_tip <> 2')
+                    ->andWhere(['m2.mattraffic_date' => NULL])
+                    ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
+                    ->one();
+
             // Если материл не найден у мола в файле импорта, то вычитаем общее количество материала
-            if (!empty($matmol)) 
-                $Material->material_number -= $matmol->mattraffic_number;            
-            
+            if (!empty($matmol))
+                $Material->material_number -= $matmol->mattraffic_number;
+
             if ($Material->material_number === 0) {
                 $Material->material_writeoff = 1;
-                $Material->save(false);
                 $return = true;
             }
+
+            if (!empty($matmol) || $Material->material_number === 0)
+                $Material->save(false);
         }
         return $return;
     }
@@ -900,7 +904,7 @@ class FregatImport {
                     $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
                     $writeoffakt->save(false);
 
-                    $spismat = self::SpisatMaterial($ar->id_material,$ar->id_mol);
+                    $spismat = self::SpisatMaterial($ar->id_material, $ar->id_mol);
 
                     $Material = Material::findOne($ar->id_material);
 
@@ -911,7 +915,7 @@ class FregatImport {
                     $Matlog->matlog_filelastdate = self::$filelastdate;
                     $Matlog->matlog_rownum = 0;
                     $Matlog->matlog_type = $spismat ? 4 : 2;
-                    $Matlog->matlog_message = $spismat ? 'Материал списан' : 'Запись не изменилась';
+                    $Matlog->matlog_message = $spismat ? 'Материал списан. ' : 'Запись не изменялась. ';
                     $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                     $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
                     $Matlog->material_writeoff = $Material->material_writeoff === 1 ? 'Да' : 'Нет';
