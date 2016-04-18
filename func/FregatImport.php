@@ -634,6 +634,11 @@ class FregatImport {
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
 
+
+
+
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -644,6 +649,11 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
+
+
+
 
 
                 
@@ -1135,6 +1145,26 @@ class FregatImport {
                                             if ($Employee->employee_importdo === 1) {
                                                 if (isset($Employee->scenarios()['import1c']))
                                                     $Employee->scenario = 'import1c';
+
+                                                if (!empty($Employee->employee_dateinactive)) {
+                                                    $Employeelog = new Employeelog;
+                                                    $Employeelog->id_logreport = self::$logreport_id;
+                                                    $Employeelog->employeelog_type = 2;
+                                                    $Employeelog->employeelog_filename = self::$filename;
+                                                    $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                                                    $Employeelog->employeelog_rownum = $i;
+                                                    $Employeelog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($Employee->employee_dateinactive) . '"';
+
+                                                    $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname;
+                                                    $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
+                                                    $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+                                                    if (!empty($Employee->id_build))
+                                                        $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+                                                    $Employeelog->save(false);
+
+                                                    $Employee->employee_dateinactive = null;
+                                                }
+
                                                 $Employee->employee_forinactive = 1;
                                                 $Employee->save(false);
                                             }

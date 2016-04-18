@@ -71,7 +71,7 @@ class MaterialController extends Controller {
                 $Mattraffic->mattraffic_tip = empty($Mattraffic->mattraffic_tip) ? 1 : $Mattraffic->mattraffic_tip;
 
                 if ($Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
-                    return $this->redirect(['index']);
+                    return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
                 else
                     return $this->render('create', [
                                 'model' => $model,
@@ -89,7 +89,7 @@ class MaterialController extends Controller {
             $model->id_matvid = empty($model->id_matvid) ? 1 : $model->id_matvid;
             $model->id_izmer = empty($model->id_izmer) ? 1 : $model->id_izmer;
             $model->material_importdo = empty($model->material_importdo) ? 1 : $model->material_importdo;
-            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('d.m.Y') : $Mattraffic->mattraffic_date;
+            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
 
             return $this->render('create', [
                         'model' => $model,
@@ -108,20 +108,13 @@ class MaterialController extends Controller {
                 ->orderBy('mattraffic_date desc, mattraffic_id desc')
                 ->one();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save()) {
-
-
-
-            return $this->redirect(['index']);
-        } else {            
-            $model->material_release  = Yii::$app->formatter->asDate($model->material_release);
-            $Mattraffic->mattraffic_date = Yii::$app->formatter->asDate($Mattraffic->mattraffic_date);
-
+        if ($model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else
             return $this->render('update', [
                         'model' => $model,
                         'Mattraffic' => $Mattraffic,
             ]);
-        }
     }
 
     public function actionDelete($id) {

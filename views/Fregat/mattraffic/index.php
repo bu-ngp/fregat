@@ -25,32 +25,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
+    $mattraffic_tip = [1 => 'Приход', 2 => 'Списание'];
+
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'mattrafficgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         [
                             'attribute' => 'mattraffic_date',
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDate($model->mattraffic_date);
-                            }
+                            'format' => 'date',
                         ],
                         [
                             'attribute' => 'mattraffic_tip',
-                            'filter' => [1 => 'Приход', 2 => 'Списание'],
-                            'value' => function ($model) {
-                        $mattraffic_tip = '';
-                        switch ($model->mattraffic_tip) {
-                            case 1:
-                                $mattraffic_tip = 'Приход';
-                                break;
-                            case 2:
-                                $mattraffic_tip = 'Списание';
-                                break;
-                        }
-
-                        return $mattraffic_tip;
-                    },
+                            'filter' => $mattraffic_tip,
+                            'value' => function ($model) use ($mattraffic_tip) {
+                                return isset($mattraffic_tip[$model->mattraffic_tip]) ? $mattraffic_tip[$model->mattraffic_tip] : '';
+                            },
                         ],
                         'mattraffic_number',
                         [
@@ -73,9 +63,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         [
                             'attribute' => 'idMaterial.material_release',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDate($model->idMaterial->material_release);
-                            }
+                            'format' => 'date',
                         ],
                         'idMaterial.material_number',
                         'idMaterial.idIzmer.izmer_name',
@@ -91,9 +79,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         [
                             'attribute' => 'idMol.employee_dateinactive',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDate($model->idMol->employee_dateinactive);
-                            }
+                            'format' => 'date',
                         ],
                         [
                             'attribute' => 'idMaterial.material_writeoff',
@@ -110,9 +96,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         [
                             'attribute' => 'idMaterial.material_lastchange',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDatetime($model->idMaterial->material_lastchange);
-                            }
+                            'format' => 'datetime',
                         ],
                         [
                             'attribute' => 'idMaterial.material_importdo',
@@ -129,9 +113,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         [
                             'attribute' => 'idMol.employee_lastchange',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDatetime($model->idMol->employee_lastchange);
-                            }
+                            'format' => 'datetime',
                         ],
                         [
                             'attribute' => 'idMol.employee_importdo',
@@ -148,9 +130,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         [
                             'attribute' => 'mattraffic_lastchange',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDatetime($model->mattraffic_lastchange);
-                            }
+                            'format' => 'datetime',
                         ],
                     ],
                 ]),
@@ -181,8 +161,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                                     'dropdown' => [
                                                         'encodeLabels' => false,
                                                         'items' => [
-                                                            ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
-                                                            ['label' => 'Журнал материальных ценностей', 'url' => Url::to(['Fregat/material/index']), 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => ['Fregat/material/create'], 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал материальных ценностей', 'url' => ['Fregat/material/index'], 'linkOptions' => ['data-pjax' => '0']],
                                                         ],
                                                     ],
                                                     'options' => ['class' => 'btn btn-success']
@@ -192,15 +172,17 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                                     'label' => '<i class="glyphicon glyphicon-random"></i> Движение',
                                                     'encodeLabel' => false,
                                                     'dropdown' => [
-                                                         'encodeLabels' => false,
+                                                        'encodeLabels' => false,
                                                         'items' => [
-                                                            ['label' => 'Изменить материально ответственное лицо <i class="glyphicon glyphicon-user"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Изменить материально ответственное лицо <i class="glyphicon glyphicon-user"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                             '<li role="presentation" class="divider"></li>',
-                                                            ['label' => 'Журнал перемещений материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
-                                                            ['label' => 'Составить акт перемещения материальной ценности <i class="glyphicon glyphicon-random"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал перемещений материальных ценностей', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт перемещения материальной ценности <i class="glyphicon glyphicon-random"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                             '<li role="presentation" class="divider"></li>',
-                                                            ['label' => 'Журнал восстановления материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
-                                                            ['label' => 'Составить акт восстановления материальной ценности <i class="glyphicon glyphicon-wrench"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал осмотров материальных ценностей', 'url' => ['Fregat/osmotrakt/index'], 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал восстановления материальных ценностей', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт осмотра материальной ценности <i class="glyphicon glyphicon-search"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт восстановления материальных ценностей <i class="glyphicon glyphicon-wrench"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                         ],
                                                     ],
                                                     'options' => ['class' => 'btn btn-warning']
@@ -210,10 +192,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                                     'label' => '<i class="glyphicon glyphicon-trash"></i> Списание',
                                                     'encodeLabel' => false,
                                                     'dropdown' => [
-                                                         'encodeLabels' => false,
+                                                        'encodeLabels' => false,
                                                         'items' => [
-                                                            ['label' => 'Составить акт списания материальнной ценности <i class="glyphicon glyphicon-trash"></i>', 'url' => '#', 'options' => ['data-pjax' => '0']],
-                                                            ['label' => 'Журнал списаний материальных ценностей', 'url' => '#', 'options' => ['data-pjax' => '0']],
+                                                            ['label' => 'Составить акт списания материальнной ценности <i class="glyphicon glyphicon-trash"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
+                                                            ['label' => 'Журнал списаний материальных ценностей', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                         ],
                                                     ],
                                                     'options' => ['class' => 'btn btn-danger']

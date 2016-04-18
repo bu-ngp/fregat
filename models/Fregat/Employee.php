@@ -46,11 +46,7 @@ class Employee extends \yii\db\ActiveRecord {
             [['id_dolzh', 'id_podraz', 'id_person', 'employee_username', 'employee_lastchange'], 'required'],
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
-            [['employee_dateinactive'], 'date', 'format' => 'dd.MM.yyyy'],
-            ['employee_dateinactive', 'filter', 'filter' => function($value) {
-                    return preg_replace('/(\d{2})\.(\d{2})\.(\d{4})/', '$3-$2-$1', $value);
-                }],
-            //  [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],
             //    [['id_person'], 'required', 'on' => ['importnewuser']],
             [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
             //   [['employee_fio'], 'string', 'max' => 255],

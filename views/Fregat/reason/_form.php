@@ -4,15 +4,15 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Podraz */
+/* @var $model app\models\Fregat\Reason */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="podraz-form">
+<div class="reason-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'podraz_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
+    <?= $form->field($model, 'reason_text')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
 
     <div class="form-group">
         <div class="form-group">

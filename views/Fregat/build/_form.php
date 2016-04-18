@@ -12,7 +12,7 @@ use yii\bootstrap\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'build_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+    <?= $form->field($model, 'build_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
 
     <div class="form-group">
         <div class="panel panel-default">

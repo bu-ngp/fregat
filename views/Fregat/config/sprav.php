@@ -30,6 +30,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 <li>
                     <?= Html::a('<i class="glyphicon glyphicon-duplicate"></i> Группы материальных ценностей', ['//Fregat/grupa/index'], ['class' => 'btn btn-default']) ?>
                 </li>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-object-align-bottom"></i> Организации', ['//Fregat/organ/index'], ['class' => 'btn btn-default']) ?>
+                </li>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-book"></i> Шаблоны актов осмотра материальной ценности', ['//Fregat/reason/index'], ['class' => 'btn btn-default']) ?>
+                </li>
             <?php endif; ?>
         </ul>
     </div>

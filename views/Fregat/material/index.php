@@ -44,9 +44,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         [
                             'attribute' => 'material_release',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDate($model->material_release);
-                            }
+                            'format' => 'date',
                         ],
                         [
                             'attribute' => 'material_writeoff',
@@ -63,9 +61,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         [
                             'attribute' => 'material_lastchange',
                             'visible' => false,
-                            'value' => function ($model, $key, $index, $column) {
-                                return Yii::$app->formatter->asDatetime($model->material_lastchange);
-                            }
+                            'format' => 'datetime',
                         ],
                         [
                             'attribute' => 'material_importdo',
@@ -82,36 +78,39 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                               $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'iduser' => $iduser, $foreign['model'] => [$foreign['field'] => $model['material_id']]]);
                               return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
                               }], */ /* Yii::$app->user->can('MaterialEdit') */ true ? [
-                                'update' => ['Fregat/material/update', 'material_id'],
-                                    //'delete' => ['Fregat/material/delete', 'material_id'],
-                                    ] : []
-                    ),
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-picture"></i> ' . $this->title,
-                        'before' =>
-                        ButtonGroup::widget([
-                            'buttons' => [
-                                true/* Yii::$app->user->can('EmployeeEdit') */ ?
-                                        ButtonDropdown::widget([
-                                            'label' => '<i class="glyphicon glyphicon-plus"></i> Приход',
-                                            'encodeLabel' => false,
-                                            'dropdown' => [
-                                                'encodeLabels' => false,
-                                                'items' => [
-                                                    ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => Url::to(['Fregat/material/create']), 'options' => ['data-pjax' => '0']],
-                                                ],
-                                            ],
-                                            'options' => ['class' => 'btn btn-success']
-                                        ]) : [],
-                            ]
+                                'karta' => function ($url, $model) {
+                                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/material/update', 'id' => $model->material_id]);
+                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Карта материальной ценности', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
+                                }
+                                            //'delete' => ['Fregat/material/delete', 'material_id'],
+                                            ] : []
+                            ),
                         ]),
-                    ],
-                ]
-    ]));
-    ?>
+                        'gridOptions' => [
+                            'dataProvider' => $dataProvider,
+                            'filterModel' => $searchModel,
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-picture"></i> ' . $this->title,
+                                'before' =>
+                                ButtonGroup::widget([
+                                    'buttons' => [
+                                        true/* Yii::$app->user->can('EmployeeEdit') */ ?
+                                                ButtonDropdown::widget([
+                                                    'label' => '<i class="glyphicon glyphicon-plus"></i> Приход',
+                                                    'encodeLabel' => false,
+                                                    'dropdown' => [
+                                                        'encodeLabels' => false,
+                                                        'items' => [
+                                                            ['label' => 'Составить акт прихода материальнной ценности <i class="glyphicon glyphicon-plus-sign"></i>', 'url' => Url::to(['Fregat/material/create']), 'options' => ['data-pjax' => '0']],
+                                                        ],
+                                                    ],
+                                                    'options' => ['class' => 'btn btn-success']
+                                                ]) : [],
+                                    ]
+                                ]),
+                            ],
+                        ]
+            ]));
+            ?>
 
 </div>

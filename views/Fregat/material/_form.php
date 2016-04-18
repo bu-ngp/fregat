@@ -8,7 +8,7 @@ use kartik\select2\Select2;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\web\Session;
-use kartik\datetime\DateTimePicker;
+use kartik\datecontrol\DateControl;
 use app\models\Fregat\Mattraffic;
 
 /* @var $this yii\web\View */
@@ -105,14 +105,11 @@ use app\models\Fregat\Mattraffic;
             <?= $form->field($model, 'material_serial')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
 
             <?=
-            $form->field($model, 'material_release')->widget(DateTimePicker::classname(), [
-                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
-                'pluginOptions' => [
-                    'format' => 'dd.mm.yyyy',
-                    'minView' => 2,
-                    'maxView' => 3,
-                    'autoclose' => true,
-                ]
+            $form->field($model, 'material_release')->widget(DateControl::classname(), [
+                'type' => DateControl::FORMAT_DATE,
+                'options' => [
+                    'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+                ],
             ])
             ?>
 
@@ -122,7 +119,7 @@ use app\models\Fregat\Mattraffic;
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Материально-ответственное лицо') ?></div>
+        <div class="panel-heading"><?= Html::encode('Приход') ?></div>
         <div class="panel-body">  
 
             <?=
@@ -140,21 +137,54 @@ use app\models\Fregat\Mattraffic;
                         'methodquery' => 'selectinput',
             ]));
             ?>
-            
+
             <?=
-            $form->field($Mattraffic, 'mattraffic_date')->widget(DateTimePicker::classname(), [
-                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
-                'pluginOptions' => [
-                    'format' => 'dd.mm.yyyy',
-                    'minView' => 2,
-                    'maxView' => 3,
-                    'autoclose' => true,
-                ]
+            $form->field($Mattraffic, 'mattraffic_date')->widget(DateControl::classname(), [
+                'type' => DateControl::FORMAT_DATE,
+                'options' => [
+                    'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+                ],
             ])
             ?>
 
         </div>
     </div>
+    <?php
+    /*   $mattraffic_tip = [1 => 'Приход', 2 => 'Списание'];
+
+      echo DynaGrid::widget(Proc::DGopts([
+      'options' => ['id' => 'materialhistorygrid'],
+      'columns' => Proc::DGcols([
+      'columns' => [
+      [
+      'attribute' => 'mattraffic_date',
+      'format' => 'date',
+      ],
+      [
+      'attribute' => 'mattraffic_tip',
+      'filter' => $mattraffic_tip,
+      'value' => function ($model) use ($mattraffic_tip) {
+      return isset($mattraffic_tip[$model->mattraffic_tip]) ? $mattraffic_tip[$model->mattraffic_tip] : '';
+      },
+      ],
+
+
+      'idemployee.employee_id',
+      'idemployee.idperson.auth_user_fullname',
+      'idemployee.iddolzh.dolzh_name',
+      'idemployee.idpodraz.podraz_name',
+      'idemployee.idbuild.build_name',
+      ],
+      ]),
+      'gridOptions' => [
+      'dataProvider' => $dataProvider,
+      'filterModel' => $searchModel,
+      'panel' => [
+      'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> История операций</h3>',
+      ],
+      ]
+      ])); */
+    ?>
 
     <div class="form-group">
         <div class="panel panel-default">

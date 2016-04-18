@@ -324,6 +324,27 @@ class Proc {
         return $bc[key($bc)];
     }
 
+    // Возвращает предпоследний URL из хлебных крошек из сессии
+    public static function GetPreviousURLBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        end($bc);
+        prev($bc);
+        $session->close();
+        return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
+    }
+    
+    // Возвращает последний URL из хлебных крошек из сессии
+    public static function GetLastURLBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        end($bc);
+        $session->close();
+        return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
+    }
+
     public static function GetMenuButtons($view) {
         $controller = Yii::$app->controller;
         $default_controller = Yii::$app->defaultRoute;

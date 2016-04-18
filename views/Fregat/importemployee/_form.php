@@ -22,7 +22,7 @@ use yii\web\Session;
     ]);
     ?>
 
-    <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+    <?= $form->field($model, 'importemployee_combination')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
 
     <?=
     $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([

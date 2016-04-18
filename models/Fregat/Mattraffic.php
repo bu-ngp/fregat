@@ -43,9 +43,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
             ['mattraffic_username', 'filter', 'filter' => function($value) {
                     return 'IMPORT';
                 }, 'on' => 'import1c'],
-            ['mattraffic_date', 'filter', 'filter' => function($value) {
-                    return preg_replace('/(\d{2})\.(\d{2})\.(\d{4})/', '$3-$2-$1', $value);
-                }, 'except' => 'import1c'],
+            ['mattraffic_date', 'date', 'format' => 'yyyy-MM-dd'],
             [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip', 'mattraffic_lastchange'], 'required'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer'],

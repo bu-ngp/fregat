@@ -95,6 +95,14 @@ $config = [
             'class' => '\kartik\grid\Module',
         // other module settings
         ],
+        'datecontrol' => [
+            'class' => '\kartik\datecontrol\Module',
+            'autoWidgetSettings' => [
+                \kartik\datecontrol\Module::FORMAT_DATE => ['pluginOptions' => ['autoclose' => true]], // example
+                \kartik\datecontrol\Module::FORMAT_DATETIME => ['pluginOptions' => ['autoclose' => true]], // setup if needed
+                \kartik\datecontrol\Module::FORMAT_TIME => ['pluginOptions' => ['autoclose' => true]], // setup if needed
+            ],
+        ],
     ],
     'params' => $params,
 ];
