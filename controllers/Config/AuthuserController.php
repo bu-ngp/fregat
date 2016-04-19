@@ -61,13 +61,9 @@ class AuthuserController extends Controller {
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $result = Proc::GetBreadcrumbsFromSession();
-            end($result);
-            prev($result);
-
-            return $this->redirect($result[key($result)]['url']);
-        } else {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else {
             $Authassignment = new Authassignment;
             $Employee = new Employee;
             $Authassignment->load(Yii::$app->request->get(), 'Authassignment');

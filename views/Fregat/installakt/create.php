@@ -4,9 +4,9 @@ use yii\helpers\Html;
 use app\func\Proc;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Izmer */
+/* @var $model app\models\Fregat\Installakt */
 
-$this->title = 'Добавить единицу измерения';
+$this->title = 'Добавить акт перемещения материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             'model' => $model,
         ]);

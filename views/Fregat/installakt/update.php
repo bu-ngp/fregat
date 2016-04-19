@@ -4,22 +4,26 @@ use yii\helpers\Html;
 use app\func\Proc;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Izmer */
+/* @var $model app\models\Fregat\Installakt */
 
-$this->title = 'Добавить единицу измерения';
+$this->title = 'Обновить акт перемещения материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             'model' => $model,
         ]);
 ?>
-<div class="izmer-create">
+<div class="installakt-update">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
             $this->render('_form', [
                 'model' => $model,
+                'searchModelOsn' => $searchModelOsn,
+                'dataProviderOsn' => $dataProviderOsn,
+                'searchModelMat' => $searchModelMat,
+                'dataProviderMat' => $dataProviderMat,
             ])
             ?>
         </div>
-    </div> 
+    </div>
 </div>
