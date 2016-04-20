@@ -639,6 +639,7 @@ class FregatImport {
 
 
 
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -649,6 +650,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
 
 
 
@@ -856,7 +858,7 @@ class FregatImport {
                 ->andWhere(['m1.id_material' => $MaterialID])
                 ->count();
 
-        if (empty($result)) {
+        if (!empty($result)) {
             $Material = Material::findOne($MaterialID);
 
             $matmol = Mattraffic::find()
@@ -902,7 +904,7 @@ class FregatImport {
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
                     $spismat = self::SpisatMaterial($ar->id_material, $ar->id_mol);
-                    
+
                     $Mattraffic = new Mattraffic;
                     $Mattraffic->attributes = $ar->attributes;
                     $Mattraffic->mattraffic_date = date('Y-m-d');
@@ -915,7 +917,7 @@ class FregatImport {
                     $writeoffakt = new Writeoffakt();
                     $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
                     $writeoffakt->save(false);
-                   
+
                     $Material = Material::findOne($ar->id_material);
 
                     $Matlog = new Matlog;
