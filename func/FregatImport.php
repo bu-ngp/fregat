@@ -901,6 +901,8 @@ class FregatImport {
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
+                    $spismat = self::SpisatMaterial($ar->id_material, $ar->id_mol);
+                    
                     $Mattraffic = new Mattraffic;
                     $Mattraffic->attributes = $ar->attributes;
                     $Mattraffic->mattraffic_date = date('Y-m-d');
@@ -913,9 +915,7 @@ class FregatImport {
                     $writeoffakt = new Writeoffakt();
                     $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
                     $writeoffakt->save(false);
-
-                    $spismat = self::SpisatMaterial($ar->id_material, $ar->id_mol);
-
+                   
                     $Material = Material::findOne($ar->id_material);
 
                     $Matlog = new Matlog;
