@@ -207,8 +207,8 @@ class Proc {
             $thisroute = $params['thisroute'];
             $fields = $params['fields'];
             $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
-            $methodquery = $params['methodquery'];
-            $methodparams = $params['methodparams'];
+            $methodquery = isset($params['methodquery']) ? $params['methodquery'] : '';
+            $methodparams = isset($params['methodparams']) ? $params['methodparams'] : '';
 
             if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
                 $fields['showresultfields'] = [$fields['resultfield']];
