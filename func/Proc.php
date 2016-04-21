@@ -206,7 +206,7 @@ class Proc {
             $fromgridroute = $params['fromgridroute'];
             $thisroute = $params['thisroute'];
             $fields = $params['fields'];
-            $dopparams = $params['dopparams'];
+            $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
             $methodquery = $params['methodquery'];
             $methodparams = $params['methodparams'];
 
