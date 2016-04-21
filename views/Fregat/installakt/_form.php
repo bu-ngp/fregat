@@ -80,7 +80,7 @@ use app\models\Fregat\Employee;
                         'filterModel' => $searchModelOsn,
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Перемещенные материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/trosnov/create',
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-osnov/create',
                                 'idinstallakt' => $model->primaryKey,
                                     ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],

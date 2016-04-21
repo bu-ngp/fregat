@@ -210,11 +210,10 @@ class Proc {
             $methodquery = $params['methodquery'];
             $methodparams = $params['methodparams'];
 
-            if (!isset($fields['showresultfields']))
+            if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
-            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !empty($fields['resultfield']) && !empty($fromgridroute) && !empty($thisroute)) {
-
+            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($fromgridroute) && !empty($thisroute)) {
 
                 if (!empty($methodquery)) {
                     $methodparams['q'] = $model->$fields['keyfield'];
@@ -229,7 +228,7 @@ class Proc {
                             ->one();
 
                 return [
-                    'initValueText' => implode(', ', $initrecord),
+                    'initValueText' => !empty($initrecord) ? implode(', ', $initrecord) : '',
                     'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession'],
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'pluginOptions' => [
@@ -238,7 +237,7 @@ class Proc {
                         'ajax' => [
                             'url' => Url::to([$resultrequest]),
                             'dataType' => 'json',
-                            'data' => new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . ' } }')
+                            'data' => empty($fields['methodquery']) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . ' } }') : new JsExpression('function(params) { return {q:params.term} }'),
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                     ],
@@ -334,7 +333,7 @@ class Proc {
         $session->close();
         return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
     }
-    
+
     // Возвращает последний URL из хлебных крошек из сессии
     public static function GetLastURLBreadcrumbsFromSession() {
         $session = new Session;

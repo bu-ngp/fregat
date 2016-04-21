@@ -48,7 +48,7 @@ class TrOsnov extends \yii\db\ActiveRecord
             'tr_osnov_id' => 'Tr Osnov ID',
             'tr_osnov_kab' => 'Кабинет',
             'id_installakt' => 'Акт установки',
-            'id_mattraffic' => 'Id Mattraffic',
+            'id_mattraffic' => 'Инвентарный номер',
         ];
     }
 

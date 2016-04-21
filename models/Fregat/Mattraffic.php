@@ -44,7 +44,8 @@ class Mattraffic extends \yii\db\ActiveRecord {
                     return 'IMPORT';
                 }, 'on' => 'import1c'],
             ['mattraffic_date', 'date', 'format' => 'yyyy-MM-dd'],
-            [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip', 'mattraffic_lastchange'], 'required'],
+            ['mattraffic_number', 'default', 'value' => 1],
+            [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip', 'mattraffic_lastchange', 'mattraffic_number'], 'required'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer'],
             ['mattraffic_date', 'unique', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом'],
@@ -157,5 +158,43 @@ class Mattraffic extends \yii\db\ActiveRecord {
                         return $query;
                     }
 
-                }
-                
+                    public function selectinputfortrosnov($params) {
+
+                        $method = isset($params['init']) ? 'one' : 'all';
+
+                        $query = self::find()
+                                ->select(array_merge(isset($params['init']) ? [] : ['m1.mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                                ->from(['m1' => 'mattraffic'])
+                                ->join('LEFT JOIN', 'material idMaterial', 'm1.id_material = idMaterial.material_id')
+                                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                                ->joinWith([
+                                    'idMol' => function($query) {
+                                        $query->from(['idMol' => 'employee']);
+                                        $query->joinWith([
+                                            'idperson' => function($query) {
+                                                $query->from(['idperson' => 'auth_user']);
+                                            },
+                                                    'iddolzh' => function($query) {
+                                                $query->from(['iddolzh' => 'dolzh']);
+                                            },
+                                                    'idpodraz' => function($query) {
+                                                $query->from(['idpodraz' => 'podraz']);
+                                            },
+                                                    'idbuild' => function($query) {
+                                                $query->from(['idbuild' => 'build']);
+                                            },
+                                                ]);
+                                            },
+                                                ])
+                                                ->where(['like', isset($params['init']) ? 'm1.mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                                                ->andWhere('m1.mattraffic_tip in (1,2)')
+                                                ->andWhere(['m2.mattraffic_date' => NULL])
+                                                ->limit(20)
+                                                ->asArray()
+                                                ->$method();
+
+                                        return $query;
+                                    }
+
+                                }
+                                

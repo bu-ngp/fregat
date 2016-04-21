@@ -640,6 +640,7 @@ class FregatImport {
 
 
 
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -650,6 +651,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
 
 
 
@@ -852,7 +854,7 @@ class FregatImport {
                 ->from(['m1' => 'mattraffic'])
                 ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
                 ->andWhere('m1.mattraffic_tip <> 2')
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->andWhere(['m1.id_material' => $MaterialID])
@@ -865,7 +867,7 @@ class FregatImport {
                     ->from(['m1' => 'mattraffic'])
                     ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                     ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
                     ->andWhere('m1.mattraffic_tip <> 2')
                     ->andWhere(['m2.mattraffic_date' => NULL])
                     ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
@@ -875,12 +877,12 @@ class FregatImport {
             if (!empty($matmol))
                 $Material->material_number -= $matmol->mattraffic_number;
 
-            if ($Material->material_number === 0) {
+            if ($Material->material_number == 0) {
                 $Material->material_writeoff = 1;
                 $return = true;
             }
 
-            if (!empty($matmol) || $Material->material_number === 0)
+            if (!empty($matmol) || $Material->material_number == 0)
                 $Material->save(false);
         }
         return $return;
@@ -895,7 +897,7 @@ class FregatImport {
                     ->from(['m1' => 'mattraffic'])
                     ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                     ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2])
+                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
                     ->andWhere('m1.mattraffic_tip <> 2')
                     ->andWhere(['m2.mattraffic_date' => NULL])
                     ->all();
