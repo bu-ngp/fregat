@@ -54,9 +54,43 @@ class TrOsnovController extends Controller {
         $Material = new Material;
         $Employee = new Employee;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->tr_osnov_id]);
+
+        $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : '';
+        $mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
+
+        $filleddata = false;
+
+        if (!empty($id_mattraffic)) {
+            $Mattrafficcurrent = Mattraffic::findOne($id_mattraffic);
+
+            $Mattraffic->attributes = $Mattrafficcurrent->attributes;
+
+            $Mattraffic->mattraffic_date = date('Y-m-d');
+            $Mattraffic->mattraffic_number = $mattraffic_number;
+            $Mattraffic->mattraffic_tip = 3;
+            if ($Mattraffic->validate()) {
+                $Mattraffic->save(false);
+                $model->id_mattraffic = $Mattraffic->mattraffic_id;
+            }
+            $model->id_installakt = isset($_GET['idinstallakt']) ? $_GET['idinstallakt'] : Null;
+            $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
+
+            $filleddata = true;
+        }
+
+        if ($filleddata && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
+            $id_mattraffic = isset(Yii::$app->request->get('TrOsnov')['id_mattraffic']) ? Yii::$app->request->get('TrOsnov')['id_mattraffic'] : '';
+
+            if (!empty($id_mattraffic)) {
+                $material_id = Mattraffic::findOne($id_mattraffic)->id_material;
+                $employee_id = Mattraffic::findOne($id_mattraffic)->id_mol;
+
+                $Material = Material::findOne($material_id);
+                $Employee = Employee::findOne($employee_id);
+            }
+
             return $this->render('create', [
                         'model' => $model,
                         'Mattraffic' => $Mattraffic,
@@ -95,9 +129,13 @@ class TrOsnovController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        $tr_osnov = $this->findModel($id);
+        $id_mattraffic = $tr_osnov->id_mattraffic;
+        $tr_osnov->delete();
+        Mattraffic::findOne($id_mattraffic)->delete();
+
+        return $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
     }
 
     /**

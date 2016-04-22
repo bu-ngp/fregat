@@ -626,15 +626,11 @@ class FregatImport {
                 $Employee->id_person = $Authuser->getPrimaryKey();
             }
 
-
             $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname; //self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
             $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
 
 
 
@@ -646,18 +642,25 @@ class FregatImport {
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
             //   $Employeelog->attributes = $Employee->attributes;
+            /*   if (!empty($Employee->employee_dateinactive)) {             // Если есть в excel, то убрать дату неактивности специальности
+              $Employeelog->employeelog_type = 2;
+              $Employeelog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($Employee->employee_dateinactive) . '"';
+              $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname;
+              $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
+              $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+              if (!empty($Employee->id_build))
+              $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+
+              $Employee->employee_dateinactive = null;
+
+              $result = self::ImportValidate($Employee, $Employeelog);
+              } */
+
             $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname; //self::GetNameByID('auth_user', 'auth_user_fullname', $Employee->id_person);
             $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
-
-
-
-
 
 
                 
@@ -671,6 +674,11 @@ class FregatImport {
     // Определяем количество материальной ценности с учетом изменения
     private static function MatNumberChanging(&$Material, &$Traflog, $Number, $Diff) {
         if (!self::$os && $Number != 0) {
+            if ($Diff && $Number < 0) {
+                $Material->material_writeoff = 0;
+                $Number = abs($Number);
+            }
+
             $Material->material_number = $Diff ? $Material->material_number - $Number : $Number;
 
             if (floatval($Material->material_number) < 0)
@@ -693,7 +701,7 @@ class FregatImport {
         ]);
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc limit 1', array_merge([
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
                     'id_material' => $xls_attributes_mattraffic['id_material'],
                     'id_mol' => $xls_attributes_mattraffic['id_mol'],
                                 ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
@@ -1295,7 +1303,8 @@ class FregatImport {
                                                     $employeelog->save(false);
                                                 $traflog->id_matlog = $matlog->matlog_id;
                                                 $traflog->id_employeelog = $employeelog->employeelog_id;
-                                                $traflog->save(false);
+                                                if ($traflog->validate())
+                                                    $traflog->save(false);
                                             }
 
                                             if ($MattrafficDo) {

@@ -25,10 +25,13 @@ use kartik\touchspin\TouchSpin;
                                     'keyfield' => 'id_mattraffic',
                                 ],
                                 'placeholder' => 'Введите инвентарный номер материальной ценности',
-                                'fromgridroute' => 'Fregat/tr-osnov/create',
+                                'fromgridroute' => 'Fregat/mattraffic/forinstallakt',
                                 'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinputfortrosnov',
+                                'dopparams' => [
+                                    'foreigndo' => '1',
+                                ],
                             ]), [
                 'pluginEvents' => [
                     "select2:select" => "function() { FillTrOsnov(); }",

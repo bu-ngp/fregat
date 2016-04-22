@@ -168,7 +168,6 @@ class Proc {
                 $params['buttons']['delete'] = function ($url, $model) use ($params) {
                     $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['delete'][0], 'id' => $model[$params['buttons']['delete'][1]]]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
-                                'id' => 'Authitemexcel',
                                 'type' => 'button',
                                 'title' => 'Удалить',
                                 'class' => 'btn btn-xs btn-danger',

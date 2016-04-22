@@ -57,7 +57,7 @@ class Material extends \yii\db\ActiveRecord {
             [['material_serial'], 'string', 'max' => 255],
             [['material_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Основное средство, 2 - Материалы
             [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
-            ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
+            ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_1c','material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
             [['material_1c'], 'required', 'on' => 'import1c'],
             [['material_serial'], 'match', 'pattern' => '/^null$|^б\/н$|^б\н$|^б\/н\.$|^б\н\.$|^-$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "null", "б/н", "б\н", "б/н.", "б\н.", "-"'],
             ['material_price', 'double', 'min' => 0, 'max' => 1000000000],

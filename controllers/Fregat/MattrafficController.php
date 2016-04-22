@@ -22,7 +22,7 @@ class MattrafficController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index','selectinputformaterial'],
+                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -45,6 +45,17 @@ class MattrafficController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionForinstallakt() {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchforinstallakt(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
         ]);
     }
 
