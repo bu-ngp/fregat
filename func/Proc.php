@@ -177,7 +177,7 @@ class Proc {
             }
 
             $mascolumns = isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [];
-            $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons'] > 0) ? [
+            $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons']) > 0 ? [
                 [ 'class' => 'kartik\grid\ActionColumn',
                     'header' => Html::encode('Действия'),
                     'contentOptions' => ['style' => 'white-space: nowrap;'],

@@ -10,20 +10,20 @@ function FillTrOsnov() {
                 $("#material-material_tip").val(obj.material_tip);
                 $("#material-material_name").val(obj.material_name);
                 $("#material-material_writeoff").val(obj.material_writeoff);
-                $("#employee-id_person").val(obj.auth_user_fullname);
-                $("#employee-id_dolzh").val(obj.dolzh_name);
-                $("#employee-id_podraz").val(obj.podraz_name);
-                $("#employee-id_build").val(obj.build_name);
+                $("#authuser-auth_user_fullname").val(obj.auth_user_fullname);
+                $("#dolzh-dolzh_name").val(obj.dolzh_name);
+                $("#podraz-podraz_name").val(obj.podraz_name);
+                $("#build-build_name").val(obj.build_name);
                 $("#mattraffic_number_max").text("Не более " + Math.round(obj.mattraffic_number));
 
                 SetSessionEach([
                     $("#material-material_tip"),
                     $("#material-material_name"),
                     $("#material-material_writeoff"),
-                    $("#employee-id_person"),
-                    $("#employee-id_dolzh"),
-                    $("#employee-id_podraz"),
-                    $("#employee-id_build")
+                    $("#authuser-auth_user_fullname"),
+                    $("#dolzh-dolzh_name"),
+                    $("#podraz-podraz_name"),
+                    $("#build-build_name")
                 ]);
             },
             error: function (data) {
@@ -37,20 +37,20 @@ function ClearTrOsnov() {
     $("#material-material_tip").val(0);
     $("#material-material_name").val('');
     $("#material-material_writeoff").val('');
-    $("#employee-id_person").val('');
-    $("#employee-id_dolzh").val('');
-    $("#employee-id_podraz").val('');
-    $("#employee-id_build").val('');
+    $("#authuser-auth_user_fullname").val('');
+    $("#dolzh-dolzh_name").val('');
+    $("#podraz-podraz_name").val('');
+    $("#build-build_name").val('');
     $("#mattraffic_number_max").text('');
 
     SetSessionEach([
         $("#material-material_tip"),
         $("#material-material_name"),
         $("#material-material_writeoff"),
-        $("#employee-id_person"),
-        $("#employee-id_dolzh"),
-        $("#employee-id_podraz"),
-        $("#employee-id_build")
+        $("#authuser-auth_user_fullname"),
+        $("#dolzh-dolzh_name"),
+        $("#podraz-podraz_name"),
+        $("#build-build_name")
     ]);
 
     /*  SetSession($("#material-material_tip"));

@@ -53,7 +53,19 @@ class Mattraffic extends \yii\db\ActiveRecord {
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 3], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами
             [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
+            ['mattraffic_number', 'MaxNumberMove'],
         ];
+    }
+
+    public function MaxNumberMove($attribute) {
+        $query = self::find([
+                    'id_material' => $this->id_material,
+                    'id_mol' => $this->id_mol,
+                ])
+                ->andWhere(['in', 'mattraffic_tip', [1, 3]])
+                ->one();
+
+        $this->addError($attribute, 'your password is not strong enough!');
     }
 
     /**

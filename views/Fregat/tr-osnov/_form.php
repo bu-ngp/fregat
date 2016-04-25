@@ -5,6 +5,10 @@ use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
 use app\func\Proc;
 use kartik\touchspin\TouchSpin;
+use app\models\Config\Authuser;
+use app\models\Fregat\Dolzh;
+use app\models\Fregat\Podraz;
+use app\models\Fregat\Build;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrOsnov */
@@ -52,21 +56,19 @@ use kartik\touchspin\TouchSpin;
         <div class="panel-heading"><?= Html::encode('Материально-ответственное лицо') ?></div>
         <div class="panel-body">
 
-            <?= $form->field($Employee, 'id_person', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field(isset($Employee->idperson) ? $Employee->idperson : new Authuser, 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= $form->field($Employee, 'id_dolzh', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field(isset($Employee->iddolzh) ? $Employee->iddolzh : new Dolzh, 'dolzh_name', ['enableClientValidation' => false])->textInput(['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= $form->field($Employee, 'id_podraz', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field(isset($Employee->idpodraz) ? $Employee->idpodraz : new Podraz, 'podraz_name', ['enableClientValidation' => false])->textInput(['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= $form->field($Employee, 'id_build', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
-
-            <?= $form->field($Employee->iddolzh, 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field(isset($Employee->idbuild) ? $Employee->idbuild : new Build, 'build_name', ['enableClientValidation' => false])->textInput(['class' => 'form-control setsession', 'disabled' => true]) ?>
 
         </div>
     </div>
     <?=
     $form->field($Mattraffic, 'mattraffic_number', [
-        'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon"></span></div>'
+        'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">'.$mattraffic_number_max.'</span></div>'
     ])->widget(TouchSpin::classname(), [
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [

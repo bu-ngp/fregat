@@ -53,6 +53,7 @@ class TrOsnovController extends Controller {
         $Mattraffic = new Mattraffic;
         $Material = new Material;
         $Employee = new Employee;
+        $mattraffic_number_max = NULL;
 
 
         $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : '';
@@ -86,13 +87,10 @@ class TrOsnovController extends Controller {
             if (!empty($id_mattraffic)) {
                 $material_id = Mattraffic::findOne($id_mattraffic)->id_material;
                 $employee_id = Mattraffic::findOne($id_mattraffic)->id_mol;
+                $mattraffic_number_max = 'Не более ' . doubleval(Mattraffic::findOne($id_mattraffic)->mattraffic_number);
 
                 $Material = Material::findOne($material_id);
                 $Employee = Employee::findOne($employee_id);
-                $Employee->id_person = $Employee->idperson->auth_user_fullname;
-             //   $Employee->id_dolzh = $Employee->iddolzh->dolzh_name;
-                $Employee->id_podraz = $Employee->idpodraz->podraz_name;
-                $Employee->id_build = $Employee->idbuild->build_name;
 
                 Proc::SetSessionValuesFromAR($Material, true);
                 Proc::SetSessionValuesFromAR($Employee, true);
@@ -103,6 +101,7 @@ class TrOsnovController extends Controller {
                         'Mattraffic' => $Mattraffic,
                         'Material' => $Material,
                         'Employee' => $Employee,
+                        'mattraffic_number_max' => $mattraffic_number_max,
             ]);
         }
     }
