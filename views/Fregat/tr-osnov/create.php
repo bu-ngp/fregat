@@ -9,7 +9,7 @@ use app\func\Proc;
 
 $this->title = 'Добавить перемещаемую материальную ценность';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Mattraffic/*, $Material, $Employee*/],
+            'model' => [$model, $Mattraffic, $Material, $Employee],  // $Material, $Employee для сохранения setsession при вводе инвентарника
         ]);
 ?>
 <div class="tr-osnov-create">

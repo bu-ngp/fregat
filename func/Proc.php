@@ -106,11 +106,11 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*  echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-              $s1 = $_SESSION;
-              unset($s1['__flash']);
-              print_r($s1);
-              echo '</pre>'; */
+         /*   echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            $s1 = $_SESSION;
+            unset($s1['__flash']);
+            print_r($s1);
+            echo '</pre>';*/
 
             $session->close();
 
@@ -341,6 +341,25 @@ class Proc {
         end($bc);
         $session->close();
         return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
+    }
+
+    // Сохранить модель в сессии
+    public static function SetSessionValuesFromAR($model, $PreviusBC = false) {
+        if ($model instanceof ActiveRecord) {
+            $BC = self::GetBreadcrumbsFromSession();
+            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
+            end($BC);
+            if ($PreviusBC)
+                prev($BC);
+
+            foreach ($model as $attr => $value)
+                $BC[key($BC)]['dopparams'][$fmodel][$attr] = $value;
+            $session = new Session;
+            $session->open();
+            $session['breadcrumbs'] = $BC;
+            $session->close();
+        } else
+            throw new \Exception('Ошибка в Proc::SetSessionValuesFromAR()');
     }
 
     public static function GetMenuButtons($view) {

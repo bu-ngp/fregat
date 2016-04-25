@@ -60,6 +60,8 @@ use kartik\touchspin\TouchSpin;
 
             <?= $form->field($Employee, 'id_build', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
+            <?= $form->field($Employee->iddolzh, 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+
         </div>
     </div>
     <?=

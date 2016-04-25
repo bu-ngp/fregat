@@ -58,6 +58,28 @@ function SetSession(thiselem) {
     });
 }
 
+function SetSessionEach(thiselems_array) {
+    var data = [];
+    $.each(thiselems_array, function (i, elem) {
+        var field = elem.attr("name");
+        data.push({
+            modelclass: field.substring(0, field.indexOf("[")),
+            field: field.substring(field.indexOf("[") + 1, field.indexOf("]")),
+            value: elem.val()
+        });
+    });
+
+    $.ajax({
+        url: "?r=site%2Fsetsession",
+        type: "post",
+        data: {data: JSON.stringify(data)},
+        async: false,
+        error: function (data) {
+            console.error("Ошибка SetSession");
+        }
+    });
+}
+
 function InitWindowGUID() {
     var guid = Math.floor(Math.random() * 0x10000 /* 65536 */).toString(16);
     window.name = guid;

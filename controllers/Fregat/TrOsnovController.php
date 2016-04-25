@@ -89,6 +89,13 @@ class TrOsnovController extends Controller {
 
                 $Material = Material::findOne($material_id);
                 $Employee = Employee::findOne($employee_id);
+                $Employee->id_person = $Employee->idperson->auth_user_fullname;
+             //   $Employee->id_dolzh = $Employee->iddolzh->dolzh_name;
+                $Employee->id_podraz = $Employee->idpodraz->podraz_name;
+                $Employee->id_build = $Employee->idbuild->build_name;
+
+                Proc::SetSessionValuesFromAR($Material, true);
+                Proc::SetSessionValuesFromAR($Employee, true);
             }
 
             return $this->render('create', [
@@ -135,7 +142,7 @@ class TrOsnovController extends Controller {
         $tr_osnov->delete();
         Mattraffic::findOne($id_mattraffic)->delete();
 
-        return $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
+        //  return $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
     }
 
     /**

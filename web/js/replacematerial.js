@@ -4,7 +4,7 @@ function FillTrOsnov() {
             url: "?r=Fregat%2Ftr-osnov%2Ffilltrosnov",
             type: "post",
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val()},
-          //  async: false,
+            //  async: false,
             success: function (data) {
                 var obj = JSON.parse(data);
                 $("#material-material_tip").val(obj.material_tip);
@@ -16,13 +16,15 @@ function FillTrOsnov() {
                 $("#employee-id_build").val(obj.build_name);
                 $("#mattraffic_number_max").text("Не более " + Math.round(obj.mattraffic_number));
 
-                SetSession($("#material-material_tip"));
-                SetSession($("#material-material_name"));
-                SetSession($("#material-material_writeoff"));
-                SetSession($("#employee-id_person"));
-                SetSession($("#employee-id_dolzh"));
-                SetSession($("#employee-id_podraz"));
-                SetSession($("#employee-id_build"));
+                SetSessionEach([
+                    $("#material-material_tip"),
+                    $("#material-material_name"),
+                    $("#material-material_writeoff"),
+                    $("#employee-id_person"),
+                    $("#employee-id_dolzh"),
+                    $("#employee-id_podraz"),
+                    $("#employee-id_build")
+                ]);
             },
             error: function (data) {
                 console.error("Ошибка FillTrOsnov()");
@@ -41,11 +43,21 @@ function ClearTrOsnov() {
     $("#employee-id_build").val('');
     $("#mattraffic_number_max").text('');
 
-    SetSession($("#material-material_tip"));
-    SetSession($("#material-material_name"));
-    SetSession($("#material-material_writeoff"));
-    SetSession($("#employee-id_person"));
-    SetSession($("#employee-id_dolzh"));
-    SetSession($("#employee-id_podraz"));
-    SetSession($("#employee-id_build"));
+    SetSessionEach([
+        $("#material-material_tip"),
+        $("#material-material_name"),
+        $("#material-material_writeoff"),
+        $("#employee-id_person"),
+        $("#employee-id_dolzh"),
+        $("#employee-id_podraz"),
+        $("#employee-id_build")
+    ]);
+
+    /*  SetSession($("#material-material_tip"));
+     SetSession($("#material-material_name"));
+     SetSession($("#material-material_writeoff"));
+     SetSession($("#employee-id_person"));
+     SetSession($("#employee-id_dolzh"));
+     SetSession($("#employee-id_podraz"));
+     SetSession($("#employee-id_build"));*/
 }

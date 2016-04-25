@@ -30,7 +30,7 @@ class SiteController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['error','setsession', 'setwindowguid', 'delete-excel-file'],
+                        'actions' => ['error', 'setsession', 'setwindowguid', 'delete-excel-file'],
                         'allow' => true,
                     ],
                 ],
@@ -97,6 +97,8 @@ class SiteController extends Controller {
         $modelclass = (string) filter_input(INPUT_POST, 'modelclass');
         $field = (string) filter_input(INPUT_POST, 'field');
         $value = (string) filter_input(INPUT_POST, 'value');
+        $data = (string) filter_input(INPUT_POST, 'data');
+
 
         if (!empty($modelclass) && !empty($field)) {
             $session = new Session;
@@ -104,7 +106,6 @@ class SiteController extends Controller {
 
             $res = $session['breadcrumbs'];
             end($res);
-
 
             if (isset($res[key($res)]['dopparams'][$modelclass])) {
                 $res[key($res)]['dopparams'][$modelclass][$field] = $value;
@@ -123,6 +124,21 @@ class SiteController extends Controller {
 
             $session['breadcrumbs'] = $res;
 
+            $session->close();
+        } elseif (!empty($data)) {
+            $data = json_decode($data);
+            $session = new Session;
+            $session->open();
+
+            $res = $session['breadcrumbs'];
+            end($res);
+
+            foreach ($data as $obj)
+                if (isset($res[key($res)]['dopparams'][$obj->modelclass]))
+                    $res[key($res)]['dopparams'][$obj->modelclass][$obj->field] = $obj->value;
+
+            $result = '1';
+            $session['breadcrumbs'] = $res;
             $session->close();
         }
 
