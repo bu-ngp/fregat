@@ -106,11 +106,11 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-         /*   echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-            $s1 = $_SESSION;
-            unset($s1['__flash']);
-            print_r($s1);
-            echo '</pre>';*/
+            /*   echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+              $s1 = $_SESSION;
+              unset($s1['__flash']);
+              print_r($s1);
+              echo '</pre>'; */
 
             $session->close();
 
@@ -853,6 +853,22 @@ class Proc {
 
         $session->close();
         return $filter;
+    }
+
+    // Берет значение сначала из справочника (посредством перехода на страницу выбора), если нет, то вытаскивает из сессии (для порстого обновления страницы)
+    // выводит $kl - для последующей передачи в функцию Proc::SetSessionValuesFromAR, т.е. установить в последнюю сессию или предыдущую
+    public static function GetValueForFillARs(&$attrvar, $modelname, $attrname) {
+        $kl = true;
+        $lastses = self::GetLastBreadcrumbsFromSession();
+        if (empty($attrvar))
+            if (isset(Yii::$app->request->get($modelname)[$attrname]) && isset($lastses['dopparams']['foreign']))
+                $attrvar = Yii::$app->request->get($modelname)[$attrname];
+            elseif (isset($lastses['dopparams'][$modelname][$attrname])) {
+                $attrvar = $lastses['dopparams'][$modelname][$attrname];
+                $kl = false;
+            }
+
+        return $kl;
     }
 
 }

@@ -69,6 +69,10 @@ class TrOsnovController extends Controller {
             $Mattraffic->mattraffic_date = date('Y-m-d');
             $Mattraffic->mattraffic_number = $mattraffic_number;
             $Mattraffic->mattraffic_tip = 3;
+
+            if (isset($Mattraffic->scenarios()['traffic']))
+                $Mattraffic->scenario = 'traffic';
+
             if ($Mattraffic->validate()) {
                 $Mattraffic->save(false);
                 $model->id_mattraffic = $Mattraffic->mattraffic_id;
@@ -82,7 +86,8 @@ class TrOsnovController extends Controller {
         if ($filleddata && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
-            $id_mattraffic = isset(Yii::$app->request->get('TrOsnov')['id_mattraffic']) ? Yii::$app->request->get('TrOsnov')['id_mattraffic'] : '';
+
+            $PreviusBC = Proc::GetValueForFillARs($id_mattraffic, 'TrOsnov', 'id_mattraffic');
 
             if (!empty($id_mattraffic)) {
                 $material_id = Mattraffic::findOne($id_mattraffic)->id_material;
@@ -92,8 +97,8 @@ class TrOsnovController extends Controller {
                 $Material = Material::findOne($material_id);
                 $Employee = Employee::findOne($employee_id);
 
-                Proc::SetSessionValuesFromAR($Material, true);
-                Proc::SetSessionValuesFromAR($Employee, true);
+                Proc::SetSessionValuesFromAR($Material, $PreviusBC);
+                Proc::SetSessionValuesFromAR($Employee, $PreviusBC);
             }
 
             return $this->render('create', [

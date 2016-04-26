@@ -293,7 +293,16 @@ class MattrafficSearch extends Mattraffic {
                                     'query' => $query,
                                 ]);
 
+                                // $this->baseRelations($query);
+                                $query->from(['m1' => 'mattraffic'])
+                                ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date');
+
                                 $this->baseRelations($query);
+
+                                $query->andWhere('m1.mattraffic_number > 0')
+                                        ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
+                                        ->andWhere(['m2.mattraffic_date' => NULL]);
 
                                 $this->load($params);
 
