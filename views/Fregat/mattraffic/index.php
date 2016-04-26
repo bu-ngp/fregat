@@ -32,7 +32,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 'columns' => Proc::DGcols([
                     'buttons' => empty($foreign) ? [] : [
                         'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
-                            $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['mattraffic_id']]]);
+                            $customurl = Url::to([$foreign['url'], 'idinstallakt'=>(string) filter_input(INPUT_GET, 'idinstallakt'), 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['mattraffic_id']]]);
                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
                         }],
                             'buttonsfirst' => true,

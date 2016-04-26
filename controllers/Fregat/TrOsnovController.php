@@ -92,7 +92,7 @@ class TrOsnovController extends Controller {
             if (!empty($id_mattraffic)) {
                 $material_id = Mattraffic::findOne($id_mattraffic)->id_material;
                 $employee_id = Mattraffic::findOne($id_mattraffic)->id_mol;
-                $mattraffic_number_max = 'Не более ' . doubleval(Mattraffic::findOne($id_mattraffic)->mattraffic_number);
+                $mattraffic_number_max = 'Не более ' . doubleval(Mattraffic::GetMaxNumberMattrafficForInstallAkt($id_mattraffic));
 
                 $Material = Material::findOne($material_id);
                 $Employee = Employee::findOne($employee_id);

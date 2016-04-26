@@ -48,7 +48,9 @@ class Mattraffic extends \yii\db\ActiveRecord {
             [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip', 'mattraffic_lastchange', 'mattraffic_number'], 'required'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer'],
-            ['mattraffic_date', 'unique', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом'],
+            ['mattraffic_date', 'unique', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом', 'when' => function ($model) {
+            return in_array($model->mattraffic_tip, [1, 2]);
+        }],
             [['mattraffic_username'], 'string', 'max' => 128],
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 3], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами
@@ -65,7 +67,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
                 ->andWhere(['in', 'mattraffic_tip', [1, 3]])
                 ->one();
 
-        $this->addError($attribute, 'your password is not strong enough!');
+        //   $this->addError($attribute, 'your password is not strong enough!');
     }
 
     /**
@@ -209,5 +211,33 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                         return $query;
                                     }
 
-                                }
-                                
+                                    // Выводит максимально возможное количество материальной ценноси для перемещения
+                                    public static function GetMaxNumberMattrafficForInstallAkt($mattraffic_id) {
+                                        $mattraffic = self::findOne($mattraffic_id);
+                                        $mattraffic_number = $mattraffic->mattraffic_number;
+
+                                        $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
+
+
+                                        $mattraffic_number_remove = self::find()
+                                                ->joinWith(['idMaterial' => function($query) {
+                                                        $query->from(['idMaterial' => 'material']);
+                                                    }])
+                                                        ->andWhere([
+                                                            'id_material' => $mattraffic->id_material,
+                                                            'id_mol' => $mattraffic->id_mol,
+                                                            'mattraffic_tip' => 3,
+                                                        ])
+                                                        ->sum('mattraffic_number');
+                                                    
+                                                    
+                                                    if ($os && !isset($mattraffic_number_remove))
+                                                        $mattraffic_number_remove = 0;
+
+                                                    $mattraffic_number = $mattraffic_number - $mattraffic_number_remove;
+
+                                                return $mattraffic_number;
+                                            }
+
+                                        }
+                                        

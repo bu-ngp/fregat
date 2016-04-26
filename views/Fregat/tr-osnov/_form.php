@@ -35,6 +35,7 @@ use app\models\Fregat\Build;
                                 'methodquery' => 'selectinputfortrosnov',
                                 'dopparams' => [
                                     'foreigndo' => '1',
+                                    'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
                                 ],
                             ]), [
                 'pluginEvents' => [
@@ -82,7 +83,7 @@ use app\models\Fregat\Build;
     ]);
     ?>
 
-    <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true]) ?>    
+    <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>    
 
     <div class="form-group">
         <div class="panel panel-default">
