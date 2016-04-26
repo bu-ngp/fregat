@@ -199,7 +199,8 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                             },
                                                 ])
                                                 ->where(['like', isset($params['init']) ? 'm1.mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
-                                                ->andWhere('m1.mattraffic_tip in (1,2)')
+                                                ->andWhere('m1.mattraffic_number > 0')
+                                                ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
                                                 ->andWhere(['m2.mattraffic_date' => NULL])
                                                 ->limit(20)
                                                 ->asArray()
