@@ -72,8 +72,7 @@ use app\models\Fregat\Employee;
                                             'type' => 'button',
                                             'title' => 'Удалить',
                                             'class' => 'btn btn-xs btn-danger',
-                                            'onclick' => 'ConfirmDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '"); ',
-                                            'data-pjax' => '0'
+                                            'onclick' => 'ConfirmDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", {}, function() {$.pjax.reload({container:"#trOsnovgrid-pjax"}); });',
                                 ]);
                             },
                                 ],

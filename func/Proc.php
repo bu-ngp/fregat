@@ -460,7 +460,7 @@ class Proc {
     }
 
     static function WhereCunstruct($modelsearch, $field, $type = '') {
-        preg_match('/(>=|<=|>|<|=)?(.*)/', $modelsearch->$field, $matches);
+        preg_match('/(>=|<=|>|<|=)?(.*)/',  $modelsearch->getAttribute($field), $matches);
         $operator = $matches[1];
         $value = $matches[2];
 

@@ -60,14 +60,22 @@ class Mattraffic extends \yii\db\ActiveRecord {
     }
 
     public function MaxNumberMove($attribute) {
-        $query = self::find([
+        $query = self::find()
+                ->join('LEFT JOIN', 'material', 'material.material_id = mattraffic.id_material')
+                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)')
+                ->andWhere('mattraffic_number > 0')
+                ->andWhere([
                     'id_material' => $this->id_material,
                     'id_mol' => $this->id_mol,
                 ])
-                ->andWhere(['in', 'mattraffic_tip', [1, 3]])
+                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                ->andWhere(['tr_osnov.id_mattraffic' => NULL])
                 ->one();
 
-        //   $this->addError($attribute, 'your password is not strong enough!');
+        if (!empty($query) && $this->mattraffic_number > self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id))
+            $this->addError($attribute, 'чето както дохуя!');
     }
 
     /**
@@ -81,7 +89,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
             'id_material' => 'Материальная ценность',
             'id_mol' => 'Материально-ответственное лицо',
             'mattraffic_username' => 'Пользователь изменивший запись',
-            'mattraffic_lastchange' => 'Дата изменения записи',
+            'mattraffic_lastchange' => 'Дата изменения записи операции',
             'mattraffic_tip' => 'Тип операции',
         ];
     }
@@ -177,10 +185,10 @@ class Mattraffic extends \yii\db\ActiveRecord {
                         $method = isset($params['init']) ? 'one' : 'all';
 
                         $query = self::find()
-                                ->select(array_merge(isset($params['init']) ? [] : ['m1.mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-                                ->from(['m1' => 'mattraffic'])
-                                ->join('LEFT JOIN', 'material idMaterial', 'm1.id_material = idMaterial.material_id')
-                                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                                ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                                ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
+                                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)')
                                 ->joinWith([
                                     'idMol' => function($query) {
                                         $query->from(['idMol' => 'employee']);
@@ -200,10 +208,11 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                                 ]);
                                             },
                                                 ])
-                                                ->where(['like', isset($params['init']) ? 'm1.mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
-                                                ->andWhere('m1.mattraffic_number > 0')
-                                                ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
-                                                ->andWhere(['m2.mattraffic_date' => NULL])
+                                                ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                                                ->andWhere('mattraffic_number > 0')
+                                                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                                                ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                                                ->andWhere(['tr_osnov.id_mattraffic' => NULL])
                                                 ->limit(20)
                                                 ->asArray()
                                                 ->$method();
@@ -229,12 +238,12 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                                             'mattraffic_tip' => 3,
                                                         ])
                                                         ->sum('mattraffic_number');
-                                                    
-                                                    
-                                                    if ($os && !isset($mattraffic_number_remove))
-                                                        $mattraffic_number_remove = 0;
 
-                                                    $mattraffic_number = $mattraffic_number - $mattraffic_number_remove;
+
+                                                if ($os && !isset($mattraffic_number_remove))
+                                                    $mattraffic_number_remove = 0;
+
+                                                $mattraffic_number = $mattraffic_number - $mattraffic_number_remove;
 
                                                 return $mattraffic_number;
                                             }

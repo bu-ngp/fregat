@@ -200,7 +200,7 @@ $(document).ajaxComplete(function (event, xhr, settings) {
 });
 
 /* Диалог подтверждения перед выполнением Ajax запроса*/
-function ConfirmDialogToAjax(message, url, data) {
+function ConfirmDialogToAjax(message, url, data, funcafteraccess) {
     if (data == "undefined")
         data = {};
     if (message == "undefined")
@@ -212,6 +212,10 @@ function ConfirmDialogToAjax(message, url, data) {
                     url: url,
                     type: "post",
                     data: data,
+                    success: function () {
+                        if ((typeof (funcafteraccess) === "function"))
+                            funcafteraccess.apply($(this));
+                    },
                     error: function () {
                         console.error("ConfirmDialogToAjax: " + url);
                     }
