@@ -674,7 +674,7 @@ class FregatImport {
     // Определяем количество материальной ценности с учетом изменения
     private static function MatNumberChanging(&$Material, &$Traflog, $Number, $Diff) {
         if (!self::$os && $Number != 0) {
-            if ($Diff && $Number < 0) {
+            if ($Diff && ($Material->material_number - $Number) < 0) {
                 $Material->material_writeoff = 0;
                 $Number = abs($Number);
             }
