@@ -4,7 +4,6 @@ function FillTrOsnov() {
             url: "?r=Fregat%2Ftr-osnov%2Ffilltrosnov",
             type: "post",
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val()},
-            //  async: false,
             success: function (data) {
                 var obj = JSON.parse(data);
                 $("#material-material_tip").val(obj.material_tip);
@@ -14,7 +13,7 @@ function FillTrOsnov() {
                 $("#dolzh-dolzh_name").val(obj.dolzh_name);
                 $("#podraz-podraz_name").val(obj.podraz_name);
                 $("#build-build_name").val(obj.build_name);
-                $("#mattraffic_number_max").text("Не более " + Math.round(obj.mattraffic_number));
+                $("#mattraffic_number_max").text("Не более " + obj.mattraffic_number);
 
                 SetSessionEach([
                     $("#material-material_tip"),
@@ -52,12 +51,4 @@ function ClearTrOsnov() {
         $("#podraz-podraz_name"),
         $("#build-build_name")
     ]);
-
-    /*  SetSession($("#material-material_tip"));
-     SetSession($("#material-material_name"));
-     SetSession($("#material-material_writeoff"));
-     SetSession($("#employee-id_person"));
-     SetSession($("#employee-id_dolzh"));
-     SetSession($("#employee-id_podraz"));
-     SetSession($("#employee-id_build"));*/
 }

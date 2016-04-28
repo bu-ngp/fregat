@@ -74,8 +74,10 @@ class Mattraffic extends \yii\db\ActiveRecord {
                 ->andWhere(['tr_osnov.id_mattraffic' => NULL])
                 ->one();
 
-        if (!empty($query) && $this->mattraffic_number > self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id))
-            $this->addError($attribute, 'чето както дохуя!');
+        $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id);
+
+        if (!empty($query) && $this->mattraffic_number > $max_number)
+            $this->addError($attribute, 'Количество не может превышать ' . $max_number);
     }
 
     /**
