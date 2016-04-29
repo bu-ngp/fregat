@@ -54,22 +54,20 @@ class TrOsnovController extends Controller {
         $Employee = new Employee;
         $mattraffic_number_max = NULL;
 
-
+        // Если форма отправлена на сервер, получаем выбранную материальную ценность
         $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : '';
-        $mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
-
-        $filleddata = false;
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
 
+            // Если форма отправлена на сервер, то создать запись перемещения мат цен-ти в mattraffic
             if (!empty($id_mattraffic)) {
                 $Mattrafficcurrent = Mattraffic::findOne($id_mattraffic);
 
                 $Mattraffic->attributes = $Mattrafficcurrent->attributes;
 
                 $Mattraffic->mattraffic_date = date('Y-m-d');
-                $Mattraffic->mattraffic_number = $mattraffic_number;
+                $Mattraffic->mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
                 $Mattraffic->mattraffic_tip = 3;
 
                 if (isset($Mattraffic->scenarios()['traffic']))
@@ -79,39 +77,48 @@ class TrOsnovController extends Controller {
                     $Mattraffic->save(false);
                     $model->id_mattraffic = $Mattraffic->mattraffic_id;
                 }
-                $model->id_installakt = isset($_GET['idinstallakt']) ? $_GET['idinstallakt'] : Null;
-                $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
 
-                $filleddata = true;
+                //Акт установки уже создан и берется из URL параметра
+                $model->id_installakt = (string) filter_input(INPUT_GET, 'idinstallakt');
+
+                //Сохраняем кабинет в модель из отправленной формы
+                $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
             }
 
-            if ($filleddata && $model->save()) {
+            // Сохраняем модель с отправленными данными и сохраненным mattraffic
+            if (!$Mattraffic->isNewRecord && $model->save()) {
                 $transaction->commit();
                 return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-            } else {
-
+            } else { // иначе
+                // Берет значение сначала из справочника (посредством перехода на страницу выбора), если нет, то вытаскивает из сессии (для простого обновления страницы)
+                // выводит $PreviusBC - для последующей передачи в функцию Proc::SetSessionValuesFromAR, т.е. установить в последнюю сессию или предыдущую (хлебных крошек)
                 $PreviusBC = Proc::GetValueForFillARs($id_mattraffic, 'TrOsnov', 'id_mattraffic');
 
+                // Очистить ошибку id_mattraffic, если есть ошибка по mattraffic_number (Превышено допустимое кол-во для перемещения матер. цен-ти)
                 if (isset($Mattraffic->errors['mattraffic_number']))
                     $model->clearErrors('id_mattraffic');
 
+                // Если выбрана мат. цен-ть, то заполнить информацию для отображения на форме по мат. цен-ти и МОЛ
                 if (!empty($id_mattraffic)) {
                     $Material = Material::find()->joinWith('mattraffics')->where(['mattraffic_id' => $id_mattraffic])->one();
                     $Employee = Employee::find()->joinWith('mattraffics')->where(['mattraffic_id' => $id_mattraffic])->one();
+                    // GetMaxNumberMattrafficForInstallAkt - Определяем максимально допустимое кол-во материала для перемещения (Общее кол-во материала минус уже перемещенное кол-во)
                     $mattraffic_number_max = 'Не более ' . doubleval(Mattraffic::GetMaxNumberMattrafficForInstallAkt($id_mattraffic));
 
+                    // Сохраняем модель мат. цен-ти и МОЛ'а в сессию (т.к. эти модели только для отображения)
                     Proc::SetSessionValuesFromAR($Material, $PreviusBC);
                     Proc::SetSessionValuesFromAR($Employee, $PreviusBC);
                 }
-
+                
+                // Откатываем транзакцию
                 $transaction->rollback();
 
                 return $this->render('create', [
                             'model' => $model,
                             'Mattraffic' => $Mattraffic,
-                            'Material' => $Material,
-                            'Employee' => $Employee,
-                            'mattraffic_number_max' => $mattraffic_number_max,
+                            'Material' => $Material, // Для просмотра
+                            'Employee' => $Employee, // Для просмотра
+                            'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
                 ]);
             }
         } catch (Exception $e) {
@@ -153,6 +160,7 @@ class TrOsnovController extends Controller {
         }
     }
 
+    // Удаление перемещаемой мат. цен-ти из акта установки
     public function actionDelete($id) {
         if (Yii::$app->request->isAjax) {
             $tr_osnov = $this->findModel($id);

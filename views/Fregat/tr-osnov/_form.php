@@ -32,7 +32,7 @@ use app\models\Fregat\Build;
                                 'fromgridroute' => 'Fregat/mattraffic/forinstallakt',
                                 'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
                                 'thisroute' => $this->context->module->requestedRoute,
-                                'methodquery' => 'selectinputfortrosnov',
+                                'methodquery' => 'selectinputfortrosnov',   
                                 'dopparams' => [
                                     'foreigndo' => '1',
                                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),

@@ -93,7 +93,7 @@ class TrOsnovSearch extends TrOsnov {
                                 // grid filtering conditions
                                 $query->andFilterWhere([
                                     'tr_osnov_id' => $this->tr_osnov_id,
-                                    'id_installakt' => $this->id_installakt,
+                                    'id_installakt' => (string) filter_input(INPUT_GET, 'id'),
                                     'id_mattraffic' => $this->id_mattraffic,
                                 ]);
 

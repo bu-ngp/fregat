@@ -59,6 +59,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
         ];
     }
 
+    // Определяем максимальное кол-во мат. цен-ти для перемещения (Основное средство - кол-во всегда не более 1, Материал - кол-во не более (Общее кол-во материала МОЛ'а - кол-во перемещенного материала МОЛ'а))
     public function MaxNumberMove($attribute) {
         $query = self::find()
                 ->join('LEFT JOIN', 'material', 'material.material_id = mattraffic.id_material')
@@ -185,12 +186,12 @@ class Mattraffic extends \yii\db\ActiveRecord {
                     public function selectinputfortrosnov($params) {
 
                         $method = isset($params['init']) ? 'one' : 'all';
-
+                        
                         $query = self::find()
                                 ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                                 ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
                                 ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)')
+                                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)') //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
                                 ->joinWith([
                                     'idMol' => function($query) {
                                         $query->from(['idMol' => 'employee']);
@@ -228,7 +229,6 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                         $mattraffic_number = $mattraffic->mattraffic_number;
 
                                         $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
-
 
                                         $mattraffic_number_remove = self::find()
                                                 ->joinWith(['idMaterial' => function($query) {
