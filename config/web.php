@@ -60,6 +60,16 @@ $config = [
             'datetimeFormat' => 'dd.MM.yyyy HH:mm:ss',
             'nullDisplay' => '',
         ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => '172.19.17.3',
+                'username' => 'portal',
+                'password' => '123654',
+                'port' => '25',
+            ],
+        ],
     ],
     'modules' => [
         'dynagrid' => [

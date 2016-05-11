@@ -637,6 +637,29 @@ class FregatImport {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -661,6 +684,29 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 
@@ -988,6 +1034,61 @@ class FregatImport {
         }
     }
 
+    // Ищем жену Михаилу
+    static function Mishanya($Authuser, $Employee, $matches) {
+        $dr = Yii::$app->formatter->asDate($matches[16]);
+        $d1 = new \DateTime($dr);
+        $d2 = new \DateTime(date('Y-m-d'));
+        $diff = $d2->diff($d1);
+
+        $subthemes = [
+            'Мишаня, новые телочки, пора за работу',
+            'Мишаня, настало твое время',
+            'Мишаня, мы все верим в тебя',
+            'Мишаня, все в твоих руках, за работу',
+            'Мишаня, на этот раз у тебя полюбому все получится',
+            'Мишаня, я лично в тебя верю, давай',
+            'Мишаня, мы будем болеть за тебя всем отделом',
+            'Мишаня, Президент лично одобрил',
+            'Мишаня, все схвачено, дело за тобой',
+            'Мишаня, давай пацан',
+            'Мишаня, у тебя все получится',
+            'Мишаня, вперед, в атаку',
+            'Мишаня, хватит распиздяйничать, займись делом',
+            'Мишаня, появилась непыльная работенка',
+            'Мишаня, кажется ты нашел свою новую жену',
+            'Мишаня, тебе пора жениться',
+            'Мишаня, она ждет',
+            'Мишаня, кажется кто-то нуждается в твоих комплементах',
+            'Мишаня, найден новый объект для комплиментиков',
+            'Мишаня, с ней только серьезные отношения',
+            'Мишаня, она думает о тебе',
+            'Мишаня, хватит душить удава, займись делом',
+        ];
+
+        if ($diff->y < 30)
+            Yii::$app->mailer->compose('/site/misha', [
+                        'fio' => $Authuser->auth_user_fullname,
+                        'dr' => $dr,
+                        'vozrast' => $diff->y,
+                        'dolzh' => Dolzh::findOne($Employee->id_dolzh)->dolzh_name,
+                        'podraz' => Podraz::findOne($Employee->id_podraz)->podraz_name,
+                        'build' => (!empty($Employee->id_build)) ? Build::findOne($Employee->id_build)->build_name : '',
+                        'address' => $matches[10],
+                    ])
+                    ->setFrom('portal@mugp-nv.ru')
+                    ->setTo([
+                        'karpovvv@mugp-nv.ru',
+                        'dnn@mugp-nv.ru',
+                        'mns@mugp-nv.ru',
+                        'dvg@mugp-nv.ru',
+                        'chepenkoav@mugp-nv.ru',
+                        'valikanovae@mugp-nv.ru',
+                    ])
+                    ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
+                    ->send();
+    }
+
     // Производим импорт материальных ценностей
     static function ImportDo() {
         // Делаем запись в таблицу отчетов импорта
@@ -1043,7 +1144,7 @@ class FregatImport {
                                 $transaction = Yii::$app->db->beginTransaction();
                                 $i++;
                                 try {
-                                    $pattern = '/^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
+                                    $pattern = '/^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|/ui';
                                     preg_match($pattern, $subject, $matches);
 
                                     if ($matches[0] !== NULL) {
@@ -1131,6 +1232,8 @@ class FregatImport {
                                                 if ($Employee->validate()) {
                                                     self::$logreport_additions++;
                                                     $Employee->save(false);
+
+                                                    self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
