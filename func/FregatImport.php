@@ -632,34 +632,6 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -684,29 +656,6 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 
@@ -1195,11 +1144,13 @@ class FregatImport {
                                                             ->where(['like', 'auth_user_fullname', $employee_fio, false])
                                                             ->one() : false;
 
+                                            $newEmployee = false;
                                             if (empty($Authuser) || $AuthuserCount > 1) {
                                                 $Authuser = new Authuser;
                                                 $Authuser->auth_user_fullname = $employee_fio;
                                                 $Authuser->auth_user_login = Proc::CreateLogin($employee_fio);
                                                 $Authuser->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
+                                                $newEmployee = true;
                                             }
 
                                             $Employee = new Employee;
@@ -1233,7 +1184,8 @@ class FregatImport {
                                                     self::$logreport_additions++;
                                                     $Employee->save(false);
 
-                                                    self::Mishanya($Authuser, $Employee, $matches);
+                                                    if ($newEmployee)
+                                                        self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
