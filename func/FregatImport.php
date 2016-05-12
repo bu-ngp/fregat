@@ -637,6 +637,7 @@ class FregatImport {
 
 
 
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -661,6 +662,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
 
 
 
@@ -1024,6 +1026,13 @@ class FregatImport {
             'Мишаня, с ней только серьезные отношения',
             'Мишаня, она думает о тебе',
             'Мишаня, хватит душить удава, займись делом',
+            'Мишаня, тут Кондратьевские подсуетились',
+            'Мишаня, получи новое задание Кунимена',
+            'Мишаня, киевская развед-школа поработала на тебя',
+            'Мишаня, у нее компьютер сломался, нужно проверить',
+            'Мишаня, пора поработать с низкого старта',
+            'Мишаня, партийное задание',
+            'Мишаня, надевай тапки пиздуна, есть задание',
         ];
 
         if ($pol == 'Ж' && $diff->y <= 35)
