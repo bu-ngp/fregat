@@ -632,6 +632,9 @@ class FregatImport {
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
+
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -656,6 +659,9 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
+
 
 
                 
@@ -986,6 +992,7 @@ class FregatImport {
     // Ищем жену Михаилу
     static function Mishanya($Authuser, $Employee, $matches) {
         $dr = Yii::$app->formatter->asDate($matches[16]);
+        $pol = Yii::$app->formatter->asDate($matches[15]);
         $d1 = new \DateTime($dr);
         $d2 = new \DateTime(date('Y-m-d'));
         $diff = $d2->diff($d1);
@@ -1015,7 +1022,7 @@ class FregatImport {
             'Мишаня, хватит душить удава, займись делом',
         ];
 
-        if ($diff->y < 30)
+        if ($pol == 'Ж' && $diff->y <= 35)
             Yii::$app->mailer->compose('/site/misha', [
                         'fio' => $Authuser->auth_user_fullname,
                         'dr' => $dr,
@@ -1093,7 +1100,7 @@ class FregatImport {
                                 $transaction = Yii::$app->db->beginTransaction();
                                 $i++;
                                 try {
-                                    $pattern = '/^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|/ui';
+                                    $pattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
                                     preg_match($pattern, $subject, $matches);
 
                                     if ($matches[0] !== NULL) {
@@ -1184,7 +1191,7 @@ class FregatImport {
                                                     self::$logreport_additions++;
                                                     $Employee->save(false);
 
-                                                    if ($newEmployee)
+                                                    if ($newEmployee && isset($matches[5]))
                                                         self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
@@ -1243,7 +1250,7 @@ class FregatImport {
                                         $Employeelog->employeelog_filename = self::$filename;
                                         $Employeelog->employeelog_filelastdate = self::$filelastdate;
                                         $Employeelog->employeelog_rownum = $i;
-                                        $Employeelog->employeelog_message = 'Ошибка при добавлении записи: Не пройдено регулярное выражение /^(.+?)\|(Поликлиника №\s?[1,2,3] )?(.+?)\|(.+?)\|/ui';
+                                        $Employeelog->employeelog_message = 'Ошибка при добавлении записи: Не пройдено регулярное выражение /^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
                                         $Employeelog->save(false);
                                         self::$logreport_errors++;
                                     }
