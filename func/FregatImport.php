@@ -635,6 +635,8 @@ class FregatImport {
 
 
 
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -659,6 +661,8 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
 
 
 
@@ -992,7 +996,7 @@ class FregatImport {
     // Ищем жену Михаилу
     static function Mishanya($Authuser, $Employee, $matches) {
         $dr = Yii::$app->formatter->asDate($matches[16]);
-        $pol = Yii::$app->formatter->asDate($matches[15]);
+        $pol = $matches[15];
         $d1 = new \DateTime($dr);
         $d2 = new \DateTime(date('Y-m-d'));
         $diff = $d2->diff($d1);
@@ -1191,7 +1195,7 @@ class FregatImport {
                                                     self::$logreport_additions++;
                                                     $Employee->save(false);
 
-                                                    if ($newEmployee && isset($matches[5]))
+                                                    if ($newEmployee)
                                                         self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
