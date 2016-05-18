@@ -630,15 +630,8 @@ class FregatImport {
             $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name; //self::GetNameByID('dolzh', 'dolzh_name', $Employee->id_dolzh);
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
-                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
-
-
-
-
-                
+                $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
+             
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
@@ -662,15 +655,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
-
-
-
-
-
-                
+              
 // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
@@ -832,7 +817,7 @@ class FregatImport {
 
             $Forlog = Employee::find()
                     ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
-                    ->where('employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
+                    ->where('employee_forinactive is null and employee_importdo = 1 and DATE(employee_dateinactive) = CURDATE() and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
                     ->all();
 
             if (!empty($Forlog))
@@ -1201,11 +1186,11 @@ class FregatImport {
                                                 $Authuser->save(false);
                                                 $Employee->id_person = $Authuser->getPrimaryKey();
                                                 if ($Employee->validate()) {
-                                                    self::$logreport_additions++;
+                                                    $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                    if ($newEmployee)
-                                                        self::Mishanya($Authuser, $Employee, $matches);
+                                                    //   if ($newEmployee)
+                                                    //      self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
