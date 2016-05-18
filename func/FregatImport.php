@@ -1189,8 +1189,8 @@ class FregatImport {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                    //   if ($newEmployee)
-                                                    //      self::Mishanya($Authuser, $Employee, $matches);
+                                                    if ($newEmployee)
+                                                       self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
