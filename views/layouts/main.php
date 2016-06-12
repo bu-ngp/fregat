@@ -98,7 +98,7 @@ AppAsset::register($this);
 
         <footer class="footer">
             <div class="container">
-                <p class="pull-left">&copy; Карпов Владимир, БУ "Нижневартвоская городская поликлиника"  <?= date('Y') ?></p>
+                <p class="pull-left">&copy; Карпов Владимир, БУ "Нижневартовская городская поликлиника"  <?= date('Y') ?></p>
             </div>
         </footer>
 

@@ -47,6 +47,8 @@ $config = [
             'rules' => [
                 'Fregat/<controller:\w+>/<action:\w+>' => 'Fregat/<controller>/<action>',
                 'Config/<controller:\w+>/<action:\w+>' => 'Config/<controller>/<action>',
+                'Base/<controller:\w+>/<action:\w+>' => 'Base/<controller>/<action>',
+                'Glauk/<controller:\w+>/<action:\w+>' => 'Glauk/<controller>/<action>',
             //  'encodeParams' => FALSE,
             // my rules
             ],

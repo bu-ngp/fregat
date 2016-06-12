@@ -13,6 +13,7 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\func\FregatImport;
 use app\func\TestMem;
+use app\models\Base\Fias;
 
 class FregatController extends Controller {
 
@@ -72,30 +73,36 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
+        $file = 'AS_ADDROBJ_20160609_c5080ba4-9f46-4b6e-aecc-72a630730b3a.XML';
+        $interestingNodes = array('AOGUID');
+        $xmlObject = new \XMLReader();
+        $xmlObject->open($file);
+        header('Content-Type: text/html; charset=utf-8');
 
-
-
-        $rows = \app\models\Fregat\Import\Traflog::find()
-                ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
-                ->joinWith(['idmatlog', 'idemployeelog'])
-                ->where(['traflog.id_logreport' => 1])
-                ->createCommand()
-                ->queryAll();
-        /*    ->asArray()
-          ->all(); */
-
-        $searchModel = new \app\models\Fregat\ImportemployeeSearch();
-        var_dump(substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1));
-
-
-        /*
-          $Importconfig = \app\models\Fregat\Import\Importconfig::findOne(1);
-
-          foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
-          $filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
-
-          file_exists($filename) ? var_dump($filename.': File Exist') : var_dump($filename. ': File Not Exist');
-          } */
+        $i = 0;
+        while ($xmlObject->read() /* && $i <= 50 */) {
+            if ($xmlObject->name == 'Object') {
+                if ($xmlObject->getAttribute('IFNSFL') == '8603') {
+               // if (($xmlObject->getAttribute('PARENTGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076' && $xmlObject->getAttribute('AOLEVEL') == '7') || $xmlObject->getAttribute('AOGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076') {
+                    $fias = new Fias;
+                    $fias->AOGUID = $xmlObject->getAttribute('AOGUID');
+                    $fias->OFFNAME = $xmlObject->getAttribute('OFFNAME');
+                    $fias->SHORTNAME = $xmlObject->getAttribute('SHORTNAME');
+                    $fias->IFNSFL = $xmlObject->getAttribute('IFNSFL');
+                    $fias->AOLEVEL = $xmlObject->getAttribute('AOLEVEL');
+                    $fias->PARENTGUID = $xmlObject->getAttribute('PARENTGUID');
+                    if ($fias->validate())
+                        $fias->save();
+                    else {
+                        var_dump($fias->attributes);
+                        var_dump($fias->getErrors());
+                    }
+                    //    $i++;
+                }
+            }
+        }
+        ECHO 'ok';
+        $xmlObject->close();
     }
 
 }

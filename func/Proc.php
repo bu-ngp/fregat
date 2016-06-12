@@ -208,11 +208,17 @@ class Proc {
             $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
             $methodquery = isset($params['methodquery']) ? $params['methodquery'] : '';
             $methodparams = isset($params['methodparams']) ? $params['methodparams'] : '';
+            $ajaxparams = isset($params['ajaxparams']) && is_array($params['ajaxparams']) ? $params['ajaxparams'] : [];
+            $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
+
+            $ajaxparamsString = '';
+            foreach ($ajaxparams as $key => $value)
+                $ajaxparamsString.= ',' . $key . ': ' . $value;
 
             if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
-            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($fromgridroute) && !empty($thisroute)) {
+            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute)) {
 
                 if (!empty($methodquery)) {
                     $methodparams['q'] = $model->$fields['keyfield'];
@@ -226,32 +232,33 @@ class Proc {
                             ->asArray()
                             ->one();
 
-                return [
+                return array_merge([
                     'initValueText' => !empty($initrecord) ? implode(', ', $initrecord) : '',
-                    'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession'],
+                    'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true],
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'pluginOptions' => [
                         'allowClear' => true,
-                        'minimumInputLength' => 3,
+                        'minimumInputLength' => $minimumInputLength,
                         'ajax' => [
                             'url' => Url::to([$resultrequest]),
                             'dataType' => 'json',
-                            'data' => empty($fields['methodquery']) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . ' } }') : new JsExpression('function(params) { return {q:params.term} }'),
+                            'data' => empty($fields['methodquery']) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . '' . $ajaxparamsString . ' } }') : new JsExpression('function(params) { return {q:params.term' . $ajaxparamsString . '} }'),
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    ],
-                    'addon' => [
-                        'append' => [
-                            'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
-                                'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
-                                'url' => $thisroute,
-                                'field' => $fields['keyfield'],
-                                'id' => $model->primaryKey,
-                                            ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
-                            'asButton' => true
-                        ]
                     ]
-                ];
+                        ], !empty($fromgridroute) ? [
+                            'addon' => [
+                                'append' => [
+                                    'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
+                                        'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                        'url' => $thisroute,
+                                        'field' => $fields['keyfield'],
+                                        'id' => $model->primaryKey,
+                                                    ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
+                                    'asButton' => true
+                                ]
+                            ]] : []
+                );
             } else
                 throw new \Exception('Ошибка в Proc::DGselect2()');
         }
@@ -371,6 +378,8 @@ class Proc {
             'fregat_matcen' => 'Fregat/mattraffic/index',
             'fregat_conf' => 'Fregat/fregat/config',
             'config_conf' => 'Config/config/index',
+            'glauk_index' => 'Base/patient/glaukindex',
+            'glauk_conf' => 'Glauk/glaukuchet/config',
         ];
 
         $session = new Session;
@@ -400,6 +409,15 @@ class Proc {
                     $result = array_merge(
                             Yii::$app->user->can('UserEdit') || Yii::$app->user->can('RoleEdit') ? [['label' => 'Настройки портала', 'url' => [$urls['config_conf']],
                             'options' => $session['currentmenuurl'] === $urls['config_conf'] ? ['class' => 'active'] : [],
+                                ]] : []
+                    );
+                    break;
+                case 'glauk':
+                    $result = array_merge(
+                            Yii::$app->user->can('GlaukUserPermission') ? [['label' => 'Пациенты', 'url' => [$urls['glauk_index']],
+                            'options' => $session['currentmenuurl'] === $urls['glauk_index'] ? ['class' => 'active'] : [],
+                                ]] : [], Yii::$app->user->can('GlaukOperatorPermission') ? [['label' => 'Настройки', 'url' => [$urls['glauk_conf']],
+                            'options' => $session['currentmenuurl'] === $urls['glauk_conf'] ? ['class' => 'active'] : [],
                                 ]] : []
                     );
                     break;
@@ -460,7 +478,7 @@ class Proc {
     }
 
     static function WhereCunstruct($modelsearch, $field, $type = '') {
-        preg_match('/(>=|<=|>|<|=)?(.*)/',  $modelsearch->getAttribute($field), $matches);
+        preg_match('/(>=|<=|>|<|=)?(.*)/', $modelsearch->getAttribute($field), $matches);
         $operator = $matches[1];
         $value = $matches[2];
 

@@ -1,0 +1,255 @@
+<?php
+
+namespace app\models\Base;
+
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use app\models\Base\Patient;
+use app\func\Proc;
+
+/**
+ * PatientSearch represents the model behind the search form about `app\models\Base\Patient`.
+ */
+class PatientSearch extends Patient {
+
+    public function attributes() {
+        // add related fields to searchable attributes
+        return array_merge(parent::attributes(), [
+            /* 'idFias.fias_city',
+              'idFias.fias_street', */
+            'glaukuchets.glaukuchet_uchetbegin',
+            'glaukuchets.glaukuchet_detect',
+            'glaukuchets.glaukuchet_deregdate',
+            'glaukuchets.glaukuchet_deregreason',
+            'glaukuchets.glaukuchet_stage',
+            'glaukuchets.glaukuchet_operdate',
+            'glaukuchets.glaukuchet_rlocat',
+            'glaukuchets.glaukuchet_invalid',
+            'glaukuchets.glaukuchet_lastvisit',
+            'glaukuchets.glaukuchet_lastmetabol',
+            'glaukuchets.idEmployee.idperson.auth_user_fullname',
+            'glaukuchets.idEmployee.iddolzh.dolzh_name',
+            'glaukuchets.idEmployee.idpodraz.podraz_name',
+            'glaukuchets.idEmployee.idbuild.build_name',
+            'glaukuchets.idClassMkb.code',
+            'glaukuchets.idClassMkb.name',
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules() {
+        return [
+            [['patient_id', 'patient_pol'], 'integer'],
+            [['patient_fam', 'patient_im', 'patient_ot', 'patient_dr', 'id_fias', 'patient_dom', 'patient_korp', 'patient_kvartira', 'patient_username', 'patient_lastchange'], 'safe'],
+            [[/* 'idFias.fias_city',
+              'idFias.fias_street', */
+            'glaukuchets.glaukuchet_uchetbegin',
+            'glaukuchets.glaukuchet_detect',
+            'glaukuchets.glaukuchet_deregdate',
+            'glaukuchets.glaukuchet_deregreason',
+            'glaukuchets.glaukuchet_stage',
+            'glaukuchets.glaukuchet_operdate',
+            'glaukuchets.glaukuchet_rlocat',
+            'glaukuchets.glaukuchet_invalid',
+            'glaukuchets.glaukuchet_lastvisit',
+            'glaukuchets.glaukuchet_lastmetabol',
+            'glaukuchets.idEmployee.idperson.auth_user_fullname',
+            'glaukuchets.idEmployee.iddolzh.dolzh_name',
+            'glaukuchets.idEmployee.idpodraz.podraz_name',
+            'glaukuchets.idEmployee.idbuild.build_name',
+            'glaukuchets.idClassMkb.code',
+            'glaukuchets.idClassMkb.name'], 'safe'],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios() {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+
+    private function glaukRelations(&$query) {
+        $query->joinWith([
+            'glaukuchets' => function($query) {
+                $query->from(['glaukuchets' => 'glaukuchet']);
+                $query->joinWith([
+                    'idClassMkb' => function($query) {
+                        $query->from(['idClassMkb' => 'class_mkb']);
+                    },
+                            'idEmployee' => function($query) {
+                        $query->from(['idEmployee' => 'employee']);
+                        $query->joinWith([
+                            'idperson' => function($query) {
+                                $query->from(['idperson' => 'auth_user']);
+                            },
+                                    'iddolzh' => function($query) {
+                                $query->from(['iddolzh' => 'dolzh']);
+                            },
+                                    'idpodraz' => function($query) {
+                                $query->from(['idpodraz' => 'podraz']);
+                            },
+                                    'idbuild' => function($query) {
+                                $query->from(['idbuild' => 'build']);
+                            },
+                                ]);
+                            }]);
+                            }
+                                ]);
+                            }
+
+                            private function glaukFilter(&$query) {
+                                $query->andFilterWhere(['LIKE', 'patient_fam', $this->getAttribute('patient_fam')]);
+                                $query->andFilterWhere(['LIKE', 'patient_im', $this->getAttribute('patient_im')]);
+                                $query->andFilterWhere(['LIKE', 'patient_ot', $this->getAttribute('patient_ot')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'patient_dr', 'date'));
+                                $query->andFilterWhere(['LIKE', 'patient_pol', $this->getAttribute('patient_pol')]);
+                                /*     $query->andFilterWhere(['LIKE', 'idFias.fias_city', $this->getAttribute('idFias.fias_city')]);
+                                  $query->andFilterWhere(['LIKE', 'idFias.fias_street', $this->getAttribute('idFias.fias_street')]); */
+                                $query->andFilterWhere(['LIKE', 'patient_dom', $this->getAttribute('patient_dom')]);
+                                $query->andFilterWhere(['LIKE', 'patient_korp', $this->getAttribute('patient_korp')]);
+                                $query->andFilterWhere(['LIKE', 'patient_kvartira', $this->getAttribute('patient_kvartira')]);
+                                $query->andFilterWhere(['LIKE', 'patient_username', $this->getAttribute('patient_username')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'patient_lastchange', 'datetime'));
+
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_uchetbegin', 'date'));
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_detect', $this->getAttribute('glaukuchets.glaukuchet_detect')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_deregdate', 'date'));
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_deregreason', $this->getAttribute('glaukuchets.glaukuchet_deregreason')]);
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_stage', $this->getAttribute('glaukuchets.glaukuchet_stage')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_operdate', 'date'));
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_rlocat', $this->getAttribute('glaukuchets.glaukuchet_rlocat')]);
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_invalid', $this->getAttribute('glaukuchets.glaukuchet_invalid')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_lastvisit', 'date'));
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_lastmetabol', 'date'));
+                                $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('glaukuchets.idEmployee.idperson.auth_user_fullname')]);
+                                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('glaukuchets.idEmployee.iddolzh.dolzh_name')]);
+                                $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('glaukuchets.idEmployee.idpodraz.podraz_name')]);
+                                $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('glaukuchets.idEmployee.idbuild.build_name')]);
+                                $query->andFilterWhere(['LIKE', 'idClassMkb.code', $this->getAttribute('glaukuchets.idClassMkb.code')]);
+                                $query->andFilterWhere(['LIKE', 'idClassMkb.name', $this->getAttribute('glaukuchets.idClassMkb.name')]);
+                            }
+
+                            private function glaukSort(&$dataProvider) {
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_uchetbegin'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_detect'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_detect' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_detect' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_deregdate'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_deregdate' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_deregdate' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_deregreason'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_deregreason' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_deregreason' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_stage'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_stage' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_stage' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_operdate'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_operdate' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_operdate' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_rlocat'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_rlocat' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_rlocat' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_invalid'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_invalid' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_invalid' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastvisit'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_lastvisit' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_lastvisit' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastmetabol'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_lastmetabol' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_lastmetabol' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idEmployee.idperson.auth_user_fullname'] = [
+                                    'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
+                                    'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idEmployee.iddolzh.dolzh_name'] = [
+                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
+                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idEmployee.idpodraz.podraz_name'] = [
+                                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
+                                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idEmployee.idbuild.build_name'] = [
+                                    'asc' => ['idbuild.build_name' => SORT_ASC],
+                                    'desc' => ['idbuild.build_name' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idClassMkb.code'] = [
+                                    'asc' => ['idClassMkb.code' => SORT_ASC],
+                                    'desc' => ['idClassMkb.code' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.idClassMkb.name'] = [
+                                    'asc' => ['idClassMkb.name' => SORT_ASC],
+                                    'desc' => ['idClassMkb.name' => SORT_DESC],
+                                ];
+                            }
+
+                            /**
+                             * Creates data provider instance with search query applied
+                             *
+                             * @param array $params
+                             *
+                             * @return ActiveDataProvider
+                             */
+                            public function search($params) {
+                                $query = Patient::find();
+
+                                // add conditions that should always apply here
+
+                                $dataProvider = new ActiveDataProvider([
+                                    'query' => $query,
+                                ]);
+
+                                $this->glaukRelations($query);
+
+                                $this->load($params);
+
+                                if (!$this->validate()) {
+                                    // uncomment the following line if you do not want to return any records when validation fails
+                                    // $query->where('0=1');
+                                    return $dataProvider;
+                                }
+
+                                $this->glaukFilter($query);
+                                $this->glaukSort($dataProvider);
+
+                                if (empty($params['sort']))
+                                    $query->orderBy('patient_lastchange desc');
+
+                                return $dataProvider;
+                            }
+
+                        }
+                        
