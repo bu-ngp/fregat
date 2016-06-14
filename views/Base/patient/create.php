@@ -1,5 +1,6 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/glaukpatient.js');
+if ($patienttype === 'glauk')
+    \Yii::$app->getView()->registerJsFile('js/glaukpatient.js');
 
 use yii\helpers\Html;
 use app\func\Proc;
@@ -9,19 +10,22 @@ use app\func\Proc;
 
 $this->title = 'Создать нового пациента';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => $model,
+            'model' => array_merge([$model, $Fias], $patienttype === 'glauk' ? [$Glaukuchet] : []),
         ]);
+
+if ($patienttype === 'glauk')
+    $dopparams['Glaukuchet'] = $Glaukuchet;
 ?>
 <div class="patient-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
-            $this->render('_form', [
+            $this->render('_form', array_merge([
                 'model' => $model,
-                'Glaukuchet' => $Glaukuchet,
                 'Fias' => $Fias,
-            ])
+                'patienttype' => $patienttype,
+                            ], $dopparams))
             ?>
         </div>
     </div>    

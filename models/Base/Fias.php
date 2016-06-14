@@ -66,7 +66,7 @@ class Fias extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getPatients() {
-        return $this->hasMany(Patient::className(), ['id_fias' => 'AOGUID']);
+        return $this->hasOne(Patient::className(), ['id_fias' => 'AOGUID']);
     }
 
     public function selectinputforcity($params) {
@@ -89,13 +89,13 @@ class Fias extends \yii\db\ActiveRecord {
     }
 
     public function selectinputforstreet($params) {
-        if (isset($params['fias_city'])) {
-            $method = isset($params['init']) ? 'one' : 'all';
 
+        $method = isset($params['init']) ? 'one' : 'all';
+        if (isset($params['fias_city']) || $method === 'one') {
             $query = self::find()
                     ->select(array_merge(isset($params['init']) ? [] : ['AOGUID AS id'], ["CONCAT_WS('. ',SHORTNAME,OFFNAME) AS text"]))
                     ->where(['like', isset($params['init']) ? 'AOGUID' : 'OFFNAME', $params['q'], isset($params['init']) ? false : null])
-                    ->andWhere(['like', 'PARENTGUID', $params['fias_city']])
+                    ->andWhere($method === 'one' ? '1=1' : ['like', 'PARENTGUID', $params['fias_city']])
                     ->andWhere(['AOLEVEL' => 7])
                     ->orderBy('OFFNAME')
                     ->limit(10)

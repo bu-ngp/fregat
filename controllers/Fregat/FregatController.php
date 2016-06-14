@@ -23,9 +23,14 @@ class FregatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'sprav'],
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['sprav'],
+                        'allow' => true,
+                        'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
                         'actions' => ['config', 'import'],
@@ -83,7 +88,7 @@ class FregatController extends Controller {
         while ($xmlObject->read() /* && $i <= 50 */) {
             if ($xmlObject->name == 'Object') {
                 if ($xmlObject->getAttribute('IFNSFL') == '8603') {
-               // if (($xmlObject->getAttribute('PARENTGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076' && $xmlObject->getAttribute('AOLEVEL') == '7') || $xmlObject->getAttribute('AOGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076') {
+                    // if (($xmlObject->getAttribute('PARENTGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076' && $xmlObject->getAttribute('AOLEVEL') == '7') || $xmlObject->getAttribute('AOGUID') == '0bf0f4ed-13f8-446e-82f6-325498808076') {
                     $fias = new Fias;
                     $fias->AOGUID = $xmlObject->getAttribute('AOGUID');
                     $fias->OFFNAME = $xmlObject->getAttribute('OFFNAME');

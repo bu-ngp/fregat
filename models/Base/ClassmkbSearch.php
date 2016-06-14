@@ -10,13 +10,12 @@ use app\models\Base\Classmkb;
 /**
  * ClassmkbSearch represents the model behind the search form about `app\models\Base\Classmkb`.
  */
-class ClassmkbSearch extends Classmkb
-{
+class ClassmkbSearch extends Classmkb {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id', 'parent_id', 'node_count'], 'integer'],
             [['name', 'code', 'parent_code', 'additional_info'], 'safe'],
@@ -26,8 +25,7 @@ class ClassmkbSearch extends Classmkb
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class ClassmkbSearch extends Classmkb
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Classmkb::find();
 
         // add conditions that should always apply here
@@ -57,6 +54,8 @@ class ClassmkbSearch extends Classmkb
             return $dataProvider;
         }
 
+        $query->andFilterWhere(['node_count' => 0]);
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -65,10 +64,11 @@ class ClassmkbSearch extends Classmkb
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'code', $this->code])
-            ->andFilterWhere(['like', 'parent_code', $this->parent_code])
-            ->andFilterWhere(['like', 'additional_info', $this->additional_info]);
+                ->andFilterWhere(['like', 'code', $this->code])
+                ->andFilterWhere(['like', 'parent_code', $this->parent_code])
+                ->andFilterWhere(['like', 'additional_info', $this->additional_info]);
 
         return $dataProvider;
     }
+
 }

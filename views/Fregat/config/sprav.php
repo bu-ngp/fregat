@@ -37,6 +37,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     <?= Html::a('<i class="glyphicon glyphicon-book"></i> Шаблоны актов осмотра материальной ценности', ['//Fregat/reason/index'], ['class' => 'btn btn-default']) ?>
                 </li>
             <?php endif; ?>
+            <?php if (Yii::$app->user->can('GlaukUserPermission')): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-tint"></i> Препараты', ['//Base/preparat/index'], ['class' => 'btn btn-default']) ?>
+                </li>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-heart-empty"></i> МКБ-10', ['//Base/classmkb/index'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
         </ul>
     </div>
 </div>

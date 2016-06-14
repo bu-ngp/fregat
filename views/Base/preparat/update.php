@@ -1,21 +1,25 @@
 <?php
 
 use yii\helpers\Html;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Base\Preparat */
 
-$this->title = 'Update Preparat: ' . $model->preparat_id;
-$this->params['breadcrumbs'][] = ['label' => 'Preparats', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->preparat_id, 'url' => ['view', 'id' => $model->preparat_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Обновить препарат';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+    'model' => $model,
+]);
 ?>
 <div class="preparat-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

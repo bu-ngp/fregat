@@ -1,33 +1,48 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\dynagrid\DynaGrid;
+use app\func\Proc;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Base\PreparatSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Preparats';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Препараты';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="preparat-index">
+    <?php
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'preparatgrid'],
+                'columns' => Proc::DGcols([
+                    'columns' => [
+                        'preparat_name',
+                    ],
+                    'buttons' => array_merge(
+                            empty($foreign) ? [] : [
+                                'choose' => function ($url, $model, $key) use ($foreign, $patienttype) {
+                                    $customurl = Url::to([$foreign['url'], 'patienttype' => $patienttype, 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['preparat_id']]]);
+                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                                }], Yii::$app->user->can('PreparatEdit') ? [
+                                        'update' => ['Base/preparat/update', 'preparat_id'],
+                                        'delete' => ['Base/preparat/delete', 'preparat_id'],
+                                            ] : []
+                            ),
+                        ]),
+                        'gridOptions' => [
+                            'dataProvider' => $dataProvider,
+                            'filterModel' => $searchModel,
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-tint"></i> ' . $this->title,
+                                'before' => Yii::$app->user->can('PreparatEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                            ],
+                        ]
+            ]));
+            ?>
 
-    <p>
-        <?= Html::a('Create Preparat', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'preparat_id',
-            'preparat_name',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
 </div>

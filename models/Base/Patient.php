@@ -38,6 +38,9 @@ class Patient extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
+            [['patient_username'], 'filter', 'filter' => function($value) {
+            return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+        }],
             [['patient_fam', 'patient_im', 'patient_dr', 'patient_pol', 'patient_username'], 'required'],
             [['patient_dr', 'patient_lastchange'], 'safe'],
             [['patient_pol'], 'integer'],
@@ -73,7 +76,7 @@ class Patient extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGlaukuchets() {
-        return $this->hasMany(Glaukuchet::className(), ['id_patient' => 'patient_id']);
+        return $this->hasOne(Glaukuchet::className(), ['id_patient' => 'patient_id']);
     }
 
     /**

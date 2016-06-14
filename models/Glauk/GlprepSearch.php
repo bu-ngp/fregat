@@ -10,13 +10,12 @@ use app\models\Glauk\Glprep;
 /**
  * GlprepSearch represents the model behind the search form about `app\models\Glauk\Glprep`.
  */
-class GlprepSearch extends Glprep
-{
+class GlprepSearch extends Glprep {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['glprep_id', 'id_glaukuchet', 'id_preparat'], 'integer'],
         ];
@@ -25,8 +24,7 @@ class GlprepSearch extends Glprep
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -38,8 +36,7 @@ class GlprepSearch extends Glprep
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Glprep::find();
 
         // add conditions that should always apply here
@@ -48,21 +45,36 @@ class GlprepSearch extends Glprep
             'query' => $query,
         ]);
 
-        $this->load($params);
+        $query->joinWith([
+            'idPreparat' => function($query) {
+                $query->from(['idPreparat' => 'preparat']);
+            }]);
 
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+                $this->load($params);
+                $this->id_glaukuchet = $params['id'];
+
+                if (!$this->validate()) {
+                    // uncomment the following line if you do not want to return any records when validation fails
+                    // $query->where('0=1');
+                    return $dataProvider;
+                }
+
+                // grid filtering conditions
+                $query->andFilterWhere([
+                    'glprep_id' => $this->glprep_id,
+                    'id_glaukuchet' => $this->id_glaukuchet,
+                    'id_preparat' => $this->id_preparat,
+                ]);
+
+                $query->andFilterWhere(['LIKE', 'idPreparat.preparat_name', $this->getAttribute('idPreparat.preparat_name')]);
+
+                $dataProvider->sort->attributes['idPreparat.preparat_name'] = [
+                    'asc' => ['idPreparat.preparat_name' => SORT_ASC],
+                    'desc' => ['idPreparat.preparat_name' => SORT_DESC],
+                ];
+
+                return $dataProvider;
+            }
+
         }
-
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'glprep_id' => $this->glprep_id,
-            'id_glaukuchet' => $this->id_glaukuchet,
-            'id_preparat' => $this->id_preparat,
-        ]);
-
-        return $dataProvider;
-    }
-}
+        

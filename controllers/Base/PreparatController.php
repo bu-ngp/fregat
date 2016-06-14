@@ -8,18 +8,34 @@ use app\models\Base\PreparatSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\func\Proc;
+use yii\filters\AccessControl;
 
 /**
  * PreparatController implements the CRUD actions for Preparat model.
  */
-class PreparatController extends Controller
-{
+class PreparatController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'forglaukuchet'],
+                        'allow' => true,
+                        'roles' => ['GlaukUserPermission'],
+                    ],
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['PreparatEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -29,81 +45,62 @@ class PreparatController extends Controller
         ];
     }
 
-    /**
-     * Lists all Preparat models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new PreparatSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
-    /**
-     * Displays a single Preparat model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+    public function actionForglaukuchet() {
+        $searchModel = new PreparatSearch();
+        $dataProvider = $searchModel->searchforglaukuchet(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'patienttype' => 'glauk',
         ]);
     }
 
-    /**
-     * Creates a new Preparat model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Preparat();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->preparat_id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
 
-    /**
-     * Updates an existing Preparat model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->preparat_id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
 
-    /**
-     * Deletes an existing Preparat model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+    public function actionDelete($id) {
+        $record = $this->findModel($id);
+        if ($record !== null) {
+            if ($record->delete()) {
+                return $this->redirect(['index']);
+            } else {
+                return $this->redirect(['index', 'errordelete' => 'Нельзя удалить']);
+            }
+        } else {
+            return $this->redirect(['index']);
+        }
     }
 
     /**
@@ -113,12 +110,12 @@ class PreparatController extends Controller
      * @return Preparat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Preparat::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

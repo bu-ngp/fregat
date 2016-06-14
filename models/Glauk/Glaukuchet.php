@@ -33,22 +33,23 @@ use app\models\Base\Patient;
  * @property Patient $idPatient
  * @property Glprep[] $glpreps
  */
-class Glaukuchet extends \yii\db\ActiveRecord
-{
+class Glaukuchet extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'glaukuchet';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
+            [['glaukuchet_username'], 'filter', 'filter' => function($value) {
+            return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+        }],
             [['glaukuchet_uchetbegin', 'glaukuchet_detect', 'glaukuchet_stage', 'glaukuchet_lastvisit', 'id_patient', 'id_employee', 'id_class_mkb', 'glaukuchet_username'], 'required'],
             [['glaukuchet_uchetbegin', 'glaukuchet_deregdate', 'glaukuchet_operdate', 'glaukuchet_lastvisit', 'glaukuchet_lastmetabol', 'glaukuchet_lastchange'], 'safe'],
             [['glaukuchet_detect', 'glaukuchet_deregreason', 'glaukuchet_stage', 'glaukuchet_rlocat', 'glaukuchet_invalid', 'id_patient', 'id_employee', 'id_class_mkb'], 'integer'],
@@ -63,8 +64,7 @@ class Glaukuchet extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'glaukuchet_id' => 'Glaukuchet ID',
             'glaukuchet_uchetbegin' => 'Дата постановки на учет',
@@ -89,32 +89,29 @@ class Glaukuchet extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdClassMkb()
-    {
+    public function getIdClassMkb() {
         return $this->hasOne(ClassMkb::className(), ['id' => 'id_class_mkb']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdEmployee()
-    {
+    public function getIdEmployee() {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdPatient()
-    {
+    public function getIdPatient() {
         return $this->hasOne(Patient::className(), ['patient_id' => 'id_patient']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getGlpreps()
-    {
+    public function getGlpreps() {
         return $this->hasMany(Glprep::className(), ['id_glaukuchet' => 'glaukuchet_id']);
     }
+
 }

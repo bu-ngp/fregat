@@ -226,7 +226,7 @@ function ConfirmDialogToAjax(message, url, data, funcafteraccess) {
 }
 
 $(function () {
-    $("input.form-control.setsession").focusout(function () {
+    $("input.form-control.setsession").change(function () {
         SetSession(this);
     });
 

@@ -3,6 +3,7 @@
 namespace app\models\Base;
 
 use Yii;
+use app\models\Glauk\Glprep;
 
 /**
  * This is the model class for table "preparat".
@@ -28,9 +29,9 @@ class Preparat extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['preparat_id', 'preparat_name'], 'required'],
-            [['preparat_id'], 'integer'],
+            [['preparat_name'], 'required'],
             [['preparat_name'], 'string', 'max' => 255],
+            [['preparat_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
         ];
     }
 

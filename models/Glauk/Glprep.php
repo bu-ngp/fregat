@@ -15,34 +15,32 @@ use app\models\Base\Preparat;
  * @property Glaukuchet $idGlaukuchet
  * @property Preparat $idPreparat
  */
-class Glprep extends \yii\db\ActiveRecord
-{
+class Glprep extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'glprep';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['glprep_id', 'id_glaukuchet', 'id_preparat'], 'required'],
-            [['glprep_id', 'id_glaukuchet', 'id_preparat'], 'integer'],
+            [['id_glaukuchet', 'id_preparat'], 'required'],
+            [['id_glaukuchet', 'id_preparat'], 'integer'],
             [['id_glaukuchet'], 'exist', 'skipOnError' => true, 'targetClass' => Glaukuchet::className(), 'targetAttribute' => ['id_glaukuchet' => 'glaukuchet_id']],
             [['id_preparat'], 'exist', 'skipOnError' => true, 'targetClass' => Preparat::className(), 'targetAttribute' => ['id_preparat' => 'preparat_id']],
+            ['id_glaukuchet', 'unique', 'targetAttribute' => ['id_glaukuchet', 'id_preparat'], 'message' => 'Этот препарат уже есть у глаукомного пациента'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'glprep_id' => 'Glprep ID',
             'id_glaukuchet' => 'Карта глаукомного больного',
@@ -53,16 +51,15 @@ class Glprep extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdGlaukuchet()
-    {
+    public function getIdGlaukuchet() {
         return $this->hasOne(Glaukuchet::className(), ['glaukuchet_id' => 'id_glaukuchet']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdPreparat()
-    {
+    public function getIdPreparat() {
         return $this->hasOne(Preparat::className(), ['preparat_id' => 'id_preparat']);
     }
+
 }

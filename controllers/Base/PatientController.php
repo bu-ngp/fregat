@@ -29,12 +29,12 @@ class PatientController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['glaukindex'],
+                        'actions' => ['glaukindex', 'update'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'update'],
+                        'actions' => ['create', 'delete'],
                         'allow' => true,
                         'roles' => ['GlaukOperatorPermission'],
                     ],
@@ -60,57 +60,77 @@ class PatientController extends Controller {
         ]);
     }
 
-    /**
-     * Creates a new Patient model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate() {
+    public function actionCreate($patienttype) {
         $model = new Patient;
-        $Glaukuchet = new Glaukuchet;
         $Fias = new Fias;
         $Fias->scenario = 'citychoose';
+        $dopparams = [];
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-            return $this->redirect(['update', 'id' => $model->patient_id]);
-        } else {
-            return $this->render('create', [
-                        'model' => $model,
-                        'Fias' => $Fias,
-                        'Glaukuchet' => $Glaukuchet,
-            ]);
+        if ($patienttype === 'glauk') {
+            $Glaukuchet = new Glaukuchet;
+            $dopparams['Glaukuchet'] = $Glaukuchet;
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if ($patienttype === 'glauk' && $model->load(Yii::$app->request->post()) && $model->save() && $Glaukuchet->load(array_replace_recursive(Yii::$app->request->post(), ['Glaukuchet' => ['id_patient' => $model->patient_id]])) && $Glaukuchet->save()) {
+                Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+                $transaction->commit();
+                return $this->redirect(['update', 'id' => $model->patient_id, 'patienttype' => $patienttype]);
+            } else {
+                // Откатываем транзакцию
+                $transaction->rollback();
+                return $this->render('create', array_merge([
+                            'model' => $model,
+                            'Fias' => $Fias,
+                            'patienttype' => $patienttype,
+                                        ], $dopparams));
+            }
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception($e->getMessage());
         }
     }
 
-    /**
-     * Updates an existing Patient model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionUpdate($id) {
+    public function actionUpdate($id, $patienttype) {
+        $dopparams = [];
         $model = $this->findModel($id);
-        $Glaukuchet = Glaukuchet::find(['id_patient' => $model->primaryKey])->one();
-        $Glprep = new Glprep;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        } else {
+        $Fias = Fias::FindOne(Fias::findOne($model->id_fias)->PARENTGUID);
+
+        if ($patienttype === 'glauk') {
+            $Glaukuchet = Glaukuchet::findOne(['id_patient' => $model->primaryKey]);
+            $dopparams['Glaukuchet'] = $Glaukuchet;
+            $Glprep = new Glprep;
             $Glprep->load(Yii::$app->request->get(), 'Glprep');
             $Glprep->id_glaukuchet = $Glaukuchet->primaryKey;
             if ($Glprep->validate())
                 $Glprep->save(false);
 
-            $searchModel = new GlprepSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $searchModelglprep = new GlprepSearch();
+            $dataProviderglprep = $searchModelglprep->search(Yii::$app->request->queryParams);
+            $dopparams['Glprep'] = $Glprep;
+            $dopparams['searchModelglprep'] = $searchModelglprep;
+            $dopparams['dataProviderglprep'] = $dataProviderglprep;
+        }
 
-            return $this->render('update', [
-                        'model' => $model,
-                        'Glaukuchet' => $Glaukuchet,
-                        'Glprep' => $Glprep,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
-            ]);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+
+            if ($patienttype === 'glauk' && $model->load(Yii::$app->request->post()) && $model->save() && $Glaukuchet->load(Yii::$app->request->post()) && $Glaukuchet->save()) {
+                $transaction->commit();
+                return $this->redirect([$patienttype . 'index']);
+            } else {
+                // Откатываем транзакцию
+                $transaction->rollback();
+                return $this->render('update', array_merge([
+                            'model' => $model,
+                            'Fias' => $Fias,
+                            'patienttype' => $patienttype,
+                                        ], $dopparams));
+            }
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception($e->getMessage());
         }
     }
 

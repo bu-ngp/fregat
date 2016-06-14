@@ -19,21 +19,19 @@ use Yii;
  * @property Classmkb[] $classmkbs
  * @property Glaukuchet[] $glaukuchets
  */
-class Classmkb extends \yii\db\ActiveRecord
-{
+class Classmkb extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'class_mkb';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['name', 'code'], 'required'],
             [['parent_id', 'node_count'], 'integer'],
@@ -47,8 +45,7 @@ class Classmkb extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'PK',
             'name' => 'Наименование диагноза',
@@ -63,24 +60,37 @@ class Classmkb extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getParent()
-    {
+    public function getParent() {
         return $this->hasOne(Classmkb::className(), ['id' => 'parent_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getClassmkbs()
-    {
+    public function getClassmkbs() {
         return $this->hasMany(Classmkb::className(), ['parent_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getGlaukuchets()
-    {
+    public function getGlaukuchets() {
         return $this->hasMany(Glaukuchet::className(), ['id_class_mkb' => 'id']);
     }
+
+    public function selectinput($params) {
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $query = self::find()
+                ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(" - ", code, name) AS text']))
+                ->where(['node_count' => 0])
+                ->andwhere(['or', ['like', isset($params['init']) ? 'id' : 'code', $params['q'], isset($params['init']) ? false : null], $method === 'all' ? ['like', 'name', $params['q']] : '1<>1'])
+                //    ->andwhere(['or', ['like', isset($params['init']) ? 'id' : 'code', $params['q'], isset($params['init']) ? false : null], [$method === 'all' ? ['like', 'name', $params['q']] : '1<>1']])
+                ->limit(10)
+                ->asArray()
+                ->$method();
+
+        return $query;
+    }
+
 }

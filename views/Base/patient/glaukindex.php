@@ -70,7 +70,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_detect',
                             'filter' => $glaukuchet_detect,
                             'value' => function ($model) use ($glaukuchet_detect) {
-                                return isset($glaukuchet_detect[$model->glaukuchet_detect]) ? $glaukuchet_detect[$model->glaukuchet_detect] : '';
+                                return isset($glaukuchet_detect[$model->glaukuchets->glaukuchet_detect]) ? $glaukuchet_detect[$model->glaukuchets->glaukuchet_detect] : '';
                             },
                         //  'visible' => false,    
                         ],
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_deregreason',
                             'filter' => $glaukuchet_deregreason,
                             'value' => function ($model) use ($glaukuchet_deregreason) {
-                                return isset($glaukuchet_deregreason[$model->glaukuchet_deregreason]) ? $glaukuchet_deregreason[$model->glaukuchet_deregreason] : '';
+                                return isset($glaukuchet_deregreason[$model->glaukuchets->glaukuchet_deregreason]) ? $glaukuchet_deregreason[$model->glaukuchets->glaukuchet_deregreason] : '';
                             },
                         //  'visible' => false,    
                         ],
@@ -91,7 +91,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_stage',
                             'filter' => $glaukuchet_stage,
                             'value' => function ($model) use ($glaukuchet_stage) {
-                                return isset($glaukuchet_stage[$model->glaukuchet_stage]) ? $glaukuchet_stage[$model->glaukuchet_stage] : '';
+                                return isset($glaukuchet_stage[$model->glaukuchets->glaukuchet_stage]) ? $glaukuchet_stage[$model->glaukuchets->glaukuchet_stage] : '';
                             },
                         //  'visible' => false,    
                         ],
@@ -104,7 +104,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_rlocat',
                             'filter' => $glaukuchet_rlocat,
                             'value' => function ($model) use ($glaukuchet_rlocat) {
-                                return isset($glaukuchet_rlocat[$model->glaukuchet_rlocat]) ? $glaukuchet_rlocat[$model->glaukuchet_rlocat] : '';
+                                return isset($glaukuchet_rlocat[$model->glaukuchets->glaukuchet_rlocat]) ? $glaukuchet_rlocat[$model->glaukuchets->glaukuchet_rlocat] : '';
                             },
                         //  'visible' => false,    
                         ],
@@ -112,7 +112,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_invalid',
                             'filter' => $glaukuchet_invalid,
                             'value' => function ($model) use ($glaukuchet_invalid) {
-                                return isset($glaukuchet_invalid[$model->glaukuchet_invalid]) ? $glaukuchet_invalid[$model->glaukuchet_invalid] : '';
+                                return isset($glaukuchet_invalid[$model->glaukuchets->glaukuchet_invalid]) ? $glaukuchet_invalid[$model->glaukuchets->glaukuchet_invalid] : '';
                             },
                         //  'visible' => false,    
                         ],
@@ -151,22 +151,25 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         // 'visible' => false,
                         ],
                     ],
-                        /* 'buttons' => array_merge(
-                          Yii::$app->user->can('BuildEdit') ? [
-                          'update' => ['Fregat/build/update', 'build_id'],
-                          'delete' => ['Fregat/build/delete', 'build_id'],
-                          ] : []
-                          ), */
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-search"></i> ' . $this->title,
-                        'before' => Yii::$app->user->can('GlaukOperatorPermission') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить нового пациента', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                    ],
-                ]
-    ]));
-    ?>
+                    'buttons' => array_merge(
+                            Yii::$app->user->can('GlaukUserPermission') ? [
+                                'update' => function ($url, $model, $key) {
+                                    $customurl = Url::to(['Base/patient/update', 'id' => $model->primarykey, 'patienttype' => 'glauk']);
+                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
+                                }] : [], Yii::$app->user->can('PatientRemoveRole') ? [
+                                        'delete' => ['Base/patient/delete', 'patient_id'],
+                                            ] : []
+                            ),
+                        ]),
+                        'gridOptions' => [
+                            'dataProvider' => $dataProvider,
+                            'filterModel' => $searchModel,
+                            'panel' => [
+                                'heading' => '<i class="glyphicon glyphicon-search"></i> ' . $this->title,
+                                'before' => Yii::$app->user->can('GlaukOperatorPermission') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить нового пациента', ['create', 'patienttype' => 'glauk'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                            ],
+                        ]
+            ]));
+            ?>
 
 </div>

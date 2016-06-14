@@ -10,13 +10,12 @@ use app\models\Base\Preparat;
 /**
  * PreparatSearch represents the model behind the search form about `app\models\Base\Preparat`.
  */
-class PreparatSearch extends Preparat
-{
+class PreparatSearch extends Preparat {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['preparat_id'], 'integer'],
             [['preparat_name'], 'safe'],
@@ -26,8 +25,7 @@ class PreparatSearch extends Preparat
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class PreparatSearch extends Preparat
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Preparat::find();
 
         // add conditions that should always apply here
@@ -66,4 +63,41 @@ class PreparatSearch extends Preparat
 
         return $dataProvider;
     }
-}
+
+    public function searchforglaukuchet($params) {
+        $query = Preparat::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $query->joinWith(['glpreps' => function($query) {
+                $query->from(['glpreps' => 'glprep']);
+            }]);
+
+                $this->load($params);
+
+                if (!$this->validate()) {
+                    // uncomment the following line if you do not want to return any records when validation fails
+                    // $query->where('0=1');
+                    return $dataProvider;
+                }
+
+                $query->where('(glpreps.id_glaukuchet <> :id_glaukuchet or glpreps.id_glaukuchet is null)', [
+                    'id_glaukuchet' => $params['id'],
+                ]);
+
+                // grid filtering conditions
+                $query->andFilterWhere([
+                    'preparat_id' => $this->preparat_id,
+                ]);
+
+                $query->andFilterWhere(['like', 'preparat_name', $this->preparat_name]);
+
+                return $dataProvider;
+            }
+
+        }
+        
