@@ -51,7 +51,12 @@ class GlprepSearch extends Glprep {
             }]);
 
                 $this->load($params);
-                $this->id_glaukuchet = $params['id'];
+
+                if (isset($params['id'])) {
+                    $Glaukuchet = Glaukuchet::findOne(['id_patient' => $params['id']]);
+                    $query->andFilterWhere(['id_glaukuchet' => empty($Glaukuchet) ? -1 : $Glaukuchet->primaryKey]);
+                } else
+                    $query->andFilterWhere(['id_glaukuchet' => -1]);
 
                 if (!$this->validate()) {
                     // uncomment the following line if you do not want to return any records when validation fails

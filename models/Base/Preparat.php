@@ -13,21 +13,19 @@ use app\models\Glauk\Glprep;
  *
  * @property Glprep[] $glpreps
  */
-class Preparat extends \yii\db\ActiveRecord
-{
+class Preparat extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'preparat';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['preparat_name'], 'required'],
             [['preparat_name'], 'string', 'max' => 255],
@@ -38,8 +36,7 @@ class Preparat extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'preparat_id' => 'Preparat ID',
             'preparat_name' => 'Наименование препарата',
@@ -49,8 +46,8 @@ class Preparat extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getGlpreps()
-    {
+    public function getGlpreps() {
         return $this->hasMany(Glprep::className(), ['id_preparat' => 'preparat_id']);
     }
+
 }

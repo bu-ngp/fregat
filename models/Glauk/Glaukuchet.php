@@ -50,7 +50,8 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             [['glaukuchet_username'], 'filter', 'filter' => function($value) {
             return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
         }],
-            [['glaukuchet_uchetbegin', 'glaukuchet_detect', 'glaukuchet_stage', 'glaukuchet_lastvisit', 'id_patient', 'id_employee', 'id_class_mkb', 'glaukuchet_username'], 'required'],
+            [['glaukuchet_uchetbegin', 'glaukuchet_detect', 'glaukuchet_stage', 'glaukuchet_lastvisit', 'id_employee', 'id_class_mkb', 'glaukuchet_username'], 'required'],
+            [['id_patient'], 'required', 'except' => 'forvalidatewithout_id_patient'],
             [['glaukuchet_uchetbegin', 'glaukuchet_deregdate', 'glaukuchet_operdate', 'glaukuchet_lastvisit', 'glaukuchet_lastmetabol', 'glaukuchet_lastchange'], 'safe'],
             [['glaukuchet_detect', 'glaukuchet_deregreason', 'glaukuchet_stage', 'glaukuchet_rlocat', 'glaukuchet_invalid', 'id_patient', 'id_employee', 'id_class_mkb'], 'integer'],
             [['glaukuchet_comment'], 'string', 'max' => 512],
@@ -58,7 +59,20 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             [['id_class_mkb'], 'exist', 'skipOnError' => true, 'targetClass' => ClassMkb::className(), 'targetAttribute' => ['id_class_mkb' => 'id']],
             [['id_employee'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_employee' => 'employee_id']],
             [['id_patient'], 'exist', 'skipOnError' => true, 'targetClass' => Patient::className(), 'targetAttribute' => ['id_patient' => 'patient_id']],
+            ['id_employee', 'CheckBuildByVrach'],
+            [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol'], 'date', 'format' => 'php:Y-m-d'],
+            [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение должно быть меньше или равно значения "' . Yii::$app->formatter->asDate(date('d.m.Y')) . '"'],
         ];
+    }
+
+    public function CheckBuildByVrach($attribute, $params) {
+        if (is_string($attribute)) {
+            $ssf2 = Employee::findOne($this->$attribute)->idperson->auth_user_fullname;
+            if (!isset(Employee::findOne($this->$attribute)->id_build)) {
+                $ssf = '';
+                $this->addError($attribute, 'У врача "' . Employee::findOne($this->$attribute)->idperson->auth_user_fullname . '" не заполнено здание, к которому врач относится');
+            }
+        }
     }
 
     /**
@@ -73,7 +87,7 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             'glaukuchet_deregreason' => 'Причина снятия с учета',
             'glaukuchet_stage' => 'Стадия глаукомы',
             'glaukuchet_operdate' => 'Дата последнего оперативного лечения',
-            'glaukuchet_rlocat' => 'Категория РЛО',
+            'glaukuchet_rlocat' => 'Категория льготного лекарственного обеспечения',
             'glaukuchet_invalid' => 'Группа инвалидности',
             'glaukuchet_lastvisit' => 'Дата последней явки на прием',
             'glaukuchet_lastmetabol' => 'Дата последнего курса метоболической терапии',

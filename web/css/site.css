@@ -138,3 +138,7 @@ table.kv-grid-table>thead>tr>td>input.form-control, table.kv-grid-table>thead>tr
     font-size: 11px;
     height: 25px;
 }
+
+input.inputuppercase {
+    text-transform: uppercase;
+}

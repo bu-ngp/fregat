@@ -85,7 +85,7 @@ class Classmkb extends \yii\db\ActiveRecord {
                 ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(" - ", code, name) AS text']))
                 ->where(['node_count' => 0])
                 ->andwhere(['or', ['like', isset($params['init']) ? 'id' : 'code', $params['q'], isset($params['init']) ? false : null], $method === 'all' ? ['like', 'name', $params['q']] : '1<>1'])
-                //    ->andwhere(['or', ['like', isset($params['init']) ? 'id' : 'code', $params['q'], isset($params['init']) ? false : null], [$method === 'all' ? ['like', 'name', $params['q']] : '1<>1']])
+                ->andwhere(['or', ['like', 'code', 'H40%', false], ['like', 'code', 'Q15.0', false]])
                 ->limit(10)
                 ->asArray()
                 ->$method();

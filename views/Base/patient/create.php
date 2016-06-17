@@ -1,6 +1,11 @@
 <?php
+
+use yii\web\View;
+
 if ($patienttype === 'glauk')
     \Yii::$app->getView()->registerJsFile('js/glaukpatient.js');
+
+\Yii::$app->getView()->registerJsFile('js/jquery.maskedinput.min.js');
 
 use yii\helpers\Html;
 use app\func\Proc;
@@ -10,11 +15,9 @@ use app\func\Proc;
 
 $this->title = 'Создать нового пациента';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => array_merge([$model, $Fias], $patienttype === 'glauk' ? [$Glaukuchet] : []),
+            'model' => array_merge([$model, $Fias], $patienttype === 'glauk' ? [$dopparams['Glaukuchet']] : []),
         ]);
 
-if ($patienttype === 'glauk')
-    $dopparams['Glaukuchet'] = $Glaukuchet;
 ?>
 <div class="patient-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -25,7 +28,7 @@ if ($patienttype === 'glauk')
                 'model' => $model,
                 'Fias' => $Fias,
                 'patienttype' => $patienttype,
-                            ], $dopparams))
+                            ], ['dopparams' => $dopparams]))
             ?>
         </div>
     </div>    

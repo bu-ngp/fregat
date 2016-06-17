@@ -30,7 +30,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
                                 }], Yii::$app->user->can('PreparatEdit') ? [
                                         'update' => ['Base/preparat/update', 'preparat_id'],
-                                        'delete' => ['Base/preparat/delete', 'preparat_id'],
+                                        'deleteajax' => ['Base/preparat/delete', 'preparat_id'],
                                             ] : []
                             ),
                         ]),

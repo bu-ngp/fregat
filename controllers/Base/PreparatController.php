@@ -91,15 +91,10 @@ class PreparatController extends Controller {
     }
 
     public function actionDelete($id) {
-        $record = $this->findModel($id);
-        if ($record !== null) {
-            if ($record->delete()) {
-                return $this->redirect(['index']);
-            } else {
-                return $this->redirect(['index', 'errordelete' => 'Нельзя удалить']);
-            }
-        } else {
-            return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax) {
+            $record = $this->findModel($id);
+            if (!empty($record))
+                echo $record->delete();
         }
     }
 

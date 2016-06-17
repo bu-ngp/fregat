@@ -35,8 +35,8 @@ class Fias extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['OFFNAME', 'SHORTNAME', 'IFNSFL', 'AOLEVEL', 'PARENTGUID'], 'required'],
-            [['AOGUID'], 'required', 'except' => 'citychoose'],
+            [['OFFNAME', 'SHORTNAME', 'IFNSFL', 'AOLEVEL', 'PARENTGUID'], 'required', 'on' => 'fiasvalidate'],
+            [['AOGUID'], 'required', 'on' => 'citychooserequired'],
             [['AOLEVEL'], 'integer'],
             [['AOGUID', 'PARENTGUID'], 'string', 'max' => 36],
             [['OFFNAME'], 'string', 'max' => 120],
@@ -51,7 +51,7 @@ class Fias extends \yii\db\ActiveRecord {
      */
     public function attributeLabels() {
         return [
-            'AOGUID' => 'Aoguid',
+            'AOGUID' => 'Населенный пункт',
             'OFFNAME' => 'Offname',
             'SHORTNAME' => 'Shortname',
             'IFNSFL' => 'Ifnsfl',
@@ -118,6 +118,30 @@ class Fias extends \yii\db\ActiveRecord {
 
             if (!empty($query))
                 $result = $query->CountStreets;
+        }
+        return $result;
+    }
+
+    public static function GetCityByAOGUID($AOGUID) {
+        $result = '';
+        if (!empty($AOGUID)) {
+            $Fias = self::findOne($AOGUID);
+            if (!empty($Fias)) {
+                $Fias2 = Fias::findOne($Fias->PARENTGUID);
+                $result = $Fias2->SHORTNAME . '. ' . $Fias2->OFFNAME . (($Fias->AOLEVEL != 7) ? ', ' . $Fias->SHORTNAME . '. ' . $Fias->OFFNAME : '');
+            }
+        }
+        return $result;
+    }
+
+    public static function GetStreetByAOGUID($AOGUID) {
+        $result = '';
+        if (!empty($AOGUID)) {
+            $Fias = self::findOne($AOGUID);
+            if (!empty($Fias)) {
+                if ($Fias->AOLEVEL == 7)
+                    $result = $Fias->SHORTNAME . '. ' . $Fias->OFFNAME;
+            }
         }
         return $result;
     }

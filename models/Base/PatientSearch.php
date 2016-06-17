@@ -16,8 +16,8 @@ class PatientSearch extends Patient {
     public function attributes() {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
-            /* 'idFias.fias_city',
-              'idFias.fias_street', */
+            'idFias.fias_city',
+            'idFias.fias_street',
             'glaukuchets.glaukuchet_uchetbegin',
             'glaukuchets.glaukuchet_detect',
             'glaukuchets.glaukuchet_deregdate',
@@ -44,8 +44,8 @@ class PatientSearch extends Patient {
         return [
             [['patient_id', 'patient_pol'], 'integer'],
             [['patient_fam', 'patient_im', 'patient_ot', 'patient_dr', 'id_fias', 'patient_dom', 'patient_korp', 'patient_kvartira', 'patient_username', 'patient_lastchange'], 'safe'],
-            [[/* 'idFias.fias_city',
-              'idFias.fias_street', */
+            [['idFias.fias_city',
+            'idFias.fias_street',
             'glaukuchets.glaukuchet_uchetbegin',
             'glaukuchets.glaukuchet_detect',
             'glaukuchets.glaukuchet_deregdate',
@@ -98,6 +98,11 @@ class PatientSearch extends Patient {
                             },
                                 ]);
                             }]);
+                            },
+                                    'idFias' => function($query) {
+                                $query->select(["IF (idFias.AOLEVEL < 7, CONCAT_WS(', ',  CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME), CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)), CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME)) AS fias_city", "IF (idFias.AOLEVEL < 7, '', CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)) AS fias_street"]);
+                                $query->from(['idFias' => 'fias']);
+                                $query->join('LEFT JOIN', 'fias AS idFias2', 'idFias.PARENTGUID = idFias2.AOGUID');
                             }
                                 ]);
                             }
@@ -108,8 +113,10 @@ class PatientSearch extends Patient {
                                 $query->andFilterWhere(['LIKE', 'patient_ot', $this->getAttribute('patient_ot')]);
                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'patient_dr', 'date'));
                                 $query->andFilterWhere(['LIKE', 'patient_pol', $this->getAttribute('patient_pol')]);
-                                /*     $query->andFilterWhere(['LIKE', 'idFias.fias_city', $this->getAttribute('idFias.fias_city')]);
-                                  $query->andFilterWhere(['LIKE', 'idFias.fias_street', $this->getAttribute('idFias.fias_street')]); */
+                                if (!empty($this->getAttribute('idFias.fias_city')))
+                                    $query->andFilterWhere(['or', ['and', ['LIKE', 'idFias.OFFNAME', $this->getAttribute('idFias.fias_city')], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.OFFNAME', $this->getAttribute('idFias.fias_city')], 'idFias.AOLEVEL >= 7']]);
+                                if (!empty($this->getAttribute('idFias.fias_street')))
+                                    $query->andFilterWhere(['and', ['LIKE', 'idFias.OFFNAME', $this->getAttribute('idFias.fias_street')], 'idFias.AOLEVEL >= 7']);
                                 $query->andFilterWhere(['LIKE', 'patient_dom', $this->getAttribute('patient_dom')]);
                                 $query->andFilterWhere(['LIKE', 'patient_korp', $this->getAttribute('patient_korp')]);
                                 $query->andFilterWhere(['LIKE', 'patient_kvartira', $this->getAttribute('patient_kvartira')]);
@@ -135,6 +142,16 @@ class PatientSearch extends Patient {
                             }
 
                             private function glaukSort(&$dataProvider) {
+                                $dataProvider->sort->attributes['idFias.fias_city'] = [
+                                    'asc' => ["IF (idFias.AOLEVEL < 7, idFias.OFFNAME, idFias2.OFFNAME)" => SORT_ASC],
+                                    'desc' => ["IF (idFias.AOLEVEL < 7, idFias.OFFNAME, idFias2.OFFNAME)" => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['idFias.fias_street'] = [
+                                    'asc' => ["IF (idFias.AOLEVEL < 7, '', idFias.OFFNAME)" => SORT_ASC],
+                                    'desc' => ["IF (idFias.AOLEVEL < 7, '', idFias.OFFNAME)" => SORT_DESC],
+                                ];
+
                                 $dataProvider->sort->attributes['glaukuchets.glaukuchet_uchetbegin'] = [
                                     'asc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_ASC],
                                     'desc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_DESC],
@@ -246,7 +263,7 @@ class PatientSearch extends Patient {
                                 $this->glaukSort($dataProvider);
 
                                 if (empty($params['sort']))
-                                    $query->orderBy('patient_lastchange desc');
+                                    $query->orderBy('glaukuchets.glaukuchet_lastchange desc');
 
                                 return $dataProvider;
                             }

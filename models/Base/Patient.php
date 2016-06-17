@@ -42,6 +42,11 @@ class Patient extends \yii\db\ActiveRecord {
             return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
         }],
             [['patient_fam', 'patient_im', 'patient_dr', 'patient_pol', 'patient_username'], 'required'],
+            [['patient_fam', 'patient_im', 'patient_ot'], 'filter', 'filter' => function($value) {
+            return mb_strtoupper($value, 'UTF-8');
+        }],
+            [['patient_dr'], 'date', 'format' => 'php:Y-m-d'],
+            [['patient_dr'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение должно быть меньше или равно значения "' . Yii::$app->formatter->asDate(date('d.m.Y')) . '"'],
             [['patient_dr', 'patient_lastchange'], 'safe'],
             [['patient_pol'], 'integer'],
             [['patient_fam', 'patient_im', 'patient_ot'], 'string', 'max' => 255],
@@ -49,6 +54,9 @@ class Patient extends \yii\db\ActiveRecord {
             [['patient_dom', 'patient_korp', 'patient_kvartira'], 'string', 'max' => 10],
             [['patient_username'], 'string', 'max' => 128],
             [['id_fias'], 'exist', 'skipOnError' => true, 'targetClass' => Fias::className(), 'targetAttribute' => ['id_fias' => 'AOGUID']],
+            [['id_fias', 'patient_dom', 'patient_kvartira'], 'required', 'on' => 'streetrequired'],
+            [['patient_dom', 'patient_kvartira'], 'required', 'on' => 'nostreetrequired'], // не используется
+            [['patient_fam'], 'unique', 'targetAttribute' => ['patient_fam', 'patient_im', 'patient_ot', 'patient_dr', 'patient_pol'], 'message' => 'Пациент с такими ФИО, датой рождения и полом уже есть в базе данных'],
         ];
     }
 
@@ -84,6 +92,18 @@ class Patient extends \yii\db\ActiveRecord {
      */
     public function getIdFias() {
         return $this->hasOne(Fias::className(), ['AOGUID' => 'id_fias']);
+    }
+
+    public function loadWithDisabledInputs($data, $formName = NULL) {
+        if (!isset($formName))
+            $formName = $this->formName();
+
+        foreach ($this->attributes() as $attr) {
+            $a = '';
+            $this->$attr = isset($_POST[$formName][$attr]) ? $_POST[$formName][$attr] : NULL;
+        }
+
+        return isset($_POST[$formName]);
     }
 
 }

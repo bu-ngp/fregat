@@ -201,11 +201,11 @@ $(document).ajaxComplete(function (event, xhr, settings) {
 
 /* Диалог подтверждения перед выполнением Ajax запроса*/
 function ConfirmDialogToAjax(message, url, data, funcafteraccess) {
-    if (data == "undefined")
+    if (typeof (data) === "undefined")
         data = {};
-    if (message == "undefined")
+    if (typeof (message) == "undefined")
         message = "Вы уверены что хотите выполнить это действие?";
-    if (url != "undefined") {
+    if (typeof (url) != "undefined") {
         bootbox.confirm(message, function (result) {
             if (result) {
                 $.ajax({
@@ -225,12 +225,54 @@ function ConfirmDialogToAjax(message, url, data, funcafteraccess) {
     }
 }
 
+/* Диалог подтверждения удаления записи посредством pjax и обновлением грида*/
+function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess) {
+    if (typeof (data) === "undefined")
+        data = {};
+    if (typeof (message) === "undefined")
+        message = "Вы уверены что хотите выполнить это действие?";
+    if (typeof (url) !== "undefined") {
+        bootbox.confirm(message, function (result) {
+            if (result) {
+                if (typeof (gridpjax) === "undefined" && $("div[data-pjax-container]").length == 1)
+                    gridpjax = $("div[data-pjax-container]").attr("id");
+                else if (typeof (gridpjax) !== "undefined")
+                    gridpjax = gridpjax + "-pjax";
+
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: data,
+                    success: function () {
+
+                        if (typeof (gridpjax) !== "undefined")
+                            $.pjax.reload({container: "#" + gridpjax});
+
+                        if ((typeof (funcafteraccess) === "function"))
+                            funcafteraccess.apply($(this));
+                    },
+                    error: function (err) {
+                        if (err.status == "500" && (err.responseText).indexOf("Integrity constraint violation") >= 0)
+                            bootbox.alert("Удаление записи невозможно, т. к. она имеется в других таблицах!");
+                        else
+                            console.error("ConfirmDeleteDialogToAjax: " + url);
+                    }
+                });
+            }
+        });
+    }
+}
+
 $(function () {
     $("input.form-control.setsession").change(function () {
         SetSession(this);
     });
 
     $("select.form-control.setsession").change(function () {
+        SetSession(this);
+    });
+
+    $("textarea.form-control.setsession").change(function () {
         SetSession(this);
     });
 

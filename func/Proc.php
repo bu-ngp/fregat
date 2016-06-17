@@ -176,6 +176,19 @@ class Proc {
                 };
             }
 
+            // Если есть кнопка удаления записи посредством ajax
+            if (isset($params['buttons']['deleteajax']) && is_array($params['buttons']['deleteajax'])) {
+                $params['buttons']['deleteajax'] = function ($url, $model) use ($params) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => $model[$params['buttons']['deleteajax'][1]]]);
+                    return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
+                                'type' => 'button',
+                                'title' => 'Удалить',
+                                'class' => 'btn btn-xs btn-danger',
+                                'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '"' . (isset($params['buttons']['deleteajax'][2]) ? ', "' . $params['buttons']['deleteajax'][2] . '"' : '') . ')'
+                    ]);
+                };
+            }
+
             $mascolumns = isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [];
             $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons']) > 0 ? [
                 [ 'class' => 'kartik\grid\ActionColumn',
@@ -210,6 +223,7 @@ class Proc {
             $methodparams = isset($params['methodparams']) ? $params['methodparams'] : '';
             $ajaxparams = isset($params['ajaxparams']) && is_array($params['ajaxparams']) ? $params['ajaxparams'] : [];
             $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
+            $form = isset($params['form']) ? $params['form'] : '';
 
             $ajaxparamsString = '';
             foreach ($ajaxparams as $key => $value)
@@ -234,7 +248,7 @@ class Proc {
 
                 return array_merge([
                     'initValueText' => !empty($initrecord) ? implode(', ', $initrecord) : '',
-                    'options' => ['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true],
+                    'options' => array_merge(['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form]),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'pluginOptions' => [
                         'allowClear' => true,

@@ -14,6 +14,7 @@ use app\models\Glauk\Glprep;
 use app\models\Glauk\Glaukuchet;
 use app\models\Glauk\GlprepSearch;
 use app\models\Base\Fias;
+use yii\base\Model;
 
 /**
  * PatientController implements the CRUD actions for Patient model.
@@ -34,9 +35,14 @@ class PatientController extends Controller {
                         'roles' => ['GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['create'],
                         'allow' => true,
                         'roles' => ['GlaukOperatorPermission'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['PatientRemoveRole'],
                     ],
                 ],
             ],
@@ -63,17 +69,37 @@ class PatientController extends Controller {
     public function actionCreate($patienttype) {
         $model = new Patient;
         $Fias = new Fias;
-        $Fias->scenario = 'citychoose';
-        $dopparams = [];
+        $Fias->AOGUID = '0bf0f4ed-13f8-446e-82f6-325498808076';
+
+        if ($Fias->load(Yii::$app->request->post())) {
+            if (!empty($Fias->AOGUID)) {
+                $Fias = Fias::findOne($Fias->AOGUID);
+
+                if ($Fias->AOLEVEL > 4 && $Fias->AOLEVEL < 7) {
+                    $model->id_fias = $Fias->AOGUID;
+                    $model->scenario = 'nostreetrequired';
+                } else
+                    $model->scenario = 'streetrequired';
+            }
+        }
+        $Fias->scenario = 'citychooserequired';
+
+        $dopparams = ['dopparams' => []];
 
         if ($patienttype === 'glauk') {
             $Glaukuchet = new Glaukuchet;
-            $dopparams['Glaukuchet'] = $Glaukuchet;
+            $Glaukuchet->glaukuchet_lastvisit = date('Y-m-d');
+            $Glaukuchet->scenario = 'forvalidatewithout_id_patient';
+            $dopparams['dopparams']['Glaukuchet'] = $Glaukuchet;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if ($patienttype === 'glauk' && $model->load(Yii::$app->request->post()) && $model->save() && $Glaukuchet->load(array_replace_recursive(Yii::$app->request->post(), ['Glaukuchet' => ['id_patient' => $model->patient_id]])) && $Glaukuchet->save()) {
+            if ($patienttype === 'glauk' && $model->load(Yii::$app->request->post()) && $Glaukuchet->load(Yii::$app->request->post()) && Model::validateMultiple([$model, $Glaukuchet, $Fias])) {
+                $model->save(false);
+                $Glaukuchet->id_patient = $model->primaryKey;
+                $Glaukuchet->save(false);
+
                 Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
                 $transaction->commit();
                 return $this->redirect(['update', 'id' => $model->patient_id, 'patienttype' => $patienttype]);
@@ -93,32 +119,87 @@ class PatientController extends Controller {
     }
 
     public function actionUpdate($id, $patienttype) {
-        $dopparams = [];
+        $dopparams = ['dopparams' => []];
         $model = $this->findModel($id);
-        $Fias = Fias::FindOne(Fias::findOne($model->id_fias)->PARENTGUID);
+        $modelloaded = $model->load(Yii::$app->request->post());
+        $GlaukuchetIsNew = false;
+
+        // Адрес
+        $Fias = new Fias;
+
+        // отправлена форма
+        if (isset($_POST['Fias']['AOGUID'])) {
+
+            // город не заполнен
+            if (empty($_POST['Fias']['AOGUID'])) {
+                $model->id_fias = NULL;
+                $model->patient_dom = NULL;
+                $model->patient_korp = NULL;
+                $model->patient_kvartira = NULL;
+            } else {// город заполнен (Если улица есть, иначе Если улицы нет)
+                $Fias->AOGUID = $_POST['Fias']['AOGUID'];
+                // Если есть улицы
+                if (Fias::Checkstreets($_POST['Fias']['AOGUID']) > 0) {
+                    // Если улица заполнена, иначе Если улица не заполнена
+                    $model->id_fias = isset($_POST['Patient']['id_fias']) ? $_POST['Patient']['id_fias'] : NULL;
+                } else  // Если улиц нет
+                    $model->id_fias = Fias::findOne($_POST['Fias']['AOGUID'])->AOGUID;
+
+                $model->id_fias = Fias::Checkstreets($_POST['Fias']['AOGUID']) > 0 /* isset($_POST['Patient']['id_fias']) */ ? $_POST['Patient']['id_fias'] : Fias::findOne($_POST['Fias']['AOGUID'])->AOGUID;
+                $model->scenario = 'streetrequired';
+            }
+        } elseif (!empty($model->id_fias)) { // просто загрузка страницы, если адрес заполнен
+            $address = Fias::findOne($model->id_fias);
+
+            // Если адрес Улица, иначе Если адрес поселок без улиц
+            $Fias = $address->AOLEVEL == 7 ? Fias::findOne($address->PARENTGUID) : $address;
+        }
 
         if ($patienttype === 'glauk') {
             $Glaukuchet = Glaukuchet::findOne(['id_patient' => $model->primaryKey]);
-            $dopparams['Glaukuchet'] = $Glaukuchet;
-            $Glprep = new Glprep;
-            $Glprep->load(Yii::$app->request->get(), 'Glprep');
-            $Glprep->id_glaukuchet = $Glaukuchet->primaryKey;
-            if ($Glprep->validate())
-                $Glprep->save(false);
 
+            if (empty($Glaukuchet)) {
+                $Glaukuchet = new Glaukuchet;
+                $Glaukuchet->id_patient = $model->primaryKey;
+                $GlaukuchetIsNew = true;
+            }
+
+            $dopparams['dopparams']['Glaukuchet'] = $Glaukuchet;
+            if (!$Glaukuchet->isNewRecord) {
+                $Glprep = new Glprep;
+                $Glprep->load(Yii::$app->request->get(), 'Glprep');
+                $Glprep->id_glaukuchet = $Glaukuchet->primaryKey;
+                if ($Glprep->validate())
+                    $Glprep->save(false);
+            }
             $searchModelglprep = new GlprepSearch();
             $dataProviderglprep = $searchModelglprep->search(Yii::$app->request->queryParams);
-            $dopparams['Glprep'] = $Glprep;
-            $dopparams['searchModelglprep'] = $searchModelglprep;
-            $dopparams['dataProviderglprep'] = $dataProviderglprep;
+            $dopparams['dopparams']['Glprep'] = $Glprep;
+            $dopparams['dopparams']['searchModelglprep'] = $searchModelglprep;
+            $dopparams['dopparams']['dataProviderglprep'] = $dataProviderglprep;
         }
+
+        $Fias->scenario = 'citychooserequired';
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
+            if ($patienttype === 'glauk' && $modelloaded && $Glaukuchet->load(Yii::$app->request->post()) && Model::validateMultiple([$model, $Glaukuchet, $Fias])) {
+                $model->save(false);
+                $Glaukuchet->save(false);
 
-            if ($patienttype === 'glauk' && $model->load(Yii::$app->request->post()) && $model->save() && $Glaukuchet->load(Yii::$app->request->post()) && $Glaukuchet->save()) {
                 $transaction->commit();
-                return $this->redirect([$patienttype . 'index']);
+
+                if ($GlaukuchetIsNew) {
+
+
+                    return $this->render('update', array_merge([
+                                'model' => $model,
+                                'Fias' => $Fias,
+                                'patienttype' => $patienttype,
+                                            ], $dopparams));
+                } else {
+                    return $this->redirect([$patienttype . 'index']);
+                }
             } else {
                 // Откатываем транзакцию
                 $transaction->rollback();
@@ -141,9 +222,20 @@ class PatientController extends Controller {
      * @return mixed
      */
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            try {
+                $Glaukuchet = Glaukuchet::findOne(['id_patient' => $id]);
+                if (!empty($Glaukuchet)) {
+                    Glprep::deleteAll(['id_glaukuchet' => $Glaukuchet->primaryKey]);
+                    Glaukuchet::deleteAll(['id_patient' => $id]);
+                }
 
-        return $this->redirect(['index']);
+                echo $this->findModel($id)->delete();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
+        }
     }
 
     /**

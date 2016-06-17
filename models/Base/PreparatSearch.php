@@ -85,8 +85,8 @@ class PreparatSearch extends Preparat {
                     return $dataProvider;
                 }
 
-                $query->where('(glpreps.id_glaukuchet <> :id_glaukuchet or glpreps.id_glaukuchet is null)', [
-                    'id_glaukuchet' => $params['id'],
+                $query->where('preparat_id not in ( select glprep.id_preparat from glprep inner join glaukuchet on glprep.id_glaukuchet = glaukuchet.glaukuchet_id where glaukuchet.id_patient = :patient_id)', [
+                    'patient_id' => $params['id'],
                 ]);
 
                 // grid filtering conditions

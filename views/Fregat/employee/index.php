@@ -16,6 +16,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
+    $patienttype = filter_input(INPUT_GET, 'patienttype');
 
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'employeegrid'],
@@ -29,8 +30,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'choose' => function ($url, $model, $key) use ($foreign) {
-                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
+                                'choose' => function ($url, $model, $key) use ($foreign, $patienttype) {
+                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'patienttype' => $patienttype, $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
                                 }], Yii::$app->user->can('EmployeeEdit') ? [
                                         'update' => ['Fregat/employee/update', 'employee_id'],

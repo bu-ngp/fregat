@@ -41,10 +41,10 @@ class GlprepController extends Controller {
     }
 
     public function actionDelete($id) {
-        $id_glaukuchet = $this->findModel($id)->id_glaukuchet;
-        $this->findModel($id)->delete();
-
-        return $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
+        if (Yii::$app->request->isAjax) {
+            $id_glaukuchet = $this->findModel($id)->id_glaukuchet;
+            echo $this->findModel($id)->delete();
+        }
     }
 
     /**

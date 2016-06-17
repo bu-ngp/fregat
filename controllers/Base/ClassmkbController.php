@@ -25,7 +25,7 @@ class ClassmkbController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinputfordiag'],
+                        'actions' => ['indexglauk', 'selectinputfordiag'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -43,6 +43,16 @@ class ClassmkbController extends Controller {
     public function actionIndex() {
         $searchModel = new ClassmkbSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionIndexglauk() {
+        $searchModel = new ClassmkbSearch();
+        $dataProvider = $searchModel->searchglauk(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
