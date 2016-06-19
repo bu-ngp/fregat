@@ -2,8 +2,6 @@
 if ($patienttype === 'glauk')
     \Yii::$app->getView()->registerJsFile('js/glaukpatient.js');
 
-\Yii::$app->getView()->registerJsFile('js/jquery.maskedinput.min.js');
-
 use yii\helpers\Html;
 use app\func\Proc;
 

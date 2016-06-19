@@ -15,6 +15,7 @@ use app\models\Glauk\Glaukuchet;
 use app\models\Glauk\GlprepSearch;
 use app\models\Base\Fias;
 use yii\base\Model;
+use app\models\Base\PatientFilter;
 
 /**
  * PatientController implements the CRUD actions for Patient model.
@@ -30,7 +31,7 @@ class PatientController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['glaukindex', 'update'],
+                        'actions' => ['glaukindex', 'update', 'toexcel', 'glaukfilter'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -58,11 +59,13 @@ class PatientController extends Controller {
     public function actionGlaukindex() {
         Proc::SetMenuButtons('glauk');
         $searchModel = new PatientSearch();
+        $filter = Proc::SetFilter('PatientSearch', new PatientFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('glaukindex', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'filter' => $filter,
         ]);
     }
 
@@ -235,6 +238,29 @@ class PatientController extends Controller {
                 $transaction->rollback();
                 throw new Exception($e->getMessage());
             }
+        }
+    }
+
+    public function actionToexcel() {
+        $searchModel = new PatientSearch();
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $modelname = $searchModel->formName();
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+        $selectvalues = json_decode($params['selectvalues']);
+
+        Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter);
+    }
+
+    public function actionGlaukfilter() {
+        $model = new PatientFilter();
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('PatientSearch', $model);
+
+            return $this->renderAjax('_glaukfilter', [
+                        'model' => $model,
+            ]);
         }
     }
 

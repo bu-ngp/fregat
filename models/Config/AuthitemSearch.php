@@ -63,7 +63,6 @@ class AuthitemSearch extends Authitem {
                 ->andFilterWhere(['like', 'description', $this->description])
                 ->andFilterWhere(['like', 'rule_name', $this->rule_name])
                 ->andFilterWhere(['like', 'data', $this->data]);
-        $ok = '1';
 
         $filter = Proc::GetFilter('AuthitemSearch', 'AuthitemFilter');
 

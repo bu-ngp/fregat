@@ -106,7 +106,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*   echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -579,65 +579,68 @@ class Proc {
 
     public static function GetAllLabelsFromAR($DataProvider, $fields = null) {
         $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
+        if ($cls_ar instanceof ActiveRecord) {
+            if (!is_array($fields))
+                $fields = $cls_ar->attributes;
+            $labels = [];
+            array_walk($fields, function($value, $key) use (&$labels, $cls_ar) {
+                $labels[$key] = $cls_ar->getAttributeLabel($key);
+            });
+        }
+        return $labels;
+    }
+
+    public static function GetAllDataFromAR($Activerecord, $fields = null) {
+        if (!is_array($fields))
+            $fields = [];
+
+        $data = [];
+        $cls_ar = $Activerecord;
 
         if ($cls_ar instanceof ActiveRecord) {
 
             if (!is_array($fields))
                 $fields = $cls_ar->attributes;
 
-            $labels = [];
+            array_walk($fields, function($value, $key) use (&$data, $cls_ar) {
+                $attr_arr = explode('.', $key);
+                $attr_arr_tmp = $attr_arr;
+                $lastelem = array_pop($attr_arr_tmp);
+                $ar = $cls_ar;
 
-            array_walk($fields, function($value, $key) use (&$labels, $cls_ar) {
-                $keytmp = empty(strpos($key, '.')) ? $key : substr($key, strrpos($key, '.') + 1);
-                $labels[$keytmp] = $cls_ar->getAttributeLabel($key);
+                foreach ($attr_arr_tmp as $relat) {
+                    $cls_ar = $cls_ar->$relat;
+                    if (!isset($cls_ar))
+                        break;
+                }
+
+                $data[$key] = '';
+
+                if (!empty($cls_ar)) {
+                    $result = false;
+                    foreach ($cls_ar->getActiveValidators($lastelem) as $validatorclass)
+                        if ($validatorclass instanceof \yii\validators\DateValidator) {
+                            $result = $validatorclass->type;
+                            break;
+                        }
+
+                    switch ($result) {
+                        case 'date':
+                            $data[$key] = Yii::$app->formatter->asDate($cls_ar->$lastelem);
+                            break;
+                        case 'time':
+                            $data[$key] = Yii::$app->formatter->asTime($cls_ar->$lastelem);
+                            break;
+                        case 'datetime':
+                            $data[$key] = Yii::$app->formatter->asDatetime($cls_ar->$lastelem);
+                            break;
+                        case false:
+                            $data[$key] = $cls_ar->$lastelem;
+                            break;
+                    }
+                }
             });
         }
-
-        return $labels;
-    }
-
-    public static function GetAllDataFromAR($Activerecord, $fields = null, $data = null) {
-        if (!is_array($fields))
-            $fields = [];
-
-        if (!is_array($data)) {
-            $data = array_intersect_key($Activerecord->toArray(), $fields);
-            /*    $tmp2 = [];
-              array_walk($data, function(&$value, $key) use (&$tmp2, $Activerecord) {
-              $tmp2[$key] = [
-              'label' => isset($Activerecord[$key]) ? $Activerecord->getAttributeLabel($key) : $key,
-              'value' => $value
-              ];
-              });
-
-              $data = $tmp2; */
-        }
-
-        foreach ($Activerecord->getRelatedRecords() as $relat => $ar_relat)
-            if ($ar_relat instanceof ActiveRecord) {
-                $tmp = [];
-
-                array_walk($fields, function(&$value, $key) use ($relat, &$tmp) {
-                    if (strpos($key, $relat) === 0)
-                        $key = substr($key, strlen($relat) + 1);
-                    $tmp[$key] = $value;
-                });
-
-                $dop = array_intersect_key($ar_relat->toArray(), $tmp);
-
-                /*    $tmp3 = [];
-                  array_walk($dop, function(&$value, $key) use (&$tmp3, $ar_relat) {
-                  $tmp3[$key] = [
-                  'label' => isset($ar_relat[$key]) ? $ar_relat->getAttributeLabel($key) : $key,
-                  'value' => $value
-                  ];
-                  });
-
-                  $dop = $tmp3; */
-
-                $data = array_merge($data, $dop);
-                $data = self::GetAllDataFromAR($ar_relat, $tmp, $data);
-            }
 
         return $data;
     }
@@ -664,44 +667,15 @@ class Proc {
             )
         );
 
-        //      var_dump(Yii::$app->request->queryParams);
-
-        $params = Yii::$app->request->queryParams;
-        $inputdata = json_decode($params['inputdata']);
-        $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
-        $selectvalues = (array) $selectvalues;
-
-        $dataProvider->pagination = false;
-        $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
-        $filter = 'Фильтр:';
-
-        foreach ($fields[$modelName] as $attr => $value) {
-            $val_result = $value;
-            if (!empty($value)) {
-                $attrlabel = strpos($attr, '.') === false ? $attr : substr($attr, strrpos($attr, '.') + 1);
-
-                if (isset($selectvalues[$modelName . '[' . $attr . ']']))
-                    $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
-
-                $filter .= ' ' . $labels[$attrlabel] . ': "' . $val_result . '";';
-            }
-        }
-
-        if ($ModelFilter instanceof Model) {
-            $dopfilter = self::ConstructFilterOutput($ModelFilter);
-            if (!empty($dopfilter))
-                $filter .= ' ' . $dopfilter;
-        }
-
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
         $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 14
             ],
-            'alignment' => array(
-                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
-            )
+                /* 'alignment' => array(
+                  'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+                  ) */
         ]);
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
@@ -711,22 +685,51 @@ class Proc {
             ]
         ]);
 
-        $i = -1;
-        $r = 5;
-        foreach ($labels as $attr => $label) {
-            $i++;
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $label);
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($font);
+        //      var_dump(Yii::$app->request->queryParams);
+
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
+        $selectvalues = (array) $selectvalues;
+
+        $dataProvider->pagination = false;
+        $filter = 'Фильтр:';
+
+        foreach ($fields[$modelName] as $attr => $value) {
+            $val_result = $value;
+            if (!empty($value)) {
+                if (isset($selectvalues[$modelName . '[' . $attr . ']']))
+                    $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
+
+                $filter .= ' ' . $labels[$attr] . ': "' . $val_result . '";';
+            }
         }
 
-        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
+        if ($ModelFilter instanceof Model) {
+            $dopfilter = self::ConstructFilterOutput($ModelFilter);
+            if (!empty($dopfilter))
+                $filter .= ' ' . $dopfilter;
+        }
 
-        foreach ($dataProvider->getModels() as $ar) {
+        $i = -1;
+        $r = 5;
+
+        foreach ($dataProvider->getModels() as $row => $ar) {
             $r++;
+            // Названия полей
+            if ($row === 0) {
+                $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+                foreach ($labels as $label) {
+                    $i++;
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
+                }
+            }
+
             $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
             $i = -1;
-            foreach (array_keys($labels) as $attr) {
+            foreach (array_keys($data) as $attr) {
                 $i++;
                 if (isset($selectvalues[$modelName . '[' . $attr . ']']))
                     $data[$attr] = $selectvalues[$modelName . '[' . $attr . ']'][$data[$attr]];
@@ -735,9 +738,11 @@ class Proc {
             }
         }
 
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
+
         /* Авторазмер колонок Excel */
         $i = -1;
-        foreach ($labels as $attr => $label) {
+        foreach (array_keys($data) as $attr) {
             $i++;
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
         }
@@ -806,7 +811,6 @@ class Proc {
             $dofilterstring = false;
             $session = new Session;
             $session->open();
-            $fmodel = substr($ModelFilter->className(), strrpos($ModelFilter->className(), '\\') + 1);
             if (isset(Yii::$app->request->queryParams[$ModelGridName]['_filter'])) {
                 $filterfield = Yii::$app->request->queryParams[$ModelGridName]['_filter'];
                 parse_str($filterfield, $filterparams);
@@ -824,7 +828,7 @@ class Proc {
             if ($dofilterstring) {
                 $filter = self::ConstructFilterOutput($ModelFilter);
                 if (!empty($filter))
-                    $filter = '<div class="panel panel-warning"><div class="panel-heading">Доп фильтр:' . $filter . '<button id="' . $fmodel . '_resetfilter" type="button" class="close" aria-hidden="true">&times;</button></div></div>';
+                    $filter = '<div class="panel panel-warning"><div class="panel-heading">Доп фильтр:' . $filter . '<button id="' . $ModelFilter->formName() . '_resetfilter" type="button" class="close" aria-hidden="true">&times;</button></div></div>';
             }
 
             $session->close();
@@ -836,11 +840,12 @@ class Proc {
     // Заполняем форму Фильтра из сессии
     public static function PopulateFilterForm($ModelGridName, &$ModelFilter) {
         if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
-            $ModelFilterName = substr($ModelFilter->className(), strrpos($ModelFilter->className(), '\\') + 1);
             $session = new Session;
             $session->open();
-            if (isset($session['_filter'][$ModelGridName][$ModelFilterName]))
-                $ModelFilter->load($session['_filter'][$ModelGridName]);
+            if (isset($session['_filter'][$ModelGridName][$ModelFilter->formName()]))
+                return $ModelFilter->load($session['_filter'][$ModelGridName]);
+            else
+                return false;
             $session->close();
         } else
             throw new HttpException(500, 'Ошибка при передачи параметров в function PopulateFilterForm');
@@ -870,14 +875,36 @@ class Proc {
         if (isset($session['_filter'])) {
             foreach ($session['_filter'] as $filtform) {
                 foreach ($filtform as $filtformname => $fields) {
-                    $fmodel = substr($AR->className(), strrpos($AR->className(), '\\') + 1);
-                    if ($filtformname === $fmodel) {
+                    if ($filtformname === $AR->formName()) {
                         foreach ($fields as $attr => $value)
-                            if (strpos($attr, '_mark') === strlen($attr) - 5) {
-                                if ($value === '1')
-                                    $filter .= ' ' . $AR->attributeLabels()[$attr] . ';';
-                            } else
-                                $filter .= ' ' . $AR->attributeLabels()[$attr] . ' = "' . $value . '"';
+                            if (!empty($value) && strpos($attr, '_znak') !== strlen($attr) - 5)
+                                if (strpos($attr, '_mark') === strlen($attr) - 5) {
+                                    if ($value === '1')
+                                        $filter .= ' ' . $AR->attributeLabels()[$attr] . ';';
+                                } elseif (!isset($fields[$attr . '_znak']) || isset($fields[$attr . '_znak']) && in_array($fields[$attr . '_znak'], ['>=', '<=', '='])) {
+                                    $znak = (isset($fields[$attr . '_znak'])) ? $fields[$attr . '_znak'] : '=';
+
+                                    $result = false;
+                                    foreach ($AR->getActiveValidators($attr) as $validatorclass)
+                                        if ($validatorclass instanceof \yii\validators\DateValidator) {
+                                            $result = $validatorclass->type;
+                                            break;
+                                        }
+
+                                    switch ($result) {
+                                        case 'date':
+                                            $value = Yii::$app->formatter->asDate($value);
+                                            break;
+                                        case 'time':
+                                            $value = Yii::$app->formatter->asTime($value);
+                                            break;
+                                        case 'datetime':
+                                            $value = Yii::$app->formatter->asDatetime($value);
+                                            break;
+                                    }
+
+                                    $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $value . '";';
+                                }
                     }
                 }
             }

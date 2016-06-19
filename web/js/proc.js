@@ -264,15 +264,7 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
 }
 
 $(function () {
-    $("input.form-control.setsession").change(function () {
-        SetSession(this);
-    });
-
-    $("select.form-control.setsession").change(function () {
-        SetSession(this);
-    });
-
-    $("textarea.form-control.setsession").change(function () {
+    $("input.form-control.setsession, select.form-control.setsession, textarea.form-control.setsession").change(function () {
         SetSession(this);
     });
 

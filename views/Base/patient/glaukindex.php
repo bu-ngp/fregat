@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile('/js/patientglaukfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
@@ -49,20 +50,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         ],
                         [
                             'attribute' => 'idFias.fias_city',
-                            'value' => function ($model, $key, $index, $column) {
-                                return \app\models\Base\Fias::GetCityByAOGUID($model->id_fias);
-                            },
                         //  'visible' => false,
                         ],
                         [
                             'attribute' => 'idFias.fias_street',
-                            'value' => function ($model, $key, $index, $column) {
-                                return \app\models\Base\Fias::GetStreetByAOGUID($model->id_fias);
-                            },
                         //  'visible' => false,
                         ],
-                        /* 'idFias.fias_city',
-                          'idFias.fias_street', */
                         [
                             'attribute' => 'patient_dom',
                         //  'visible' => false,
@@ -182,8 +175,39 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 'heading' => '<i class="glyphicon glyphicon-search"></i> ' . $this->title,
                                 'before' => Yii::$app->user->can('GlaukOperatorPermission') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить нового пациента', ['create', 'patienttype' => 'glauk'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                             ],
+                            'toolbar' => [
+                                'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['glaukfilter'], [
+                                        'title' => 'Дополнительный фильтр',
+                                        'class' => 'btn btn-default filter_button'
+                                    ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-floppy-disk"></i>', [
+                                        'id' => 'Patientglaukexcel',
+                                        'type' => 'button',
+                                        'title' => 'Экспорт в Excel',
+                                        'class' => 'btn btn-default button_export',
+                                        'onclick' => 'ExportExcel("PatientSearch","' . \yii\helpers\Url::toRoute('Base/patient/toexcel') . '", $(this)[0].id );'
+                                    ]) . '{export}{dynagrid}',
+                                ],
+                            ],
+                            'afterHeader' => $filter,
+                        /*   'pjaxSettings' => [
+                          'options' => [
+                          'timeout' => false,
+                          'clientOptions' => [
+                          'method' => 'POST',
+                          ],
+                          ],
+                          ], */
                         ]
             ]));
+            ?>
+
+            <?php
+            yii\bootstrap\Modal::begin([
+                'header' => 'Дополнительный фильтр',
+                'id' => 'PatientFilter',
+                'options' => ['class' => 'modal_filter',],
+            ]);
+            yii\bootstrap\Modal::end();
             ?>
 
 </div>

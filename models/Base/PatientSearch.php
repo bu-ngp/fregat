@@ -100,7 +100,7 @@ class PatientSearch extends Patient {
                             }]);
                             },
                                     'idFias' => function($query) {
-                                $query->select(["IF (idFias.AOLEVEL < 7, CONCAT_WS(', ',  CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME), CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)), CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME)) AS fias_city", "IF (idFias.AOLEVEL < 7, '', CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)) AS fias_street"]);
+                                $query->select(["idFias.AOGUID, IF (idFias.AOLEVEL < 7, CONCAT_WS(', ',  CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME), CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)), CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME)) AS fias_city", "IF (idFias.AOLEVEL < 7, '', CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)) AS fias_street"]);
                                 $query->from(['idFias' => 'fias']);
                                 $query->join('LEFT JOIN', 'fias AS idFias2', 'idFias.PARENTGUID = idFias2.AOGUID');
                             }
@@ -233,6 +233,38 @@ class PatientSearch extends Patient {
                                 ];
                             }
 
+                            private function glaukDopFilter(&$query) {
+                                $filter = Proc::GetFilter($this->formName(), 'PatientFilter');
+
+                                if (!empty($filter)) {
+
+                                    $attr = 'patient_fam';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_im';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_ot';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_dr';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_vozrast';
+                                    $znak = 'patient_vozrast_znak';
+                                    if (!empty($filter[$znak]) && !empty($filter[$attr]))
+                                        $query->andWhere('TIMESTAMPDIFF(YEAR, patient_dr, CURDATE()) ' . $filter[$znak] . ' ' . $filter[$attr]);
+
+                                    $attr = 'patient_pol';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere([$attr => $filter[$attr]]);
+                                }
+                            }
+
                             /**
                              * Creates data provider instance with search query applied
                              *
@@ -264,6 +296,8 @@ class PatientSearch extends Patient {
 
                                 if (empty($params['sort']))
                                     $query->orderBy('glaukuchets.glaukuchet_lastchange desc');
+
+                                $this->glaukDopfilter($query);
 
                                 return $dataProvider;
                             }
