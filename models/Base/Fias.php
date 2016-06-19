@@ -128,7 +128,9 @@ class Fias extends \yii\db\ActiveRecord {
             $Fias = self::findOne($AOGUID);
             if (!empty($Fias)) {
                 $Fias2 = Fias::findOne($Fias->PARENTGUID);
-                $result = $Fias2->SHORTNAME . '. ' . $Fias2->OFFNAME . (($Fias->AOLEVEL != 7) ? ', ' . $Fias->SHORTNAME . '. ' . $Fias->OFFNAME : '');
+                $part1 = (!empty($Fias2->SHORTNAME) && !empty($Fias2->OFFNAME)) ? $Fias2->SHORTNAME . '. ' . $Fias2->OFFNAME : '';
+
+                $result = $part1 . (($Fias->AOLEVEL != 7) ? ( empty($part1) ? '' : ', ' ) . $Fias->SHORTNAME . '. ' . $Fias->OFFNAME : '');
             }
         }
         return $result;

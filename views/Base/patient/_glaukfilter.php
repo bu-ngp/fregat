@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
 use kartik\datecontrol\DateControl;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $form yii\widgets\ActiveForm */
@@ -65,7 +66,7 @@ use kartik\datecontrol\DateControl;
                 <?=
                 $form->field($model, 'patient_pol')->widget(Select2::classname(), [
                     'hideSearch' => true,
-                    'data' => [1 => 'Мужской', 2 => 'Женский'],
+                    'data' => app\models\Base\Patient::VariablesValues('patient_pol'),
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -74,9 +75,55 @@ use kartik\datecontrol\DateControl;
                 ]);
                 ?>
 
+                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                    <div class="panel-heading"><?= Html::encode('Адрес пациента') ?></div>
+                    <div class="panel-body">
+                        <?=
+                        $form->field($model, 'fias_city')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                                            'model' => $model,
+                                            'resultmodel' => new \app\models\Base\Fias,
+                                            'fields' => [
+                                                'keyfield' => 'fias_city',
+                                            ],
+                                            'placeholder' => 'Введите населенный пункт',
+                                            'resultrequest' => 'Base/fias/selectinputforcity',
+                                            'thisroute' => $this->context->module->requestedRoute,
+                                            'methodquery' => 'selectinputforcity',
+                                        ]), [
+                            'pluginEvents' => [
+                                "select2:select" => "function() { FillCity(); }",
+                                "select2:unselect" => "function() { ClearCity(); }"
+                            ],
+                        ]))->label('Населенный пункт');
+                        ?>
 
+                        <?=
+                        $form->field($model, 'fias_street')->widget(Select2::classname(), Proc::DGselect2([
+                                    'model' => $model,
+                                    'resultmodel' => new \app\models\Base\Fias,
+                                    'fields' => [
+                                        'keyfield' => 'fias_street',
+                                    ],
+                                    'placeholder' => 'Введите улицу',
+                                    'resultrequest' => 'Base/fias/selectinputforstreet',
+                                    'thisroute' => $this->context->module->requestedRoute,
+                                    'methodquery' => 'selectinputforstreet',
+                                    'ajaxparams' => ['fias_city' => '$(\'select[name="PatientFilter[fias_city]"]\').val()'],
+                                    'minimuminputlength' => 2,
+                        ]))
+                        ?>
+
+                        <?= $form->field($model, 'patient_dom')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
+
+                        <?= $form->field($model, 'patient_korp')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
+
+                        <?= $form->field($model, 'patient_kvartira')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
+                    </div>
+                </div>
             </div>
         </div>
+
+
     </div>
 
     <div class="form-group">

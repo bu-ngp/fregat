@@ -6,6 +6,7 @@ $(document).on('ready pjax:success', function () {
     $('.filter_button').click(function (e) {
         e.preventDefault(); //for prevent default behavior of <a> tag.
         $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
+            InitAddress();
             $('input[name="patient_dr-patientfilter-patient_dr"').mask('99.99.9999');
         });
     });
@@ -52,3 +53,39 @@ $(document).on("beforeFilter", filtergrid, function (event) {
 
     return true;
 });
+
+function InitAddress() {
+    $.ajax({
+        url: "?r=Base%2Ffias%2Fcheckstreets",
+        type: "post",
+        data: {city_AOGUID: $('select[name="PatientFilter[fias_city]"]').val()},
+        success: function (data) {
+            $('select[name="PatientFilter[fias_street]"]').prop("disabled", !(data && data != '0'));
+            $('input[name="PatientFilter[patient_dom]').prop("disabled", !(data || data == '0'));
+            $('input[name="PatientFilter[patient_korp]').prop("disabled", !(data || data == '0'));
+            $('input[name="PatientFilter[patient_kvartira]').prop("disabled", !(data || data == '0'));
+        },
+        error: function (data) {
+            console.error("Ошибка FillCity()");
+        }
+    });
+}
+
+function FillCity() {
+    $('select[name="PatientFilter[fias_street]"]').select2('val', '');
+    InitAddress();
+}
+
+function ClearCity() {
+    $('select[name="PatientFilter[fias_street]"]').prop("disabled", true);
+    $('select[name="PatientFilter[fias_street]"]').select2('val', '');
+
+    $('input[name="PatientFilter[patient_dom]').prop("disabled", true);
+    $('input[name="PatientFilter[patient_dom]').val("");
+
+    $('input[name="PatientFilter[patient_korp]').prop("disabled", true);
+    $('input[name="PatientFilter[patient_korp]').val("");
+
+    $('input[name="PatientFilter[patient_kvartira]').prop("disabled", true);
+    $('input[name="PatientFilter[patient_kvartira]').val("");
+}

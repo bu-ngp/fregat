@@ -157,6 +157,24 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.idClassMkb.name',
                         // 'visible' => false,
                         ],
+                        [
+                            'attribute' => 'patient_username',
+                        // 'visible' => false,
+                        ],
+                        [
+                            'attribute' => 'patient_lastchange',
+                            'format' => 'datetime',
+                        // 'visible' => false,
+                        ],
+                        [
+                            'attribute' => 'glaukuchets.glaukuchet_username',
+                        // 'visible' => false,
+                        ],
+                        [
+                            'attribute' => 'glaukuchets.glaukuchet_lastchange',
+                            'format' => 'datetime',
+                        // 'visible' => false,
+                        ],
                     ],
                     'buttons' => array_merge(
                             Yii::$app->user->can('GlaukUserPermission') ? [
@@ -205,7 +223,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             yii\bootstrap\Modal::begin([
                 'header' => 'Дополнительный фильтр',
                 'id' => 'PatientFilter',
-                'options' => ['class' => 'modal_filter',],
+                'options' => [
+                    'class' => 'modal_filter',
+                    'tabindex' => false, // чтобы работал select2 в модальном окне
+                ],
             ]);
             yii\bootstrap\Modal::end();
             ?>

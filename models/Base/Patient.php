@@ -57,6 +57,7 @@ class Patient extends \yii\db\ActiveRecord {
             [['id_fias', 'patient_dom', 'patient_kvartira'], 'required', 'on' => 'streetrequired'],
             [['patient_dom', 'patient_kvartira'], 'required', 'on' => 'nostreetrequired'], // не используется
             [['patient_fam'], 'unique', 'targetAttribute' => ['patient_fam', 'patient_im', 'patient_ot', 'patient_dr', 'patient_pol'], 'message' => 'Пациент с такими ФИО, датой рождения и полом уже есть в базе данных'],
+            [['patient_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s', 'type' => 'datetime'],
         ];
     }
 
@@ -104,6 +105,14 @@ class Patient extends \yii\db\ActiveRecord {
         }
 
         return isset($_POST[$formName]);
+    }
+
+    public static function VariablesValues($attribute) {
+        $values = [
+            'patient_pol' => [1 => 'Мужской', 2 => 'Женский']
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
     }
 
 }

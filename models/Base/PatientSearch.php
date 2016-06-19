@@ -34,6 +34,8 @@ class PatientSearch extends Patient {
             'glaukuchets.idEmployee.idbuild.build_name',
             'glaukuchets.idClassMkb.code',
             'glaukuchets.idClassMkb.name',
+            'glaukuchets.glaukuchet_lastchange',
+            'glaukuchets.glaukuchet_username',
         ]);
     }
 
@@ -61,7 +63,9 @@ class PatientSearch extends Patient {
             'glaukuchets.idEmployee.idpodraz.podraz_name',
             'glaukuchets.idEmployee.idbuild.build_name',
             'glaukuchets.idClassMkb.code',
-            'glaukuchets.idClassMkb.name'], 'safe'],
+            'glaukuchets.idClassMkb.name',
+            'glaukuchets.glaukuchet_lastchange',
+            'glaukuchets.glaukuchet_username'], 'safe'],
         ];
     }
 
@@ -139,6 +143,10 @@ class PatientSearch extends Patient {
                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('glaukuchets.idEmployee.idbuild.build_name')]);
                                 $query->andFilterWhere(['LIKE', 'idClassMkb.code', $this->getAttribute('glaukuchets.idClassMkb.code')]);
                                 $query->andFilterWhere(['LIKE', 'idClassMkb.name', $this->getAttribute('glaukuchets.idClassMkb.name')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'patient_lastchange', 'datetime'));
+                                $query->andFilterWhere(['LIKE', 'patient_username', $this->getAttribute('patient_username')]);
+                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_lastchange', 'datetime'));
+                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_username', $this->getAttribute('glaukuchets.glaukuchet_username')]);
                             }
 
                             private function glaukSort(&$dataProvider) {
@@ -231,6 +239,16 @@ class PatientSearch extends Patient {
                                     'asc' => ['idClassMkb.name' => SORT_ASC],
                                     'desc' => ['idClassMkb.name' => SORT_DESC],
                                 ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastchange'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_lastchange' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_lastchange' => SORT_DESC],
+                                ];
+
+                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_username'] = [
+                                    'asc' => ['glaukuchets.glaukuchet_username' => SORT_ASC],
+                                    'desc' => ['glaukuchets.glaukuchet_username' => SORT_DESC],
+                                ];
                             }
 
                             private function glaukDopFilter(&$query) {
@@ -262,6 +280,26 @@ class PatientSearch extends Patient {
                                     $attr = 'patient_pol';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere([$attr => $filter[$attr]]);
+
+                                    $attr = 'fias_city';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['or', ['and', ['LIKE', 'idFias.AOGUID', $filter[$attr]], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.AOGUID', $filter[$attr]], 'idFias.AOLEVEL >= 7']]);
+
+                                    $attr = 'fias_street';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['and', ['LIKE', 'idFias.AOGUID', $filter[$attr]], 'idFias.AOLEVEL >= 7']);
+
+                                    $attr = 'patient_dom';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_korp';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_kvartira';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
                                 }
                             }
 

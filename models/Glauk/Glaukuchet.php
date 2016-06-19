@@ -62,6 +62,7 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             ['id_employee', 'CheckBuildByVrach'],
             [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol'], 'date', 'format' => 'php:Y-m-d'],
             [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение должно быть меньше или равно значения "' . Yii::$app->formatter->asDate(date('d.m.Y')) . '"'],
+            [['glaukuchet_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s', 'type' => 'datetime'],
         ];
     }
 

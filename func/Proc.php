@@ -903,6 +903,11 @@ class Proc {
                                             break;
                                     }
 
+                                    if (method_exists($AR, 'VariablesValues')) {
+                                        $var = $AR->VariablesValues($attr, $value);
+                                        $value = isset($var[$value]) ? $var[$value] : $value;
+                                    }
+
                                     $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $value . '";';
                                 }
                     }
