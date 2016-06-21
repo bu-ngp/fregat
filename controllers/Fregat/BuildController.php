@@ -24,7 +24,7 @@ class BuildController extends Controller {
                     [
                         'actions' => ['index', 'selectinput'],
                         'allow' => true,
-                        'roles' => ['FregatUserPermission'],
+                        'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
                         'actions' => ['create', 'update', 'delete'],

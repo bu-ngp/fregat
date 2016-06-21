@@ -178,5 +178,29 @@ class Employee extends \yii\db\ActiveRecord {
                 return $query;
             }
 
+            public static function getEmployeeByID($IDEmployee) {
+                $query = self::find()
+                        ->select(['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                        ->joinWith([
+                            'idperson' => function($query) {
+                                $query->from(['idperson' => 'auth_user']);
+                            },
+                                    'iddolzh' => function($query) {
+                                $query->from(['iddolzh' => 'dolzh']);
+                            },
+                                    'idpodraz' => function($query) {
+                                $query->from(['idpodraz' => 'podraz']);
+                            },
+                                    'idbuild' => function($query) {
+                                $query->from(['idbuild' => 'build']);
+                            },
+                                ])
+                                ->where([ 'employee_id' => $IDEmployee])
+                                ->asArray()
+                                ->one();
+
+                        return $query['text'];
+                    }
+
                 }
                 

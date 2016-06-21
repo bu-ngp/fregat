@@ -224,6 +224,8 @@ class Proc {
             $ajaxparams = isset($params['ajaxparams']) && is_array($params['ajaxparams']) ? $params['ajaxparams'] : [];
             $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
             $form = isset($params['form']) ? $params['form'] : '';
+            $options = isset($params['options']) ? $params['options'] : '';
+            $showToggleAll = isset($params['multipleshowall']) ? $params['multipleshowall'] : true;
 
             $ajaxparamsString = '';
             foreach ($ajaxparams as $key => $value)
@@ -234,22 +236,37 @@ class Proc {
 
             if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute)) {
 
+                $a = '';
                 if (!empty($methodquery)) {
                     $methodparams['q'] = $model->$fields['keyfield'];
                     $methodparams['init'] = true;
 
                     $initrecord = isset($methodparams['q']) ? $resultmodel->$methodquery($methodparams) : [];
-                } else
+                } else {
+                    $method = is_array($model->$fields['keyfield']) ? 'all' : 'one';
                     $initrecord = $resultmodel::find()
                             ->select($fields['showresultfields'])
-                            ->where([$resultmodel->primarykey()[0] => $model->$fields['keyfield']])
+                            ->where([is_array($model->$fields['keyfield']) ? 'in' : '=', $resultmodel->primarykey()[0], $model->$fields['keyfield']])
+                            //->where([ $resultmodel->primarykey()[0] => $model->$fields['keyfield']])
                             ->asArray()
-                            ->one();
+                            ->$method();
+
+                    if (is_array($model->$fields['keyfield']))
+                        foreach ($initrecord as $key => $rows) {
+                        $kk=$rows[$fields['showresultfields'][0]];
+                        array_shift($rows);
+                            $rr[$kk]=implode(', ', $rows);
+                        }
+                        $initrecord = $rr;
+                        $a='';
+                }
 
                 return array_merge([
-                    'initValueText' => !empty($initrecord) ? implode(', ', $initrecord) : '',
-                    'options' => array_merge(['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form]),
+                    'initValueText' => is_array($model->$fields['keyfield']) ? '' : (!empty($initrecord) ? implode(', ', $initrecord) : ''),
+                    'data' => is_array($model->$fields['keyfield']) ? $initrecord : [],
+                    'options' => empty($options) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form]) : $options,
                     'theme' => Select2::THEME_BOOTSTRAP,
+                    'showToggleAll' => $showToggleAll,
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => $minimumInputLength,
@@ -877,10 +894,42 @@ class Proc {
                 foreach ($filtform as $filtformname => $fields) {
                     if ($filtformname === $AR->formName()) {
                         foreach ($fields as $attr => $value)
-                            if (!empty($value) && strpos($attr, '_znak') !== strlen($attr) - 5)
+                            if ((!empty($value) || strpos($attr, '_beg') === strlen($attr) - 4) && strpos($attr, '_znak') !== strlen($attr) - 5 && strpos($attr, '_end') !== strlen($attr) - 4)
                                 if (strpos($attr, '_mark') === strlen($attr) - 5) {
                                     if ($value === '1')
                                         $filter .= ' ' . $AR->attributeLabels()[$attr] . ';';
+                                } elseif (strpos($attr, '_beg') === strlen($attr) - 4) {
+                                    $attrend = substr($attr, 0, strlen($attr) - 4) . '_end';
+
+                                    $result = false;
+                                    foreach ($AR->getActiveValidators($attr) as $validatorclass)
+                                        if ($validatorclass instanceof \yii\validators\DateValidator) {
+                                            $result = $validatorclass->type;
+                                            break;
+                                        }
+
+                                    switch ($result) {
+                                        case 'date':
+                                            $fields[$attr] = empty($fields[$attr]) ? '' : Yii::$app->formatter->asDate($fields[$attr]);
+                                            $fields[$attrend] = empty($fields[$attrend]) ? '' : Yii::$app->formatter->asDate($fields[$attrend]);
+                                            break;
+                                        case 'time':
+                                            $fields[$attr] = empty($fields[$attr]) ? '' : Yii::$app->formatter->asTime($fields[$attr]);
+                                            $fields[$attrend] = empty($fields[$attrend]) ? '' : Yii::$app->formatter->asDate($fields[$attrend]);
+                                            break;
+                                        case 'datetime':
+                                            $fields[$attr] = empty($fields[$attr]) ? '' : Yii::$app->formatter->asDatetime($fields[$attr]);
+                                            $fields[$attrend] = empty($fields[$attrend]) ? '' : Yii::$app->formatter->asDate($fields[$attrend]);
+                                            break;
+                                    }
+
+                                    if (!empty($fields[$attr]) && !empty($fields[$attrend]))
+                                        $filter .= ' ' . $AR->attributeLabels()[$attr] . ' С ' . $fields[$attr] . ' ПО ' . $fields[$attrend] . ';';
+                                    elseif (!empty($fields[$attr]) || !empty($fields[$attrend])) {
+                                        $znak = (!empty($fields[$attr])) ? '>=' : '<=';
+                                        $value = (!empty($fields[$attr])) ? $fields[$attr] : $fields[$attrend];
+                                        $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $value . '";';
+                                    }
                                 } elseif (!isset($fields[$attr . '_znak']) || isset($fields[$attr . '_znak']) && in_array($fields[$attr . '_znak'], ['>=', '<=', '='])) {
                                     $znak = (isset($fields[$attr . '_znak'])) ? $fields[$attr . '_znak'] : '=';
 
@@ -903,11 +952,16 @@ class Proc {
                                             break;
                                     }
 
-                                    if (method_exists($AR, 'VariablesValues')) {
-                                        $var = $AR->VariablesValues($attr, $value);
-                                        $value = isset($var[$value]) ? $var[$value] : $value;
-                                    }
+                                    if (!is_array($value))
+                                        $value = [$value];
 
+                                    if (method_exists($AR, 'VariablesValues'))
+                                        foreach ($value as $key => $item) {
+                                            $var = $AR->VariablesValues($attr, $item);
+                                            $value[$key] = isset($var[$item]) ? $var[$item] : $item;
+                                        }
+
+                                    $value = implode(', ', $value);
                                     $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $value . '";';
                                 }
                     }

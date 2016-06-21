@@ -58,4 +58,8 @@ class Build extends \yii\db\ActiveRecord {
         return $this->hasMany(Importemployee::className(), ['id_build' => 'build_id']);
     }
 
+    public static function getBuildByID($ID) {
+        return $query = self::findOne($ID)->build_name;
+    }
+
 }

@@ -300,6 +300,114 @@ class PatientSearch extends Patient {
                                     $attr = 'patient_kvartira';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_uchetbegin';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_detect';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_deregreason';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_deregdate';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_stage';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_operdate';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_rlocat';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_invalid';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+
+                                    $attr = 'glaukuchet_lastvisit';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_lastmetabol';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_id_employee';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['glaukuchets.id_employee' => $filter[$attr]]);
+
+                                    $attr = 'employee_id_dolzh';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', 'idEmployee.id_dolzh', $filter[$attr]]);
+
+                                    $attr = 'employee_id_podraz';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', 'idEmployee.id_podraz', $filter[$attr]]);
+
+                                    $attr = 'employee_id_build';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['IN', 'idEmployee.id_build', $filter[$attr]]);
+
+                                    $attr = 'patient_username';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'patient_lastchange';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
+
+                                    $attr = 'glaukuchet_username';
+                                    if (!empty($filter[$attr]))
+                                        $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+                                    $attr = 'glaukuchet_lastchange';
+                                    if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                                        $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                    elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                                        $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                                        $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                                        $query->andFilterWhere([$znak, $attr, $value]);
+                                    }
                                 }
                             }
 
