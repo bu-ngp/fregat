@@ -36,6 +36,11 @@ class EmployeeController extends Controller {
                         'allow' => true,
                         'roles' => ['EmployeeEdit'],
                     ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['EmployeeBuildEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -91,12 +96,22 @@ class EmployeeController extends Controller {
 
     public function actionUpdate($id) {
         $model = $this->findModel($id);
+        $OnlyBuildEdit = Yii::$app->user->can('EmployeeBuildEdit') && !Yii::$app->user->can('EmployeeEdit');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save())
+        if (Yii::$app->user->can('EmployeeEdit'))
+            $Values = Yii::$app->request->post();
+        elseif (Yii::$app->user->can('EmployeeBuildEdit'))
+            $Values = isset($_POST['Employee']['id_build']) ? [
+                'Employee' => [
+                    'id_build' => $_POST['Employee']['id_build'] ? $_POST['Employee']['id_build'] : NULL
+                ]] : NULL;
+
+        if ($model->load($Values) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
             return $this->render('update', [
                         'model' => $model,
+                        'OnlyBuildEdit' => $OnlyBuildEdit,
             ]);
     }
 

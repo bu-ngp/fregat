@@ -25,7 +25,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     $glaukuchet_detect = [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'];
     $glaukuchet_deregreason = [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'];
     $glaukuchet_stage = [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'];
-    $glaukuchet_rlocat = [1 => 'Федеральная', 2 => 'Региональная'];
     $glaukuchet_invalid = [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'];
 
     echo DynaGrid::widget(Proc::DGopts([
@@ -106,14 +105,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glaukuchet_operdate',
                             'format' => 'date',
                         // 'visible' => false,
-                        ],
-                        [
-                            'attribute' => 'glaukuchets.glaukuchet_rlocat',
-                            'filter' => $glaukuchet_rlocat,
-                            'value' => function ($model) use ($glaukuchet_rlocat) {
-                                return isset($glaukuchet_rlocat[$model->glaukuchets->glaukuchet_rlocat]) ? $glaukuchet_rlocat[$model->glaukuchets->glaukuchet_rlocat] : '';
-                            },
-                        //  'visible' => false,    
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_invalid',

@@ -209,6 +209,23 @@ class Proc {
     }
 
     // Возвращает параметры для элемента Select2
+    // $params[model] - Модель из которой берутся данные
+    // $params[resultmodel] - 
+    // $params[resultrequest] -
+    // $params[placeholder] -
+    // $params[fromgridroute] - 
+    // $params[thisroute] - 
+    // $params[fields] - 
+    // $params[dopparams] - 
+    // $params[methodquery] - 
+    // $params[methodparams] - 
+    // $params[ajaxparams] - 
+    // $params[minimumInputLength] - 
+    // $params[form] - Имя формы, которому пренадлежит select2, по умолчанию не задано
+    // $params[options] - Заменяет параметр "options", по умолчанию не задано
+    // $params[setsession] - Добавляет класс html "setsession" для сохранения знаечния в сессии, по умолчанию true
+    // $params[multiple][idvalue] - поле для определения ИД значений "data" при выборе multiple => true, обязательно при выборе мультивыбора
+    // $params[multiple][multipleshowall] - Показывает кнопку "Выбрать все" (при ajax загрузке значений не актуально), по умолчанию true
     public static function DGselect2($params) {
         if (isset($params) && is_array($params)) {
             $model = $params['model'];
@@ -225,7 +242,10 @@ class Proc {
             $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
             $form = isset($params['form']) ? $params['form'] : '';
             $options = isset($params['options']) ? $params['options'] : '';
-            $showToggleAll = isset($params['multipleshowall']) ? $params['multipleshowall'] : true;
+
+            $setsession = isset($params['setsession']) ? $params['setsession'] : true;
+            $multiple = isset($params['multiple']) && is_array($params['multiple']) ? $params['multiple'] : [];
+            $showToggleAll = isset($params['multiple']['multipleshowall']) ? $params['multiple']['multipleshowall'] : true;
 
             $ajaxparamsString = '';
             foreach ($ajaxparams as $key => $value)
@@ -234,37 +254,36 @@ class Proc {
             if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
-            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute)) {
+            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute) && (!empty($multiple) && isset($multiple['idvalue']) || empty($multiple))) {
 
-                $a = '';
+                $valuemodel = is_array($model->$fields['keyfield']) ? $model->$fields['keyfield'] : [$model->$fields['keyfield']];
+
                 if (!empty($methodquery)) {
                     $methodparams['q'] = $model->$fields['keyfield'];
                     $methodparams['init'] = true;
 
                     $initrecord = isset($methodparams['q']) ? $resultmodel->$methodquery($methodparams) : [];
+                    if (!is_array($initrecord))
+                        $initrecord = [$initrecord];
                 } else {
-                    $method = is_array($model->$fields['keyfield']) ? 'all' : 'one';
                     $initrecord = $resultmodel::find()
-                            ->select($fields['showresultfields'])
-                            ->where([is_array($model->$fields['keyfield']) ? 'in' : '=', $resultmodel->primarykey()[0], $model->$fields['keyfield']])
-                            //->where([ $resultmodel->primarykey()[0] => $model->$fields['keyfield']])
+                            ->select(array_merge(empty($multiple) ? [] : $multiple['idvalue'], $fields['showresultfields']))
+                            ->where(['in', $resultmodel->primarykey()[0], $valuemodel])
                             ->asArray()
-                            ->$method();
+                            ->all();
 
-                    if (is_array($model->$fields['keyfield']))
-                        foreach ($initrecord as $key => $rows) {
-                        $kk=$rows[$fields['showresultfields'][0]];
-                        array_shift($rows);
-                            $rr[$kk]=implode(', ', $rows);
-                        }
-                        $initrecord = $rr;
-                        $a='';
+                    $initrecord_tmp = [];
+                    foreach ($initrecord as $key => $rows) {
+                        if (!empty($multiple))
+                            array_shift($rows);
+                        $initrecord_tmp[$initrecord[$key][$multiple['idvalue']]] = implode(', ', $rows);
+                    }
+                    $initrecord = $initrecord_tmp;
                 }
 
                 return array_merge([
-                    'initValueText' => is_array($model->$fields['keyfield']) ? '' : (!empty($initrecord) ? implode(', ', $initrecord) : ''),
-                    'data' => is_array($model->$fields['keyfield']) ? $initrecord : [],
-                    'options' => empty($options) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control setsession', 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form]) : $options,
+                    'initValueText' => !empty($multiple) ? '' : implode(', ', $initrecord),
+                    'options' => empty($options) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control' . ($setsession ? ' setsession' : ''), 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form], empty($multiple) ? [] : ['multiple' => true]) : $options,
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'showToggleAll' => $showToggleAll,
                     'pluginOptions' => [
@@ -288,7 +307,9 @@ class Proc {
                                                     ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
                                     'asButton' => true
                                 ]
-                            ]] : []
+                            ]] : [], !empty($multiple) ? [
+                            'data' => $initrecord
+                                ] : []
                 );
             } else
                 throw new \Exception('Ошибка в Proc::DGselect2()');
@@ -730,28 +751,38 @@ class Proc {
 
         $i = -1;
         $r = 5;
+        if (count((array) $dataProvider->getModels()) > 0) {
+            foreach ($dataProvider->getModels() as $row => $ar) {
+                $r++;
+                // Названия полей
+                if ($row === 0) {
+                    $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+                    foreach ($labels as $label) {
+                        $i++;
+                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
+                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
+                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
+                    }
+                }
 
-        foreach ($dataProvider->getModels() as $row => $ar) {
-            $r++;
-            // Названия полей
-            if ($row === 0) {
-                $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
-                foreach ($labels as $label) {
+                $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
+                $i = -1;
+                foreach (array_keys($data) as $attr) {
                     $i++;
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
+                    if (isset($selectvalues[$modelName . '[' . $attr . ']']))
+                        $data[$attr] = $selectvalues[$modelName . '[' . $attr . ']'][$data[$attr]];
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 }
             }
-
-            $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
-            $i = -1;
-            foreach (array_keys($data) as $attr) {
+        } else {
+            $r++;
+            $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+            foreach ($labels as $label) {
                 $i++;
-                if (isset($selectvalues[$modelName . '[' . $attr . ']']))
-                    $data[$attr] = $selectvalues[$modelName . '[' . $attr . ']'][$data[$attr]];
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
             }
         }
 
@@ -759,7 +790,7 @@ class Proc {
 
         /* Авторазмер колонок Excel */
         $i = -1;
-        foreach (array_keys($data) as $attr) {
+        foreach ($labels as $attr) {
             $i++;
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
         }

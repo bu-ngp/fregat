@@ -33,9 +33,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'choose' => function ($url, $model, $key) use ($foreign, $patienttype) {
                                     $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'patienttype' => $patienttype, $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }], Yii::$app->user->can('EmployeeEdit') ? [
-                                        'update' => ['Fregat/employee/update', 'employee_id'],
-                                        'delete' => ['Fregat/employee/delete', 'employee_id'],] : []
+                                }], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') ? [
+                                        'update' => ['Fregat/employee/update', 'employee_id']] : []), (Yii::$app->user->can('EmployeeEdit') ? [
+                                        'delete' => ['Fregat/employee/delete', 'employee_id']] : [])
                             ),
                         ]),
                         'gridOptions' => [

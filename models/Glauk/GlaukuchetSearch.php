@@ -17,7 +17,7 @@ class GlaukuchetSearch extends Glaukuchet {
      */
     public function rules() {
         return [
-            [['glaukuchet_id', 'glaukuchet_detect', 'glaukuchet_deregreason', 'glaukuchet_stage', 'glaukuchet_rlocat', 'glaukuchet_invalid', 'id_patient', 'id_employee', 'id_class_mkb'], 'integer'],
+            [['glaukuchet_id', 'glaukuchet_detect', 'glaukuchet_deregreason', 'glaukuchet_stage', 'glaukuchet_invalid', 'id_patient', 'id_employee', 'id_class_mkb'], 'integer'],
             [['glaukuchet_uchetbegin', 'glaukuchet_deregdate', 'glaukuchet_operdate', 'glaukuchet_lastvisit', 'glaukuchet_lastmetabol', 'glaukuchet_comment', 'glaukuchet_username', 'glaukuchet_lastchange'], 'safe'],
         ];
     }
@@ -62,8 +62,7 @@ class GlaukuchetSearch extends Glaukuchet {
             'glaukuchet_deregdate' => $this->glaukuchet_deregdate,
             'glaukuchet_deregreason' => $this->glaukuchet_deregreason,
             'glaukuchet_stage' => $this->glaukuchet_stage,
-            'glaukuchet_operdate' => $this->glaukuchet_operdate,
-            'glaukuchet_rlocat' => $this->glaukuchet_rlocat,
+            'glaukuchet_operdate' => $this->glaukuchet_operdate,            
             'glaukuchet_invalid' => $this->glaukuchet_invalid,
             'glaukuchet_lastvisit' => $this->glaukuchet_lastvisit,
             'glaukuchet_lastmetabol' => $this->glaukuchet_lastmetabol,

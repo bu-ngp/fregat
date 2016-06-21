@@ -30,7 +30,7 @@ class Glprep extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['id_glaukuchet', 'id_preparat'], 'required'],
-            [['id_glaukuchet', 'id_preparat'], 'integer'],
+            [['id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'integer'],
             [['id_glaukuchet'], 'exist', 'skipOnError' => true, 'targetClass' => Glaukuchet::className(), 'targetAttribute' => ['id_glaukuchet' => 'glaukuchet_id']],
             [['id_preparat'], 'exist', 'skipOnError' => true, 'targetClass' => Preparat::className(), 'targetAttribute' => ['id_preparat' => 'preparat_id']],
             ['id_glaukuchet', 'unique', 'targetAttribute' => ['id_glaukuchet', 'id_preparat'], 'message' => 'Этот препарат уже есть у глаукомного пациента'],
@@ -45,6 +45,7 @@ class Glprep extends \yii\db\ActiveRecord {
             'glprep_id' => 'Glprep ID',
             'id_glaukuchet' => 'Карта глаукомного больного',
             'id_preparat' => 'Препарат',
+            'glprep_rlocat' => 'Категория льготного лекарственного обеспечения',
         ];
     }
 
@@ -60,6 +61,14 @@ class Glprep extends \yii\db\ActiveRecord {
      */
     public function getIdPreparat() {
         return $this->hasOne(Preparat::className(), ['preparat_id' => 'id_preparat']);
+    }
+
+    public static function VariablesValues($attribute, $value = NULL) {
+        $values = [
+            'glprep_rlocat' => [1 => 'Федеральная', 2 => 'Региональная'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
     }
 
 }

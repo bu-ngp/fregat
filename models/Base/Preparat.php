@@ -29,6 +29,9 @@ class Preparat extends \yii\db\ActiveRecord {
         return [
             [['preparat_name'], 'required'],
             [['preparat_name'], 'string', 'max' => 255],
+            [['preparat_name'], 'filter', 'filter' => function($value) {
+            return mb_strtoupper($value, 'UTF-8');
+        }],
             [['preparat_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
         ];
     }
@@ -48,6 +51,10 @@ class Preparat extends \yii\db\ActiveRecord {
      */
     public function getGlpreps() {
         return $this->hasMany(Glprep::className(), ['id_preparat' => 'preparat_id']);
+    }
+
+    public static function getPreparatByID($ID) {
+        return $query = self::findOne($ID)->preparat_name;
     }
 
 }

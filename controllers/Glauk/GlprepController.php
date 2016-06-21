@@ -25,7 +25,7 @@ class GlprepController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['delete'],
+                        'actions' => ['create', 'delete'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -38,6 +38,19 @@ class GlprepController extends Controller {
                 ],
             ],
         ];
+    }
+
+    public function actionCreate($idglaukuchet) {
+        $model = new Glprep();
+        $model->id_glaukuchet = $idglaukuchet;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else
+            return $this->render('create', [
+                        'model' => $model,
+                        'idglaukuchet' => $idglaukuchet,
+            ]);
     }
 
     public function actionDelete($id) {

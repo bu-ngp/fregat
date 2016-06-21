@@ -66,7 +66,7 @@ class DolzhController extends Controller {
         $model = new Dolzh();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
 
             return $this->render('create', [
@@ -79,7 +79,7 @@ class DolzhController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
 
             return $this->render('update', [

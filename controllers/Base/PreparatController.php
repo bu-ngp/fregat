@@ -25,7 +25,7 @@ class PreparatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'forglaukuchet'],
+                        'actions' => ['index', 'forglaukuchet', 'selectinput'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -47,11 +47,21 @@ class PreparatController extends Controller {
 
     public function actionIndex() {
         $searchModel = new PreparatSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $Request = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($Request);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
+                    'idglaukuchet' => $Request['idglaukuchet'],
+        ]);
+    }
+
+    public function actionSelectinput($field, $q = null) {
+        return Proc::select2request([
+                    'model' => new Preparat,
+                    'field' => $field,
+                    'q' => $q,
         ]);
     }
 
@@ -70,7 +80,7 @@ class PreparatController extends Controller {
         $model = new Preparat();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -82,7 +92,7 @@ class PreparatController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('update', [
                         'model' => $model,

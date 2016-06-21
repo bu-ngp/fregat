@@ -103,11 +103,11 @@ use yii\web\Session;
             ]))
             ?>
 
-            <?= $form->field($model, 'patient_dom')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_dom')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
 
-            <?= $form->field($model, 'patient_korp')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_korp')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
 
-            <?= $form->field($model, 'patient_kvartira')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_kvartira')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
 
         </div>
     </div>
@@ -188,7 +188,7 @@ use yii\web\Session;
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
-                    'options' => ['placeholder' => 'Выберете вид выявления заболевания', 'class' => 'form-control setsession', 'form' => $formname],
+                    'options' => ['placeholder' => 'Выберете стадию глаукомы', 'class' => 'form-control setsession', 'form' => $formname],
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
@@ -210,7 +210,7 @@ use yii\web\Session;
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
-                    'options' => ['placeholder' => 'Выберете вид выявления заболевания', 'class' => 'form-control setsession', 'form' => $formname],
+                    'options' => ['placeholder' => 'Выберете группу инвалидности', 'class' => 'form-control setsession', 'form' => $formname],
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
@@ -225,29 +225,27 @@ use yii\web\Session;
                 ])
                 ?>
 
-                <?=
-                $form->field($dopparams['Glaukuchet'], 'glaukuchet_rlocat')->widget(Select2::classname(), [
-                    'hideSearch' => true,
-                    'data' => [1 => 'Федеральная', 2 => 'Региональная'],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                    'options' => ['placeholder' => 'Выберете вид выявления заболевания', 'class' => 'form-control setsession', 'form' => $formname],
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                ]);
-                ?>
-
                 <?php if ($model->isNewRecord || $dopparams['Glaukuchet']->isNewRecord): ?>
                     <div class="alert alert-warning" role="alert">Для назначения лекарственных препаратов сохраните карту пациента.</div>
                 <?php endif; ?>
 
                 <?php
                 if (!$model->isNewRecord && !$dopparams['Glaukuchet']->isNewRecord) {
+                    $glprep_rlocat = app\models\Glauk\Glprep::VariablesValues('glprep_rlocat');
+
                     echo DynaGrid::widget(Proc::DGopts([
                                 'options' => ['id' => 'glprepgrid'],
                                 'columns' => Proc::DGcols([
                                     'columns' => [
                                         'idPreparat.preparat_name',
+                                        [
+                                            'attribute' => 'glprep_rlocat',
+                                            'filter' => $glprep_rlocat,
+                                            'value' => function ($model) use ($glprep_rlocat) {
+                                                return isset($glprep_rlocat[$model->glprep_rlocat]) ? $glprep_rlocat[$model->glprep_rlocat] : '';
+                                            },
+                                        //  'visible' => false,    
+                                        ],
                                     ],
                                     'buttons' => [
                                         'deleteajax' => ['Glauk/glprep/delete', 'glprep_id']
@@ -258,11 +256,8 @@ use yii\web\Session;
                                     'filterModel' => $dopparams['searchModelglprep'],
                                     'panel' => [
                                         'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-tint"></i> Препараты</h3>',
-                                        'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Base/preparat/forglaukuchet',
-                                            'foreignmodel' => 'Glprep',
-                                            'url' => $this->context->module->requestedRoute,
-                                            'field' => 'id_preparat',
-                                            'id' => $model->primaryKey,
+                                        'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Glauk/glprep/create',
+                                            'idglaukuchet' => $model->glaukuchets->glaukuchet_id,
                                                 ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                                     ],
                                 ]

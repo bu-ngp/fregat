@@ -42,7 +42,7 @@ class Patient extends \yii\db\ActiveRecord {
             return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
         }],
             [['patient_fam', 'patient_im', 'patient_dr', 'patient_pol', 'patient_username'], 'required'],
-            [['patient_fam', 'patient_im', 'patient_ot'], 'filter', 'filter' => function($value) {
+            [['patient_fam', 'patient_im', 'patient_ot', 'patient_korp', 'patient_dom', 'patient_kvartira'], 'filter', 'filter' => function($value) {
             return mb_strtoupper($value, 'UTF-8');
         }],
             [['patient_dr'], 'date', 'format' => 'php:Y-m-d'],

@@ -9,7 +9,11 @@ use yii\helpers\Html;
     <div class="panel-heading">Главное меню</div>
     <div class="panel-body">     
         <ul class="nav nav-pills nav-stacked">
-            <li><?php echo Html::a('<i class="glyphicon glyphicon-list-alt"></i> Система "Фрегат"', ['Fregat/mattraffic/index'], ['class' => 'btn btn-default']); ?></li>
+            <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
+                <li>
+                    <?php echo Html::a('<i class="glyphicon glyphicon-list-alt"></i> Система "Фрегат"', ['Fregat/mattraffic/index'], ['class' => 'btn btn-default']); ?>
+                </li>
+            <?php endif; ?>            
             <?php if (Yii::$app->user->can('GlaukUserPermission')): ?>
                 <li>
                     <?php echo Html::a('<i class="glyphicon glyphicon-search"></i> Регистр глаукомных пациентов', ['Base/patient/glaukindex'], ['class' => 'btn btn-default']); ?>

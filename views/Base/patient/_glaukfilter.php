@@ -125,6 +125,9 @@ use app\func\Proc;
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
             <div class="panel-heading"><?= Html::encode('Карта глаукомного пациента') ?></div>
             <div class="panel-body">
+
+                <?= $form->field($model, 'is_glauk_mark')->checkbox(); ?>
+
                 <div class="form-group">     
                     <label class="control-label" for="patientfilter-glaukuchet_uchetbegin_beg"><?= $model->getAttributeLabel('glaukuchet_uchetbegin_beg') ?></label>
                     <div class="row">                         
@@ -155,7 +158,7 @@ use app\func\Proc;
                             ?>
                         </div>
                     </div>
-                </div>
+                </div>                
 
                 <?=
                 $form->field($model, 'glaukuchet_detect')->widget(Select2::classname(), [
@@ -168,6 +171,8 @@ use app\func\Proc;
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
+
+                <?= $form->field($model, 'is_glaukuchet_mark')->checkbox(); ?>
 
                 <?=
                 $form->field($model, 'glaukuchet_deregreason')->widget(Select2::classname(), [
@@ -257,17 +262,7 @@ use app\func\Proc;
                     </div>
                 </div>
 
-                <?=
-                $form->field($model, 'glaukuchet_rlocat')->widget(Select2::classname(), [
-                    'hideSearch' => true,
-                    'data' => $model::VariablesValues('glaukuchet_rlocat'),
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                    'options' => ['placeholder' => 'Выберете категорию льготного лекарственного обеспечения', 'class' => 'form-control', 'multiple' => true],
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                ]);
-                ?>
+                <?= $form->field($model, 'glaukuchet_not_oper_mark')->checkbox(); ?>
 
                 <?=
                 $form->field($model, 'glaukuchet_invalid')->widget(Select2::classname(), [
@@ -280,6 +275,8 @@ use app\func\Proc;
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
+
+                <?= $form->field($model, 'glaukuchet_not_invalid_mark')->checkbox(); ?>
 
                 <div class="form-group">     
                     <label class="control-label" for="patientfilter-glaukuchet_lastvisit_beg"><?= $model->getAttributeLabel('glaukuchet_lastvisit_beg') ?></label>
@@ -345,6 +342,8 @@ use app\func\Proc;
                     </div>
                 </div>
 
+                <?= $form->field($model, 'glaukuchet_not_lastmetabol_mark')->checkbox(); ?>
+
                 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
                     <div class="panel-heading"><?= Html::encode('Врач') ?></div>
                     <div class="panel-body">
@@ -371,7 +370,7 @@ use app\func\Proc;
                                     'setsession' => false,
                                     'multiple' => [
                                         'multipleshowall' => false,
-                                        'idvalues' => 'dolzh_id',
+                                        'idvalue' => 'dolzh_id',
                                     ],
                                     'fields' => [
                                         'keyfield' => 'employee_id_dolzh',
@@ -386,15 +385,18 @@ use app\func\Proc;
                         $form->field($model, 'employee_id_podraz')->widget(Select2::classname(), Proc::DGselect2([
                                     'model' => $model,
                                     'resultmodel' => new \app\models\Fregat\Podraz,
+                                    'placeholder' => 'Введите подразделение',
+                                    'setsession' => false,
+                                    'multiple' => [
+                                        'multipleshowall' => false,
+                                        'idvalue' => 'podraz_id',
+                                    ],
                                     'fields' => [
                                         'keyfield' => 'employee_id_podraz',
                                         'resultfield' => 'podraz_name',
-                                        'showresultfields' => ['podraz_id', 'podraz_name'],
                                     ],
                                     'resultrequest' => 'Fregat/podraz/selectinput',
                                     'thisroute' => $this->context->module->requestedRoute,
-                                    'options' => ['placeholder' => 'Введите подразделение', 'class' => 'form-control', 'multiple' => true],
-                                    'multipleshowall' => false,
                         ]));
                         ?>
 
@@ -402,19 +404,62 @@ use app\func\Proc;
                         $form->field($model, 'employee_id_build')->widget(Select2::classname(), Proc::DGselect2([
                                     'model' => $model,
                                     'resultmodel' => new \app\models\Fregat\Build,
+                                    'placeholder' => 'Введите здание',
+                                    'setsession' => false,
+                                    'multiple' => [
+                                        'multipleshowall' => false,
+                                        'idvalue' => 'build_id',
+                                    ],
                                     'fields' => [
                                         'keyfield' => 'employee_id_build',
                                         'resultfield' => 'build_name',
-                                        'showresultfields' => ['build_id', 'build_name'],
                                     ],
                                     'resultrequest' => 'Fregat/build/selectinput',
                                     'thisroute' => $this->context->module->requestedRoute,
-                                    'options' => ['placeholder' => 'Введите здание', 'class' => 'form-control', 'multiple' => true],
-                                    'multipleshowall' => false,
                         ]));
                         ?>
 
                     </div>   
+                </div>
+
+                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                    <div class="panel-heading"><?= Html::encode('Медикаментозная терапия') ?></div>
+                    <div class="panel-body">
+
+                        <?=
+                        $form->field($model, 'glprep_id_preparat')->widget(Select2::classname(), Proc::DGselect2([
+                                    'model' => $model,
+                                    'resultmodel' => new app\models\Base\Preparat,
+                                    'placeholder' => 'Введите название препарата',
+                                    'setsession' => false,
+                                    'multiple' => [
+                                        'multipleshowall' => false,
+                                        'idvalue' => 'preparat_id',
+                                    ],
+                                    'fields' => [
+                                        'keyfield' => 'glprep_id_preparat',
+                                        'resultfield' => 'preparat_name',
+                                    ],
+                                    'resultrequest' => 'Base/preparat/selectinput',
+                                    'thisroute' => $this->context->module->requestedRoute,
+                        ]));
+                        ?>
+
+                        <?=
+                        $form->field($model, 'glprep_rlocat')->widget(Select2::classname(), [
+                            'hideSearch' => true,
+                            'data' => $model::VariablesValues('glprep_rlocat'),
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                            'options' => ['placeholder' => 'Выберете категорию льготного лекарственного обеспечения', 'class' => 'form-control', 'multiple' => true],
+                            'theme' => Select2::THEME_BOOTSTRAP,
+                        ]);
+                        ?>
+
+                        <?= $form->field($model, 'glprep_not_preparat_mark')->checkbox(); ?>
+
+                    </div>
                 </div>
 
             </div>   

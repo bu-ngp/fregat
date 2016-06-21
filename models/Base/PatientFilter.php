@@ -19,25 +19,32 @@ class PatientFilter extends Model {
     public $patient_dom;
     public $patient_korp;
     public $patient_kvartira;
+    public $is_glauk_mark;
     public $glaukuchet_uchetbegin_beg;
-    public $glaukuchet_uchetbegin_end;
+    public $glaukuchet_uchetbegin_end;    
     public $glaukuchet_detect;
-    public $glaukuchet_deregdate_beg;
-    public $glaukuchet_deregdate_end;
+    public $is_glaukuchet_mark;
     public $glaukuchet_deregreason;
+    public $glaukuchet_deregdate_beg;
+    public $glaukuchet_deregdate_end;    
     public $glaukuchet_stage;
     public $glaukuchet_operdate_beg;
     public $glaukuchet_operdate_end;
-    public $glaukuchet_rlocat;
+    public $glaukuchet_not_oper_mark;
     public $glaukuchet_invalid;
+    public $glaukuchet_not_invalid_mark;
     public $glaukuchet_lastvisit_beg;
     public $glaukuchet_lastvisit_end;
     public $glaukuchet_lastmetabol_beg;
     public $glaukuchet_lastmetabol_end;
+    public $glaukuchet_not_lastmetabol_mark;
     public $glaukuchet_id_employee;
     public $employee_id_dolzh;
     public $employee_id_podraz;
     public $employee_id_build;
+    public $glprep_id_preparat;
+    public $glprep_rlocat;
+    public $glprep_not_preparat_mark;
     public $patient_username;
     public $patient_lastchange_beg;
     public $patient_lastchange_end;
@@ -83,13 +90,22 @@ class PatientFilter extends Model {
             'glaukuchet_detect',
             'glaukuchet_deregreason',
             'glaukuchet_stage',
-            'glaukuchet_rlocat',
             'glaukuchet_invalid',
             'glaukuchet_id_employee',
             'employee_id_dolzh',
             'employee_id_podraz',
             'employee_id_build',
+            'glprep_id_preparat',
+            'glprep_rlocat',
                 ], 'integer'],
+            [[
+            'is_glauk_mark',
+            'is_glaukuchet_mark',
+            'glaukuchet_not_oper_mark',
+            'glaukuchet_not_invalid_mark',
+            'glaukuchet_not_lastmetabol_mark',
+            'glprep_not_preparat_mark',
+                ], 'safe'],
         ];
     }
 
@@ -106,20 +122,27 @@ class PatientFilter extends Model {
             'patient_dom' => 'Дом',
             'patient_korp' => 'Корпус',
             'patient_kvartira' => 'Квартира',
-            'glaukuchet_uchetbegin_beg' => 'Дата постановки на учет',
+            'is_glauk_mark' => 'Пациент содержится в регистре глаукомных пациентов',
+            'glaukuchet_uchetbegin_beg' => 'Дата постановки на учет',            
             'glaukuchet_detect' => 'Вид выявления заболевания',
-            'glaukuchet_deregdate_beg' => 'Дата снятия с учета',
+            'is_glaukuchet_mark' => 'Пациент состоит на учете в регистре',
             'glaukuchet_deregreason' => 'Причина снятия с учета',
+            'glaukuchet_deregdate_beg' => 'Дата снятия с учета',            
             'glaukuchet_stage' => 'Стадия глаукомы',
             'glaukuchet_operdate_beg' => 'Дата последнего оперативного лечения',
-            'glaukuchet_rlocat' => 'Категория льготного лекарственного обеспечения',
+            'glaukuchet_not_oper_mark' => 'Отсутствует оперативное лечение глаукомы',
             'glaukuchet_invalid' => 'Группа инвалидности',
+            'glaukuchet_not_invalid_mark' => 'Отсутствует инвалидность',
             'glaukuchet_lastvisit_beg' => 'Дата последней явки на прием',
             'glaukuchet_lastmetabol_beg' => 'Дата последнего курса метоболической терапии',
+            'glaukuchet_not_lastmetabol_mark' => 'Отсутствует курс метоболической терапии',
             'glaukuchet_id_employee' => 'Врач',
             'employee_id_dolzh' => 'Должность',
             'employee_id_podraz' => 'Подразделение',
             'employee_id_build' => 'Здание',
+            'glprep_id_preparat' => 'Препарат',
+            'glprep_rlocat' => 'Категория льготного лекарственного обеспечения',
+            'glprep_not_preparat_mark' => 'Отсутствует потребность в медикаментозной терапии',
             'patient_username' => 'Пользователь изменивший запись паспорта пациента',
             'patient_lastchange_beg' => 'Дата изменения записи паспорта пациента',
             'glaukuchet_username' => 'Пользователь изменивший запись карты глаукомного пациента',
@@ -140,12 +163,13 @@ class PatientFilter extends Model {
             'glaukuchet_detect' => [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'],
             'glaukuchet_deregreason' => [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'],
             'glaukuchet_stage' => [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'],
-            'glaukuchet_rlocat' => [1 => 'Федеральная', 2 => 'Региональная'],
             'glaukuchet_invalid' => [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'],
             'glaukuchet_id_employee' => [$value => \app\models\Fregat\Employee::getEmployeeByID($value)],
             'employee_id_dolzh' => [$value => \app\models\Fregat\Dolzh::getDolzhByID($value)],
             'employee_id_podraz' => [$value => \app\models\Fregat\Podraz::getPodrazByID($value)],
             'employee_id_build' => [$value => \app\models\Fregat\Build::getBuildByID($value)],
+            'glprep_id_preparat' => [$value => Preparat::getPreparatByID($value)],
+            'glprep_rlocat' => \app\models\Glauk\Glprep::VariablesValues('glprep_rlocat'),
         ];
 
         return isset($values[$attribute]) ? $values[$attribute] : NULL;

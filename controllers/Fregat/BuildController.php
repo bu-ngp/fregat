@@ -31,6 +31,11 @@ class BuildController extends Controller {
                         'allow' => true,
                         'roles' => ['BuildEdit'],
                     ],
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['EmployeeBuildEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -68,7 +73,7 @@ class BuildController extends Controller {
         $model = new Build();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -80,7 +85,7 @@ class BuildController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('update', [
                         'model' => $model,

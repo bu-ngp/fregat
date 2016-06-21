@@ -24,7 +24,6 @@ class PatientSearch extends Patient {
             'glaukuchets.glaukuchet_deregreason',
             'glaukuchets.glaukuchet_stage',
             'glaukuchets.glaukuchet_operdate',
-            'glaukuchets.glaukuchet_rlocat',
             'glaukuchets.glaukuchet_invalid',
             'glaukuchets.glaukuchet_lastvisit',
             'glaukuchets.glaukuchet_lastmetabol',
@@ -54,7 +53,6 @@ class PatientSearch extends Patient {
             'glaukuchets.glaukuchet_deregreason',
             'glaukuchets.glaukuchet_stage',
             'glaukuchets.glaukuchet_operdate',
-            'glaukuchets.glaukuchet_rlocat',
             'glaukuchets.glaukuchet_invalid',
             'glaukuchets.glaukuchet_lastvisit',
             'glaukuchets.glaukuchet_lastmetabol',
@@ -133,7 +131,6 @@ class PatientSearch extends Patient {
                                 $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_deregreason', $this->getAttribute('glaukuchets.glaukuchet_deregreason')]);
                                 $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_stage', $this->getAttribute('glaukuchets.glaukuchet_stage')]);
                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_operdate', 'date'));
-                                $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_rlocat', $this->getAttribute('glaukuchets.glaukuchet_rlocat')]);
                                 $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_invalid', $this->getAttribute('glaukuchets.glaukuchet_invalid')]);
                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_lastvisit', 'date'));
                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'glaukuchets.glaukuchet_lastmetabol', 'date'));
@@ -188,11 +185,6 @@ class PatientSearch extends Patient {
                                 $dataProvider->sort->attributes['glaukuchets.glaukuchet_operdate'] = [
                                     'asc' => ['glaukuchets.glaukuchet_operdate' => SORT_ASC],
                                     'desc' => ['glaukuchets.glaukuchet_operdate' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['glaukuchets.glaukuchet_rlocat'] = [
-                                    'asc' => ['glaukuchets.glaukuchet_rlocat' => SORT_ASC],
-                                    'desc' => ['glaukuchets.glaukuchet_rlocat' => SORT_DESC],
                                 ];
 
                                 $dataProvider->sort->attributes['glaukuchets.glaukuchet_invalid'] = [
@@ -301,6 +293,10 @@ class PatientSearch extends Patient {
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
 
+                                    $attr = 'is_glauk_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere(['not', ['glaukuchets.glaukuchet_id' => null]]);
+
                                     $attr = 'glaukuchet_uchetbegin';
                                     if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
                                         $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
@@ -313,6 +309,10 @@ class PatientSearch extends Patient {
                                     $attr = 'glaukuchet_detect';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+
+                                    $attr = 'is_glaukuchet_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere(['glaukuchets.glaukuchet_deregreason' => null, 'glaukuchets.glaukuchet_deregdate' => null]);
 
                                     $attr = 'glaukuchet_deregreason';
                                     if (!empty($filter[$attr]))
@@ -340,14 +340,17 @@ class PatientSearch extends Patient {
                                         $query->andFilterWhere([$znak, $attr, $value]);
                                     }
 
-                                    $attr = 'glaukuchet_rlocat';
-                                    if (!empty($filter[$attr]))
-                                        $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+                                    $attr = 'glaukuchet_not_oper_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere(['glaukuchets.glaukuchet_operdate' => null]);
 
                                     $attr = 'glaukuchet_invalid';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
 
+                                    $attr = 'glaukuchet_not_invalid_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere(['glaukuchets.glaukuchet_invalid' => null]);
 
                                     $attr = 'glaukuchet_lastvisit';
                                     if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
@@ -367,6 +370,10 @@ class PatientSearch extends Patient {
                                         $query->andFilterWhere([$znak, $attr, $value]);
                                     }
 
+                                    $attr = 'glaukuchet_not_lastmetabol_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere(['glaukuchets.glaukuchet_lastmetabol' => null]);
+
                                     $attr = 'glaukuchet_id_employee';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['glaukuchets.id_employee' => $filter[$attr]]);
@@ -382,6 +389,18 @@ class PatientSearch extends Patient {
                                     $attr = 'employee_id_build';
                                     if (!empty($filter[$attr]))
                                         $query->andFilterWhere(['IN', 'idEmployee.id_build', $filter[$attr]]);
+
+                                    $attr = 'glprep_id_preparat';
+                                    if (!empty($filter[$attr]))
+                                        $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.id_preparat in (' . implode(',', $filter[$attr]) . '))');
+
+                                    $attr = 'glprep_rlocat';
+                                    if (!empty($filter[$attr]))
+                                        $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.glprep_rlocat in (' . implode(',', $filter[$attr]) . '))');
+
+                                    $attr = 'glprep_not_preparat_mark';
+                                    if ($filter[$attr] === '1')
+                                        $query->andWhere('glaukuchets.glaukuchet_id not in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
 
                                     $attr = 'patient_username';
                                     if (!empty($filter[$attr]))

@@ -17,7 +17,7 @@ class GlprepSearch extends Glprep {
      */
     public function rules() {
         return [
-            [['glprep_id', 'id_glaukuchet', 'id_preparat'], 'integer'],
+            [['glprep_id', 'id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'integer'],
         ];
     }
 
@@ -69,6 +69,7 @@ class GlprepSearch extends Glprep {
                     'glprep_id' => $this->glprep_id,
                     'id_glaukuchet' => $this->id_glaukuchet,
                     'id_preparat' => $this->id_preparat,
+                    'glprep_rlocat' => $this->glprep_rlocat,
                 ]);
 
                 $query->andFilterWhere(['LIKE', 'idPreparat.preparat_name', $this->getAttribute('idPreparat.preparat_name')]);

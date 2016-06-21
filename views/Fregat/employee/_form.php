@@ -19,39 +19,39 @@ use kartik\datecontrol\DateControl;
     <?php $form = ActiveForm::begin(); ?>
 
     <?=
-    $form->field($model, 'id_dolzh')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Dolzh,
-                'fields' => [
-                    'keyfield' => 'id_dolzh',
-                    'resultfield' => 'dolzh_name',
-                ],
-                'placeholder' => 'Выберете должность',
-                'fromgridroute' => 'Fregat/dolzh/index',
-                'resultrequest' => 'Fregat/dolzh/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
-                'dopparams' => [
-                    'iduser' => $iduser,
-                ],
-    ]));
+    $form->field($model, 'id_dolzh')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                        'model' => $model,
+                        'resultmodel' => new Dolzh,
+                        'fields' => [
+                            'keyfield' => 'id_dolzh',
+                            'resultfield' => 'dolzh_name',
+                        ],
+                        'placeholder' => 'Выберете должность',
+                        'resultrequest' => 'Fregat/dolzh/selectinput',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'dopparams' => [
+                            'iduser' => $iduser,
+                        ],
+                        'disabled' => $OnlyBuildEdit,
+                    ]), $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/dolzh/index',]));
     ?>
 
     <?=
-    $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Podraz,
-                'fields' => [
-                    'keyfield' => 'id_podraz',
-                    'resultfield' => 'podraz_name',
-                ],
-                'placeholder' => 'Выберете подразделение',
-                'fromgridroute' => 'Fregat/podraz/index',
-                'resultrequest' => 'Fregat/podraz/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
-                'dopparams' => [
-                    'iduser' => $iduser,
-                ],
-    ]));
+    $form->field($model, 'id_podraz')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                        'model' => $model,
+                        'resultmodel' => new Podraz,
+                        'fields' => [
+                            'keyfield' => 'id_podraz',
+                            'resultfield' => 'podraz_name',
+                        ],
+                        'placeholder' => 'Выберете подразделение',
+                        'resultrequest' => 'Fregat/podraz/selectinput',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'dopparams' => [
+                            'iduser' => $iduser,
+                        ],
+                        'disabled' => $OnlyBuildEdit,
+                    ]), $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/podraz/index']));
     ?>
 
     <?=
@@ -76,13 +76,13 @@ use kartik\datecontrol\DateControl;
     $form->field($model, 'employee_dateinactive')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
         'options' => [
-            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession', 'disabled' => $OnlyBuildEdit],
         ],
     ])
     ?>
 
     <?=
-    $form->field($model, 'employee_importdo')->checkbox();
+    $form->field($model, 'employee_importdo')->checkbox(['disabled' => $OnlyBuildEdit]);
     ?>
 
     <div class="form-group">
