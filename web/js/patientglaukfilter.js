@@ -5,6 +5,8 @@ var filtersearch = "PatientSearch";
 $(document).on('ready pjax:success', function () {
     $('.filter_button').click(function (e) {
         e.preventDefault(); //for prevent default behavior of <a> tag.
+        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(images/progress.gif) center center no-repeat; background-size: 20px;"></div>');
+
         $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
             InitAddress();
             $('input[name="patient_dr-patientfilter-patient_dr"').mask('99.99.9999');
@@ -33,9 +35,10 @@ $(document).on("click", filtermodal + "_apply", function () {
     return false;
 });
 
-$(document).on('click', filtermodal + "_resetfilter", function (event) {
+$(document).on('click', filtermodal + "_resetfilter, " + filtermodal + "_reset", function (event) {
     bootbox.confirm("Вы уверены, что хотите сбросить дополнительный фильтр?", function (result) {
         if (result) {
+            $(filtermodal).modal("hide");
             $(filtermodal)[0].statusform = 0;
             $(filtergrid).yiiGridView("applyFilter");
         }

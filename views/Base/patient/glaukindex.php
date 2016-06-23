@@ -171,7 +171,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             Yii::$app->user->can('GlaukUserPermission') ? [
                                 'update' => function ($url, $model, $key) {
                                     $customurl = Url::to(['Base/patient/update', 'id' => $model->primarykey, 'patienttype' => 'glauk']);
-                                    return \yii\helpers\Html::a(isset($model->glaukuchets) ? '<i class="glyphicon glyphicon-pencil"></i>' : '<i class="glyphicon glyphicon-plus"></i>', $customurl, ['title' => isset($model->glaukuchets) ? 'Обновить' : 'Создать карту глаукомного пациента', 'class' => isset($model->glaukuchets) ? 'btn btn-xs btn-warning' : 'btn btn-xs btn-info', 'data-pjax' => '0']);
+
+                                    if (!(isset($model->glaukuchets) || Yii::$app->user->can('GlaukOperatorPermission')))
+                                        return '';
+                                    else
+                                        return \yii\helpers\Html::a(isset($model->glaukuchets) ? '<i class="glyphicon glyphicon-pencil"></i>' : '<i class="glyphicon glyphicon-plus"></i>', $customurl, ['title' => isset($model->glaukuchets) ? 'Обновить' : 'Создать карту глаукомного пациента', 'class' => isset($model->glaukuchets) ? 'btn btn-xs btn-warning' : 'btn btn-xs btn-info', 'data-pjax' => '0']);
                                 }] : [], Yii::$app->user->can('PatientRemoveRole') ? [
                                         'deleteajax' => ['Base/patient/delete', 'patient_id'],
                                             ] : []

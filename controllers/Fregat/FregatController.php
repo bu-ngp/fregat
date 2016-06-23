@@ -77,7 +77,7 @@ class FregatController extends Controller {
         FregatImport::ImportEmployee();
     }
 
-    public function actionTest() {
+    public function actionFias() {
         $file = 'AS_ADDROBJ_20160609_c5080ba4-9f46-4b6e-aecc-72a630730b3a.XML';
         $interestingNodes = array('AOGUID');
         $xmlObject = new \XMLReader();
@@ -108,6 +108,21 @@ class FregatController extends Controller {
         }
         ECHO 'ok';
         $xmlObject->close();
+    }
+    
+    public function actionTest() {
+        $L1 = \app\models\Config\Authuser::findOne(882);
+        $L2 = \app\models\Config\Authuser::findOne(1174);
+        
+        
+        var_dump($L1->auth_user_fullname);
+        var_dump($L2->auth_user_fullname);
+        var_dump($L1->auth_user_fullname === $L2->auth_user_fullname);
+        
+        $L2->auth_user_fullname = str_replace("\xEF\xBB\xBF",'',$L2->auth_user_fullname); 
+        var_dump($L1->auth_user_fullname);
+        var_dump($L2->auth_user_fullname);
+        var_dump($L1->auth_user_fullname === $L2->auth_user_fullname);
     }
 
 }

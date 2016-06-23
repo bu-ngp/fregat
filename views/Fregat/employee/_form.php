@@ -19,7 +19,7 @@ use kartik\datecontrol\DateControl;
     <?php $form = ActiveForm::begin(); ?>
 
     <?=
-    $form->field($model, 'id_dolzh')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+    $form->field($model, 'id_dolzh')->widget(Select2::classname(), array_merge(Proc::DGselect2(array_merge([
                         'model' => $model,
                         'resultmodel' => new Dolzh,
                         'fields' => [
@@ -33,11 +33,11 @@ use kartik\datecontrol\DateControl;
                             'iduser' => $iduser,
                         ],
                         'disabled' => $OnlyBuildEdit,
-                    ]), $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/dolzh/index',]));
+                                    ], $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/dolzh/index',]))));
     ?>
 
     <?=
-    $form->field($model, 'id_podraz')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+    $form->field($model, 'id_podraz')->widget(Select2::classname(), array_merge(Proc::DGselect2(array_merge([
                         'model' => $model,
                         'resultmodel' => new Podraz,
                         'fields' => [
@@ -51,7 +51,7 @@ use kartik\datecontrol\DateControl;
                             'iduser' => $iduser,
                         ],
                         'disabled' => $OnlyBuildEdit,
-                    ]), $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/podraz/index']));
+                                    ], $OnlyBuildEdit ? [] : ['fromgridroute' => 'Fregat/podraz/index',]))));
     ?>
 
     <?=
@@ -89,6 +89,7 @@ use kartik\datecontrol\DateControl;
         <div class="form-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                     <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
                 </div>
             </div> 
@@ -96,5 +97,3 @@ use kartik\datecontrol\DateControl;
     </div>
 
     <?php ActiveForm::end(); ?>
-
-</div>

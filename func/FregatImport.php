@@ -631,7 +631,12 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
-             
+
+
+
+
+
+                
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
@@ -655,7 +660,12 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-              
+
+
+
+
+
+                
 // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
@@ -1043,7 +1053,7 @@ class FregatImport {
                     ->send();
     }
 
-    // Производим импорт материальных ценностей
+    // Производим импорт материальных ценностей                                             // Не забыть про InactiveEmployee
     static function ImportDo() {
         // Делаем запись в таблицу отчетов импорта
         $logreport = new Logreport;
@@ -1094,7 +1104,13 @@ class FregatImport {
                         $handle = @fopen(self::$filename, "r");
 
                         if ($handle) {
+                            $UTF8deleteBOM = true;
                             while (($subject = fgets($handle, 4096)) !== false) {
+                                if ($UTF8deleteBOM) {
+                                    $subject = str_replace("\xEF\xBB\xBF", '', $subject);
+                                    $UTF8deleteBOM = false;
+                                }
+
                                 $transaction = Yii::$app->db->beginTransaction();
                                 $i++;
                                 try {
@@ -1123,7 +1139,7 @@ class FregatImport {
                                                 ->where(array_merge([
                                                     'id_dolzh' => $id_dolzh,
                                                     'id_podraz' => $location->id_podraz,
-                                                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $location->id_build]))
+                                                                ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]))
                                                 ->andFilterWhere(['like', 'auth_user_fullname', $employee_fio, false])
                                                 ->one();
 
@@ -1189,8 +1205,8 @@ class FregatImport {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                    if ($newEmployee)
-                                                       self::Mishanya($Authuser, $Employee, $matches);
+                                                    //                                              if ($newEmployee)
+                                                    //                                                  self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';

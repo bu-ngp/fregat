@@ -28,17 +28,17 @@ use yii\web\Session;
         <div class="panel-heading"><?= Html::encode('Паспорт пациента') ?></div>
         <div class="panel-body">
 
-            <?= $form->field($model, 'patient_fam')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true, 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_fam')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true, 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
-            <?= $form->field($model, 'patient_im')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_im')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
-            <?= $form->field($model, 'patient_ot')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_ot')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
             <?=
             $form->field($model, 'patient_dr')->widget(DateControl::classname(), [
                 'type' => DateControl::FORMAT_DATE,
                 'options' => [
-                    'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                    'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                 ],
                 'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
             ])
@@ -51,7 +51,7 @@ use yii\web\Session;
                 'pluginOptions' => [
                     'allowClear' => true
                 ],
-                'options' => ['placeholder' => 'Выберете пол пациента', 'class' => 'form-control setsession', 'form' => $formname],
+                'options' => ['placeholder' => 'Выберете пол пациента', 'class' => 'form-control setsession', 'form' => $formname, 'disabled' => $dopparams['DisableElements']],
                 'theme' => Select2::THEME_BOOTSTRAP,
             ]);
             ?>
@@ -73,6 +73,7 @@ use yii\web\Session;
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinputforcity',
                                 'form' => $formname,
+                                'disabled' => $dopparams['DisableElements'],
                             ]), [
                 'pluginEvents' => [
                     "select2:select" => "function() { FillCity(); }",
@@ -95,6 +96,7 @@ use yii\web\Session;
                                 'ajaxparams' => ['fias_city' => '$(\'select[name="Fias[AOGUID]"]\').val()'],
                                 'minimuminputlength' => 2,
                                 'form' => $formname,
+                                'disabled' => $dopparams['DisableElements'],
                             ]), [
                             /*  'pluginEvents' => [
                               "select2:select" => "function() { FillTrOsnov(); }",
@@ -103,11 +105,11 @@ use yii\web\Session;
             ]))
             ?>
 
-            <?= $form->field($model, 'patient_dom')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_dom')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
-            <?= $form->field($model, 'patient_korp')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_korp')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
-            <?= $form->field($model, 'patient_kvartira')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname]) ?>
+            <?= $form->field($model, 'patient_kvartira')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'form' => $formname, 'disabled' => $dopparams['DisableElements']]) ?>
 
         </div>
     </div>
@@ -119,7 +121,7 @@ use yii\web\Session;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_uchetbegin')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -129,44 +131,44 @@ use yii\web\Session;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_lastvisit')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
                 ?>
 
                 <?=
-                $form->field($dopparams['Glaukuchet'], 'id_employee')->widget(Select2::classname(), Proc::DGselect2([
+                $form->field($dopparams['Glaukuchet'], 'id_employee')->widget(Select2::classname(), Proc::DGselect2(array_merge([
                             'model' => $dopparams['Glaukuchet'],
                             'resultmodel' => new \app\models\Fregat\Employee,
                             'fields' => [
                                 'keyfield' => 'id_employee',
                             ],
                             'placeholder' => 'Введите врача',
-                            'fromgridroute' => 'Fregat/employee/index',
                             'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
                             'thisroute' => $this->context->module->requestedRoute,
                             'methodquery' => 'selectinput',
                             'dopparams' => ['patienttype' => $patienttype],
                             'form' => $formname,
-                ]));
+                            'disabled' => $dopparams['DisableElements'],
+                                        ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Fregat/employee/index'])));
                 ?>
 
                 <?=
-                $form->field($dopparams['Glaukuchet'], 'id_class_mkb')->widget(Select2::classname(), Proc::DGselect2([
+                $form->field($dopparams['Glaukuchet'], 'id_class_mkb')->widget(Select2::classname(), Proc::DGselect2(array_merge([
                             'model' => $dopparams['Glaukuchet'],
                             'resultmodel' => new app\models\Base\Classmkb,
                             'fields' => [
                                 'keyfield' => 'id_class_mkb',
                             ],
                             'placeholder' => 'Введите диагноз',
-                            'fromgridroute' => 'Base/classmkb/indexglauk',
                             'resultrequest' => 'Base/classmkb/selectinputfordiag',
                             'thisroute' => $this->context->module->requestedRoute,
                             'methodquery' => 'selectinput',
                             'dopparams' => ['patienttype' => $patienttype],
                             'form' => $formname,
-                ]));
+                            'disabled' => $dopparams['DisableElements'],
+                                        ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Base/classmkb/indexglauk'])));
                 ?>
 
                 <?=
@@ -176,7 +178,7 @@ use yii\web\Session;
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
-                    'options' => ['placeholder' => 'Выберете вид выявления заболевания', 'class' => 'form-control setsession', 'form' => $formname],
+                    'options' => ['placeholder' => 'Выберете вид выявления заболевания', 'class' => 'form-control setsession', 'form' => $formname, 'disabled' => $dopparams['DisableElements']],
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
@@ -188,7 +190,7 @@ use yii\web\Session;
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
-                    'options' => ['placeholder' => 'Выберете стадию глаукомы', 'class' => 'form-control setsession', 'form' => $formname],
+                    'options' => ['placeholder' => 'Выберете стадию глаукомы', 'class' => 'form-control setsession', 'form' => $formname, 'disabled' => $dopparams['DisableElements']],
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
@@ -197,7 +199,7 @@ use yii\web\Session;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_operdate')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -210,7 +212,7 @@ use yii\web\Session;
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
-                    'options' => ['placeholder' => 'Выберете группу инвалидности', 'class' => 'form-control setsession', 'form' => $formname],
+                    'options' => ['placeholder' => 'Выберете группу инвалидности', 'class' => 'form-control setsession', 'form' => $formname, 'disabled' => $dopparams['DisableElements']],
                     'theme' => Select2::THEME_BOOTSTRAP,
                 ]);
                 ?>
@@ -219,7 +221,7 @@ use yii\web\Session;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_lastmetabol')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -247,18 +249,18 @@ use yii\web\Session;
                                         //  'visible' => false,    
                                         ],
                                     ],
-                                    'buttons' => [
-                                        'deleteajax' => ['Glauk/glprep/delete', 'glprep_id']
-                                    ],
+                                    'buttons' => array_merge(!$dopparams['DisableElements'] ? [
+                                                'deleteajax' => ['Glauk/glprep/delete', 'glprep_id']
+                                                    ] : []),
                                 ]),
                                 'gridOptions' => [
                                     'dataProvider' => $dopparams['dataProviderglprep'],
                                     'filterModel' => $dopparams['searchModelglprep'],
                                     'panel' => [
                                         'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-tint"></i> Препараты</h3>',
-                                        'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Glauk/glprep/create',
-                                            'idglaukuchet' => $model->glaukuchets->glaukuchet_id,
-                                                ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
+                                        'before' => !$dopparams['DisableElements'] ? Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Glauk/glprep/create',
+                                                    'idglaukuchet' => $model->glaukuchets->glaukuchet_id,
+                                                        ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                                     ],
                                 ]
                     ]));
@@ -272,7 +274,7 @@ use yii\web\Session;
                         $form->field($dopparams['Glaukuchet'], 'glaukuchet_deregdate')->widget(DateControl::classname(), [
                             'type' => DateControl::FORMAT_DATE,
                             'options' => [
-                                'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                                'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                             ],
                             'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                         ])
@@ -284,7 +286,7 @@ use yii\web\Session;
                             'pluginOptions' => [
                                 'allowClear' => true
                             ],
-                            'options' => ['placeholder' => 'Выберете причину снятия с учета', 'class' => 'form-control setsession', 'form' => $formname],
+                            'options' => ['placeholder' => 'Выберете причину снятия с учета', 'class' => 'form-control setsession', 'form' => $formname, 'disabled' => $dopparams['DisableElements']],
                             'theme' => Select2::THEME_BOOTSTRAP,
                         ]);
                         ?>
@@ -297,6 +299,7 @@ use yii\web\Session;
                     'form' => $formname, 'maxlength' => 512,
                     'placeholder' => 'Введите комментарий к карте глаукомного пациента',
                     'rows' => 10,
+                    'disabled' => $dopparams['DisableElements'],
                 ]);
                 ?>
 
@@ -308,7 +311,7 @@ use yii\web\Session;
         <div class="panel panel-default">
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
-                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => $formname]) ?>
+                <?= $dopparams['DisableElements'] ? '' : Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => $formname]) ?>
             </div>
         </div>
     </div>

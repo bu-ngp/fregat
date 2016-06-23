@@ -131,7 +131,7 @@ class PatientController extends Controller {
         $Fias = new Fias;
 
         // отправлена форма
-        if (isset($_POST['Fias']['AOGUID'])) {
+        if (isset($_POST['Fias']['AOGUID']) && Yii::$app->user->can('GlaukOperatorPermission')) {
 
             // город не заполнен
             if (empty($_POST['Fias']['AOGUID'])) {
@@ -158,7 +158,9 @@ class PatientController extends Controller {
             $Fias = $address->AOLEVEL == 7 ? Fias::findOne($address->PARENTGUID) : $address;
         }
 
-        if ($patienttype === 'glauk') {
+        if ($patienttype === 'glauk' && Yii::$app->user->can('GlaukUserPermission')) {
+            $dopparams['dopparams']['DisableElements'] = !Yii::$app->user->can('GlaukOperatorPermission');
+
             $Glaukuchet = Glaukuchet::findOne(['id_patient' => $model->primaryKey]);
 
             if (empty($Glaukuchet)) {
@@ -168,7 +170,7 @@ class PatientController extends Controller {
             }
 
             $dopparams['dopparams']['Glaukuchet'] = $Glaukuchet;
-            if (!$Glaukuchet->isNewRecord) {
+            if (!$Glaukuchet->isNewRecord && Yii::$app->user->can('GlaukOperatorPermission')) {
                 $Glprep = new Glprep;
                 $Glprep->load(Yii::$app->request->get(), 'Glprep');
                 $Glprep->id_glaukuchet = $Glaukuchet->primaryKey;
@@ -184,37 +186,45 @@ class PatientController extends Controller {
 
         $Fias->scenario = 'citychooserequired';
 
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            if ($patienttype === 'glauk' && $modelloaded && $Glaukuchet->load(Yii::$app->request->post()) && Model::validateMultiple([$model, $Glaukuchet, $Fias])) {
-                $model->save(false);
-                $Glaukuchet->save(false);
+        if (Yii::$app->user->can('GlaukOperatorPermission')) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($patienttype === 'glauk' && $modelloaded && $Glaukuchet->load(Yii::$app->request->post()) && Model::validateMultiple([$model, $Glaukuchet, $Fias])) {
+                    $model->save(false);
+                    $Glaukuchet->save(false);
 
-                $transaction->commit();
+                    $transaction->commit();
 
-                if ($GlaukuchetIsNew) {
+                    if ($GlaukuchetIsNew) {
 
 
+                        return $this->render('update', array_merge([
+                                    'model' => $model,
+                                    'Fias' => $Fias,
+                                    'patienttype' => $patienttype,
+                                                ], $dopparams));
+                    } else {
+                        return $this->redirect([$patienttype . 'index']);
+                    }
+                } else {
+                    // Откатываем транзакцию
+                    $transaction->rollback();
                     return $this->render('update', array_merge([
                                 'model' => $model,
                                 'Fias' => $Fias,
                                 'patienttype' => $patienttype,
                                             ], $dopparams));
-                } else {
-                    return $this->redirect([$patienttype . 'index']);
                 }
-            } else {
-                // Откатываем транзакцию
+            } catch (Exception $e) {
                 $transaction->rollback();
-                return $this->render('update', array_merge([
-                            'model' => $model,
-                            'Fias' => $Fias,
-                            'patienttype' => $patienttype,
-                                        ], $dopparams));
+                throw new Exception($e->getMessage());
             }
-        } catch (Exception $e) {
-            $transaction->rollback();
-            throw new Exception($e->getMessage());
+        } elseif (Yii::$app->user->can('GlaukUserPermission')) {
+            return $this->render('update', array_merge([
+                        'model' => $model,
+                        'Fias' => $Fias,
+                        'patienttype' => $patienttype,
+                                    ], $dopparams));
         }
     }
 
