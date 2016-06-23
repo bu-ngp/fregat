@@ -33,7 +33,7 @@ class Glprep extends \yii\db\ActiveRecord {
             [['id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'integer'],
             [['id_glaukuchet'], 'exist', 'skipOnError' => true, 'targetClass' => Glaukuchet::className(), 'targetAttribute' => ['id_glaukuchet' => 'glaukuchet_id']],
             [['id_preparat'], 'exist', 'skipOnError' => true, 'targetClass' => Preparat::className(), 'targetAttribute' => ['id_preparat' => 'preparat_id']],
-            ['id_glaukuchet', 'unique', 'targetAttribute' => ['id_glaukuchet', 'id_preparat'], 'message' => 'Этот препарат уже есть у глаукомного пациента'],
+            ['id_preparat', 'unique', 'targetAttribute' => ['id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'message' => 'Этот препарат с этой категорией льготного лекарственного обеспечения уже есть у глаукомного пациента'],
         ];
     }
 

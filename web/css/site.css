@@ -142,3 +142,12 @@ table.kv-grid-table>thead>tr>td>input.form-control, table.kv-grid-table>thead>tr
 input.inputuppercase {
     text-transform: uppercase;
 }
+
+input.applyfiltercolor, select.applyfiltercolor, span.applyfiltercolor, ul.applyfiltercolor, li.applyfiltercolor {
+    background: #bdffbc !important;
+}
+
+label.applyfiltercolor {
+    color: #4cc74b;
+    font-weight: bold;
+}

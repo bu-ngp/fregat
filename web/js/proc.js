@@ -81,12 +81,18 @@ function SetSessionEach(thiselems_array) {
 }
 
 function InitWindowGUID() {
-    var guid = Math.floor(Math.random() * 0x10000 /* 65536 */).toString(16);
-    window.name = guid;
     $.ajax({
         url: "?r=site%2Fsetwindowguid",
         type: "post",
-        data: {guid: guid},
+        data: {guid: window.name, path: window.location.pathname, search: window.location.search},
+        dataType: "json",
+        success: function (obj) {
+            window.name = obj.guid;
+            if (obj.gohome)
+                $.ajax({
+                    url: "?r=site%2Fgohome",
+                });
+        },
         error: function (data) {
             console.error("Ошибка setWindowGUID");
         }
@@ -268,6 +274,5 @@ $(function () {
         SetSession(this);
     });
 
-    // if (window.name === '')
-    //   InitWindowGUID();
+    InitWindowGUID();
 });

@@ -38,13 +38,9 @@ AppAsset::register($this);
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => array_merge([
                     ['label' => 'Главная', 'url' => ['/site/index']],
-                        ],
-                        
-                        Proc::GetMenuButtons($this),
-                        
-                       // Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [],
-                        
-    [Yii::$app->user->isGuest ?
+                        ], Proc::GetMenuButtons($this),
+                        // Yii::$app->user->can('Administrator') ? [['label' => 'Фрегат', 'url' => ['Fregat/fregat/index']]] : [],
+                        [Yii::$app->user->isGuest ?
                             ['label' => 'Вход', 'url' => ['/site/login']] :
                             [
                         'label' => 'Выход (' . Yii::$app->user->identity->auth_user_fullname . ')',
@@ -56,27 +52,27 @@ AppAsset::register($this);
             ?>
 
             <div class="container">
-                <?php
-             /*   $controller = Yii::$app->controller;
-                $default_controller = Yii::$app->defaultRoute;
-                $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
+            <?php
+            /*   $controller = Yii::$app->controller;
+              $default_controller = Yii::$app->defaultRoute;
+              $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
 
-                if (!$isHome) {
-                    NavBar::begin([
-                        'options' => [
-                            'class' => 'navbar-default container-fluid',
-                        ],
-                    ]);
-                    echo Nav::widget([
-                        'options' => ['class' => 'navbar-nav'],
-                        'items' => array_merge(
-                                Yii::$app->user->can('Administrator') ? [['label' => 'Материальные ценности', 'url' => ['Fregat/fregat/index']]] : [], 
-                                Yii::$app->user->can('Administrator') ? [['label' => 'Настройки', 'url' => ['Fregat/fregat/config']]] : []
-                        ),
-                    ]);
-                    NavBar::end();
-                }*/
-                ?>
+              if (!$isHome) {
+              NavBar::begin([
+              'options' => [
+              'class' => 'navbar-default container-fluid',
+              ],
+              ]);
+              echo Nav::widget([
+              'options' => ['class' => 'navbar-nav'],
+              'items' => array_merge(
+              Yii::$app->user->can('Administrator') ? [['label' => 'Материальные ценности', 'url' => ['Fregat/fregat/index']]] : [],
+              Yii::$app->user->can('Administrator') ? [['label' => 'Настройки', 'url' => ['Fregat/fregat/config']]] : []
+              ),
+              ]);
+              NavBar::end();
+              } */
+            ?>
 
                 <?=
                 Breadcrumbs::widget([
@@ -87,10 +83,10 @@ AppAsset::register($this);
                 <?php
                 if (!isset($this->params['breadcrumbs'])) {
                     $session = new Session;
-                    $session->open();                    
+                    $session->open();
                     $session->remove('breadcrumbs');
-                    $session->close();
-                }                
+                    $session->close();                    
+                }
                 ?>
                 <?= $content ?>
             </div>
@@ -102,7 +98,7 @@ AppAsset::register($this);
             </div>
         </footer>
 
-        <?php $this->endBody() ?>
+<?php $this->endBody() ?>
     </body>
 </html>
-<?php $this->endPage() ?>
+        <?php $this->endPage() ?>

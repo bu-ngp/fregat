@@ -11,12 +11,22 @@ use app\func\Proc;
 ?>
 
 <div class="patientglaukfilter-form">
+    <div class="form-group">     
+        <div class="row">                         
+            <div class="col-xs-12">
+                <?=
+                yii\bootstrap\Html::input('text', null, null, ['id'=>'test1', 'class' => 'form-control inputuppercase searchfilterform', 'placeholder' => 'ПОИСК...', 'autofocus' => true])
+                ?>
+            </div>
+        </div>
+    </div>  
+
     <?php $form = ActiveForm::begin(['options' => ['id' => $model->formName() . '-form', 'data-pjax' => true]]); ?>
     <div class="insideforms">
-        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Паспорт пациента') ?></div>
             <div class="panel-body">
-                <?= $form->field($model, 'patient_fam')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase', 'autofocus' => true]) ?>
+                <?= $form->field($model, 'patient_fam')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase']) ?>
 
                 <?= $form->field($model, 'patient_im')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase']) ?>
 
@@ -75,7 +85,7 @@ use app\func\Proc;
                 ]);
                 ?>
 
-                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
                     <div class="panel-heading"><?= Html::encode('Адрес пациента') ?></div>
                     <div class="panel-body">
                         <?=
@@ -122,7 +132,7 @@ use app\func\Proc;
                 </div>
             </div>
         </div>
-        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Карта глаукомного пациента') ?></div>
             <div class="panel-body">
 
@@ -344,7 +354,7 @@ use app\func\Proc;
 
                 <?= $form->field($model, 'glaukuchet_not_lastmetabol_mark')->checkbox(); ?>
 
-                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
                     <div class="panel-heading"><?= Html::encode('Врач') ?></div>
                     <div class="panel-body">
 
@@ -422,7 +432,7 @@ use app\func\Proc;
                     </div>   
                 </div>
 
-                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
                     <div class="panel-heading"><?= Html::encode('Медикаментозная терапия') ?></div>
                     <div class="panel-body">
 
@@ -465,7 +475,7 @@ use app\func\Proc;
             </div>   
         </div>
 
-        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Аудит операций пользователя') ?></div>
             <div class="panel-body">
 

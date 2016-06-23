@@ -30,7 +30,7 @@ class SiteController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['error', 'setsession', 'setwindowguid', 'delete-excel-file'],
+                        'actions' => ['error', 'setsession', 'setwindowguid', 'delete-excel-file', 'gohome'],
                         'allow' => true,
                     ],
                 ],
@@ -146,24 +146,49 @@ class SiteController extends Controller {
     }
 
     public function actionSetwindowguid() {
-        $result = '0';
         $guid = (string) filter_input(INPUT_POST, 'guid');
+        $pathname = (string) filter_input(INPUT_POST, 'path');
+        $search = (string) filter_input(INPUT_POST, 'search');
+        $session = new Session;
+        $session->open();
+        $res = isset($session['WindowsGUIDs']) ? $session['WindowsGUIDs'] : [];
+        $currentguid = $session['WindowsGUIDCurrent'];
+        $gohome = false;
+        $homeurls = [
+            "",
+            "?r=site%2Findex",
+            "?r=site%2Flogin",
+            "?r=site%2Flogout",
+            "?r=site%2Ferror",
+        ];
 
-        if (!empty($guid)) {
-            $session = new Session;
-            $session->open();
+        $ishome = in_array($search, $homeurls);
 
-            $res = $session['WindowsGUIDs'];
-            if (!isset($res))
-                $res = [];
-            array_push($res, $guid);
+        if (empty($guid)) {        // Если новая вкладка
+            for ($i = 0; $i < 6; $i++)
+                $guid .= dechex(rand(0, 15));
+
+            $res[$guid] = 1;
+
             $session['WindowsGUIDs'] = $res;
             $session['WindowsGUIDCurrent'] = $guid;
-            $result = '1';
-            $session->close();
+            $gohome = !$ishome;
+        } else {        // Если существующая вкладка
+            if ($session['WindowsGUIDCurrent'] === $guid) {     // Если текущая вкладка
+            } else {        // Если другая существующая вкладка
+                $session['WindowsGUIDCurrent'] = $guid;
+                $gohome = !$ishome;
+            }
+            $session['WindowsGUIDs'] = $res;
         }
+        $session->close();
+        echo json_encode((object) ['guid' => $guid, 'gohome' => $gohome]);
+    }
 
-        echo $result;
+    public function actionGohome() {
+        if (Yii::$app->request->isAjax) {
+            return $this->goHome();
+        }
     }
 
     public function actionDeleteExcelFile() {

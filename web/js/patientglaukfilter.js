@@ -20,6 +20,57 @@ $(document).on('ready pjax:success', function () {
             $('input[name="glaukuchet_lastvisit_end-patientfilter-glaukuchet_lastvisit_end"').mask('99.99.9999');
             $('input[name="glaukuchet_lastmetabol_beg-patientfilter-glaukuchet_lastmetabol_beg"').mask('99.99.9999');
             $('input[name="glaukuchet_lastmetabol_end-patientfilter-glaukuchet_lastmetabol_end"').mask('99.99.9999');
+
+            $("div.insideforms span.select2-selection__rendered").each(function (key, value) {
+                if (($(value).attr("id")).indexOf("znak-container") < 0) {
+                    var select2single = $.trim($(value).clone().children().remove().end().text());
+
+                    if (select2single !== "")
+                        $(value).parent("span").addClass("applyfiltercolor");
+                }
+            });
+
+            $("div.insideforms input[type='text'].form-control").each(function (key, value) {
+                if ($(value).val() !== "")
+                    $(value).addClass("applyfiltercolor");
+            });
+
+            $("div.insideforms input[type='checkbox']").each(function (key, value) {
+                if ($(value).is(":checked"))
+                    $(value).parent("label").addClass("applyfiltercolor");
+            });
+
+            $("div.insideforms ul.select2-selection__rendered").each(function (key, value) {
+                if ($(value).children("li").length > 1) {
+                    $(value).addClass("applyfiltercolor");
+                    $(value).children("li").addClass("applyfiltercolor")
+                }
+            });
+
+            /* ----------------------------- */
+
+            $(document).on("change", "div.insideforms input[type='text'].form-control", function () {
+                if (this.value === "")
+                    $(this).removeClass("applyfiltercolor")
+                else
+                    $(this).addClass("applyfiltercolor")
+            });
+
+            $("select.form-control").change(function () {
+                if ($(this).val())
+                    $(this).next("span.select2.select2-container").children("span.selection").children("span.select2-selection").addClass("applyfiltercolor").children("ul.select2-selection__rendered").children("li").addClass("applyfiltercolor");
+                else
+                    $(this).next("span.select2.select2-container").children("span.selection").children("span.select2-selection").removeClass("applyfiltercolor").children("ul.select2-selection__rendered").children("li").removeClass("applyfiltercolor");
+                ;
+            });
+
+            $("div.insideforms input[type='checkbox']").change(function () {
+                if ($(this).is(":checked"))
+                    $(this).parent("label").addClass("applyfiltercolor");
+                else
+                    $(this).parent("label").removeClass("applyfiltercolor");
+            });
+
         });
     });
 });
@@ -102,3 +153,25 @@ function ClearCity() {
     $('input[name="PatientFilter[patient_kvartira]').prop("disabled", true);
     $('input[name="PatientFilter[patient_kvartira]').val("");
 }
+
+$(document).on("keyup", "input.searchfilterform", function () {
+//$("div.insideforms :input").not(':button,:hidden').each(function(key, value) {
+    $("div.insideforms").find("div.panelblock").hide();
+
+    $("label").each(function (key, value) {
+
+
+        var searchinput = ($("input.searchfilterform").val()).toUpperCase();
+        var labelinput = $.trim(($(value).text()).toUpperCase());
+
+        if ((labelinput).indexOf(searchinput) < 0) {
+
+            $(value).parent("div").hide();
+
+        }
+        else {
+            $(value).parentsUntil("div.insideforms", "div.panelblock").show();
+            $(value).parent("div").show();
+        }
+    })
+});
