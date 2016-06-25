@@ -5,6 +5,8 @@ use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
+use app\models\Base\Patient;
+use app\models\Glauk\Glaukuchet;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Patient\GlaukPatientSearch */
@@ -21,11 +23,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
 ?>
 <div class="patient-glaukindex">
     <?php
-    $patient_pol = [1 => 'Мужской', 2 => 'Женский'];
-    $glaukuchet_detect = [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'];
-    $glaukuchet_deregreason = [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'];
-    $glaukuchet_stage = [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'];
-    $glaukuchet_invalid = [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'];
+    $patient_pol = Patient::VariablesValues('patient_pol');
+    $glaukuchet_detect = Glaukuchet::VariablesValues('glaukuchet_detect');
+    $glaukuchet_deregreason = Glaukuchet::VariablesValues('glaukuchet_deregreason');
+    $glaukuchet_stage = Glaukuchet::VariablesValues('glaukuchet_stage');
+    $glaukuchet_invalid = Glaukuchet::VariablesValues('glaukuchet_invalid');
 
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'patientglaukgrid'],
@@ -153,6 +155,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'attribute' => 'glaukuchets.glpreps.glaukuchet_preparats',
                             'filter' => false,
                             'value' => function ($model) {
+                                $a = '';
                                 return isset($model->glaukuchets->glpreps[0]->glaukuchet_preparats) ? $model->glaukuchets->glpreps[0]->glaukuchet_preparats : '';
                             },
                             'visible' => false,
@@ -211,14 +214,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 ],
                             ],
                             'afterHeader' => $filter,
-                        /*   'pjaxSettings' => [
-                          'options' => [
-                          'timeout' => false,
-                          'clientOptions' => [
-                          'method' => 'POST',
-                          ],
-                          ],
-                          ], */
                         ]
             ]));
             ?>
@@ -235,4 +230,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             yii\bootstrap\Modal::end();
             ?>
 
+        </div>
+        <div class="form-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Url::home(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

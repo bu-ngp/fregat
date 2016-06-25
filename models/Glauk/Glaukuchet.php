@@ -33,7 +33,7 @@ use app\models\Base\Patient;
  * @property Glprep[] $glpreps
  */
 class Glaukuchet extends \yii\db\ActiveRecord {
-    
+
     /**
      * @inheritdoc
      */
@@ -50,29 +50,26 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
         }],
             [['glaukuchet_uchetbegin', 'glaukuchet_detect', 'glaukuchet_stage', 'glaukuchet_lastvisit', 'id_employee', 'id_class_mkb', 'glaukuchet_username'], 'required'],
-            [['id_patient'], 'required', 'except' => 'forvalidatewithout_id_patient'],
-            [['glaukuchet_uchetbegin', 'glaukuchet_deregdate', 'glaukuchet_operdate', 'glaukuchet_lastvisit', 'glaukuchet_lastmetabol', 'glaukuchet_lastchange'], 'safe'],
+            [['id_patient'], 'required', 'except' => 'forvalidatewithout_id_patient'], // При сохранении новой карты глаукомного пациента
             [['glaukuchet_detect', 'glaukuchet_deregreason', 'glaukuchet_stage', 'glaukuchet_invalid', 'id_patient', 'id_employee', 'id_class_mkb'], 'integer'],
             [['glaukuchet_comment'], 'string', 'max' => 512],
             [['glaukuchet_username'], 'string', 'max' => 128],
             [['id_class_mkb'], 'exist', 'skipOnError' => true, 'targetClass' => ClassMkb::className(), 'targetAttribute' => ['id_class_mkb' => 'id']],
             [['id_employee'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_employee' => 'employee_id']],
             [['id_patient'], 'exist', 'skipOnError' => true, 'targetClass' => Patient::className(), 'targetAttribute' => ['id_patient' => 'patient_id']],
-            ['id_employee', 'CheckBuildByVrach'],
+            ['id_employee', 'CheckBuildByVrach'], // Проверяет заполненноть Здания у врача
             [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol', 'glaukuchet_deregdate'], 'date', 'format' => 'php:Y-m-d'],
             [['glaukuchet_uchetbegin', 'glaukuchet_lastvisit', 'glaukuchet_operdate', 'glaukuchet_lastmetabol'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение должно быть меньше или равно значения "' . Yii::$app->formatter->asDate(date('d.m.Y')) . '"'],
             [['glaukuchet_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s', 'type' => 'datetime'],
             [['glaukuchet_deregdate'], 'compare', 'compareAttribute' => 'glaukuchet_uchetbegin', 'operator' => '>=', 'message' => 'Дата снятия с учета меньше даты постановки на учет'],
-            [['glaukuchet_deregdate', 'glaukuchet_deregreason'], 'CheckDereg'],
+            [['glaukuchet_deregdate', 'glaukuchet_deregreason'], 'CheckDereg'], // Проверяет заполнены ли атрибуты "Дата снятия с учета" и "Причина снятия с учета" при снятии с учета регистра
         ];
     }
 
+    // Проверяет заполненноть Здания у врача
     public function CheckBuildByVrach($attribute, $params) {
-        if (is_string($attribute)) {
-            $ssf2 = Employee::findOne($this->$attribute)->idperson->auth_user_fullname;
-            if (!isset(Employee::findOne($this->$attribute)->id_build))
-                $this->addError($attribute, 'У врача "' . Employee::findOne($this->$attribute)->idperson->auth_user_fullname . '" не заполнено здание, к которому врач относится');
-        }
+        if (is_string($attribute) && !isset(Employee::findOne($this->$attribute)->id_build))
+            $this->addError($attribute, 'У врача "' . Employee::findOne($this->$attribute)->idperson->auth_user_fullname . '" не заполнено здание, к которому врач относится');
     }
 
     // Проверяет заполнены ли атрибуты "Дата снятия с учета" и "Причина снятия с учета" при снятии с учета регистра
@@ -135,6 +132,26 @@ class Glaukuchet extends \yii\db\ActiveRecord {
      */
     public function getGlpreps() {
         return $this->hasMany(Glprep::className(), ['id_glaukuchet' => 'glaukuchet_id']);
+    }
+
+    public static function VariablesValues($attribute) {
+        $values = [
+            'glaukuchet_detect' => [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'],
+            'glaukuchet_deregreason' => [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'],
+            'glaukuchet_stage' => [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'],
+            'glaukuchet_invalid' => [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
+    // Меняет пользователя и дату изменения в карте глаукомного пациента
+    public function UpdateChangeAttributes() {
+        if (!$this->isNewRecord) {
+            $this->glaukuchet_lastchange = date('Y-m-d H:i:s');
+            $this->glaukuchet_username = Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+            $this->save();
+        }
     }
 
 }

@@ -102,15 +102,15 @@ class PatientSearch extends Patient {
                             },
                                 ]);
                             }, 'glpreps' => function($query) {
-                                $query->select(new \yii\db\Expression("glpreps.glprep_id, glpreps.id_glaukuchet, IF ( glpreps.id_preparat IS NULL, '', GROUP_CONCAT(CONCAT_WS(' ', idPreparat.preparat_name, IF (glpreps.glprep_rlocat = 1, '(Федеральная)', '(Региональная)'))   SEPARATOR ', ')) AS glaukuchet_preparats"));
+                                $query->select(new \yii\db\Expression("glpreps.glprep_id, glpreps.id_glaukuchet, IF ( glpreps.id_preparat IS NULL, '', GROUP_CONCAT(TRIM(CONCAT_WS(' ', idPreparat.preparat_name, IF (glpreps.glprep_rlocat IS NULL, '', IF (glpreps.glprep_rlocat = 1, '(Федеральная)', '(Региональная)'))))   SEPARATOR ', ')) AS glaukuchet_preparats"));
                                 $query->from(['glpreps' => 'glprep']);
                                 $query->joinWith([
                                     'idPreparat' => function($query) {
                                         $query->from(['idPreparat' => 'preparat']);
                                     }
                                         ]);
+                                        $query->groupby(['glpreps.id_glaukuchet']);
                                     }]);
-                                        $query->groupby(['glaukuchets.glaukuchet_id']);
                                     },
                                             'idFias' => function($query) {
                                         $query->select(["idFias.AOGUID, IF (idFias.AOLEVEL < 7, CONCAT_WS(', ',  CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME), CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)), CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME)) AS fias_city", "IF (idFias.AOLEVEL < 7, '', CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)) AS fias_street"]);
@@ -168,90 +168,25 @@ class PatientSearch extends Patient {
                                             'desc' => ["IF (idFias.AOLEVEL < 7, '', idFias.OFFNAME)" => SORT_DESC],
                                         ];
 
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_uchetbegin'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_uchetbegin' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_detect'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_detect' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_detect' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_deregdate'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_deregdate' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_deregdate' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_deregreason'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_deregreason' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_deregreason' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_stage'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_stage' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_stage' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_operdate'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_operdate' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_operdate' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_invalid'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_invalid' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_invalid' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastvisit'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_lastvisit' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_lastvisit' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastmetabol'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_lastmetabol' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_lastmetabol' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idEmployee.idperson.auth_user_fullname'] = [
-                                            'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                                            'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idEmployee.iddolzh.dolzh_name'] = [
-                                            'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                            'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idEmployee.idpodraz.podraz_name'] = [
-                                            'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                            'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idEmployee.idbuild.build_name'] = [
-                                            'asc' => ['idbuild.build_name' => SORT_ASC],
-                                            'desc' => ['idbuild.build_name' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idClassMkb.code'] = [
-                                            'asc' => ['idClassMkb.code' => SORT_ASC],
-                                            'desc' => ['idClassMkb.code' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.idClassMkb.name'] = [
-                                            'asc' => ['idClassMkb.name' => SORT_ASC],
-                                            'desc' => ['idClassMkb.name' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_lastchange'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_lastchange' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_lastchange' => SORT_DESC],
-                                        ];
-
-                                        $dataProvider->sort->attributes['glaukuchets.glaukuchet_username'] = [
-                                            'asc' => ['glaukuchets.glaukuchet_username' => SORT_ASC],
-                                            'desc' => ['glaukuchets.glaukuchet_username' => SORT_DESC],
-                                        ];
+                                        Proc::AssignRelatedAttributes($dataProvider, [
+                                            'glaukuchets.glaukuchet_uchetbegin',
+                                            'glaukuchets.glaukuchet_detect',
+                                            'glaukuchets.glaukuchet_deregdate',
+                                            'glaukuchets.glaukuchet_deregreason',
+                                            'glaukuchets.glaukuchet_stage',
+                                            'glaukuchets.glaukuchet_operdate',
+                                            'glaukuchets.glaukuchet_invalid',
+                                            'glaukuchets.glaukuchet_lastvisit',
+                                            'glaukuchets.glaukuchet_lastmetabol',
+                                            'glaukuchets.idEmployee.idperson.auth_user_fullname',
+                                            'glaukuchets.idEmployee.iddolzh.dolzh_name',
+                                            'glaukuchets.idEmployee.idpodraz.podraz_name',
+                                            'glaukuchets.idEmployee.idbuild.build_name',
+                                            'glaukuchets.idClassMkb.code',
+                                            'glaukuchets.idClassMkb.name',
+                                            'glaukuchets.glaukuchet_lastchange',
+                                            'glaukuchets.glaukuchet_username',
+                                        ]);
                                     }
 
                                     private function glaukDopFilter(&$query) {
@@ -455,6 +390,7 @@ class PatientSearch extends Patient {
 
                                         $dataProvider = new ActiveDataProvider([
                                             'query' => $query,
+                                            'sort' => ['defaultOrder' => ['glaukuchets.glaukuchet_lastchange' => SORT_DESC]]
                                         ]);
 
                                         $this->glaukRelations($query);
@@ -469,9 +405,6 @@ class PatientSearch extends Patient {
 
                                         $this->glaukFilter($query);
                                         $this->glaukSort($dataProvider);
-
-                                        if (empty($params['sort']))
-                                            $query->orderBy('glaukuchets.glaukuchet_lastchange desc');
 
                                         $this->glaukDopfilter($query);
 

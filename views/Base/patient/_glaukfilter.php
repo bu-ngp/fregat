@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
-use kartik\datecontrol\DateControl;
 use app\func\Proc;
 
 /* @var $this yii\web\View */

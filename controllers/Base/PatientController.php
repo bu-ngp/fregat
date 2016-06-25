@@ -59,7 +59,7 @@ class PatientController extends Controller {
     public function actionGlaukindex() {
         Proc::SetMenuButtons('glauk');
         $searchModel = new PatientSearch();
-        $filter = Proc::SetFilter('PatientSearch', new PatientFilter);
+        $filter = Proc::SetFilter($searchModel->formName(), new PatientFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('glaukindex', [
@@ -72,7 +72,7 @@ class PatientController extends Controller {
     public function actionCreate($patienttype) {
         $model = new Patient;
         $Fias = new Fias;
-        $Fias->AOGUID = '0bf0f4ed-13f8-446e-82f6-325498808076';
+        $Fias->AOGUID = '0bf0f4ed-13f8-446e-82f6-325498808076'; // Нижневартовск по умолчанию
 
         if ($Fias->load(Yii::$app->request->post())) {
             if (!empty($Fias->AOGUID)) {
@@ -85,7 +85,7 @@ class PatientController extends Controller {
                     $model->scenario = 'streetrequired';
             }
         }
-        $Fias->scenario = 'citychooserequired';
+        $Fias->scenario = 'citychooserequired'; // Адрес обязателен
 
         $dopparams = ['dopparams' => []];
 
@@ -142,14 +142,8 @@ class PatientController extends Controller {
             } else {// город заполнен (Если улица есть, иначе Если улицы нет)
                 $Fias->AOGUID = $_POST['Fias']['AOGUID'];
                 // Если есть улицы
-                if (Fias::Checkstreets($_POST['Fias']['AOGUID']) > 0) {
-                    // Если улица заполнена, иначе Если улица не заполнена
-                    $model->id_fias = isset($_POST['Patient']['id_fias']) ? $_POST['Patient']['id_fias'] : NULL;
-                } else  // Если улиц нет
-                    $model->id_fias = Fias::findOne($_POST['Fias']['AOGUID'])->AOGUID;
-
-                $model->id_fias = Fias::Checkstreets($_POST['Fias']['AOGUID']) > 0 /* isset($_POST['Patient']['id_fias']) */ ? $_POST['Patient']['id_fias'] : Fias::findOne($_POST['Fias']['AOGUID'])->AOGUID;
-                $model->scenario = 'streetrequired';
+                $model->id_fias = Fias::Checkstreets($_POST['Fias']['AOGUID']) > 0 ? $_POST['Patient']['id_fias'] : Fias::findOne($_POST['Fias']['AOGUID'])->AOGUID;
+                $model->scenario = 'streetrequired'; // Адрес обязателен
             }
         } elseif (!empty($model->id_fias)) { // просто загрузка страницы, если адрес заполнен
             $address = Fias::findOne($model->id_fias);
@@ -184,7 +178,7 @@ class PatientController extends Controller {
             $dopparams['dopparams']['dataProviderglprep'] = $dataProviderglprep;
         }
 
-        $Fias->scenario = 'citychooserequired';
+        $Fias->scenario = 'citychooserequired'; // Адрес обязателен
 
         if (Yii::$app->user->can('GlaukOperatorPermission')) {
             $transaction = Yii::$app->db->beginTransaction();
@@ -196,8 +190,6 @@ class PatientController extends Controller {
                     $transaction->commit();
 
                     if ($GlaukuchetIsNew) {
-
-
                         return $this->render('update', array_merge([
                                     'model' => $model,
                                     'Fias' => $Fias,
@@ -236,6 +228,7 @@ class PatientController extends Controller {
      */
     public function actionDelete($id) {
         if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
             try {
                 $Glaukuchet = Glaukuchet::findOne(['id_patient' => $id]);
                 if (!empty($Glaukuchet)) {
@@ -244,6 +237,7 @@ class PatientController extends Controller {
                 }
 
                 echo $this->findModel($id)->delete();
+                $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollback();
                 throw new Exception($e->getMessage());
@@ -258,8 +252,9 @@ class PatientController extends Controller {
         $modelname = $searchModel->formName();
         $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
         $selectvalues = json_decode($params['selectvalues']);
+        $labelvalues = isset($params['labelvalues']) ? json_decode($params['labelvalues']) : NULL;
 
-        Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter);
+        Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter, $labelvalues);
     }
 
     public function actionGlaukfilter() {

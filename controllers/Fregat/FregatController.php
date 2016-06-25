@@ -38,7 +38,7 @@ class FregatController extends Controller {
                         'roles' => ['FregatImport'],
                     ],
                     [
-                        'actions' => ['import-do', 'import-employee-do', 'test'],
+                        'actions' => ['import-do', 'import-employee-do', 'test', 'genpass'],
                         'allow' => true,
                     ],
                 ],
@@ -109,11 +109,26 @@ class FregatController extends Controller {
         ECHO 'ok';
         $xmlObject->close();
     }
-    
+
+    public function actionGenpass() {
+        $users = \app\models\Config\Authuser::find()->where('auth_user_id <> 1')->all();
+        foreach ($users as $ar) {
+            $ar->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
+            $ar->save();
+        }
+        echo 'готово: ' . (array) count($users);
+    }
+
     public function actionTest() {
-        $cls_ar = new \app\models\Glauk\Glprep;
-        $a = $cls_ar->getActiveValidators('glaukuchet_preparats');
-        var_dump($a);
+        $Glaukuchet = \app\models\Glauk\Glaukuchet::findOne(1);
+        $Glaukuchet->glaukuchet_lastchange = date('Y-m-d H:i:s');
+        $Glaukuchet->save(false);
+
+        var_dump(date_default_timezone_get());
+        var_dump(date('d.m.Y H:i:s'));
+
+        var_dump($Glaukuchet->glaukuchet_lastchange);
+        var_dump(\app\models\Glauk\Glaukuchet::findOne(1)->glaukuchet_lastchange);
     }
 
 }

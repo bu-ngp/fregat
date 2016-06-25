@@ -47,7 +47,6 @@ class Patient extends \yii\db\ActiveRecord {
         }],
             [['patient_dr'], 'date', 'format' => 'php:Y-m-d'],
             [['patient_dr'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение должно быть меньше или равно значения "' . Yii::$app->formatter->asDate(date('d.m.Y')) . '"'],
-            [['patient_dr', 'patient_lastchange'], 'safe'],
             [['patient_pol'], 'integer'],
             [['patient_fam', 'patient_im', 'patient_ot'], 'string', 'max' => 255],
             [['id_fias'], 'string', 'max' => 36],
@@ -55,7 +54,7 @@ class Patient extends \yii\db\ActiveRecord {
             [['patient_username'], 'string', 'max' => 128],
             [['id_fias'], 'exist', 'skipOnError' => true, 'targetClass' => Fias::className(), 'targetAttribute' => ['id_fias' => 'AOGUID']],
             [['id_fias', 'patient_dom', 'patient_kvartira'], 'required', 'on' => 'streetrequired'],
-            [['patient_dom', 'patient_kvartira'], 'required', 'on' => 'nostreetrequired'], // не используется
+            [['patient_dom', 'patient_kvartira'], 'required', 'on' => 'nostreetrequired'],
             [['patient_fam'], 'unique', 'targetAttribute' => ['patient_fam', 'patient_im', 'patient_ot', 'patient_dr', 'patient_pol'], 'message' => 'Пациент с такими ФИО, датой рождения и полом уже есть в базе данных'],
             [['patient_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s', 'type' => 'datetime'],
         ];
@@ -93,18 +92,6 @@ class Patient extends \yii\db\ActiveRecord {
      */
     public function getIdFias() {
         return $this->hasOne(Fias::className(), ['AOGUID' => 'id_fias']);
-    }
-
-    public function loadWithDisabledInputs($data, $formName = NULL) {
-        if (!isset($formName))
-            $formName = $this->formName();
-
-        foreach ($this->attributes() as $attr) {
-            $a = '';
-            $this->$attr = isset($_POST[$formName][$attr]) ? $_POST[$formName][$attr] : NULL;
-        }
-
-        return isset($_POST[$formName]);
     }
 
     public static function VariablesValues($attribute) {

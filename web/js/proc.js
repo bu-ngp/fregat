@@ -103,13 +103,23 @@ function InitWindowGUID() {
 function ExportExcel(model, url, button, dopfields) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
     var inputdata = {};
-    if (button == "undefined")
+    var labelvalues = {};
+    if ($.type(button) === "undefined")
         button = "";
 
     if (inputarr.length) {
         inputarr.each(function (index) {
-            if ($(this).attr("name") !== "")
+            if ($(this).attr("name") !== "") {
+                var attr = ($(this).attr("name")).match(/\[(.*)\]/);
+
                 inputdata[$(this).attr("name")] = $(this).val();
+
+                if (attr !== null)
+                    if ($("a[data-sort = '" + attr[1] + "']").length)
+                        labelvalues[attr[1]] = $.trim($("a[data-sort = '" + attr[1] + "']").text());
+                    else if ($("a[data-sort = '-" + attr[1] + "']").length)
+                        labelvalues[attr[1]] = $.trim($("a[data-sort = '-" + attr[1] + "']").text());
+            }
         });
 
         $.extend(inputdata, dopfields);
@@ -126,7 +136,7 @@ function ExportExcel(model, url, button, dopfields) {
             }
         });
 
-        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues)};
+        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues), labelvalues: JSON.stringify(labelvalues)};
 
         $.ajax({
             url: url + '&' + $.param(data),
@@ -273,6 +283,7 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
 }
 
 $(function () {
+    $("input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
     $("input.form-control.setsession, select.form-control.setsession, textarea.form-control.setsession").change(function () {
         SetSession(this);
     });

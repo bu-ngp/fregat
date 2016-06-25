@@ -617,14 +617,14 @@ class Proc {
         return FALSE;
     }
 
-    public static function GetAllLabelsFromAR($DataProvider, $fields = NULL) {
+    public static function GetAllLabelsFromAR($DataProvider, $fields = NULL, $LabelValues = NULL) {
         $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
         if ($cls_ar instanceof ActiveRecord) {
             if (!is_array($fields))
                 $fields = $cls_ar->attributes;
             $labels = [];
-            array_walk($fields, function($value, $key) use (&$labels, $cls_ar) {
-                $labels[$key] = $cls_ar->getAttributeLabel($key);
+            array_walk($fields, function($value, $key) use (&$labels, $cls_ar, $LabelValues) {
+                $labels[$key] = property_exists($LabelValues, $key) ? $LabelValues->$key : $cls_ar->getAttributeLabel($key);
             });
         }
         return $labels;
@@ -688,7 +688,7 @@ class Proc {
         return $data;
     }
 
-    public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL, $ModelFilter = NULL) {
+    public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL, $ModelFilter = NULL, $LabelValues = NULL) {
         $objPHPExcel = new \PHPExcel;
 
         /* Границы таблицы */
@@ -716,9 +716,6 @@ class Proc {
                 'bold' => true,
                 'size' => 14
             ],
-                /* 'alignment' => array(
-                  'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
-                  ) */
         ]);
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
@@ -727,8 +724,6 @@ class Proc {
                 'italic' => true
             ]
         ]);
-
-        //      var_dump(Yii::$app->request->queryParams);
 
         $params = Yii::$app->request->queryParams;
         $inputdata = json_decode($params['inputdata']);
@@ -761,7 +756,7 @@ class Proc {
                 $r++;
                 // Названия полей
                 if ($row === 0) {
-                    $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+                    $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName], $LabelValues);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
                     $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
                     $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
@@ -787,7 +782,7 @@ class Proc {
             }
         } else {
             $r++;
-            $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+            $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName], $LabelValues);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
             $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
             $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
@@ -1115,6 +1110,20 @@ class Proc {
             'saveOptions' => ['class' => 'form-control'],
         ])->label(false);
         echo '</div></div></div>';
+    }
+
+    // Присваеиват сортировку реляционным атрибутам по массиву списку атрибутов
+    public static function AssignRelatedAttributes(&$DataProvider, $AttributesNames) {
+        if ($DataProvider instanceof \yii\data\ActiveDataProvider && is_array($AttributesNames))
+            foreach ($AttributesNames as $attr) {
+                preg_match('/(\w+\.?\w+)$/', $attr, $matches);
+                $attrsql = $matches[1];
+
+                $DataProvider->sort->attributes[$attr] = [
+                    'asc' => [$attrsql => SORT_ASC],
+                    'desc' => [$attrsql => SORT_DESC],
+                ];
+            }
     }
 
 }

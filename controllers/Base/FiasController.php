@@ -6,7 +6,6 @@ use Yii;
 use app\models\Base\Fias;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\func\Proc;
 
@@ -30,12 +29,6 @@ class FiasController extends Controller {
                     ],
                 ],
             ],
-                /*   'verbs' => [
-                  'class' => VerbFilter::className(),
-                  'actions' => [
-                  'delete' => ['POST'],
-                  ],
-                  ], */
         ];
     }
 
@@ -62,6 +55,7 @@ class FiasController extends Controller {
             ]);
     }
 
+    // Проверка количества улиц у населенного пункта
     public function actionCheckstreets() {
         if (Yii::$app->request->isAjax) {
             $city_AOGUID = Yii::$app->request->post('city_AOGUID');

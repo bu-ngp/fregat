@@ -64,40 +64,5 @@ class PreparatSearch extends Preparat {
         return $dataProvider;
     }
 
-    public function searchforglaukuchet($params) {
-        $query = Preparat::find();
-
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $query->joinWith(['glpreps' => function($query) {
-                $query->from(['glpreps' => 'glprep']);
-            }]);
-
-                $this->load($params);
-
-                if (!$this->validate()) {
-                    // uncomment the following line if you do not want to return any records when validation fails
-                    // $query->where('0=1');
-                    return $dataProvider;
-                }
-
-                $query->where('preparat_id not in ( select glprep.id_preparat from glprep inner join glaukuchet on glprep.id_glaukuchet = glaukuchet.glaukuchet_id where glaukuchet.id_patient = :patient_id)', [
-                    'patient_id' => $params['id'],
-                ]);
-
-                // grid filtering conditions
-                $query->andFilterWhere([
-                    'preparat_id' => $this->preparat_id,
-                ]);
-
-                $query->andFilterWhere(['like', 'preparat_name', $this->preparat_name]);
-
-                return $dataProvider;
-            }
-
         }
         

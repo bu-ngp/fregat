@@ -4,7 +4,6 @@ namespace app\controllers\Glauk;
 
 use Yii;
 use app\models\Glauk\Glprep;
-use app\models\Glauk\GlprepSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

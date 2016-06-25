@@ -19,9 +19,9 @@ use yii\db\Expression;
  */
 class Fias extends \yii\db\ActiveRecord {
 
-    public $fias_city;
-    public $fias_street;
-    public $CountStreets;
+    public $fias_city; // Населенный пункт
+    public $fias_street; // Улица
+    public $CountStreets; // Количество улиц у населенного пункта
 
     /**
      * @inheritdoc
@@ -69,6 +69,7 @@ class Fias extends \yii\db\ActiveRecord {
         return $this->hasOne(Patient::className(), ['id_fias' => 'AOGUID']);
     }
 
+    // Выбор населенного пункта
     public function selectinputforcity($params) {
 
         $method = isset($params['init']) ? 'one' : 'all';
@@ -88,6 +89,7 @@ class Fias extends \yii\db\ActiveRecord {
         return $query;
     }
 
+    // Выбор улицы у населенного пункта $params['fias_city']
     public function selectinputforstreet($params) {
 
         $method = isset($params['init']) ? 'one' : 'all';
@@ -106,6 +108,7 @@ class Fias extends \yii\db\ActiveRecord {
         }
     }
 
+    // Выводит количество улиц у населенного пункта с ИД $AOGUID
     public static function Checkstreets($AOGUID) {
         $result = 0;
         if (!empty($AOGUID)) {
@@ -122,6 +125,7 @@ class Fias extends \yii\db\ActiveRecord {
         return $result;
     }
 
+    // Вывод названия населенного пункта по ИД $AOGUID
     public static function GetCityByAOGUID($AOGUID) {
         $result = '';
         if (!empty($AOGUID)) {
@@ -136,6 +140,7 @@ class Fias extends \yii\db\ActiveRecord {
         return $result;
     }
 
+    // Вывод названия улицы по ИД $AOGUID
     public static function GetStreetByAOGUID($AOGUID) {
         $result = '';
         if (!empty($AOGUID)) {

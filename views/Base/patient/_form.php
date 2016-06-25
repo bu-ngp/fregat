@@ -6,7 +6,6 @@ use kartik\select2\Select2;
 use kartik\dynagrid\DynaGrid;
 use kartik\datecontrol\DateControl;
 use app\func\Proc;
-use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Base\Patient */
@@ -47,7 +46,7 @@ use yii\web\Session;
             <?=
             $form->field($model, 'patient_pol')->widget(Select2::classname(), [
                 'hideSearch' => true,
-                'data' => [1 => 'Мужской', 2 => 'Женский'],
+                'data' => $model::VariablesValues('patient_pol'),
                 'pluginOptions' => [
                     'allowClear' => true
                 ],
@@ -98,10 +97,6 @@ use yii\web\Session;
                                 'form' => $formname,
                                 'disabled' => $dopparams['DisableElements'],
                             ]), [
-                            /*  'pluginEvents' => [
-                              "select2:select" => "function() { FillTrOsnov(); }",
-                              "select2:unselect" => "function() { ClearTrOsnov(); }"
-                              ], */
             ]))
             ?>
 
@@ -174,7 +169,7 @@ use yii\web\Session;
                 <?=
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_detect')->widget(Select2::classname(), [
                     'hideSearch' => true,
-                    'data' => [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'],
+                    'data' => $dopparams['Glaukuchet']->VariablesValues('glaukuchet_detect'),
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -186,7 +181,7 @@ use yii\web\Session;
                 <?=
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_stage')->widget(Select2::classname(), [
                     'hideSearch' => true,
-                    'data' => [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'],
+                    'data' => $dopparams['Glaukuchet']->VariablesValues('glaukuchet_stage'),
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -208,7 +203,7 @@ use yii\web\Session;
                 <?=
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_invalid')->widget(Select2::classname(), [
                     'hideSearch' => true,
-                    'data' => [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'],
+                    'data' => $dopparams['Glaukuchet']->VariablesValues('glaukuchet_invalid'),
                     'pluginOptions' => [
                         'allowClear' => true
                     ],
@@ -246,7 +241,6 @@ use yii\web\Session;
                                             'value' => function ($model) use ($glprep_rlocat) {
                                                 return isset($glprep_rlocat[$model->glprep_rlocat]) ? $glprep_rlocat[$model->glprep_rlocat] : '';
                                             },
-                                        //  'visible' => false,    
                                         ],
                                     ],
                                     'buttons' => array_merge(!$dopparams['DisableElements'] ? [
@@ -282,7 +276,7 @@ use yii\web\Session;
                         <?=
                         $form->field($dopparams['Glaukuchet'], 'glaukuchet_deregreason')->widget(Select2::classname(), [
                             'hideSearch' => true,
-                            'data' => [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'],
+                            'data' => $dopparams['Glaukuchet']->VariablesValues('glaukuchet_deregreason'),
                             'pluginOptions' => [
                                 'allowClear' => true
                             ],
@@ -300,6 +294,7 @@ use yii\web\Session;
                     'placeholder' => 'Введите комментарий к карте глаукомного пациента',
                     'rows' => 10,
                     'disabled' => $dopparams['DisableElements'],
+                    'style' => 'resize: none',
                 ]);
                 ?>
 

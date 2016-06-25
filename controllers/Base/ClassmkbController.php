@@ -7,7 +7,6 @@ use app\models\Base\Classmkb;
 use app\models\Base\ClassmkbSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
 
@@ -29,12 +28,6 @@ class ClassmkbController extends Controller {
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
                 ],
             ],
         ];

@@ -17,11 +17,12 @@ use app\models\Base\Preparat;
  */
 class Glprep extends \yii\db\ActiveRecord {
 
-    public $glaukuchet_preparats;
+    public $glaukuchet_preparats; // Строка со списком препаратов назначенных пациенту
 
     /**
      * @inheritdoc
      */
+
     public static function tableName() {
         return 'glprep';
     }
@@ -35,9 +36,21 @@ class Glprep extends \yii\db\ActiveRecord {
             [['id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'integer'],
             [['id_glaukuchet'], 'exist', 'skipOnError' => true, 'targetClass' => Glaukuchet::className(), 'targetAttribute' => ['id_glaukuchet' => 'glaukuchet_id']],
             [['id_preparat'], 'exist', 'skipOnError' => true, 'targetClass' => Preparat::className(), 'targetAttribute' => ['id_preparat' => 'preparat_id']],
-            ['id_preparat', 'unique', 'targetAttribute' => ['id_glaukuchet', 'id_preparat', 'glprep_rlocat'], 'message' => 'Этот препарат с этой категорией льготного лекарственного обеспечения уже есть у глаукомного пациента'],
             [['glaukuchet_preparats'], 'safe'],
+            ['id_preparat', 'UniqueGlaukPreparat'], // Проверяет на уникальность список препаратов, включая проверку на NULL
         ];
+    }
+
+    // Проверяет на уникальность список препаратов, включая проверку на NULL
+    public function UniqueGlaukPreparat($attribute, $params) {
+        if (is_string($attribute)) {
+            $query = self::find()
+                    ->andWhere(['id_glaukuchet' => $this->id_glaukuchet, 'id_preparat' => $this->id_preparat, 'glprep_rlocat' => empty($this->glprep_rlocat) ? NULL : $this->glprep_rlocat])
+                    ->count();
+
+            if ($query > 0)
+                $this->addError($attribute, 'Этот препарат с этой категорией льготного лекарственного обеспечения уже есть у глаукомного пациента');
+        }
     }
 
     /**
@@ -73,6 +86,24 @@ class Glprep extends \yii\db\ActiveRecord {
         ];
 
         return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
+    public function save($runValidation = true, $attributeNames = null) {
+        $result = parent::save($runValidation, $attributeNames);
+
+        if ($result) // При изменении препаратов, менять пользователя и дату изменения в карте глаукомного пациента
+            Glaukuchet::findOne($this->id_glaukuchet)->UpdateChangeAttributes();
+
+        return $result;
+    }
+
+    public function delete() {
+        $result = parent::delete();
+
+        if ($result)  // При изменении препаратов, менять пользователя и дату изменения в карте глаукомного пациента
+            Glaukuchet::findOne($this->id_glaukuchet)->UpdateChangeAttributes();
+
+        return $result;
     }
 
 }

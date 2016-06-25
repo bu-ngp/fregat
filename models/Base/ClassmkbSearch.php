@@ -71,6 +71,7 @@ class ClassmkbSearch extends Classmkb {
         return $dataProvider;
     }
 
+     // список диагнозов для регистра глаукомных пациентов
     public function searchglauk($params) {
         $query = Classmkb::find();
 
@@ -96,7 +97,7 @@ class ClassmkbSearch extends Classmkb {
             'parent_id' => $this->parent_id,
             'node_count' => $this->node_count,
         ]);
-
+       
         $query->andFilterWhere(['or', ['like', 'code', 'H40%', false], ['like', 'code', 'Q15.0', false]]);
 
         $query->andFilterWhere(['like', 'name', $this->name])

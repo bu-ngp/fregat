@@ -7,6 +7,7 @@ $config = [
     'basePath' => dirname(__DIR__),
     'language' => 'ru-RU',
     'bootstrap' => ['log'],
+    'timeZone' => 'Asia/Yekaterinburg',
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -61,6 +62,7 @@ $config = [
             'dateFormat' => 'dd.MM.yyyy',
             'datetimeFormat' => 'dd.MM.yyyy HH:mm:ss',
             'nullDisplay' => '',
+            'timeZone' => 'UTC',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',

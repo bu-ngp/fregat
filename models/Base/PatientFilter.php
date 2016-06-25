@@ -4,6 +4,12 @@ namespace app\models\Base;
 
 use Yii;
 use yii\base\Model;
+use app\models\Glauk\Glaukuchet;
+use app\models\Glauk\Glprep;
+use app\models\Fregat\Employee;
+use app\models\Fregat\Dolzh;
+use app\models\Fregat\Podraz;
+use app\models\Fregat\Build;
 
 class PatientFilter extends Model {
 
@@ -21,12 +27,12 @@ class PatientFilter extends Model {
     public $patient_kvartira;
     public $is_glauk_mark;
     public $glaukuchet_uchetbegin_beg;
-    public $glaukuchet_uchetbegin_end;    
+    public $glaukuchet_uchetbegin_end;
     public $glaukuchet_detect;
     public $is_glaukuchet_mark;
     public $glaukuchet_deregreason;
     public $glaukuchet_deregdate_beg;
-    public $glaukuchet_deregdate_end;    
+    public $glaukuchet_deregdate_end;
     public $glaukuchet_stage;
     public $glaukuchet_operdate_beg;
     public $glaukuchet_operdate_end;
@@ -65,8 +71,13 @@ class PatientFilter extends Model {
             'patient_kvartira',
             'patient_username',
             'glaukuchet_username',
+            'is_glauk_mark',
+            'is_glaukuchet_mark',
+            'glaukuchet_not_oper_mark',
+            'glaukuchet_not_invalid_mark',
+            'glaukuchet_not_lastmetabol_mark',
+            'glprep_not_preparat_mark',
                 ], 'safe'],
-            [['patient_vozrast'], 'exist', 'targetAttribute' => ['patient_vozrast_znak', 'patient_vozrast']],
             [[
             'patient_dr',
             'glaukuchet_uchetbegin_beg',
@@ -98,14 +109,6 @@ class PatientFilter extends Model {
             'glprep_id_preparat',
             'glprep_rlocat',
                 ], 'integer'],
-            [[
-            'is_glauk_mark',
-            'is_glaukuchet_mark',
-            'glaukuchet_not_oper_mark',
-            'glaukuchet_not_invalid_mark',
-            'glaukuchet_not_lastmetabol_mark',
-            'glprep_not_preparat_mark',
-                ], 'safe'],
         ];
     }
 
@@ -123,11 +126,11 @@ class PatientFilter extends Model {
             'patient_korp' => 'Корпус',
             'patient_kvartira' => 'Квартира',
             'is_glauk_mark' => 'Пациент содержится в регистре глаукомных пациентов',
-            'glaukuchet_uchetbegin_beg' => 'Дата постановки на учет',            
+            'glaukuchet_uchetbegin_beg' => 'Дата постановки на учет',
             'glaukuchet_detect' => 'Вид выявления заболевания',
             'is_glaukuchet_mark' => 'Пациент состоит на учете в регистре',
             'glaukuchet_deregreason' => 'Причина снятия с учета',
-            'glaukuchet_deregdate_beg' => 'Дата снятия с учета',            
+            'glaukuchet_deregdate_beg' => 'Дата снятия с учета',
             'glaukuchet_stage' => 'Стадия глаукомы',
             'glaukuchet_operdate_beg' => 'Дата последнего оперативного лечения',
             'glaukuchet_not_oper_mark' => 'Отсутствует оперативное лечение глаукомы',
@@ -157,19 +160,19 @@ class PatientFilter extends Model {
 
     public static function VariablesValues($attribute, $value = NULL) {
         $values = [
-            'patient_pol' => [1 => 'Мужской', 2 => 'Женский'],
+            'patient_pol' => Patient::VariablesValues($attribute),
             'fias_city' => [$value => Fias::GetCityByAOGUID($value)],
             'fias_street' => [$value => Fias::GetStreetByAOGUID($value)],
-            'glaukuchet_detect' => [1 => 'При обращении за лечением', 2 => 'При обращении по диспансеризации'],
-            'glaukuchet_deregreason' => [1 => 'Смерть', 2 => 'Миграция', 3 => 'Другое'],
-            'glaukuchet_stage' => [1 => 'I стадия', 2 => 'II стадия', 3 => 'III стадия', 4 => 'IV стадия'],
-            'glaukuchet_invalid' => [1 => 'I группа', 2 => 'II группа', 3 => 'III группа'],
-            'glaukuchet_id_employee' => [$value => \app\models\Fregat\Employee::getEmployeeByID($value)],
-            'employee_id_dolzh' => [$value => \app\models\Fregat\Dolzh::getDolzhByID($value)],
-            'employee_id_podraz' => [$value => \app\models\Fregat\Podraz::getPodrazByID($value)],
-            'employee_id_build' => [$value => \app\models\Fregat\Build::getBuildByID($value)],
+            'glaukuchet_detect' => Glaukuchet::VariablesValues($attribute),
+            'glaukuchet_deregreason' => Glaukuchet::VariablesValues($attribute),
+            'glaukuchet_stage' => Glaukuchet::VariablesValues($attribute),
+            'glaukuchet_invalid' => Glaukuchet::VariablesValues($attribute),
+            'glaukuchet_id_employee' => [$value => Employee::getEmployeeByID($value)],
+            'employee_id_dolzh' => [$value => Dolzh::getDolzhByID($value)],
+            'employee_id_podraz' => [$value => Podraz::getPodrazByID($value)],
+            'employee_id_build' => [$value => Build::getBuildByID($value)],
             'glprep_id_preparat' => [$value => Preparat::getPreparatByID($value)],
-            'glprep_rlocat' => \app\models\Glauk\Glprep::VariablesValues('glprep_rlocat'),
+            'glprep_rlocat' => Glprep::VariablesValues($attribute),
         ];
 
         return isset($values[$attribute]) ? $values[$attribute] : NULL;

@@ -145,20 +145,14 @@ function ClearCity() {
 }
 
 $(document).on("keyup", "input.searchfilterform", function () {
-//$("div.insideforms :input").not(':button,:hidden').each(function(key, value) {
     $("div.insideforms").find("div.panelblock").hide();
 
     $("label").each(function (key, value) {
-
-
         var searchinput = ($("input.searchfilterform").val()).toUpperCase();
         var labelinput = $.trim(($(value).text()).toUpperCase());
 
-        if ((labelinput).indexOf(searchinput) < 0) {
-
+        if ((labelinput).indexOf(searchinput) < 0)
             $(value).parent("div").hide();
-
-        }
         else {
             $(value).parentsUntil("div.insideforms", "div.panelblock").show();
             $(value).parent("div").show();

@@ -52,6 +52,7 @@ class GlprepSearch extends Glprep {
 
                 $this->load($params);
 
+                // Отображает список препаратов глаукомного пациента в его карте
                 if (isset($params['id'])) {
                     $Glaukuchet = Glaukuchet::findOne(['id_patient' => $params['id']]);
                     $query->andFilterWhere(['id_glaukuchet' => empty($Glaukuchet) ? -1 : $Glaukuchet->primaryKey]);

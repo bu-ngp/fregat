@@ -25,7 +25,7 @@ class PreparatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'forglaukuchet', 'selectinput'],
+                        'actions' => ['index', 'selectinput'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -62,17 +62,6 @@ class PreparatController extends Controller {
                     'model' => new Preparat,
                     'field' => $field,
                     'q' => $q,
-        ]);
-    }
-
-    public function actionForglaukuchet() {
-        $searchModel = new PreparatSearch();
-        $dataProvider = $searchModel->searchforglaukuchet(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'patienttype' => 'glauk',
         ]);
     }
 
