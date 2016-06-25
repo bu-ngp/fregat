@@ -9,17 +9,7 @@ $(document).on('ready pjax:success', function () {
 
         $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
             InitAddress();
-            $('input[name="patient_dr-patientfilter-patient_dr"').mask('99.99.9999');
-            $('input[name="glaukuchet_uchetbegin_beg-patientfilter-glaukuchet_uchetbegin_beg"').mask('99.99.9999');
-            $('input[name="glaukuchet_uchetbegin_end-patientfilter-glaukuchet_uchetbegin_end"').mask('99.99.9999');
-            $('input[name="glaukuchet_deregdate_beg-patientfilter-glaukuchet_deregdate_beg"').mask('99.99.9999');
-            $('input[name="glaukuchet_deregdate_end-patientfilter-glaukuchet_deregdate_end"').mask('99.99.9999');
-            $('input[name="glaukuchet_operdate_beg-patientfilter-glaukuchet_operdate_beg"').mask('99.99.9999');
-            $('input[name="glaukuchet_operdate_end-patientfilter-glaukuchet_operdate_end"').mask('99.99.9999');
-            $('input[name="glaukuchet_lastvisit_beg-patientfilter-glaukuchet_lastvisit_beg"').mask('99.99.9999');
-            $('input[name="glaukuchet_lastvisit_end-patientfilter-glaukuchet_lastvisit_end"').mask('99.99.9999');
-            $('input[name="glaukuchet_lastmetabol_beg-patientfilter-glaukuchet_lastmetabol_beg"').mask('99.99.9999');
-            $('input[name="glaukuchet_lastmetabol_end-patientfilter-glaukuchet_lastmetabol_end"').mask('99.99.9999');
+            $("div.insideforms input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
 
             $("div.insideforms span.select2-selection__rendered").each(function (key, value) {
                 if (($(value).attr("id")).indexOf("znak-container") < 0) {

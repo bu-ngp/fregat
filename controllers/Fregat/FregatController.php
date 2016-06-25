@@ -111,18 +111,9 @@ class FregatController extends Controller {
     }
     
     public function actionTest() {
-        $L1 = \app\models\Config\Authuser::findOne(882);
-        $L2 = \app\models\Config\Authuser::findOne(1174);
-        
-        
-        var_dump($L1->auth_user_fullname);
-        var_dump($L2->auth_user_fullname);
-        var_dump($L1->auth_user_fullname === $L2->auth_user_fullname);
-        
-        $L2->auth_user_fullname = str_replace("\xEF\xBB\xBF",'',$L2->auth_user_fullname); 
-        var_dump($L1->auth_user_fullname);
-        var_dump($L2->auth_user_fullname);
-        var_dump($L1->auth_user_fullname === $L2->auth_user_fullname);
+        $cls_ar = new \app\models\Glauk\Glprep;
+        $a = $cls_ar->getActiveValidators('glaukuchet_preparats');
+        var_dump($a);
     }
 
 }

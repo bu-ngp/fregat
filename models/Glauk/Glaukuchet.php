@@ -33,7 +33,7 @@ use app\models\Base\Patient;
  * @property Glprep[] $glpreps
  */
 class Glaukuchet extends \yii\db\ActiveRecord {
-
+    
     /**
      * @inheritdoc
      */
@@ -104,8 +104,8 @@ class Glaukuchet extends \yii\db\ActiveRecord {
             'id_employee' => 'Врач',
             'id_class_mkb' => 'Диагноз',
             'glaukuchet_comment' => 'Заметка',
-            'glaukuchet_username' => 'Пользователь изменивший запись',
-            'glaukuchet_lastchange' => 'Дата изменения записи',
+            'glaukuchet_username' => 'Пользователь изменивший запись карты глаукомного пациента',
+            'glaukuchet_lastchange' => 'Дата изменения записи карты глаукомного пациента',
         ];
     }
 

@@ -99,17 +99,20 @@ function InitWindowGUID() {
     });
 }
 
-function ExportExcel(model, url, button) {
+// dopfields - Дополнительные поля таблицы (например те, что без фильтра)
+function ExportExcel(model, url, button, dopfields) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
     var inputdata = {};
     if (button == "undefined")
         button = "";
 
-    if (inputarr.length || selectarr.length) {
+    if (inputarr.length) {
         inputarr.each(function (index) {
             if ($(this).attr("name") !== "")
                 inputdata[$(this).attr("name")] = $(this).val();
         });
+
+        $.extend(inputdata, dopfields);
 
         var selectvalues = {};
         $('select[name^="' + model + '"]').each(function () {

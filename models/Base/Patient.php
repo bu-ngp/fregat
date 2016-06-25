@@ -71,13 +71,13 @@ class Patient extends \yii\db\ActiveRecord {
             'patient_im' => 'Имя',
             'patient_ot' => 'Отчество',
             'patient_dr' => 'Дата рождения',
-            'patient_pol' => 'Пол',
+            'patient_pol' => 'Пол пациента',
             'id_fias' => 'Улица',
             'patient_dom' => 'Дом',
             'patient_korp' => 'Корпус',
             'patient_kvartira' => 'Квартира',
-            'patient_username' => 'Пользователь изменивший запись',
-            'patient_lastchange' => 'Дата изменения записи',
+            'patient_username' => 'Пользователь изменивший запись пациента',
+            'patient_lastchange' => 'Дата изменения записи пациента',
         ];
     }
 

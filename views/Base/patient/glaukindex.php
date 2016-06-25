@@ -45,32 +45,32 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'value' => function ($model) use ($patient_pol) {
                                 return isset($patient_pol[$model->patient_pol]) ? $patient_pol[$model->patient_pol] : '';
                             },
-                        //  'visible' => false,    
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'idFias.fias_city',
-                        //  'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'idFias.fias_street',
-                        //  'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'patient_dom',
-                        //  'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'patient_korp',
-                        //  'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'patient_kvartira',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_uchetbegin',
                             'format' => 'date',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_detect',
@@ -78,12 +78,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'value' => function ($model) use ($glaukuchet_detect) {
                                 return isset($glaukuchet_detect[$model->glaukuchets->glaukuchet_detect]) ? $glaukuchet_detect[$model->glaukuchets->glaukuchet_detect] : '';
                             },
-                        //  'visible' => false,    
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_deregdate',
                             'format' => 'date',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_deregreason',
@@ -91,7 +91,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'value' => function ($model) use ($glaukuchet_deregreason) {
                                 return isset($glaukuchet_deregreason[$model->glaukuchets->glaukuchet_deregreason]) ? $glaukuchet_deregreason[$model->glaukuchets->glaukuchet_deregreason] : '';
                             },
-                        //  'visible' => false,    
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_stage',
@@ -99,12 +99,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'value' => function ($model) use ($glaukuchet_stage) {
                                 return isset($glaukuchet_stage[$model->glaukuchets->glaukuchet_stage]) ? $glaukuchet_stage[$model->glaukuchets->glaukuchet_stage] : '';
                             },
-                        //  'visible' => false,    
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_operdate',
                             'format' => 'date',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_invalid',
@@ -112,59 +112,68 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                             'value' => function ($model) use ($glaukuchet_invalid) {
                                 return isset($glaukuchet_invalid[$model->glaukuchets->glaukuchet_invalid]) ? $glaukuchet_invalid[$model->glaukuchets->glaukuchet_invalid] : '';
                             },
-                        //  'visible' => false,    
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_lastvisit',
                             'format' => 'date',
-                        // 'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_lastmetabol',
                             'format' => 'date',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.idEmployee.idperson.auth_user_fullname',
-                        // 'visible' => false,
+                            'label' => 'ФИО врача',
                         ],
                         [
                             'attribute' => 'glaukuchets.idEmployee.iddolzh.dolzh_name',
-                        // 'visible' => false,
+                            'label' => 'Специальность врача',
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.idEmployee.idpodraz.podraz_name',
-                        // 'visible' => false,
+                            'label' => 'Подразделение врача',
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.idEmployee.idbuild.build_name',
-                        // 'visible' => false,
+                            'label' => 'Местонахождение врача',
                         ],
                         [
                             'attribute' => 'glaukuchets.idClassMkb.code',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.idClassMkb.name',
-                        // 'visible' => false,
+                            'visible' => false,
+                        ],
+                        [
+                            'attribute' => 'glaukuchets.glpreps.glaukuchet_preparats',
+                            'filter' => false,
+                            'value' => function ($model) {
+                                return isset($model->glaukuchets->glpreps[0]->glaukuchet_preparats) ? $model->glaukuchets->glpreps[0]->glaukuchet_preparats : '';
+                            },
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'patient_username',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'patient_lastchange',
                             'format' => 'datetime',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_username',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                         [
                             'attribute' => 'glaukuchets.glaukuchet_lastchange',
                             'format' => 'datetime',
-                        // 'visible' => false,
+                            'visible' => false,
                         ],
                     ],
                     'buttons' => array_merge(
@@ -197,7 +206,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                         'type' => 'button',
                                         'title' => 'Экспорт в Excel',
                                         'class' => 'btn btn-default button_export',
-                                        'onclick' => 'ExportExcel("PatientSearch","' . \yii\helpers\Url::toRoute('Base/patient/toexcel') . '", $(this)[0].id );'
+                                        'onclick' => 'ExportExcel("PatientSearch","' . \yii\helpers\Url::toRoute('Base/patient/toexcel') . '", $(this)[0].id, {"PatientSearch[glaukuchets.glpreps.glaukuchet_preparats]": ""});'
                                     ]) . '{export}{dynagrid}',
                                 ],
                             ],

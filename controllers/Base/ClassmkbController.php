@@ -25,7 +25,7 @@ class ClassmkbController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['indexglauk', 'selectinputfordiag'],
+                        'actions' => ['index', 'indexglauk', 'selectinputfordiag'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],

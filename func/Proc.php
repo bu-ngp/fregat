@@ -11,6 +11,8 @@ use kartik\select2\Select2;
 use yii\web\JsExpression;
 use yii\db\ActiveRecord;
 use yii\base\Model;
+use kartik\datecontrol\DateControl;
+use kartik\touchspin\TouchSpin;
 
 class Proc {
 
@@ -615,7 +617,7 @@ class Proc {
         return FALSE;
     }
 
-    public static function GetAllLabelsFromAR($DataProvider, $fields = null) {
+    public static function GetAllLabelsFromAR($DataProvider, $fields = NULL) {
         $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
         if ($cls_ar instanceof ActiveRecord) {
             if (!is_array($fields))
@@ -656,6 +658,9 @@ class Proc {
 
                 if (!empty($cls_ar)) {
                     $result = false;
+                    if (is_array($cls_ar))
+                        $cls_ar = $cls_ar[0];
+
                     foreach ($cls_ar->getActiveValidators($lastelem) as $validatorclass)
                         if ($validatorclass instanceof \yii\validators\DateValidator) {
                             $result = $validatorclass->type;
@@ -749,7 +754,7 @@ class Proc {
                 $filter .= ' ' . $dopfilter;
         }
 
-        $i = -1;
+        $i = 0;
         $r = 5;
         if (count((array) $dataProvider->getModels()) > 0) {
             foreach ($dataProvider->getModels() as $row => $ar) {
@@ -757,6 +762,9 @@ class Proc {
                 // Названия полей
                 if ($row === 0) {
                     $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
                     foreach ($labels as $label) {
                         $i++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
@@ -766,7 +774,9 @@ class Proc {
                 }
 
                 $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
-                $i = -1;
+                $i = 0;
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $r - 5);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 foreach (array_keys($data) as $attr) {
                     $i++;
                     if (isset($selectvalues[$modelName . '[' . $attr . ']']))
@@ -778,6 +788,9 @@ class Proc {
         } else {
             $r++;
             $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
             foreach ($labels as $label) {
                 $i++;
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
@@ -789,11 +802,9 @@ class Proc {
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
 
         /* Авторазмер колонок Excel */
-        $i = -1;
-        foreach ($labels as $attr) {
-            $i++;
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn(0)->setWidth(6);
+        for ($i = 1; $i <= count($labels) + 1; $i++)
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
-        }
 
         if ($filter !== 'Фильтр:') {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $filter);
@@ -1018,6 +1029,92 @@ class Proc {
             }
 
         return $kl;
+    }
+
+    public static function FilterFieldDate($Form, $ActiveRecord, $FieldName) {
+        return $Form->field($ActiveRecord, $FieldName)->widget(DateControl::classname(), [
+                    'type' => DateControl::FORMAT_DATE,
+                    'options' => [
+                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+                    ],
+                    'saveOptions' => ['class' => 'form-control'],
+        ]);
+    }
+
+    public static function FilterFieldIntCondition($Form, $ActiveRecord, $FieldName, $Options = NULL) {
+        if (!is_array($Options))
+            $Options = [];
+
+        echo '<div class="form-group"><label class="control-label" for="patientfilter-patient_vozrast">';
+        echo $ActiveRecord->getAttributeLabel('patient_vozrast');
+        echo '</label><div class="row"><div class="col-xs-5">';
+        echo $Form->field($ActiveRecord, $FieldName . '_znak')->widget(Select2::classname(), [
+            'hideSearch' => true,
+            'data' => ['>=' => 'Больше или равно', '<=' => 'Меньше или равно', '=' => 'Равно'],
+            'options' => ['placeholder' => 'Выберете знак равенства', 'class' => 'form-control', 'style' => 'width; 215px;'],
+            'theme' => Select2::THEME_BOOTSTRAP,
+        ])->label(false);
+        echo '</div><div class="col-xs-7">';
+        echo $Form->field($ActiveRecord, $FieldName)->widget(TouchSpin::classname(), [
+            'options' => ['class' => 'form-control'],
+            'pluginOptions' => array_merge([
+                'verticalbuttons' => true,
+                'forcestepdivisibility' => 'none',
+                    ], $Options),
+        ])->label(false);
+        echo '</div></div></div>';
+    }
+
+    public static function FilterFieldSelectSingle($Form, $ActiveRecord, $FieldName, $PlaceHolder) {
+        if (method_exists($ActiveRecord, 'VariablesValues'))
+            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), [
+                        'hideSearch' => true,
+                        'data' => $ActiveRecord::VariablesValues($FieldName),
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                        'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control'],
+                        'theme' => Select2::THEME_BOOTSTRAP,
+            ]);
+    }
+
+    public static function FilterFieldSelectMultiple($Form, $ActiveRecord, $FieldName, $PlaceHolder) {
+        if (method_exists($ActiveRecord, 'VariablesValues'))
+            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), [
+                        'hideSearch' => true,
+                        'data' => $ActiveRecord::VariablesValues($FieldName),
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                        'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control', 'multiple' => true],
+                        'theme' => Select2::THEME_BOOTSTRAP,
+            ]);
+    }
+
+    public static function FilterFieldDateRange($Form, $ActiveRecord, $FieldName) {
+        echo '<div class="form-group"><label class="control-label" for="' . strtolower($ActiveRecord->formName()) . '-' . $FieldName . '_beg">';
+        echo $ActiveRecord->getAttributeLabel($FieldName . '_beg');
+        echo '</label><div class="row"><div class="col-xs-6">';
+        echo $Form->field($ActiveRecord, $FieldName . '_beg', [
+            'inputTemplate' => '<div class="input-group"><span class="input-group-addon">ОТ</span>{input}</div>'
+        ])->widget(DateControl::classname(), [
+            'type' => DateControl::FORMAT_DATE,
+            'options' => [
+                'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+            ],
+            'saveOptions' => ['class' => 'form-control'],
+        ])->label(false);
+        echo '</div><div class="col-xs-6">';
+        echo $Form->field($ActiveRecord, $FieldName . '_end', [
+            'inputTemplate' => '<div class="input-group"><span class="input-group-addon">ДО</span>{input}</div>'
+        ])->widget(DateControl::classname(), [
+            'type' => DateControl::FORMAT_DATE,
+            'options' => [
+                'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
+            ],
+            'saveOptions' => ['class' => 'form-control'],
+        ])->label(false);
+        echo '</div></div></div>';
     }
 
 }

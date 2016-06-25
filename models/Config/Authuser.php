@@ -46,9 +46,9 @@ class Authuser extends \yii\db\ActiveRecord {
      */
     public function attributeLabels() {
         return [
-            'auth_user_id' => 'Код',
-            'auth_user_fullname' => 'Фамилия Имя Отчество',
-            'auth_user_login' => 'Логин',
+            'auth_user_id' => 'Код сотрудника',
+            'auth_user_fullname' => 'ФИО сотрудника',
+            'auth_user_login' => 'Логин сотрудника',
             'auth_user_password' => 'Пароль',
             'auth_user_password2' => 'Подтвердите пароль',
         ];
@@ -67,12 +67,11 @@ class Authuser extends \yii\db\ActiveRecord {
     public function getitemnames() {
         return $this->hasMany(Authitem::className(), ['name' => 'item_name'])->viaTable('auth_assignment', ['user_id' => 'auth_user_id']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmployees()
-    {
+    public function getEmployees() {
         return $this->hasMany(Employee::className(), ['id_person' => 'auth_user_id']);
     }
 
