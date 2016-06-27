@@ -303,11 +303,70 @@ function AssignValueFromGrid(URL, ValueID) {
     }
 }
 
-$(function () {
+function GetScrollFilter(ThisElement) {
+    var filterurl = $(ThisElement).parent("form").attr("action");
+
+    var tmpsc = localStorage.getItem('scrollfilter');
+    if (tmpsc !== null) {
+        var tmpsc_obj = JSON.parse(tmpsc);
+
+        if (filterurl in tmpsc_obj) {
+            $(ThisElement).animate({
+                scrollTop: tmpsc_obj[filterurl]
+            }, 500);
+        }
+    }
+}
+
+function SetScrollFilter(ThisElement) {
+    var tmpsc = localStorage.getItem('scrollfilter');
+    var filterurl = $(ThisElement).parent("form").attr("action");
+    if (tmpsc !== null) {
+        var tmpsc_obj = JSON.parse(tmpsc);
+        tmpsc_obj[filterurl] = $(ThisElement).scrollTop();
+        localStorage.setItem('scrollfilter', JSON.stringify(tmpsc_obj));
+    } else {
+        var tmpsc_obj = {};
+        tmpsc_obj[filterurl] = $(ThisElement).scrollTop();
+        localStorage.setItem('scrollfilter', JSON.stringify(tmpsc_obj));
+    }
+}
+
+$(document).ready(function () {
     $("input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
     $("input.form-control.setsession, select.form-control.setsession, textarea.form-control.setsession").change(function () {
         SetSession(this);
     });
 
     InitWindowGUID();
+
+    if ($.inArray(window.location.search, ["", "?r=site%2Findex"]) >= 0) {
+        localStorage.removeItem('scroll');
+        localStorage.removeItem('scrollfilter');
+    }
+    else {
+        var tmpsc = localStorage.getItem('scroll');
+        if (tmpsc !== null) {
+            var tmpsc_obj = JSON.parse(tmpsc);
+            if (window.location.search in tmpsc_obj)
+                $("html,body").animate({
+                    scrollTop: tmpsc_obj[window.location.search]
+                }, 500);
+        }
+
+    }
+
+    $(window).scroll(function () {
+        var tmpsc = localStorage.getItem('scroll');
+        if (tmpsc !== null) {
+            var tmpsc_obj = JSON.parse(tmpsc);
+            tmpsc_obj[window.location.search] = $(document).scrollTop();
+            localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
+        } else {
+            var tmpsc_obj = {};
+            tmpsc_obj[window.location.search] = $(document).scrollTop();
+            localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
+        }
+
+    });
 });

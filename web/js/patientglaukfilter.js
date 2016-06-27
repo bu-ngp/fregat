@@ -61,6 +61,13 @@ $(document).on('ready pjax:success', function () {
                     $(this).parent("label").removeClass("applyfiltercolor");
             });
 
+
+            GetScrollFilter("div.insideforms");
+
+            $("div.insideforms").scroll(function () {
+                SetScrollFilter(this);
+            });
+
         });
     });
 });
