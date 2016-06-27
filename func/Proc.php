@@ -1132,6 +1132,7 @@ class Proc {
             }
     }
 
+    // Присваивает выбранное значение из справочника модели, в сессии
     public static function AssignToModelFromGrid($ActiveRecord = NULL, $AttributeForeignID = NULL) {
         if (Yii::$app->request->isAjax) {
             $LastBC = Proc::GetLastBreadcrumbsFromSession();

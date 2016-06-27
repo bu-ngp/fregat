@@ -34,7 +34,7 @@ class InstallaktController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                    //  'roles' => ['InstallaktEdit'],
+                      'roles' => ['InstallEdit'],
                     ],
                 ],
             ],

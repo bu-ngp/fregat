@@ -273,8 +273,10 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                     error: function (err) {
                         if (err.status == "500" && (err.responseText).indexOf("Integrity constraint violation") >= 0)
                             bootbox.alert("Удаление записи невозможно, т. к. она имеется в других таблицах!");
+                        else if ((err.responseText).indexOf("Internal Server Error (#500): ") >= 0)
+                            bootbox.alert((err.responseText).substring(30));
                         else
-                            console.error("ConfirmDeleteDialogToAjax: " + url);
+                            bootbox.alert(err.responseText);
                     }
                 });
             }

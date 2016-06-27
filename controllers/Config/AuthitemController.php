@@ -145,7 +145,12 @@ class AuthitemController extends Controller {
     }
 
     public function actionAssignToAuthassignment() {
-        Proc::AssignToModelFromGrid(new Authassignment, 'user_id');
+        $LastBC = Proc::GetLastBreadcrumbsFromSession();
+        if ($LastBC['dopparams']['foreign']['model'] === 'Authassignment')
+            Proc::AssignToModelFromGrid(new Authassignment, 'user_id');
+        elseif ($LastBC['dopparams']['foreign']['model'] === 'Authitemchild')
+            Proc::AssignToModelFromGrid(new Authitemchild, 'parent');
+
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 

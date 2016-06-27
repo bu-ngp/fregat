@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Fregat\Grupavid;
 
 /**
  * MatvidController implements the CRUD actions for Matvid model.
@@ -102,7 +103,7 @@ class MatvidController extends Controller {
     }
 
     public function actionAssignToMaterial() {
-        Proc::AssignToModelFromGrid();
+        Proc::AssignToModelFromGrid(new Grupavid, 'id_grupa');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 

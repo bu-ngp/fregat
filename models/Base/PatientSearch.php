@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Base\Patient;
 use app\func\Proc;
+use yii\db\Expression;
 
 /**
  * PatientSearch represents the model behind the search form about `app\models\Base\Patient`.
@@ -245,7 +246,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_uchetbegin';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -266,7 +267,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_deregdate';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -279,7 +280,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_operdate';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -300,7 +301,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_lastvisit';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -309,7 +310,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_lastmetabol';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -354,7 +355,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'patient_lastchange';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
@@ -367,7 +368,7 @@ class PatientSearch extends Patient {
 
                                             $attr = 'glaukuchet_lastchange';
                                             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                                                $query->andFilterWhere(['between', $attr, $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+                                                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
                                             elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
                                                 $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
                                                 $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];

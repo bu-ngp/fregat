@@ -29,7 +29,7 @@ class IzmerController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                    //    'roles' => ['IzmerEdit'],
+                        'roles' => ['IzmerEdit'],
                     ],
                 ],
             ],

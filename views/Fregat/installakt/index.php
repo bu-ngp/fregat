@@ -29,7 +29,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'idInstaller.idperson.auth_user_fullname',
                         'idInstaller.iddolzh.dolzh_name',
                     ],
-                    'buttons' => array_merge(/* Yii::$app->user->can('InstallaktEdit') */ true ? [
+                    'buttons' => array_merge(Yii::$app->user->can('InstallEdit') ? [
                                 'update' => ['Fregat/installakt/update', 'installakt_id'],
                                 'deleteajax' => ['Fregat/installakt/delete', 'installakt_id'],
                                     ] : []
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'filterModel' => $searchModel,
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-random"></i> ' . $this->title,
-                        'before' => /* Yii::$app->user->can('MatvidEdit') */true ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                        'before' => Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                     /* ButtonGroup::widget([
                       'buttons' => [
                       Yii::$app->user->can('EmployeeEdit')  ?

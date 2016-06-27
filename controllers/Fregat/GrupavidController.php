@@ -57,8 +57,16 @@ class GrupavidController extends Controller {
      * @return mixed
      */
     public function actionDelete($id) {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $id_grupa = $this->findModel($id)->id_grupa;
+            $grupavid_main = $this->findModel($id)->grupavid_main;
+            $countmatvids = Grupavid::find([ 'id_grupa' => $id_grupa])->count();
+
+            if ($grupavid_main == '1' && $countmatvids >= 2)
+                throw new \yii\web\HttpException(500, 'Ошибка удаления. Данный вид материальной ценности является основным в группе.');
+            else
+                echo $this->findModel($id)->delete();
+        }
     }
 
     /**

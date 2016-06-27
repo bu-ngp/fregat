@@ -26,7 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
                                 'chooseajax' => ['Fregat/izmer/assign-to-material']
-                                    ], true/* Yii::$app->user->can('IzmerEdit') */ ? [
+                                    ], Yii::$app->user->can('IzmerEdit') ? [
                                 'update' => ['Fregat/izmer/update', 'izmer_id'],
                                 'deleteajax' => ['Fregat/izmer/delete', 'izmer_id'],
                                     ] : []
@@ -37,7 +37,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'filterModel' => $searchModel,
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-pushpin"></i> ' . $this->title,
-                        'before' => true/* Yii::$app->user->can('IzmerEdit') */ ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                        'before' => Yii::$app->user->can('IzmerEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                     ],
                 ]
     ]));

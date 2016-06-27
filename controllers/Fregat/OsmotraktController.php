@@ -32,7 +32,7 @@ class OsmotraktController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                    //   'roles' => ['OsmotraktEdit' ],
+                        'roles' => ['OsmotraktEdit' ],
                     ],
                 ],
             ],
