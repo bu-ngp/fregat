@@ -36,10 +36,8 @@ class ImpemployeeController extends Controller {
     }
 
     public function actionDelete($id) {
-        $id_importemployee = $this->findModel($id)->id_importemployee;
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['Fregat/importemployee/update', 'id' => $id_importemployee]);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**

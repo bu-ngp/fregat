@@ -29,7 +29,6 @@ class AppAsset extends AssetBundle {
         'js/proc.js',
         'js/jquery-deserialize-master/jquery.deserialize.js',
         'js/jquery.maskedinput.min.js',
-            //  'js/test.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

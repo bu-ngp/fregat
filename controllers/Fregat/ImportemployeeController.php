@@ -66,7 +66,7 @@ class ImportemployeeController extends Controller {
         $model = $this->findModel($id);
         $Impemployee = new Impemployee;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             $Impemployee->load(Yii::$app->request->get(), 'Impemployee');
             $Impemployee->id_importemployee = $model->primaryKey;
@@ -86,18 +86,17 @@ class ImportemployeeController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     public function actionToexcel() {
         $searchModel = new ImportemployeeSearch();
         $params = Yii::$app->request->queryParams;
         $inputdata = json_decode($params['inputdata']);
-        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('ImportemployeeSearch', $inputdata));
-        $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
-        
+        $modelname = $searchModel->formName();
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+
         Proc::Grid2Excel($dataProvider, $modelname, 'Импорт сотрудников');
     }
 

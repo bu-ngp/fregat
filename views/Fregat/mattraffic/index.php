@@ -6,6 +6,9 @@ use kartik\dynagrid\DynaGrid;
 use yii\helpers\Url;
 use yii\bootstrap\ButtonDropdown;
 use yii\bootstrap\ButtonGroup;
+use app\models\Fregat\Mattraffic;
+use app\models\Fregat\Material;
+use app\models\Fregat\Employee;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\MattrafficSearch */
@@ -25,16 +28,18 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
-    $mattraffic_tip = [1 => 'Приход', 2 => 'Списание'];
+    $mattraffic_tip = Mattraffic::VariablesValues('mattraffic_tip');
+    $material_tip = Material::VariablesValues('material_tip');
+    $material_writeoff = Material::VariablesValues('material_writeoff');
+    $material_importdo = Material::VariablesValues('material_importdo');
+    $employee_importdo = Employee::VariablesValues('employee_importdo');
 
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'mattrafficgrid'],
                 'columns' => Proc::DGcols([
                     'buttons' => empty($foreign) ? [] : [
-                        'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
-                            $customurl = Url::to([$foreign['url'], 'idinstallakt'=>(string) filter_input(INPUT_GET, 'idinstallakt'), 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['mattraffic_id']]]);
-                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                        }],
+                        'chooseajax' => ['Fregat/mattraffic/assign-to-']
+                        ],
                             'buttonsfirst' => true,
                             'columns' => [
                                 [
@@ -51,10 +56,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 'mattraffic_number',
                                 [
                                     'attribute' => 'idMaterial.material_tip',
-                                    'filter' => [1 => 'Основное средство', 2 => 'Материал'],
-                                    'value' => function ($model) {
-                                return $model->idMaterial->material_tip === 1 ? 'Основное средство' : 'Материал';
-                            },
+                                    'filter' => $material_tip,
+                                    'value' => function ($model) use ($material_tip) {
+                                        return isset($material_tip[$model->idMaterial->material_tip]) ? $material_tip[$model->idMaterial->material_tip] : '';
+                                    },
                                 ],
                                 [
                                     'attribute' => 'idMaterial.idMatv.matvid_name',
@@ -68,8 +73,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 ],
                                 [
                                     'attribute' => 'idMaterial.material_release',
-                                    'visible' => false,
                                     'format' => 'date',
+                                    'visible' => false,
                                 ],
                                 'idMaterial.material_number',
                                 'idMaterial.idIzmer.izmer_name',
@@ -84,16 +89,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 'idMol.idbuild.build_name',
                                 [
                                     'attribute' => 'idMol.employee_dateinactive',
-                                    'visible' => false,
                                     'format' => 'date',
+                                    'visible' => false,
                                 ],
                                 [
                                     'attribute' => 'idMaterial.material_writeoff',
-                                    'filter' => [0 => 'Нет', 1 => 'Да'],
+                                    'filter' => $material_writeoff,
+                                    'value' => function ($model) use ($material_writeoff) {
+                                        return isset($material_writeoff[$model->idMaterial->material_writeoff]) ? $material_writeoff[$model->idMaterial->material_writeoff] : '';
+                                    },
                                     'visible' => false,
-                                    'value' => function ($model) {
-                                return $model->idMaterial->material_writeoff === 0 ? 'Нет' : 'Да';
-                            },
                                 ],
                                 [
                                     'attribute' => 'idMaterial.material_username',
@@ -101,16 +106,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 ],
                                 [
                                     'attribute' => 'idMaterial.material_lastchange',
-                                    'visible' => false,
                                     'format' => 'datetime',
+                                    'visible' => false,
                                 ],
                                 [
                                     'attribute' => 'idMaterial.material_importdo',
-                                    'filter' => [0 => 'Нет', 1 => 'Да'],
+                                    'filter' => $material_importdo,
+                                    'value' => function ($model) use ($material_importdo) {
+                                        return isset($material_importdo[$model->idMaterial->material_importdo]) ? $material_importdo[$model->idMaterial->material_importdo] : '';
+                                    },
                                     'visible' => false,
-                                    'value' => function ($model) {
-                                return $model->idMaterial->material_importdo === 0 ? 'Нет' : 'Да';
-                            },
                                 ],
                                 [
                                     'attribute' => 'idMol.employee_username',
@@ -118,16 +123,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 ],
                                 [
                                     'attribute' => 'idMol.employee_lastchange',
-                                    'visible' => false,
                                     'format' => 'datetime',
+                                    'visible' => false,
                                 ],
                                 [
                                     'attribute' => 'idMol.employee_importdo',
-                                    'filter' => [0 => 'Нет', 1 => 'Да'],
+                                    'filter' => $employee_importdo,
+                                    'value' => function ($model) use ($employee_importdo) {
+                                        return isset($employee_importdo[$model->idMol->employee_importdo]) ? $employee_importdo[$model->idMol->employee_importdo] : '';
+                                    },
                                     'visible' => false,
-                                    'value' => function ($model) {
-                                return $model->idMol->employee_importdo === 0 ? 'Нет' : 'Да';
-                            },
                                 ],
                                 [
                                     'attribute' => 'mattraffic_username',
@@ -135,8 +140,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 ],
                                 [
                                     'attribute' => 'mattraffic_lastchange',
-                                    'visible' => false,
                                     'format' => 'datetime',
+                                    'visible' => false,
                                 ],
                             ],
                         ]),
@@ -213,4 +218,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                     ]));
                     ?>
 
+                </div>
+                <div class="form-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Url::home(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

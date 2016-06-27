@@ -42,6 +42,7 @@ class BuildSearch extends Build {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['build_name' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -57,8 +58,6 @@ class BuildSearch extends Build {
         ]);
 
         $query->andFilterWhere(['like', 'build_name', $this->build_name]);
-        if (empty($query->orderBy))
-            $query->orderBy('build_name');
 
         return $dataProvider;
     }

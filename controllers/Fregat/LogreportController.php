@@ -41,7 +41,7 @@ class LogreportController extends Controller {
 
     public function actionIndex() {
         $searchModel = new LogreportSearch();
-        $dataProvider = $searchModel->searchreport(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
@@ -50,15 +50,22 @@ class LogreportController extends Controller {
     }
 
     public function actionClear() {
-        Traflog::deleteAll();
-        Matlog::deleteAll();
-        Employeelog::deleteAll();
-        Logreport::deleteAll();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                Traflog::deleteAll();
+                Matlog::deleteAll();
+                Employeelog::deleteAll();
+                echo Logreport::deleteAll();
 
-        // Удалить все файлы с расширением .xlsx в папке "importreports"
-        array_map('unlink', glob("importreports/*.xlsx"));
-
-        return $this->redirect(['index']);
+                // Удалить все файлы с расширением .xlsx в папке "importreports"
+                array_map('unlink', glob("importreports/*.xlsx"));
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
+        }
     }
 
     /**

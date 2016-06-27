@@ -60,6 +60,7 @@ class TrOsnovSearch extends TrOsnov {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['tr_osnov_id' => SORT_DESC]],
         ]);
 
         $query->joinWith(['idMattraffic' => function($query) {
@@ -104,33 +105,13 @@ class TrOsnovSearch extends TrOsnov {
                                 $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
 
-                                $dataProvider->sort->attributes['idMattraffic.idMaterial.material_name'] = [
-                                    'asc' => ['idMaterial.material_name' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMattraffic.idMaterial.material_inv'] = [
-                                    'asc' => ['idMaterial.material_inv' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_inv' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMattraffic.mattraffic_number'] = [
-                                    'asc' => ['idMattraffic.mattraffic_number' => SORT_ASC],
-                                    'desc' => ['idMattraffic.mattraffic_number' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMattraffic.idMol.idperson.auth_user_fullname'] = [
-                                    'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                                    'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMattraffic.idMol.iddolzh.dolzh_name'] = [
-                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                ];
-
-                                if (empty($params['sort']))
-                                    $query->orderBy('tr_osnov_id desc');
+                                Proc::AssignRelatedAttributes($dataProvider, [
+                                    'idMattraffic.idMaterial.material_name',
+                                    'idMattraffic.idMaterial.material_inv',
+                                    'idMattraffic.mattraffic_number',
+                                    'idMattraffic.idMol.idperson.auth_user_fullname',
+                                    'idMattraffic.idMol.iddolzh.dolzh_name',
+                                ]);
 
                                 return $dataProvider;
                             }

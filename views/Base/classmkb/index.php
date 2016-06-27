@@ -26,26 +26,24 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'name',
                     ],
                     'buttons' => empty($foreign) ? [] : [
-                        'choose' => function ($url, $model, $key) use ($foreign, $patienttype) {
-                            $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'patienttype' => $patienttype, $foreign['model'] => [$foreign['field'] => $model['id']]]);
-                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                        }],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider,
-                            'filterModel' => $searchModel,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-heart-empty"></i> ' . $this->title,
+                        'chooseajax' => ['Base/classmkb/assign-to-glaukuchet']
                             ],
-                        ]
-            ]));
-            ?>
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-heart-empty"></i> ' . $this->title,
+                    ],
+                ]
+    ]));
+    ?>
 
-        </div>
-        <div class="form-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
         </div>
     </div>
 </div>

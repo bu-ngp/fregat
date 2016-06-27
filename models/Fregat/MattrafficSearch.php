@@ -149,115 +149,30 @@ class MattrafficSearch extends Mattraffic {
                             }
 
                             private function baseSort(&$dataProvider) {
-                                $dataProvider->sort->attributes['idMaterial.material_tip'] = [
-                                    'asc' => ['idMaterial.material_tip' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_tip' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.idMatv.matvid_name'] = [
-                                    'asc' => ['idMatv.matvid_name' => SORT_ASC],
-                                    'desc' => ['idMatv.matvid_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_name'] = [
-                                    'asc' => ['idMaterial.material_name' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_inv'] = [
-                                    'asc' => ['idMaterial.material_inv' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_inv' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_serial'] = [
-                                    'asc' => ['idMaterial.material_serial' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_serial' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_release'] = [
-                                    'asc' => ['idMaterial.material_release' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_release' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_number'] = [
-                                    'asc' => ['idMaterial.material_number' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_number' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.idIzmer.izmer_name'] = [
-                                    'asc' => ['idIzmer.izmer_name' => SORT_ASC],
-                                    'desc' => ['idIzmer.izmer_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_price'] = [
-                                    'asc' => ['idMaterial.material_price' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_price' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.employee_id'] = [
-                                    'asc' => ['idMol.employee_id' => SORT_ASC],
-                                    'desc' => ['idMol.employee_id' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.idperson.auth_user_fullname'] = [
-                                    'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                                    'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.iddolzh.dolzh_name'] = [
-                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.idpodraz.podraz_name'] = [
-                                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.idbuild.build_name'] = [
-                                    'asc' => ['idbuild.build_name' => SORT_ASC],
-                                    'desc' => ['idbuild.build_name' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.employee_dateinactive'] = [
-                                    'asc' => ['idMol.employee_dateinactive' => SORT_ASC],
-                                    'desc' => ['idMol.employee_dateinactive' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_writeoff'] = [
-                                    'asc' => ['idMaterial.material_writeoff' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_writeoff' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_username'] = [
-                                    'asc' => ['idMaterial.material_username' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_username' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_lastchange'] = [
-                                    'asc' => ['idMaterial.material_lastchange' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_lastchange' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMaterial.material_importdo'] = [
-                                    'asc' => ['idMaterial.material_importdo' => SORT_ASC],
-                                    'desc' => ['idMaterial.material_importdo' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.employee_username'] = [
-                                    'asc' => ['idMol.employee_username' => SORT_ASC],
-                                    'desc' => ['idMol.employee_username' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.employee_lastchange'] = [
-                                    'asc' => ['idMol.employee_lastchange' => SORT_ASC],
-                                    'desc' => ['idMol.employee_lastchange' => SORT_DESC],
-                                ];
-
-                                $dataProvider->sort->attributes['idMol.employee_importdo'] = [
-                                    'asc' => ['idMol.employee_importdo' => SORT_ASC],
-                                    'desc' => ['idMol.employee_importdo' => SORT_DESC],
-                                ];
+                                Proc::AssignRelatedAttributes($dataProvider, [
+                                    'idMaterial.material_tip',
+                                    'idMaterial.idMatv.matvid_name',
+                                    'idMaterial.material_name',
+                                    'idMaterial.material_inv',
+                                    'idMaterial.material_serial',
+                                    'idMaterial.material_release',
+                                    'idMaterial.material_number',
+                                    'idMaterial.idIzmer.izmer_name',
+                                    'idMaterial.material_price',
+                                    'idMol.employee_id',
+                                    'idMol.idperson.auth_user_fullname',
+                                    'idMol.iddolzh.dolzh_name',
+                                    'idMol.idpodraz.podraz_name',
+                                    'idMol.idbuild.build_name',
+                                    'idMol.employee_dateinactive',
+                                    'idMaterial.material_writeoff',
+                                    'idMaterial.material_username',
+                                    'idMaterial.material_lastchange',
+                                    'idMaterial.material_importdo',
+                                    'idMol.employee_username',
+                                    'idMol.employee_lastchange',
+                                    'idMol.employee_importdo',
+                                ]);
                             }
 
                             public function search($params) {
@@ -265,6 +180,7 @@ class MattrafficSearch extends Mattraffic {
 
                                 $dataProvider = new ActiveDataProvider([
                                     'query' => $query,
+                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
                                 ]);
 
                                 $this->baseRelations($query);
@@ -280,9 +196,6 @@ class MattrafficSearch extends Mattraffic {
                                 $this->baseFilter($query);
                                 $this->baseSort($dataProvider);
 
-                                if (empty($params['sort']))
-                                    $query->orderBy('mattraffic_date desc, mattraffic_id desc');
-
                                 return $dataProvider;
                             }
 
@@ -291,6 +204,7 @@ class MattrafficSearch extends Mattraffic {
 
                                 $dataProvider = new ActiveDataProvider([
                                     'query' => $query,
+                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
                                 ]);
 
                                 $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
@@ -313,9 +227,6 @@ class MattrafficSearch extends Mattraffic {
 
                                 $this->baseFilter($query);
                                 $this->baseSort($dataProvider);
-
-                                if (empty($params['sort']))
-                                    $query->orderBy('mattraffic_date desc, mattraffic_id desc');
 
                                 return $dataProvider;
                             }

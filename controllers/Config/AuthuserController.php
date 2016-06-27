@@ -13,6 +13,7 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 
 /**
  * AuthuserController implements the CRUD actions for Authuser model.
@@ -31,17 +32,24 @@ class AuthuserController extends Controller {
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
         ];
     }
 
     public function actionIndex() {
         $searchModel = new AuthuserSearch();
-        $dataProvider = isset($_GET['emp']) && $_GET['emp'] ? $searchModel->searchemployee(Yii::$app->request->queryParams) : $searchModel->search(Yii::$app->request->queryParams);
+        $emp = (string) filter_input(INPUT_GET, 'emp');
+        $dataProvider = $emp ? $searchModel->searchemployee(Yii::$app->request->queryParams) : $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-                    'emp' => isset($_GET['emp']) && $_GET['emp']
+                    'emp' => $emp,
         ]);
     }
 
@@ -64,16 +72,7 @@ class AuthuserController extends Controller {
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else {
-            $Authassignment = new Authassignment;
-            $Employee = new Employee;
-            $Authassignment->load(Yii::$app->request->get(), 'Authassignment');
-            $Employee->load(Yii::$app->request->get(), 'Employee');
-            $Authassignment->user_id = $model->primaryKey;
-            $Employee->id_person = $model->primaryKey;
-            if ($Authassignment->validate())
-                $Authassignment->save(false);
-            if ($Employee->validate())
-                $Employee->save(false);
+            $emp = (string) filter_input(INPUT_GET, 'emp');
 
             $searchModel = new AuthassignmentSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -83,8 +82,7 @@ class AuthuserController extends Controller {
 
             return $this->render('update', [
                         'model' => $model,
-                        'emp' => isset($_GET['emp']) && $_GET['emp'],
-                        'Authassignment' => $Authassignment,
+                        'emp' => $emp,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
                         'searchModelEmp' => $searchModelEmp,
@@ -94,9 +92,8 @@ class AuthuserController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     public function actionChangepassword($id) {
@@ -105,12 +102,8 @@ class AuthuserController extends Controller {
         $model->auth_user_password2 = '';
         $model->scenario = 'Changepassword';
 
-        $result = Proc::GetBreadcrumbsFromSession();
-        end($result);
-        prev($result);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect($result[key($result)]['url']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('changepassword', [
                         'model' => $model,

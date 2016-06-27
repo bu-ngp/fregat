@@ -85,11 +85,10 @@ class Authuser extends \yii\db\ActiveRecord {
             $this->auth_user_password2 = $this->auth_user_password;
         }
 
-        if ($this->getIsNewRecord()) {
+        if ($this->getIsNewRecord())
             return $this->insert($runValidation, $attributeNames);
-        } else {
+        else
             return $this->update($runValidation, $attributeNames) !== false;
-        }
     }
 
 }

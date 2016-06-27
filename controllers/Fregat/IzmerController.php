@@ -22,15 +22,15 @@ class IzmerController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'selectinput', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
-                /*   [
-                  'actions' => ['create', 'update', 'delete'],
-                  'allow' => true,
-                  'roles' => ['IzmerEdit'],
-                  ], */
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                    //    'roles' => ['IzmerEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -64,7 +64,7 @@ class IzmerController extends Controller {
         $model = new Izmer();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -75,19 +75,22 @@ class IzmerController extends Controller {
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        } else {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else
             return $this->render('update', [
                         'model' => $model,
             ]);
-        }
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
 
-        return $this->redirect(['index']);
+    public function actionAssignToMaterial() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

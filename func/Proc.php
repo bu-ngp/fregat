@@ -84,12 +84,6 @@ class Proc {
                             prev($result);
 
                         $model->load($result[key($result)]['dopparams'], $fmodel);
-
-                        if (isset(Yii::$app->request->get()[$fmodel][$field])) {
-                            $value = Yii::$app->request->get()[$fmodel][$field];
-                            $result[key($result)]['dopparams'][$fmodel][$field] = $value;
-                            $model->$field = $value;
-                        }
                     }
                 }
 
@@ -108,7 +102,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -187,6 +181,18 @@ class Proc {
                                 'title' => 'Удалить',
                                 'class' => 'btn btn-xs btn-danger',
                                 'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '"' . (isset($params['buttons']['deleteajax'][2]) ? ', "' . $params['buttons']['deleteajax'][2] . '"' : '') . ')'
+                    ]);
+                };
+            }
+
+            // Если есть кнопка выбора записи посредством ajax
+            if (isset($params['buttons']['chooseajax']) && is_array($params['buttons']['chooseajax'])) {
+                $params['buttons']['chooseajax'] = function ($url, $model) use ($params) {
+                    return Html::button('<i class="glyphicon glyphicon-ok-sign"></i>', [
+                                'type' => 'button',
+                                'title' => 'Выбрать',
+                                'class' => 'btn btn-xs btn-success',
+                                'onclick' => 'AssignValueFromGrid("' . Url::to([$params['buttons']['chooseajax'][0]]) . '","' . $model->primarykey . '")'
                     ]);
                 };
             }
@@ -302,7 +308,7 @@ class Proc {
                             'addon' => [
                                 'append' => [
                                     'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
-                                        'foreignmodel' => substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                        'foreignmodel' => $model->formName(),
                                         'url' => $thisroute,
                                         'field' => $fields['keyfield'],
                                         'id' => $model->primaryKey,
@@ -1124,6 +1130,36 @@ class Proc {
                     'desc' => [$attrsql => SORT_DESC],
                 ];
             }
+    }
+
+    public static function AssignToModelFromGrid($ActiveRecord = NULL, $AttributeForeignID = NULL) {
+        if (Yii::$app->request->isAjax) {
+            $LastBC = Proc::GetLastBreadcrumbsFromSession();
+            $assigndata = filter_input(INPUT_POST, 'assigndata');
+            $foreign = isset($LastBC['dopparams']['foreign']) ? $LastBC['dopparams']['foreign'] : '';
+
+            if (!empty($foreign) && !empty($assigndata)) {
+                $BC = Proc::GetBreadcrumbsFromSession();
+                end($BC);
+                prev($BC);
+                $BC[key($BC)]['dopparams'][$foreign['model']][$foreign['field']] = $assigndata;
+                $session = new Session;
+                $session->open();
+                $session['breadcrumbs'] = $BC;
+                $session->close();
+
+                if ($ActiveRecord instanceof ActiveRecord && is_string($AttributeForeignID)) {
+                    $field = $LastBC['dopparams']['foreign']['field'];
+                    if ($ActiveRecord->formName() === $LastBC['dopparams']['foreign']['model']) {
+                        $ActiveRecord->$field = $assigndata;
+                        $ActiveRecord->$AttributeForeignID = $foreign['id'];
+                        if ($ActiveRecord->validate())
+                            $ActiveRecord->save(false);
+                    }
+                }
+            } else
+                return 'error foreign or assigndata empty AssignToModelFromGrid()';
+        }
     }
 
 }

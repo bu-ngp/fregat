@@ -45,6 +45,7 @@ class IzmerSearch extends Izmer
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['izmer_name' => SORT_ASC]],
         ]);
 
         $this->load($params);

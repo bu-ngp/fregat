@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Config\Authitemchild;
+use app\func\Proc;
 
 /**
  * AuthitemchildSearch represents the model behind the search form about `app\models\Config\Authitemchild`.
@@ -74,19 +75,7 @@ class AuthitemchildSearch extends Authitemchild {
                 $query->andFilterWhere(['LIKE', 'children.type', $this->getAttribute('children.type')]);
                 $query->andFilterWhere(['LIKE', 'children.name', $this->getAttribute('children.name')]);
 
-                $dataProvider->sort->attributes['children.description'] = [
-                    'asc' => ['children.description' => SORT_ASC],
-                    'desc' => ['children.description' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['children.type'] = [
-                    'asc' => ['children.type' => SORT_ASC],
-                    'desc' => ['children.type' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['children.name'] = [
-                    'asc' => ['children.name' => SORT_ASC],
-                    'desc' => ['children.name' => SORT_DESC],
-                ];
-
+                Proc::AssignRelatedAttributes($dataProvider, ['children.description', 'children.type', 'children.name']);
 
                 return $dataProvider;
             }

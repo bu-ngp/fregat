@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Importmaterial;
+use app\func\Proc;
 
 /**
  * ImportmaterialSearch represents the model behind the search form about `app\models\Fregat\Importmaterial`.
@@ -47,6 +48,7 @@ class ImportmaterialSearch extends Importmaterial {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['importmaterial_combination' => SORT_ASC]],
         ]);
 
         $query->joinWith([
@@ -71,13 +73,7 @@ class ImportmaterialSearch extends Importmaterial {
                 $query->andFilterWhere(['like', 'importmaterial_combination', $this->importmaterial_combination]);
                 $query->andFilterWhere(['LIKE', 'idmatvid.matvid_name', $this->getAttribute('idmatvid.matvid_name')]);
 
-                if (empty($query->orderBy))
-                    $query->orderBy('importmaterial_combination');
-
-                $dataProvider->sort->attributes['idmatvid.matvid_name'] = [
-                    'asc' => ['idmatvid.matvid_name' => SORT_ASC],
-                    'desc' => ['idmatvid.matvid_name' => SORT_DESC],
-                ];
+                Proc::AssignRelatedAttributes($dataProvider, ['idmatvid.matvid_name']);
 
                 return $dataProvider;
             }

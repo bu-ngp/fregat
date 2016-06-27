@@ -15,21 +15,19 @@ use Yii;
  * @property Grupa $idGrupa
  * @property Matvid $idMatv
  */
-class Grupavid extends \yii\db\ActiveRecord
-{
+class Grupavid extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'grupavid';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['grupavid_main', 'id_grupa', 'id_matvid'], 'integer'],
             [['id_grupa', 'id_matvid'], 'required'],
@@ -40,8 +38,7 @@ class Grupavid extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'grupavid_id' => 'Grupavid ID',
             'grupavid_main' => 'Основная',
@@ -53,16 +50,23 @@ class Grupavid extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdgrupa()
-    {
+    public function getIdgrupa() {
         return $this->hasOne(Grupa::className(), ['grupa_id' => 'id_grupa']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdmatvid()
-    {
+    public function getIdmatvid() {
         return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid']);
     }
+
+    public static function VariablesValues($attribute) {
+        $values = [
+            'grupavid_main' => [0 => 'Нет', 1 => 'Да'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
 }

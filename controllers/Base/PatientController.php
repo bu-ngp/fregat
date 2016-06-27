@@ -196,7 +196,7 @@ class PatientController extends Controller {
                                     'patienttype' => $patienttype,
                                                 ], $dopparams));
                     } else {
-                        return $this->redirect([$patienttype . 'index']);
+                        return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
                     }
                 } else {
                     // Откатываем транзакцию

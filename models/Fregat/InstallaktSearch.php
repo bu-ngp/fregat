@@ -50,6 +50,7 @@ class InstallaktSearch extends Installakt {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['installakt_id' => SORT_DESC]],
         ]);
 
         $query->joinWith(['idInstaller' => function($query) {
@@ -82,18 +83,7 @@ class InstallaktSearch extends Installakt {
                         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idInstaller.idperson.auth_user_fullname')]);
                         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idInstaller.iddolzh.dolzh_name')]);
 
-                        $dataProvider->sort->attributes['idInstaller.idperson.auth_user_fullname'] = [
-                            'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                            'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                        ];
-
-                        $dataProvider->sort->attributes['idInstaller.iddolzh.dolzh_name'] = [
-                            'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                            'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                        ];
-
-                        if (empty($params['sort']))
-                            $query->orderBy('installakt_id desc');
+                        Proc::AssignRelatedAttributes($dataProvider, ['idInstaller.idperson.auth_user_fullname', 'idInstaller.iddolzh.dolzh_name']);
 
                         return $dataProvider;
                     }

@@ -42,6 +42,7 @@ class PodrazSearch extends Podraz {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['podraz_name' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -57,9 +58,7 @@ class PodrazSearch extends Podraz {
         ]);
 
         $query->andFilterWhere(['like', 'podraz_name', $this->podraz_name]);
-        if (empty($query->orderBy))
-            $query->orderBy('podraz_name');
-
+    
         return $dataProvider;
     }
 

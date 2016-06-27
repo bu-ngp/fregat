@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Impemployee;
+use app\func\Proc;
 
 /**
  * ImpemployeeSearch represents the model behind the search form about `app\models\Fregat\Impemployee`.
@@ -16,7 +17,6 @@ class ImpemployeeSearch extends Impemployee {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
             'idemployee.employee_id',
-            'idemployee.employee_fio',
             'idemployee.iddolzh.dolzh_name',
             'idemployee.idpodraz.podraz_name',
             'idemployee.idbuild.build_name',
@@ -30,7 +30,7 @@ class ImpemployeeSearch extends Impemployee {
     public function rules() {
         return [
             [['impemployee_id', 'id_importemployee', 'id_employee'], 'integer'],
-            [['idemployee.employee_id', 'idemployee.employee_fio', 'idemployee.iddolzh.dolzh_name', 'idemployee.idbuild.build_name', 'idemployee.idpodraz.podraz_name', 'idemployee.idperson.auth_user_fullname'], 'safe'],
+            [['idemployee.employee_id', 'idemployee.iddolzh.dolzh_name', 'idemployee.idbuild.build_name', 'idemployee.idpodraz.podraz_name', 'idemployee.idperson.auth_user_fullname'], 'safe'],
         ];
     }
 
@@ -94,42 +94,18 @@ class ImpemployeeSearch extends Impemployee {
                                                 ]);
 
                                                 $query->andFilterWhere(['LIKE', 'idemployee.employee_id', $this->getAttribute('idemployee.employee_id')]);
-                                                $query->andFilterWhere(['LIKE', 'idemployee.employee_fio', $this->getAttribute('idemployee.employee_fio')]);
                                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idemployee.iddolzh.dolzh_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idemployee.idperson.auth_user_fullname')]);
 
-
-                                                $dataProvider->sort->attributes['idemployee.employee_id'] = [
-                                                    'asc' => ['idemployee.employee_id' => SORT_ASC],
-                                                    'desc' => ['idemployee.employee_id' => SORT_DESC],
-                                                ];
-
-                                                $dataProvider->sort->attributes['idemployee.employee_fio'] = [
-                                                    'asc' => ['idemployee.employee_fio' => SORT_ASC],
-                                                    'desc' => ['idemployee.employee_fio' => SORT_DESC],
-                                                ];
-
-                                                $dataProvider->sort->attributes['idemployee.iddolzh.dolzh_name'] = [
-                                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                                ];
-
-                                                $dataProvider->sort->attributes['idemployee.idbuild.build_name'] = [
-                                                    'asc' => ['idbuild.build_name' => SORT_ASC],
-                                                    'desc' => ['idbuild.build_name' => SORT_DESC],
-                                                ];
-
-                                                $dataProvider->sort->attributes['idemployee.idpodraz.podraz_name'] = [
-                                                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                                ];
-
-                                                $dataProvider->sort->attributes['idemployee.idperson.auth_user_fullname'] = [
-                                                    'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                                                    'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                                                ];
+                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                    'idemployee.employee_id',
+                                                    'idemployee.iddolzh.dolzh_name',
+                                                    'idemployee.idbuild.build_name',
+                                                    'idemployee.idpodraz.podraz_name',
+                                                    'idemployee.idperson.auth_user_fullname',
+                                                ]);
 
                                                 return $dataProvider;
                                             }
@@ -139,6 +115,7 @@ class ImpemployeeSearch extends Impemployee {
 
                                                 $dataProvider = new ActiveDataProvider([
                                                     'query' => $query,
+                                                    'sort' => ['defaultOrder' => ['idemployee.idperson.auth_user_fullname' => SORT_ASC]],
                                                 ]);
 
                                                 $query->joinWith([
@@ -175,38 +152,16 @@ class ImpemployeeSearch extends Impemployee {
                                                                                 ]);
 
                                                                                 $query->andFilterWhere(['LIKE', 'idemployee.employee_id', $this->getAttribute('idemployee.employee_id')]);
-                                                                                $query->andFilterWhere(['LIKE', 'idemployee.employee_fio', $this->getAttribute('idemployee.employee_fio')]);
                                                                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idemployee.iddolzh.dolzh_name')]);
                                                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idemployee.idpodraz.podraz_name')]);
                                                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idemployee.idbuild.build_name')]);
 
-                                                                                if (empty($query->orderBy))
-                                                                                    $query->orderBy('idemployee.employee_fio');
-
-                                                                                $dataProvider->sort->attributes['idemployee.employee_id'] = [
-                                                                                    'asc' => ['idemployee.employee_id' => SORT_ASC],
-                                                                                    'desc' => ['idemployee.employee_id' => SORT_DESC],
-                                                                                ];
-
-                                                                                $dataProvider->sort->attributes['idemployee.employee_fio'] = [
-                                                                                    'asc' => ['idemployee.employee_fio' => SORT_ASC],
-                                                                                    'desc' => ['idemployee.employee_fio' => SORT_DESC],
-                                                                                ];
-
-                                                                                $dataProvider->sort->attributes['idemployee.iddolzh.dolzh_name'] = [
-                                                                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                                                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                                                                ];
-
-                                                                                $dataProvider->sort->attributes['idemployee.idbuild.build_name'] = [
-                                                                                    'asc' => ['idbuild.build_name' => SORT_ASC],
-                                                                                    'desc' => ['idbuild.build_name' => SORT_DESC],
-                                                                                ];
-
-                                                                                $dataProvider->sort->attributes['idemployee.idpodraz.podraz_name'] = [
-                                                                                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                                                                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                                                                ];
+                                                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                                                    'idemployee.employee_id',
+                                                                                    'idemployee.iddolzh.dolzh_name',
+                                                                                    'idemployee.idbuild.build_name',
+                                                                                    'idemployee.idpodraz.podraz_name',
+                                                                                ]);
 
                                                                                 return $dataProvider;
                                                                             }

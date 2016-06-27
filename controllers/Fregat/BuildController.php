@@ -22,7 +22,7 @@ class BuildController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput'],
+                        'actions' => ['index', 'selectinput', 'assign-to-employee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -60,8 +60,6 @@ class BuildController extends Controller {
     }
 
     public function actionSelectinput($field, $q = null) {
-        //$showresultfields = $_GET['showresultfields'];
-
         return Proc::select2request([
                     'model' => new Build,
                     'field' => $field,
@@ -94,16 +92,13 @@ class BuildController extends Controller {
     }
 
     public function actionDelete($id) {
-        $record = $this->findModel($id);
-        if ($record !== null) {
-            if ($record->delete()) {
-                return $this->redirect(['index']);
-            } else {
-                return $this->redirect(['index', 'errordelete' => 'Нельзя удалить']);
-            }
-        } else {
-            return $this->redirect(['index']);
-        }
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
+
+    public function actionAssignToEmployee() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

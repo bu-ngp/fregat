@@ -30,31 +30,29 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'choose' => function ($url, $model, $key) use ($foreign, $patienttype) {
-                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], 'patienttype' => $patienttype, $foreign['model'] => [$foreign['field'] => $model['employee_id']]]);
-                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') ? [
-                                        'update' => ['Fregat/employee/update', 'employee_id']] : []), (Yii::$app->user->can('EmployeeEdit') ? [
-                                        'delete' => ['Fregat/employee/delete', 'employee_id']] : [])
-                            ),
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider,
-                            'filterModel' => $searchModel,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
-                                'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                            ],
-                        ]
-            ]));
-            ?>
+                                'chooseajax' => ['Fregat/employee/assign-to-material']
+                                    ], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') ? [
+                                'update' => ['Fregat/employee/update', 'employee_id']] : []), (Yii::$app->user->can('EmployeeEdit') ? [
+                                'deleteajax' => ['Fregat/employee/delete', 'employee_id']] : [])
+                    ),
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
+                        'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                    ],
+                ]
+    ]));
+    ?>
 
-        </div>
+</div>
 
-        <div class="form-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
         </div>
     </div>
 </div>

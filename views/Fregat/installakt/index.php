@@ -23,15 +23,15 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'installakt_id',
                         [
                             'attribute' => 'installakt_date',
-                            'visible' => false,
                             'format' => 'date',
+                            'visible' => false,
                         ],
                         'idInstaller.idperson.auth_user_fullname',
                         'idInstaller.iddolzh.dolzh_name',
                     ],
                     'buttons' => array_merge(/* Yii::$app->user->can('InstallaktEdit') */ true ? [
                                 'update' => ['Fregat/installakt/update', 'installakt_id'],
-                                'delete' => ['Fregat/installakt/delete', 'installakt_id'],
+                                'deleteajax' => ['Fregat/installakt/delete', 'installakt_id'],
                                     ] : []
                     ),
                 ]),
@@ -62,4 +62,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ]
     ]));
     ?>
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div> 
 </div>

@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\func\Proc;
 
 /**
  * ImportmaterialController implements the CRUD actions for Importmaterial model.
@@ -50,7 +51,7 @@ class ImportmaterialController extends Controller {
         $model = new Importmaterial();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -62,7 +63,7 @@ class ImportmaterialController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('update', [
                         'model' => $model,
@@ -71,9 +72,8 @@ class ImportmaterialController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**

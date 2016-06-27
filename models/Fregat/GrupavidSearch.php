@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Grupavid;
+use app\func\Proc;
 
 /**
  * GrupavidSearch represents the model behind the search form about `app\models\Fregat\Grupavid`.
@@ -58,7 +59,7 @@ class GrupavidSearch extends Grupavid {
                 ]);
 
                 $this->load($params);
-                
+
                 $this->id_grupa = $params['id'];
 
                 if (!$this->validate()) {
@@ -76,10 +77,7 @@ class GrupavidSearch extends Grupavid {
 
                 $query->andFilterWhere(['LIKE', 'idmatvid.matvid_name', $this->getAttribute('idmatvid.matvid_name')]);
 
-                $dataProvider->sort->attributes['idmatvid.matvid_name'] = [
-                    'asc' => ['idmatvid.matvid_name' => SORT_ASC],
-                    'desc' => ['idmatvid.matvid_name' => SORT_DESC],
-                ];
+                Proc::AssignRelatedAttributes($dataProvider, ['idmatvid.matvid_name']);
 
                 return $dataProvider;
             }

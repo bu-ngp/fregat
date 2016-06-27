@@ -35,12 +35,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             /* empty($foreign) ? [] : [
-                              'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
-                              $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['organ_id']]]);
-                              return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                              }], */ /* Yii::$app->user->can('OsmotraktEdit') */ true ? [
+                              'chooseajax' => ['Fregat/osmotrakt/assign-to-']], */ /* Yii::$app->user->can('OsmotraktEdit') */ true ? [
                                 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                                'delete' => ['Fregat/osmotrakt/delete', 'osmotrakt_id'],
+                                'deleteajax' => ['Fregat/osmotrakt/delete', 'osmotrakt_id'],
                                     ] : []
                     ),
                 ]),
@@ -54,4 +51,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ]
     ]));
     ?>
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

@@ -25,7 +25,7 @@ class OrganController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput'],
+                        'actions' => ['index', 'selectinput', 'assign-to-osmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -54,7 +54,7 @@ class OrganController extends Controller {
                     'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     public function actionSelectinput($field, $q = null) {
         return Proc::select2request([
                     'model' => new Organ,
@@ -62,12 +62,12 @@ class OrganController extends Controller {
                     'q' => $q,
         ]);
     }
-    
+
     public function actionCreate() {
         $model = new Organ();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -79,7 +79,7 @@ class OrganController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('update', [
                         'model' => $model,
@@ -88,9 +88,13 @@ class OrganController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
 
-        return $this->redirect(['index']);
+    public function actionAssignToOsmotrakt() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

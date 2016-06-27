@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Importemployee;
+use app\func\Proc;
 
 /**
  * ImportemployeeSearch represents the model behind the search form about `app\models\Fregat\Importemployee`.
@@ -47,6 +48,7 @@ class ImportemployeeSearch extends Importemployee {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['importemployee_combination' => SORT_ASC]],
         ]);
 
         $query->joinWith([
@@ -77,17 +79,7 @@ class ImportemployeeSearch extends Importemployee {
                         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
 
-                        if (empty($query->orderBy))
-                            $query->orderBy('importemployee_combination');
-
-                        $dataProvider->sort->attributes['idbuild.build_name'] = [
-                            'asc' => ['idbuild.build_name' => SORT_ASC],
-                            'desc' => ['idbuild.build_name' => SORT_DESC],
-                        ];
-                        $dataProvider->sort->attributes['idpodraz.podraz_name'] = [
-                            'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                            'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                        ];
+                        Proc::AssignRelatedAttributes($dataProvider, ['idbuild.build_name', 'idpodraz.podraz_name']);
 
                         return $dataProvider;
                     }

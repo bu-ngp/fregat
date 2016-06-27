@@ -49,6 +49,7 @@ class MaterialSearch extends Material {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['material_name' => SORT_ASC]],
         ]);
 
         $query->joinWith(['idMatv' => function($query) {
@@ -92,18 +93,7 @@ class MaterialSearch extends Material {
                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'material_lastchange', 'datetime'));
                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'material_number'));
 
-                        $dataProvider->sort->attributes['idMatv.matvid_name'] = [
-                            'asc' => ['idMatv.matvid_name' => SORT_ASC],
-                            'desc' => ['idMatv.matvid_name' => SORT_DESC],
-                        ];
-
-                        $dataProvider->sort->attributes['idIzmer.izmer_name'] = [
-                            'asc' => ['idIzmer.izmer_name' => SORT_ASC],
-                            'desc' => ['idIzmer.izmer_name' => SORT_DESC],
-                        ];
-
-                        if (empty($params['sort']))
-                            $query->orderBy('material_name');
+                        Proc::AssignRelatedAttributes($dataProvider, ['idMatv.matvid_name', 'idIzmer.izmer_name']);
 
                         return $dataProvider;
                     }

@@ -47,10 +47,7 @@ class Employee extends \yii\db\ActiveRecord {
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],
-            //    [['id_person'], 'required', 'on' => ['importnewuser']],
             [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
-            //   [['employee_fio'], 'string', 'max' => 255],
-            //  [['employee_fio'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
             ['id_person', 'unique', 'targetAttribute' => ['id_person', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'На этого сотрудника уже есть такая специальность'],
             [['employee_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Специальность при импорте не изменяется, 1 - Специальность может быть изменена при импорте  
             [['employee_forinactive'], 'integer', 'min' => 1, 'max' => 1], // 1 - Сотрудник не найдет в файле импорта сотрудников, т.е. не работает по данной специальности, NULL по умолчанию
@@ -200,6 +197,14 @@ class Employee extends \yii\db\ActiveRecord {
                                 ->one();
 
                         return $query['text'];
+                    }
+
+                    public static function VariablesValues($attribute) {
+                        $values = [
+                            'employee_importdo' => [0 => 'Нет', 1 => 'Да'],
+                        ];
+
+                        return isset($values[$attribute]) ? $values[$attribute] : NULL;
                     }
 
                 }

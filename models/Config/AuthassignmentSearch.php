@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Config\Authassignment;
+use app\func\Proc;
 
 /**
  * AuthassignmentSearch represents the model behind the search form about `app\models\Config\Authassignment`.
@@ -80,18 +81,7 @@ class AuthassignmentSearch extends Authassignment {
                 $query->andFilterWhere(['LIKE', 'itemname.type', $this->getAttribute('itemname.type')]);
                 $query->andFilterWhere(['LIKE', 'itemname.name', $this->getAttribute('itemname.name')]);
 
-                $dataProvider->sort->attributes['itemname.description'] = [
-                    'asc' => ['itemname.description' => SORT_ASC],
-                    'desc' => ['itemname.description' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['itemname.type'] = [
-                    'asc' => ['itemname.type' => SORT_ASC],
-                    'desc' => ['itemname.type' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['itemname.name'] = [
-                    'asc' => ['itemname.name' => SORT_ASC],
-                    'desc' => ['itemname.name' => SORT_DESC],
-                ];
+                Proc::AssignRelatedAttributes($dataProvider, ['itemname.description', 'itemname.type', 'itemname.name']);
 
                 return $dataProvider;
             }

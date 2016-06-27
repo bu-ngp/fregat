@@ -7,7 +7,6 @@ use app\models\Fregat\Podraz;
 use kartik\select2\Select2;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
-use yii\web\Session;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Importemployee */
@@ -46,7 +45,6 @@ use yii\web\Session;
                 'fields' => [
                     'keyfield' => 'id_build',
                     'resultfield' => 'build_name',
-                //    'showresultfields' => ['build_id', 'build_name'],
                 ],
                 'placeholder' => 'Выберете здание',
                 'fromgridroute' => 'Fregat/build/index',
@@ -59,8 +57,6 @@ use yii\web\Session;
 
     <?php
     if (!$model->isNewRecord) {
-        $session = new Session;
-        $session->open();
 
         echo DynaGrid::widget(Proc::DGopts([
                     'options' => ['id' => 'impemployeegrid'],
@@ -73,7 +69,7 @@ use yii\web\Session;
                             'idemployee.idbuild.build_name',
                         ],
                         'buttons' => [
-                            'delete' => ['Fregat/impemployee/delete', 'impemployee_id']
+                            'deleteajax' => ['Fregat/impemployee/delete', 'impemployee_id'],
                         ],
                     ]),
                     'gridOptions' => [
@@ -82,23 +78,21 @@ use yii\web\Session;
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-user"></i> Привязать к сотруднику</h3>',
                             'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить сотрудника', ['Fregat/employee/forimportemployee',
-                                'foreignmodel' => 'Impemployee', //substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                'foreignmodel' => 'Impemployee',
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_employee',
                                 'id' => $model->primaryKey,
-                                    // 'id' => $_GET['id'],
                                     ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],
                     ]
         ]));
-
-        $session->close();
     }
     ?>
 
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Importemployeeform']) ?>
             </div>
         </div>

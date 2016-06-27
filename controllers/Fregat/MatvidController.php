@@ -23,7 +23,7 @@ class MatvidController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'forgrupavid'],
+                        'actions' => ['index', 'selectinput', 'forgrupavid', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -67,7 +67,7 @@ class MatvidController extends Controller {
         $model = new Matvid();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -78,19 +78,17 @@ class MatvidController extends Controller {
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        } else {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else
             return $this->render('update', [
                         'model' => $model,
             ]);
-        }
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     public function actionForgrupavid() {
@@ -101,6 +99,11 @@ class MatvidController extends Controller {
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionAssignToMaterial() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

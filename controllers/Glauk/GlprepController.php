@@ -53,10 +53,8 @@ class GlprepController extends Controller {
     }
 
     public function actionDelete($id) {
-        if (Yii::$app->request->isAjax) {
-            $id_glaukuchet = $this->findModel($id)->id_glaukuchet;
+        if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
-        }
     }
 
     /**

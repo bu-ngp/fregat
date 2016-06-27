@@ -24,7 +24,7 @@ class ClassmkbController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'indexglauk', 'selectinputfordiag'],
+                        'actions' => ['index', 'indexglauk', 'selectinputfordiag', 'assign-to-glaukuchet'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -62,6 +62,11 @@ class ClassmkbController extends Controller {
                         'q' => $q,
                         'methodquery' => 'selectinput',
             ]);
+    }
+
+    public function actionAssignToGlaukuchet() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -23,11 +23,6 @@ class FregatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['FregatUserPermission'],
-                    ],
-                    [
                         'actions' => ['sprav'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
@@ -38,7 +33,7 @@ class FregatController extends Controller {
                         'roles' => ['FregatImport'],
                     ],
                     [
-                        'actions' => ['import-do', 'import-employee-do', 'test', 'genpass'],
+                        'actions' => ['import-do', 'test', 'genpass'],
                         'allow' => true,
                     ],
                 ],
@@ -50,11 +45,6 @@ class FregatController extends Controller {
                 ],
             ],
         ];
-    }
-
-    public function actionIndex() {
-        Proc::SetMenuButtons('fregat');
-        return $this->render('//Fregat/index');
     }
 
     public function actionConfig() {
@@ -71,10 +61,6 @@ class FregatController extends Controller {
 
     public function actionImportDo() {
         FregatImport::ImportDo();
-    }
-
-    public function actionImportEmployeeDo() {
-        FregatImport::ImportEmployee();
     }
 
     public function actionFias() {

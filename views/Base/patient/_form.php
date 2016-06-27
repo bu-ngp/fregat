@@ -244,7 +244,7 @@ use app\func\Proc;
                                         ],
                                     ],
                                     'buttons' => array_merge(!$dopparams['DisableElements'] ? [
-                                                'deleteajax' => ['Glauk/glprep/delete', 'glprep_id']
+                                                'deleteajax' => ['Glauk/glprep/delete', 'glprep_id'],
                                                     ] : []),
                                 ]),
                                 'gridOptions' => [

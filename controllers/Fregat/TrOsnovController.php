@@ -109,7 +109,7 @@ class TrOsnovController extends Controller {
                     Proc::SetSessionValuesFromAR($Material, $PreviusBC);
                     Proc::SetSessionValuesFromAR($Employee, $PreviusBC);
                 }
-                
+
                 // Откатываем транзакцию
                 $transaction->rollback();
 
@@ -163,10 +163,18 @@ class TrOsnovController extends Controller {
     // Удаление перемещаемой мат. цен-ти из акта установки
     public function actionDelete($id) {
         if (Yii::$app->request->isAjax) {
-            $tr_osnov = $this->findModel($id);
-            $id_mattraffic = $tr_osnov->id_mattraffic;
-            $tr_osnov->delete();
-            echo Mattraffic::findOne($id_mattraffic)->delete();
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $tr_osnov = $this->findModel($id);
+                $id_mattraffic = $tr_osnov->id_mattraffic;
+                $tr_osnov->delete();
+                echo Mattraffic::findOne($id_mattraffic)->delete();
+
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
         }
     }
 

@@ -20,9 +20,10 @@ $(document).on("click", filtermodal + "_apply", function () {
     return false;
 });
 
-$(document).on('click', filtermodal + "_resetfilter", function (event) {
+$(document).on('click', filtermodal + "_resetfilter, " + filtermodal + "_reset", function (event) {
     bootbox.confirm("Вы уверены, что хотите сбросить дополнительный фильтр?", function (result) {
         if (result) {
+            $(filtermodal).modal("hide");
             $(filtermodal)[0].statusform = 0;
             $(filtergrid).yiiGridView("applyFilter");
         }

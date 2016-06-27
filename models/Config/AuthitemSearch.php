@@ -67,12 +67,12 @@ class AuthitemSearch extends Authitem {
         $filter = Proc::GetFilter('AuthitemSearch', 'AuthitemFilter');
 
         if (!empty($filter)) {
-            if ($filter['onlyrootauthitems_mark'] === '1') {
+            $attr = 'onlyrootauthitems_mark';
+            if ($filter[$attr] === '1')
                 $query->joinWith('authitemchildrenparent')
                         ->where('(not parent in (select b.child from auth_item_child b) or (parent Is Null))')
                         ->andFilterWhere(['type' => 1])
                         ->groupBy(['name', 'type', 'description']);
-            }
         }
 
         return $dataProvider;
@@ -83,6 +83,7 @@ class AuthitemSearch extends Authitem {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['description' => SORT_ASC]],
         ]);
 
         $query->joinWith(['authitemchildrenchild' => function($query) {
@@ -112,10 +113,6 @@ class AuthitemSearch extends Authitem {
                         ->andFilterWhere(['like', 'rule_name', $this->rule_name])
                         ->andFilterWhere(['like', 'data', $this->data]);
 
-                if (empty($query->orderBy))
-                    $query->orderBy('description');
-
-
                 return $dataProvider;
             }
 
@@ -124,6 +121,7 @@ class AuthitemSearch extends Authitem {
 
                 $dataProvider = new ActiveDataProvider([
                     'query' => $query,
+                    'sort' => ['defaultOrder' => ['description' => SORT_ASC]],
                 ]);
 
                 $query->joinWith(['authassignments' => function($query) {
@@ -158,10 +156,6 @@ class AuthitemSearch extends Authitem {
                                         ->andFilterWhere(['like', 'description', $this->description])
                                         ->andFilterWhere(['like', 'rule_name', $this->rule_name])
                                         ->andFilterWhere(['like', 'data', $this->data]);
-
-                                if (empty($query->orderBy))
-                                    $query->orderBy('description');
-
 
                                 return $dataProvider;
                             }

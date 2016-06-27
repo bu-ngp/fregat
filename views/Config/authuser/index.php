@@ -35,7 +35,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                                         },
                                                     ] : [], Yii::$app->user->can('UserEdit') ? [
-                                                'delete' => ['Config/authuser/delete', 'auth_user_id'],
+                                                'deleteajax' => ['Config/authuser/delete', 'auth_user_id'],
                                                     ] : []
                                     ),
                                 ]),
@@ -50,4 +50,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ]));
                     ?>
 
+                </div>
+                <div class="form-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

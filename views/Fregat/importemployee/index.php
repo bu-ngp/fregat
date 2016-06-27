@@ -23,7 +23,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => [
                         'update' => ['Fregat/importemployee/update', 'importemployee_id'],
-                        'delete' => ['Fregat/importemployee/delete', 'importemployee_id'],
+                        'deleteajax' => ['Fregat/importemployee/delete', 'importemployee_id'],
                     ],
                 ]),
                 'gridOptions' => [
@@ -39,7 +39,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                 'type' => 'button',
                                 'title' => 'Экспорт в Excel',
                                 'class' => 'btn btn-default button_export',
-                                'onclick' => 'ExportExcel("ImportemployeeSearch","' . \yii\helpers\Url::toRoute('Fregat/importemployee/toexcel') . '", $(this)[0].id );'
+                                'onclick' => 'ExportExcel("' . $searchModel->formName() . '","' . \yii\helpers\Url::toRoute('Fregat/importemployee/toexcel') . '", $(this)[0].id );'
                             ]) . '{export}{dynagrid}',
                         ],
                     ],
@@ -47,4 +47,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     ]));
     ?>
 
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

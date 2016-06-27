@@ -186,7 +186,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
                     public function selectinputfortrosnov($params) {
 
                         $method = isset($params['init']) ? 'one' : 'all';
-                        
+
                         $query = self::find()
                                 ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                                 ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
@@ -248,6 +248,14 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                                 $mattraffic_number = $mattraffic_number - $mattraffic_number_remove;
 
                                                 return $mattraffic_number;
+                                            }
+
+                                            public static function VariablesValues($attribute) {
+                                                $values = [
+                                                    'mattraffic_tip' => [1 => 'Приход', 2 => 'Списание'],
+                                                ];
+
+                                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
                                             }
 
                                         }

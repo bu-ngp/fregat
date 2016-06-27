@@ -7,6 +7,7 @@ use app\models\Config\Authitemchild;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 
 /**
  * AuthitemchildController implements the CRUD actions for Authitemchild model.
@@ -25,12 +26,18 @@ class AuthitemchildController extends Controller {
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
         ];
     }
 
     public function actionDelete($parent, $child) {
-        $this->findModel($parent, $child)->delete();
-        return $this->redirect(['Config/authitem/update', 'id' => $parent]);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($parent, $child)->delete();
     }
 
     /**

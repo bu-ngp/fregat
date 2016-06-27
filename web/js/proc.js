@@ -282,6 +282,25 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
     }
 }
 
+/* Функция отправляет запрос на присвоение значения из справочника 
+ * URL - URL действия присвоения значения
+ * ValueID - Значение первичного ключа, выбраной записи
+ * 
+ * */
+function AssignValueFromGrid(URL, ValueID) {
+    var assigndata = {};
+    if (typeof (URL) === "string" && typeof (ValueID) === "string") {
+        $.ajax({
+            url: URL,
+            type: "post",
+            data: {assigndata: ValueID},
+            success: function (data) {
+                console.debug(data)
+            }
+        });
+    }
+}
+
 $(function () {
     $("input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
     $("input.form-control.setsession, select.form-control.setsession, textarea.form-control.setsession").change(function () {

@@ -26,24 +26,29 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'choose' => function ($url, $model, $key) use ($foreign, $iduser) {
-                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['reason_id']]]);
-                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }], Yii::$app->user->can('ReasonEdit') ? [
-                                        'update' => ['Fregat/reason/update', 'reason_id'],
-                                        'delete' => ['Fregat/reason/delete', 'reason_id'],
-                                            ] : []
-                            ),
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider,
-                            'filterModel' => $searchModel,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-briefcase"></i> ' . $this->title,
-                                'before' => Yii::$app->user->can('ReasonEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                            ],
-                        ]
-            ]));
-            ?>
+                                'chooseajax' => ['Fregat/reason/assign-to-osmotrakt']
+                                    ], Yii::$app->user->can('ReasonEdit') ? [
+                                'update' => ['Fregat/reason/update', 'reason_id'],
+                                'deleteajax' => ['Fregat/reason/delete', 'reason_id'],
+                                    ] : []
+                    ),
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-briefcase"></i> ' . $this->title,
+                        'before' => Yii::$app->user->can('ReasonEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                    ],
+                ]
+    ]));
+    ?>
 
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

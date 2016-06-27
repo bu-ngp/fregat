@@ -4,11 +4,10 @@ namespace app\controllers\Fregat;
 
 use Yii;
 use app\models\Fregat\Grupavid;
-use app\models\Fregat\GrupavidSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\func\Proc;
+use yii\filters\AccessControl;
 
 /**
  * GrupavidController implements the CRUD actions for Grupavid model.
@@ -17,6 +16,16 @@ class GrupavidController extends Controller {
 
     public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['createmain', 'delete'],
+                        'allow' => true,
+                        'roles' => ['GrupaEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -27,72 +36,18 @@ class GrupavidController extends Controller {
         ];
     }
 
-    /**
-     * Lists all Grupavid models.
-     * @return mixed
-     */
-    public function actionIndex() {
-        $searchModel = new GrupavidSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Grupavid model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id) {
-        return $this->render('view', [
-                    'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Grupavid model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate() {
-        $model = new Grupavid();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->grupavid_id]);
-        } else {
-            return $this->render('create', [
-                        'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Grupavid model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id) {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->grupavid_id]);
-        } else {
-            return $this->render('update', [
-                        'model' => $model,
-            ]);
-        }
-    }
-
     public function actionCreatemain($grupavid_id, $id_grupa) {
-        Grupavid::updateAll(['grupavid_main' => 0], ['id_grupa' => $id_grupa]);
-        Grupavid::updateAll(['grupavid_main' => 1], ['grupavid_id' => $grupavid_id]);
-        $result = Proc::GetBreadcrumbsFromSession();
-        end($result);
-        return $this->redirect($result[key($result)]['url']);
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                Grupavid::updateAll(['grupavid_main' => 0], ['id_grupa' => $id_grupa]);
+                echo Grupavid::updateAll(['grupavid_main' => 1], ['grupavid_id' => $grupavid_id]);
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
+        }
     }
 
     /**
@@ -102,9 +57,8 @@ class GrupavidController extends Controller {
      * @return mixed
      */
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**

@@ -10,13 +10,12 @@ use app\models\Fregat\Dolzh;
 /**
  * DolzhSearch represents the model behind the search form about `app\models\Fregat\Dolzh`.
  */
-class DolzhSearch extends Dolzh
-{
+class DolzhSearch extends Dolzh {
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['dolzh_id'], 'integer'],
             [['dolzh_name'], 'safe'],
@@ -26,8 +25,7 @@ class DolzhSearch extends Dolzh
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,12 +37,12 @@ class DolzhSearch extends Dolzh
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Dolzh::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['dolzh_name' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -60,9 +58,8 @@ class DolzhSearch extends Dolzh
         ]);
 
         $query->andFilterWhere(['like', 'dolzh_name', $this->dolzh_name]);
-        if (empty($query->orderBy))
-            $query->orderBy('dolzh_name');
 
         return $dataProvider;
     }
+
 }

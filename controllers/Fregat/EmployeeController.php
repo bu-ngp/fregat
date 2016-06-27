@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Fregat\Impemployee;
 
 /**
  * EmployeeController implements the CRUD actions for Employee model.
@@ -27,7 +28,7 @@ class EmployeeController extends Controller {
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['selectinputformaterial', 'forimportemployee'],
+                        'actions' => ['selectinputformaterial', 'forimportemployee', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -116,9 +117,13 @@ class EmployeeController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
 
-        return $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
+    public function actionAssignToMaterial() {
+        Proc::AssignToModelFromGrid(new Impemployee, 'id_importemployee');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

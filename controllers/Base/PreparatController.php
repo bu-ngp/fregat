@@ -25,7 +25,7 @@ class PreparatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput'],
+                        'actions' => ['index', 'selectinput', 'assign-to-glaukuchet'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -90,11 +90,13 @@ class PreparatController extends Controller {
     }
 
     public function actionDelete($id) {
-        if (Yii::$app->request->isAjax) {
-            $record = $this->findModel($id);
-            if (!empty($record))
-                echo $record->delete();
-        }
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
+
+    public function actionAssignToGlaukuchet() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -48,6 +48,7 @@ class EmployeeSearch extends Employee {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['employee_id' => SORT_ASC]],
         ]);
 
         $query->joinWith(['idperson' => function($query) {
@@ -88,25 +89,7 @@ class EmployeeSearch extends Employee {
                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
-                $dataProvider->sort->attributes['idperson.auth_user_fullname'] = [
-                    'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                    'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
-                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['idbuild.build_name'] = [
-                    'asc' => ['idbuild.build_name' => SORT_ASC],
-                    'desc' => ['idbuild.build_name' => SORT_DESC],
-                ];
-                $dataProvider->sort->attributes['idpodraz.podraz_name'] = [
-                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                ];
-
-                if (empty($params['sort']))
-                    $query->orderBy('employee_id');
+                Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
                 return $dataProvider;
             }
@@ -116,10 +99,8 @@ class EmployeeSearch extends Employee {
 
                 $dataProvider = new ActiveDataProvider([
                     'query' => $query,
+                    'sort' => ['defaultOrder' => ['employee_id' => SORT_ASC]],
                 ]);
-
-
-
 
                 $query->joinWith(['impemployees' => function($query) {
                         $query->from(['impemployees' => 'impemployee']);
@@ -171,25 +152,7 @@ class EmployeeSearch extends Employee {
                                                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
                                                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
-                                                        if (empty($query->orderBy))
-                                                            $query->orderBy('employee_id');
-
-                                                        $dataProvider->sort->attributes['idperson.auth_user_fullname'] = [
-                                                            'asc' => ['idperson.auth_user_fullname' => SORT_ASC],
-                                                            'desc' => ['idperson.auth_user_fullname' => SORT_DESC],
-                                                        ];
-                                                        $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
-                                                            'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                                            'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                                        ];
-                                                        $dataProvider->sort->attributes['idbuild.build_name'] = [
-                                                            'asc' => ['idbuild.build_name' => SORT_ASC],
-                                                            'desc' => ['idbuild.build_name' => SORT_DESC],
-                                                        ];
-                                                        $dataProvider->sort->attributes['idpodraz.podraz_name'] = [
-                                                            'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                                            'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                                        ];
+                                                        Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
                                                         return $dataProvider;
                                                     }
@@ -199,14 +162,8 @@ class EmployeeSearch extends Employee {
 
                                                         $dataProvider = new ActiveDataProvider([
                                                             'query' => $query,
+                                                            'sort' => ['defaultOrder' => ['employee_id' => SORT_ASC]],
                                                         ]);
-
-
-
-
-                                                        /*   $query->joinWith(['idperson' => function($query) {
-                                                          $query->from(['idperson' => 'person']);
-                                                          }]); */
 
                                                         $query->joinWith(['iddolzh' => function($query) {
                                                                 $query->from(['iddolzh' => 'dolzh']);
@@ -238,11 +195,6 @@ class EmployeeSearch extends Employee {
                                                                                     'id_person' => $params['id'],
                                                                                 ]);
 
-                                                                                /*      $query->where('(idperson.id_importemployee <> :id_importemployee or impemployees.id_importemployee is null)', [
-                                                                                  'id_importemployee' => $params['id'],
-                                                                                  ]); */
-
-                                                                                //  $query->andFilterWhere(['like', 'employee_fio', $this->employee_fio]);
                                                                                 $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
                                                                                 $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
                                                                                 $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
@@ -250,21 +202,7 @@ class EmployeeSearch extends Employee {
                                                                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_lastchange', 'datetime'));
                                                                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'employee_dateinactive', 'date'));
 
-                                                                                if (empty($query->orderBy))
-                                                                                    $query->orderBy('employee_id');
-
-                                                                                $dataProvider->sort->attributes['iddolzh.dolzh_name'] = [
-                                                                                    'asc' => ['iddolzh.dolzh_name' => SORT_ASC],
-                                                                                    'desc' => ['iddolzh.dolzh_name' => SORT_DESC],
-                                                                                ];
-                                                                                $dataProvider->sort->attributes['idbuild.build_name'] = [
-                                                                                    'asc' => ['idbuild.build_name' => SORT_ASC],
-                                                                                    'desc' => ['idbuild.build_name' => SORT_DESC],
-                                                                                ];
-                                                                                $dataProvider->sort->attributes['idpodraz.podraz_name'] = [
-                                                                                    'asc' => ['idpodraz.podraz_name' => SORT_ASC],
-                                                                                    'desc' => ['idpodraz.podraz_name' => SORT_DESC],
-                                                                                ];
+                                                                                Proc::AssignRelatedAttributes($dataProvider, ['iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
                                                                                 return $dataProvider;
                                                                             }

@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Glauk\Glprep;
+use app\func\Proc;
 
 /**
  * GlprepSearch represents the model behind the search form about `app\models\Glauk\Glprep`.
@@ -43,6 +44,7 @@ class GlprepSearch extends Glprep {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['glprep_id' => SORT_DESC]],
         ]);
 
         $query->joinWith([
@@ -75,10 +77,7 @@ class GlprepSearch extends Glprep {
 
                 $query->andFilterWhere(['LIKE', 'idPreparat.preparat_name', $this->getAttribute('idPreparat.preparat_name')]);
 
-                $dataProvider->sort->attributes['idPreparat.preparat_name'] = [
-                    'asc' => ['idPreparat.preparat_name' => SORT_ASC],
-                    'desc' => ['idPreparat.preparat_name' => SORT_DESC],
-                ];
+                Proc::AssignRelatedAttributes($dataProvider, ['idPreparat.preparat_name']);
 
                 return $dataProvider;
             }

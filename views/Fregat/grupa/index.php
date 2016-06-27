@@ -25,12 +25,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'choose' => function ($url, $model, $key) use ($foreign) {
-                                    $customurl = Url::to([$foreign['url'], 'id' => $foreign['id'], $foreign['model'] => [$foreign['field'] => $model['grupa_id']]]);
-                                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-ok-sign"></i>', $customurl, ['title' => 'Выбрать', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                                }], Yii::$app->user->can('GrupaEdit') ? [
+                                'chooseajax' => ['Fregat/grupa/assign-to-material']
+                                ], Yii::$app->user->can('GrupaEdit') ? [
                                         'update' => ['Fregat/grupa/update', 'grupa_id'],
-                                        'delete' => ['Fregat/grupa/delete', 'grupa_id'],] : []
+                                        'deleteajax' => ['Fregat/grupa/delete', 'grupa_id']] : []
                             ),
                         ]),
                         'gridOptions' => [
@@ -44,4 +42,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             ]));
             ?>
 
+        </div>
+        <div class="form-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div> 
 </div>

@@ -12,6 +12,8 @@ use yii\web\NotFoundHttpException;
 use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Config\AuthitemFilter;
+use yii\filters\VerbFilter;
+use app\models\Config\Authassignment;
 
 /**
  * AuthitemController implements the CRUD actions for Authitem model.
@@ -29,10 +31,16 @@ class AuthitemController extends Controller {
                         'roles' => ['RoleEdit'],
                     ],
                     [
-                        'actions' => ['forauthassignment'],
+                        'actions' => ['forauthassignment', 'assign-to-authassignment'],
                         'allow' => true,
                         'roles' => ['UserEdit'],
                     ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
             ],
         ];
@@ -41,7 +49,7 @@ class AuthitemController extends Controller {
     public function actionIndex() {
         $searchModel = new AuthitemSearch();
         $queryParams = Yii::$app->request->queryParams;
-        $filter = Proc::SetFilter('AuthitemSearch', new AuthitemFilter);
+        $filter = Proc::SetFilter($searchModel->formName(), new AuthitemFilter);
         $dataProvider = $searchModel->search($queryParams);
 
         return $this->render('index', [
@@ -56,11 +64,7 @@ class AuthitemController extends Controller {
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-
-            if ($model->type == 1)
-                return $this->redirect(['update', 'id' => $model->name]);
-            else
-                return $this->redirect(['index']);
+            return ($model->type == 1) ? $this->redirect(['update', 'id' => $model->name]) : $this->redirect(Proc::GetLastURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                         'model' => $model,
@@ -73,7 +77,7 @@ class AuthitemController extends Controller {
         $Authitemchild = new Authitemchild;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             $Authitemchild->load(Yii::$app->request->get(), 'Authitemchild');
             $Authitemchild->parent = $model->primaryKey;
@@ -93,9 +97,8 @@ class AuthitemController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            $record = $this->findModel($id)->delete();
     }
 
     public function actionForauthitemchild() {
@@ -122,8 +125,8 @@ class AuthitemController extends Controller {
         $searchModel = new AuthitemSearch();
         $params = Yii::$app->request->queryParams;
         $inputdata = json_decode($params['inputdata']);
-        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName('AuthitemSearch', $inputdata));
-        $modelname = substr($searchModel->className(), strrpos($searchModel->className(), '\\') + 1);
+        $modelname = $searchModel->formName();
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
         $selectvalues = json_decode($params['selectvalues']);
 
         Proc::Grid2Excel($dataProvider, $modelname, 'Авторизованные единицы', $selectvalues, new AuthitemFilter);
@@ -139,6 +142,11 @@ class AuthitemController extends Controller {
                         'model' => $model,
             ]);
         }
+    }
+
+    public function actionAssignToAuthassignment() {
+        Proc::AssignToModelFromGrid(new Authassignment, 'user_id');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

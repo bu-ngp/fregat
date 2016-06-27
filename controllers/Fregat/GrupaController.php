@@ -24,7 +24,7 @@ class GrupaController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -71,17 +71,15 @@ class GrupaController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             $Grupavid = new Grupavid;
             $Grupavid->load(Yii::$app->request->get(), 'Grupavid');
 
-            $count = Grupavid::find()
-                    ->where(['id_grupa' => $model->primaryKey])
-                    ->one();
+            $count = Grupavid::find(['id_grupa' => $model->primaryKey])->count();
 
             $Grupavid->id_grupa = $model->primaryKey;
-            $Grupavid->grupavid_main = isset($count) ? 0 : 1;
+            $Grupavid->grupavid_main = $count > 0 ? 0 : 1;
 
             if ($Grupavid->validate())
                 $Grupavid->save(false);
@@ -99,11 +97,22 @@ class GrupaController extends Controller {
     }
 
     public function actionDelete($id) {
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                Grupavid::deleteAll(['id_grupa' => $id]);
+                echo $this->findModel($id)->delete();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
+        }
+    }
 
-        Grupavid::deleteAll(['id_grupa' => $id]);
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+    public function actionAssignToMaterial() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

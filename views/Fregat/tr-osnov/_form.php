@@ -32,7 +32,7 @@ use app\models\Fregat\Build;
                                 'fromgridroute' => 'Fregat/mattraffic/forinstallakt',
                                 'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
                                 'thisroute' => $this->context->module->requestedRoute,
-                                'methodquery' => 'selectinputfortrosnov',   
+                                'methodquery' => 'selectinputfortrosnov',
                                 'dopparams' => [
                                     'foreigndo' => '1',
                                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
@@ -69,7 +69,7 @@ use app\models\Fregat\Build;
     </div>
     <?=
     $form->field($Mattraffic, 'mattraffic_number', [
-        'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">'.$mattraffic_number_max.'</span></div>'
+        'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">' . $mattraffic_number_max . '</span></div>'
     ])->widget(TouchSpin::classname(), [
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
@@ -88,6 +88,7 @@ use app\models\Fregat\Build;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Добавить', ['class' => 'btn btn-success']) ?>
             </div>
         </div>

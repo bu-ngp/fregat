@@ -44,6 +44,7 @@ class ReasonSearch extends Reason {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['reason_text' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -60,8 +61,6 @@ class ReasonSearch extends Reason {
         ]);
 
         $query->andFilterWhere(['like', 'reason_text', $this->reason_text]);
-        if (empty($params['sort']))
-            $query->orderBy('reason_text');
 
         return $dataProvider;
     }

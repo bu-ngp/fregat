@@ -4,11 +4,10 @@ namespace app\controllers\Fregat;
 
 use Yii;
 use app\models\Fregat\Import\Importconfig;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\func\Proc;
 
 /**
  * ImportconfigController implements the CRUD actions for Importconfig model.
@@ -27,25 +26,18 @@ class ImportconfigController extends Controller {
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                ],
-            ],
         ];
     }
-    
-    public function actionUpdate() {
-        $model = $this->findModel(1);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['//Fregat/fregat/import']);
-        } else {
+    public function actionUpdate() {
+        $model = Importconfig::findOne(1);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else
             return $this->render('update', [
                         'model' => $model,
             ]);
-        }
     }
 
     /**

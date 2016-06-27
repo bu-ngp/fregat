@@ -15,7 +15,7 @@ class ConfigController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'test'],
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['RoleEdit', 'UserEdit'],
                     ],
@@ -27,13 +27,6 @@ class ConfigController extends Controller {
     public function actionIndex() {
         Proc::SetMenuButtons('config');
         return $this->render('//Config/index');
-    }
-
-    public function actionTest() {
-        $objReader = \PHPExcel_IOFactory::createReaderForFile("imp/os.xls");
-        $objPHPExcel = $objReader->load("imp/os.xls");
-        $objWorksheet = $objPHPExcel->getActiveSheet();
-        echo $objWorksheet->getCellByColumnAndRow(7, 7)->getValue();
     }
 
 }

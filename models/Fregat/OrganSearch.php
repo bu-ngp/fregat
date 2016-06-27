@@ -44,6 +44,7 @@ class OrganSearch extends Organ {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['organ_name' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -60,8 +61,6 @@ class OrganSearch extends Organ {
         ]);
 
         $query->andFilterWhere(['like', 'organ_name', $this->organ_name]);
-        if (empty($params['sort']))
-            $query->orderBy('organ_name');
 
         return $dataProvider;
     }

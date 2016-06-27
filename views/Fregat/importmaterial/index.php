@@ -22,7 +22,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => [
                         'update' => ['Fregat/importmaterial/update', 'importmaterial_id'],
-                        'delete' => ['Fregat/importmaterial/delete', 'importmaterial_id'],
+                        'deleteajax' => ['Fregat/importmaterial/delete', 'importmaterial_id'],
                     ],
                 ]),
                 'gridOptions' => [
@@ -36,4 +36,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     ]));
     ?>
 
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

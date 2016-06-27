@@ -74,9 +74,8 @@ class Authassignment extends \yii\db\ActiveRecord {
                 return false;
 
             return $auth->assign($item, $this->user_id);
-        } else {
+        } else 
             return false;
-        }
     }
 
     public function delete() {

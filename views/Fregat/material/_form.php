@@ -31,7 +31,7 @@ use app\models\Fregat\Mattraffic;
             <?=
             $form->field($model, 'material_tip')->widget(Select2::classname(), [
                 'hideSearch' => true,
-                'data' => [1 => 'Основное средство', 2 => 'Материал'],
+                'data' => $model::VariablesValues('material_tip'),
                 'pluginOptions' => [
                     'allowClear' => true
                 ],
@@ -189,6 +189,7 @@ use app\models\Fregat\Mattraffic;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Materialform']) ?>
             </div>
         </div>

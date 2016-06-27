@@ -7,6 +7,7 @@ use app\models\Config\Authassignment;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 
 /**
  * AuthassignmentController implements the CRUD actions for Authassignment model.
@@ -25,13 +26,18 @@ class AuthassignmentController extends Controller {
                     ],
                 ],
             ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
         ];
     }
 
     public function actionDelete($item_name, $user_id) {
-        $this->findModel($item_name, $user_id)->delete();
-
-        return $this->redirect(['Config/authuser/update', 'id' => $user_id]);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($item_name, $user_id)->delete();
     }
 
     /**

@@ -101,10 +101,9 @@ class Importconfig extends \yii\db\ActiveRecord {
     }
 
     public function save($runValidation = true, $attributeNames = null) {
-        if (!$this->getIsNewRecord()) {
-
+        if (!$this->getIsNewRecord())
             return $this->update($runValidation, $attributeNames) !== false;
-        } else
+        else
             return false;
     }
 

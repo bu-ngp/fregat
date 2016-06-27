@@ -27,7 +27,7 @@ use yii\web\Session;
     <?=
     $form->field($model, 'type')->widget(Select2::classname(), [
         'hideSearch' => true,
-        'data' => [1 => 'Роль', 2 => 'Операция'],
+        'data' => $model::VariablesValues('type'),
         'options' => ['placeholder' => 'Выберете тип', 'class' => 'form-control setsession'],
         'disabled' => !$model->isNewRecord,
         'pluginOptions' => [
@@ -42,55 +42,53 @@ use yii\web\Session;
 
     <?php
     if (!$model->isNewRecord && $model->type == 1) {
-        $session = new Session;
-        $session->open();
+        $type = \app\models\Config\Authitem::VariablesValues('type');
 
         echo DynaGrid::widget(Proc::DGopts([
+                    'options' => ['id' => 'authitemchildgrid'],
                     'columns' => Proc::DGcols([
                         'columns' => [
                             'children.description',
                             [
                                 'attribute' => 'children.type',
-                                'filter' => [1 => 'Роль', 2 => 'Операция'],
-                                'value' => function ($model) {
-                            return $model->children->type == 1 ? 'Роль' : 'Операция';
-                        },
+                                'filter' => $type,
+                                'value' => function ($model) use ($type) {
+                                    return isset($type[$model->children->type]) ? $type[$model->children->type] : '';
+                                },
                             ],
                             'children.name',
                         ],
                         'buttons' => [
-                            'deletecustom' => function ($url, $model) {
+                            'deletecustom' => function ($url, $model) use ($params) {
                                 $customurl = Yii::$app->getUrlManager()->createUrl(['Config/authitemchild/delete', 'parent' => $model->parent, 'child' => $model->child]);
-                                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить'/* , 'data-pjax' => '0' */, 'class' => 'btn btn-xs btn-danger', 'data' => [
-                                                'confirm' => "Вы уверены, что хотите удалить запись?",
-                                                'method' => 'post',
-                                ]]);
-                            }
-                                ],
+                                return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
+                                            'type' => 'button',
+                                            'title' => 'Удалить',
+                                            'class' => 'btn btn-xs btn-danger',
+                                            'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '")'
+                                ]);
+                            }],
                             ]),
                             'gridOptions' => [
                                 'dataProvider' => $dataProvider,
                                 'filterModel' => $searchModel,
-                                'options' => ['id' => 'authitemchildgrid'],
                                 'panel' => [
                                     'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Дочерние авторизационные единицы</h3>',
                                     'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить дочернюю авторизационную единицу', ['Config/authitem/forauthitemchild',
-                                        'foreignmodel' => 'Authitemchild', //substr($model->className(), strrpos($model->className(), '\\') + 1),
+                                        'foreignmodel' => 'Authitemchild',
                                         'url' => $this->context->module->requestedRoute,
                                         'field' => 'child',
                                         'id' => $model->primaryKey,
-                                            // 'id' => $_GET['id'],
                                             ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                                 ],
                             ]
                 ]));
-
-                $session->close();
             }
             ?>
 
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                     <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Authitemform']) ?>
         </div>
     </div>

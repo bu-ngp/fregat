@@ -32,3 +32,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         </ul>
     </div>
 </div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Url::home(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
+</div>

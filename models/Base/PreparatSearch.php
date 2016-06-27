@@ -44,6 +44,7 @@ class PreparatSearch extends Preparat {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['preparat_name' => SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -64,5 +65,4 @@ class PreparatSearch extends Preparat {
         return $dataProvider;
     }
 
-        }
-        
+}

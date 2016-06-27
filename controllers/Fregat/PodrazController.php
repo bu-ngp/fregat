@@ -22,7 +22,7 @@ class PodrazController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput'],
+                        'actions' => ['index', 'selectinput', 'assign-to-employee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -87,9 +87,13 @@ class PodrazController extends Controller {
     }
 
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
 
-        return $this->redirect(['index']);
+    public function actionAssignToEmployee() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -2,10 +2,11 @@
 
 use yii\helpers\Html;
 use app\func\Proc;
+use app\models\Config\Authassignment;
 
 $this->title = 'Обновить пользователя';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Authassignment],
+            'model' => [$model, new Authassignment],
         ]);
 ?>
 <div class="authuser-update">

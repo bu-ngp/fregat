@@ -29,15 +29,9 @@ class MaterialController extends Controller {
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                ],
-            ],
         ];
     }
-
+    
     public function actionIndex() {
         $searchModel = new MaterialSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -45,12 +39,6 @@ class MaterialController extends Controller {
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    public function actionView($id) {
-        return $this->render('view', [
-                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -115,12 +103,6 @@ class MaterialController extends Controller {
                         'model' => $model,
                         'Mattraffic' => $Mattraffic,
             ]);
-    }
-
-    public function actionDelete($id) {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**

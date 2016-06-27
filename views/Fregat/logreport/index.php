@@ -21,20 +21,15 @@ $this->title = 'Отчеты импорта из 1С';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="logreport-index">
-    <?php
-    $result = Proc::GetLastBreadcrumbsFromSession();
-    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
-
-    echo DynaGrid::widget(Proc::DGopts([
+    <?=
+    DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'logreportgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'logreport_id',
                         [
                             'attribute' => 'logreport_executetime',
-                            'value' => function ($model, $key, $index, $column) {
-                                return date("H:i:s", strtotime($model->logreport_executetime));
-                            }
+                            'format' => 'time',
                         ],
                         [
                             'attribute' => 'logreport_memoryused',
@@ -45,16 +40,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         ],
                         [
                             'attribute' => 'logreport_date',
-                            'value' => function ($model, $key, $index, $column) {
-                                return date("d.m.Y", strtotime($model->logreport_date));
-                            }
+                            'format' => 'date',
                         ],
-                        /*    [
-                          'attribute' => 'maxfilelastdate',
-                          'value' => function ($model, $key, $index, $column) {
-                          return date("d.m.Y H:i:s", strtotime($model->maxfilelastdate));
-                          }
-                          ], */
                         'logreport_errors',
                         'logreport_updates',
                         'logreport_additions',
@@ -63,7 +50,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' =>
                     [
-                        'download' => function ($url, $model, $key) {
+                        'download' => function ($model) {
                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-download-alt"></i>', 'importreports/Отчет импорта в систему Фрегат N' . $model['logreport_id'] . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                         },
                             ],
@@ -73,13 +60,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'filterModel' => $searchModel,
                             'panel' => [
                                 'heading' => '<i class="glyphicon glyphicon-inbox"></i> ' . $this->title,
-                                'before' => Html::a('<i class="glyphicon glyphicon-flash"></i> Очистить отчеты', ['Fregat/logreport/clear'], ['class' => 'btn btn-danger'/* , 'data-pjax' => '0' */, 'data' => [
-                                        'confirm' => "Вы уверены, что хотите очистить все отчеты?",
-                                        'method' => 'post',
-                            ]]),
+                                'before' => Html::button('<i class="glyphicon glyphicon-trash"></i> Очистить отчеты', [
+                                    'type' => 'button',
+                                    'title' => 'Удалить',
+                                    'class' => 'btn btn-danger',
+                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите очистить все отчеты?", "' . Yii::$app->getUrlManager()->createUrl(['Fregat/logreport/clear']) . '")'
+                                ]),
                             ],
                         ]
             ]));
             ?>
 
+        </div>
+        <div class="form-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

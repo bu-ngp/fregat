@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Import\Importconfig */
@@ -14,12 +15,12 @@ use yii\bootstrap\ActiveForm;
         <div class="panel-heading"><?= Html::encode('Основные средства') ?></div>
         <div class="panel-body">
 
-            <?= $form->field($model, 'os_filename')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'os_filename')->textInput(['maxlength' => true, 'autofocus' => true]) ?>
 
             <?= $form->field($model, 'os_startrow')->textInput() ?>
 
             <?= $form->field($model, 'os_material_1c')->textInput(['maxlength' => true]) ?>
-            
+
             <?= $form->field($model, 'os_mattraffic_date')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'os_material_inv')->textInput(['maxlength' => true]) ?>
@@ -98,6 +99,7 @@ use yii\bootstrap\ActiveForm;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton('<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => 'btn btn-primary']) ?>
             </div>
         </div> 

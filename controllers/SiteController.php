@@ -53,34 +53,17 @@ class SiteController extends Controller {
     }
 
     public function actionIndex() {
-        /*  if (!\Yii::$app->user->isGuest) {
-          return $this->goHome();
-          }
-
-          $model = new LoginForm();
-          if ($model->load(Yii::$app->request->post()) && $model->login()) {
-          //   return $this->goBack();
-          } */
-        return $this->render('index', [
-                        //  'model' => $model,
-        ]);
+        return $this->render('index');
     }
 
     public function actionLogin() {
-        if (!\Yii::$app->user->isGuest) {
-
+        if (!\Yii::$app->user->isGuest)
             return $this->goHome();
-        }
-
-        /*             $auth = Yii::$app->authManager;
-          $author = $auth->createRole('Administrator');
-          $auth->add($author);
-          $auth->assign($author, 1); */
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        if ($model->load(Yii::$app->request->post()) && $model->login())
             return $this->goBack();
-        }
+
         return $this->render('login', [
                     'model' => $model,
         ]);
@@ -112,18 +95,7 @@ class SiteController extends Controller {
                 $result = '1';
             }
 
-            /*   if (isset($session[$modelclass])) {
-              $session[$modelclass] = array_replace_recursive($session[$modelclass], [
-              'attributes' => [
-              $field => $value,
-              ],
-              ]);
-              $result = '1';
-              } */
-
-
             $session['breadcrumbs'] = $res;
-
             $session->close();
         } elseif (!empty($data)) {
             $data = json_decode($data);
@@ -145,6 +117,7 @@ class SiteController extends Controller {
         echo $result;
     }
 
+    // Для определения секущей вкладки, если вкладка сменилась, то перейти на домашнюю страницу
     public function actionSetwindowguid() {
         $guid = (string) filter_input(INPUT_POST, 'guid');
         $pathname = (string) filter_input(INPUT_POST, 'path');
@@ -186,9 +159,8 @@ class SiteController extends Controller {
     }
 
     public function actionGohome() {
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax)
             return $this->goHome();
-        }
     }
 
     public function actionDeleteExcelFile() {

@@ -117,4 +117,12 @@ class Authitem extends \yii\db\ActiveRecord {
         return $auth->remove($authitem);
     }
 
+    public static function VariablesValues($attribute) {
+        $values = [
+            'type' => [1 => 'Роль', 2 => 'Операция']
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
 }

@@ -390,7 +390,7 @@ class PatientSearch extends Patient {
 
                                         $dataProvider = new ActiveDataProvider([
                                             'query' => $query,
-                                            'sort' => ['defaultOrder' => ['glaukuchets.glaukuchet_lastchange' => SORT_DESC]]
+                                            'sort' => ['defaultOrder' => ['glaukuchets.glaukuchet_lastchange' => SORT_DESC]],
                                         ]);
 
                                         $this->glaukRelations($query);
