@@ -23,12 +23,12 @@ class EmployeeController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['selectinputformaterial', 'forimportemployee', 'assign-to-material'],
+                        'actions' => ['selectinputformaterial', 'forimportemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],

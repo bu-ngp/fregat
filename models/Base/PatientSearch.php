@@ -110,7 +110,6 @@ class PatientSearch extends Patient {
                                         $query->from(['idPreparat' => 'preparat']);
                                     }
                                         ]);
-                                        $query->groupby(['glpreps.id_glaukuchet']);
                                     }]);
                                     },
                                             'idFias' => function($query) {
@@ -119,6 +118,7 @@ class PatientSearch extends Patient {
                                         $query->join('LEFT JOIN', 'fias AS idFias2', 'idFias.PARENTGUID = idFias2.AOGUID');
                                     }
                                         ]);
+                                        $query->groupby(['patient_id']);
                                     }
 
                                     private function glaukFilter(&$query) {
@@ -408,7 +408,7 @@ class PatientSearch extends Patient {
                                         $this->glaukSort($dataProvider);
 
                                         $this->glaukDopfilter($query);
-
+                                        
                                         return $dataProvider;
                                     }
 
