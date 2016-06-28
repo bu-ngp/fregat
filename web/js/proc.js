@@ -376,12 +376,13 @@ $(document).ready(function () {
         localStorage.removeItem('scrollfilter');
     } else {
         var tmpsc = localStorage.getItem('scroll');
+        var r = getUrlParameter("r");
         if (tmpsc !== null) {
             var tmpsc_obj = JSON.parse(tmpsc);
             var curindex = -1;
 
             $.each(tmpsc_obj, function (ind, val) {
-                if (val.url === window.location.search) {
+                if (val.url === r) {
                     curindex = ind;
                     $("html,body").animate({
                         scrollTop: $("div.has-error").length ? ($("div.has-error").offset()).top - 70 : val.scroll
@@ -393,37 +394,37 @@ $(document).ready(function () {
             if (curindex >= 0)
                 localStorage.setItem('scroll', JSON.stringify(tmpsc_obj.slice(0, curindex + 1)));
             else {
-                tmpsc_obj.push({url: window.location.search, scroll: $(document).scrollTop()});
+                tmpsc_obj.push({url: r, scroll: $(document).scrollTop()});
                 localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
             }
         }
         else {
-            var tmpsc_obj = [{url: window.location.search, scroll: $(document).scrollTop()}];
+            var tmpsc_obj = [{url: r, scroll: $(document).scrollTop()}];
             localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         }
-
     }
 
     $(window).scroll(function () {
         var tmpsc = localStorage.getItem('scroll');
+        var r = getUrlParameter("r");
         if (tmpsc !== null) {
             var tmpsc_obj = JSON.parse(tmpsc);
             var findurl = false;
             $.each(tmpsc_obj, function (ind, val) {
-                if (val.url === window.location.search) {
+                if (val.url === r) {
                     val.scroll = $(document).scrollTop();
                     findurl = true;
                     return false;
                 }
             }, findurl);
             if (!findurl) {
-                var obj = {url: window.location.search, scroll: $(document).scrollTop()};
+                var obj = {url: r, scroll: $(document).scrollTop()};
                 tmpsc_obj.push(obj);
             }
 
             localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         } else {
-            var tmpsc_obj = [{url: window.location.search, scroll: $(document).scrollTop()}];
+            var tmpsc_obj = [{url: r, scroll: $(document).scrollTop()}];
             localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         }
 
