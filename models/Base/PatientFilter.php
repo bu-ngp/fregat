@@ -51,6 +51,9 @@ class PatientFilter extends Model {
     public $glprep_id_preparat;
     public $glprep_rlocat;
     public $glprep_not_preparat_mark;
+    public $glprep_preparat_mark;
+    public $glaukuchet_comment_mark;
+    public $glaukuchet_comment;
     public $patient_username;
     public $patient_lastchange_beg;
     public $patient_lastchange_end;
@@ -77,6 +80,9 @@ class PatientFilter extends Model {
             'glaukuchet_not_invalid_mark',
             'glaukuchet_not_lastmetabol_mark',
             'glprep_not_preparat_mark',
+                'glprep_preparat_mark',
+            'glaukuchet_comment_mark',
+            'glaukuchet_comment',
                 ], 'safe'],
             [[
             'patient_dr',
@@ -146,6 +152,9 @@ class PatientFilter extends Model {
             'glprep_id_preparat' => 'Препарат',
             'glprep_rlocat' => 'Категория льготного лекарственного обеспечения',
             'glprep_not_preparat_mark' => 'Отсутствует потребность в медикаментозной терапии',
+            'glprep_preparat_mark' => 'Пациенту требуется медикаментозная терапия',
+            'glaukuchet_comment_mark' => 'Содержит заметку',
+            'glaukuchet_comment' => 'Текст заметки',
             'patient_username' => 'Пользователь изменивший запись паспорта пациента',
             'patient_lastchange_beg' => 'Дата изменения записи паспорта пациента',
             'glaukuchet_username' => 'Пользователь изменивший запись карты глаукомного пациента',

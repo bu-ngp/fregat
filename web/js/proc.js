@@ -99,6 +99,21 @@ function InitWindowGUID() {
     });
 }
 
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
 // dopfields - Дополнительные поля таблицы (например те, что без фильтра)
 function ExportExcel(model, url, button, dopfields) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
@@ -108,7 +123,7 @@ function ExportExcel(model, url, button, dopfields) {
         button = "";
 
     if (inputarr.length) {
-        inputarr.each(function (index) {
+        inputarr.each(function () {
             if ($(this).attr("name") !== "") {
                 var attr = ($(this).attr("name")).match(/\[(.*)\]/);
 
@@ -122,7 +137,16 @@ function ExportExcel(model, url, button, dopfields) {
             }
         });
 
-        $.extend(inputdata, dopfields);
+
+        if (typeof (dopfields) !== "undefined") {
+            $.each(dopfields, function (index, value) {
+                var attr = index.match(/\[(.*)\]/);
+                if (attr !== null && $("th[attr_fullname='" + attr[1] + "']").length) {
+                    inputdata[index] = value;
+                    labelvalues[attr[1]] = $.trim($("th[attr_fullname='" + attr[1] + "']").text());
+                }
+            });
+        }
 
         var selectvalues = {};
         $('select[name^="' + model + '"]').each(function () {
@@ -136,7 +160,7 @@ function ExportExcel(model, url, button, dopfields) {
             }
         });
 
-        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues), labelvalues: JSON.stringify(labelvalues)};
+        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues), labelvalues: JSON.stringify(labelvalues), sort: getUrlParameter("sort")};
 
         $.ajax({
             url: url + '&' + $.param(data),
@@ -330,7 +354,13 @@ function SetScrollFilter(ThisElement) {
         tmpsc_obj[filterurl] = $(ThisElement).scrollTop();
         localStorage.setItem('scrollfilter', JSON.stringify(tmpsc_obj));
     }
+    $("input.searchfilterform").focus();
 }
+
+
+$(document).on("click", "#scrollupbutton", function () {
+    $(document).scrollTop(0);
+});
 
 $(document).ready(function () {
     $("input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
@@ -340,18 +370,36 @@ $(document).ready(function () {
 
     InitWindowGUID();
 
+    /* scrollreturn page \/ \/ \/ */
     if ($.inArray(window.location.search, ["", "?r=site%2Findex"]) >= 0) {
         localStorage.removeItem('scroll');
         localStorage.removeItem('scrollfilter');
-    }
-    else {
+    } else {
         var tmpsc = localStorage.getItem('scroll');
         if (tmpsc !== null) {
             var tmpsc_obj = JSON.parse(tmpsc);
-            if (window.location.search in tmpsc_obj)
-                $("html,body").animate({
-                    scrollTop: tmpsc_obj[window.location.search]
-                }, 500);
+            var curindex = -1;
+
+            $.each(tmpsc_obj, function (ind, val) {
+                if (val.url === window.location.search) {
+                    curindex = ind;
+                    $("html,body").animate({
+                        scrollTop: $("div.has-error").length ? ($("div.has-error").offset()).top - 70 : val.scroll
+                    }, 500);
+                    return false;
+                }
+            }, curindex);
+
+            if (curindex >= 0)
+                localStorage.setItem('scroll', JSON.stringify(tmpsc_obj.slice(0, curindex + 1)));
+            else {
+                tmpsc_obj.push({url: window.location.search, scroll: $(document).scrollTop()});
+                localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
+            }
+        }
+        else {
+            var tmpsc_obj = [{url: window.location.search, scroll: $(document).scrollTop()}];
+            localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         }
 
     }
@@ -360,13 +408,31 @@ $(document).ready(function () {
         var tmpsc = localStorage.getItem('scroll');
         if (tmpsc !== null) {
             var tmpsc_obj = JSON.parse(tmpsc);
-            tmpsc_obj[window.location.search] = $(document).scrollTop();
+            var findurl = false;
+            $.each(tmpsc_obj, function (ind, val) {
+                if (val.url === window.location.search) {
+                    val.scroll = $(document).scrollTop();
+                    findurl = true;
+                    return false;
+                }
+            }, findurl);
+            if (!findurl) {
+                var obj = {url: window.location.search, scroll: $(document).scrollTop()};
+                tmpsc_obj.push(obj);
+            }
+
             localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         } else {
-            var tmpsc_obj = {};
-            tmpsc_obj[window.location.search] = $(document).scrollTop();
+            var tmpsc_obj = [{url: window.location.search, scroll: $(document).scrollTop()}];
             localStorage.setItem('scroll', JSON.stringify(tmpsc_obj));
         }
 
+        if ($(document).scrollTop() > 0)
+            $("#scrollupbutton").fadeIn("slow");
+        else
+            $("#scrollupbutton").fadeOut("slow");
+
     });
+
+    /* scrollreturn page /\ /\ /\ */
 });

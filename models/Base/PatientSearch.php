@@ -110,7 +110,9 @@ class PatientSearch extends Patient {
                                         $query->from(['idPreparat' => 'preparat']);
                                     }
                                         ]);
+                                        $query->addGroupBy(['glpreps.id_glaukuchet']);
                                     }]);
+                                        $query->GroupBy(['glaukuchets.glaukuchet_id']);
                                     },
                                             'idFias' => function($query) {
                                         $query->select(["idFias.AOGUID, IF (idFias.AOLEVEL < 7, CONCAT_WS(', ',  CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME), CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)), CONCAT_WS('. ',idFias2.SHORTNAME,idFias2.OFFNAME)) AS fias_city", "IF (idFias.AOLEVEL < 7, '', CONCAT_WS('. ',idFias.SHORTNAME,idFias.OFFNAME)) AS fias_street"]);
@@ -118,7 +120,7 @@ class PatientSearch extends Patient {
                                         $query->join('LEFT JOIN', 'fias AS idFias2', 'idFias.PARENTGUID = idFias2.AOGUID');
                                     }
                                         ]);
-                                        $query->groupby(['patient_id']);
+                                        $query->addGroupBy(['patient_id']);
                                     }
 
                                     private function glaukFilter(&$query) {
@@ -349,6 +351,18 @@ class PatientSearch extends Patient {
                                             if ($filter[$attr] === '1')
                                                 $query->andWhere('glaukuchets.glaukuchet_id not in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
 
+                                            $attr = 'glprep_preparat_mark';
+                                            if ($filter[$attr] === '1')
+                                                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
+                                            
+                                            $attr = 'glaukuchet_comment_mark';
+                                            if ($filter[$attr] === '1')
+                                                $query->andWhere("glaukuchets.glaukuchet_comment <> ''");
+
+                                            $attr = 'glaukuchet_comment';
+                                            if (!empty($filter[$attr]))
+                                                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
                                             $attr = 'patient_username';
                                             if (!empty($filter[$attr]))
                                                 $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
@@ -408,7 +422,7 @@ class PatientSearch extends Patient {
                                         $this->glaukSort($dataProvider);
 
                                         $this->glaukDopfilter($query);
-                                        
+
                                         return $dataProvider;
                                     }
 

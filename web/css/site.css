@@ -150,3 +150,33 @@ label.applyfiltercolor {
     color: #4cc74b;
     font-weight: bold;
 }
+
+div#scrollupbutton {
+    color: #cfcfcf;
+    font-size: 20px;
+    position: fixed;
+    background-color: white;
+    border: #bfbfbf solid 1px;
+    height: 80px;
+    bottom: 50px;
+    right: 50px;
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+
+div#scrollupbutton:hover {
+    background-color: #f2f2f2;
+}
+
+div#scrollupbutton:active {
+    color: #6ec2ff;
+    border: #6ec2ff solid 1px;
+}
+
+div#scrollupbutton>span {
+    position: absolute;
+    top: 25px;
+    left: 6px;
+}

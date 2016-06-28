@@ -228,8 +228,14 @@ use app\func\Proc;
 
                         <?= $form->field($model, 'glprep_not_preparat_mark')->checkbox(); ?>
 
+                        <?= $form->field($model, 'glprep_preparat_mark')->checkbox(); ?>
+
                     </div>
                 </div>
+
+                <?= $form->field($model, 'glaukuchet_comment_mark')->checkbox(); ?>
+
+                <?= $form->field($model, 'glaukuchet_comment')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
 
             </div>   
         </div>

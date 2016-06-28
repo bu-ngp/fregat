@@ -65,7 +65,7 @@ $(document).on('ready pjax:success', function () {
             GetScrollFilter("div.insideforms");
 
             $("div.insideforms").scroll(function () {
-                SetScrollFilter(this);
+                SetScrollFilter(this);                
             });
 
         });

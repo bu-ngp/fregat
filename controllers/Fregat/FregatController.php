@@ -106,15 +106,10 @@ class FregatController extends Controller {
     }
 
     public function actionTest() {
-        $Glaukuchet = \app\models\Glauk\Glaukuchet::findOne(1);
-        $Glaukuchet->glaukuchet_lastchange = date('Y-m-d H:i:s');
-        $Glaukuchet->save(false);
-
-        var_dump(date_default_timezone_get());
-        var_dump(date('d.m.Y H:i:s'));
-
-        var_dump($Glaukuchet->glaukuchet_lastchange);
-        var_dump(\app\models\Glauk\Glaukuchet::findOne(1)->glaukuchet_lastchange);
+        echo Proc::switcher('H40');
+        echo Proc::switcher('h40');
+        echo Proc::switcher('р40');
+        echo Proc::switcher('Р40');
     }
 
 }

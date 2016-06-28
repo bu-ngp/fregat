@@ -3,6 +3,7 @@
 namespace app\models\Base;
 
 use Yii;
+use app\func\Proc;
 
 /**
  * This is the model class for table "class_mkb".
@@ -80,6 +81,13 @@ class Classmkb extends \yii\db\ActiveRecord {
 
     public function selectinput($params) {
         $method = isset($params['init']) ? 'one' : 'all';
+
+        // Меняем раскладку на английскую при вводе МКБ10
+        if ($method === 'all') {
+            preg_match('/^([а-яА-Я]\d)/ui', $params['q'], $match);
+            if (!empty($match[1]))
+                $params['q'] = Proc::switcher($params['q']);
+        }
 
         $query = self::find()
                 ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(" - ", code, name) AS text']))

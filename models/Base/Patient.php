@@ -25,7 +25,7 @@ use app\models\Glauk\Glaukuchet;
  * @property Fias $idFias
  */
 class Patient extends \yii\db\ActiveRecord {
-
+    
     /**
      * @inheritdoc
      */
