@@ -134,31 +134,13 @@ class FregatController extends Controller {
             if (empty($inactivePerson)) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
-                    if ($ar->employee_id == 1165)
-                        $a = '';
-
-                    $impemployee = \app\models\Fregat\Impemployee::find()
-                            ->andWhere(['id_employee' => $ar->employee_id])
-                            ->all();
-
-                    if (!empty($impemployee)) {
-                        foreach ($impemployee as $ar2) {
-                            \app\models\Fregat\Impemployee::deleteAll(['id_employee' => $ar2->id_employee]);
-
-                            $impemployeecount = \app\models\Fregat\Impemployee::find()
-                                    ->andwhere(['id_importemployee' => $ar2->id_importemployee])
-                                    ->count();
-                            if (empty($impemployeecount))
-                                \app\models\Fregat\Importemployee::deleteAll(['importemployee_id' => $ar2->id_importemployee]);
-                        }
-                    }
-
                     \app\models\Fregat\Employee::deleteAll(['id_person' => $ar->id_person]);
+                    $au = \app\models\Config\Authuser::findOne($ar->id_person)->auth_user_fullname;
                     \app\models\Config\Authuser::deleteAll(['auth_user_id' => $ar->id_person]);
                     $transaction->commit();
                 } catch (Exception $e) {
+                    echo 'Can\'t delete "' . $au . '"';
                     $transaction->rollback();
-                    throw new Exception($e->getMessage());
                 }
             }
         }
