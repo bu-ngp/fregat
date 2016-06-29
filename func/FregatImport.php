@@ -643,6 +643,7 @@ class FregatImport {
 
 
 
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -667,6 +668,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
 
 
 
@@ -1305,7 +1307,7 @@ class FregatImport {
                             }
                             fclose($handle);
 
-                            //  self::InactiveEmployee();
+                            self::InactiveEmployee();
                         }
                         $logreport->logreport_amount += $i;
                         $logreport->logreport_employeelastdate = self::$filelastdate;
