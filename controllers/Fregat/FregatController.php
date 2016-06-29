@@ -120,7 +120,7 @@ class FregatController extends Controller {
 
     public function actionRemoveinactiveemployee() {
         $au = \app\models\Fregat\Employee::find()
-                ->select(['id_person'])
+                ->select(['employee_id', 'id_person'])
                 ->groupBy(['id_person'])
                 ->all();
         foreach ($au as $ar) {
@@ -134,6 +134,9 @@ class FregatController extends Controller {
             if (empty($inactivePerson)) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
+                    if ($ar->employee_id == 1165)
+                        $a = '';
+
                     $impemployee = \app\models\Fregat\Impemployee::find()
                             ->andWhere(['id_employee' => $ar->employee_id])
                             ->all();
@@ -141,7 +144,12 @@ class FregatController extends Controller {
                     if (!empty($impemployee)) {
                         foreach ($impemployee as $ar2) {
                             \app\models\Fregat\Impemployee::deleteAll(['id_employee' => $ar2->id_employee]);
-                            \app\models\Fregat\Importemployee::deleteAll(['importemployee_id' => $ar2->id_importemployee]);
+
+                            $impemployeecount = \app\models\Fregat\Impemployee::find()
+                                    ->andwhere(['id_importemployee' => $ar2->id_importemployee])
+                                    ->count();
+                            if (empty($impemployeecount))
+                                \app\models\Fregat\Importemployee::deleteAll(['importemployee_id' => $ar2->id_importemployee]);
                         }
                     }
 
