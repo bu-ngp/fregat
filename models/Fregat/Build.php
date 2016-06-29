@@ -31,6 +31,9 @@ class Build extends \yii\db\ActiveRecord {
             [['build_name'], 'string', 'max' => 100],
             [['build_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['build_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            [['build_name'], 'filter', 'filter' => function($value) {
+            return mb_strtoupper($value, 'UTF-8');
+        }],
         ];
     }
 

@@ -38,6 +38,9 @@ class Authuser extends \yii\db\ActiveRecord {
             ['auth_user_login', 'unique'],
             [['auth_user_password'], 'string', 'max' => 255],
             ['auth_user_password2', 'compare', 'compareAttribute' => 'auth_user_password', 'message' => "Подтверждение пароля не совпадает", 'on' => ['Newuser', 'Changepassword']],
+            [['auth_user_fullname'], 'filter', 'filter' => function($value) {
+            return mb_strtoupper($value, 'UTF-8');
+        }],
         ];
     }
 

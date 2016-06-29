@@ -31,6 +31,9 @@ class Podraz extends \yii\db\ActiveRecord {
             [['podraz_name'], 'string', 'max' => 255],
             [['podraz_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['podraz_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            [['podraz_name'], 'filter', 'filter' => function($value) {
+            return mb_strtoupper($value, 'UTF-8');
+        }],
         ];
     }
 

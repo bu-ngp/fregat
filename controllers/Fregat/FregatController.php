@@ -33,7 +33,7 @@ class FregatController extends Controller {
                         'roles' => ['FregatImport'],
                     ],
                     [
-                        'actions' => ['import-do', 'test', 'genpass'],
+                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee'],
                         'allow' => true,
                     ],
                 ],
@@ -105,11 +105,57 @@ class FregatController extends Controller {
         echo 'готово: ' . (array) count($users);
     }
 
+    public function actionUppercaseemployee() {
+        foreach (\app\models\Config\Authuser::find()->all() as $AR)
+            $AR->save();
+        foreach (\app\models\Fregat\Dolzh::find()->all() as $AR)
+            $AR->save();
+        foreach (\app\models\Fregat\Podraz::find()->all() as $AR)
+            $AR->save();
+        foreach (Build::find()->all() as $AR)
+            $AR->save();
+
+        echo 'OK_';
+    }
+
+    public function actionRemoveinactiveemployee() {
+        $au = \app\models\Fregat\Employee::find()
+                ->select(['id_person'])
+                ->groupBy(['id_person'])
+                ->all();
+        foreach ($au as $ar) {
+            $inactivePerson = \app\models\Fregat\Employee::find()
+                    ->andWhere([
+                        'id_person' => $ar->id_person,
+                        'employee_dateinactive' => NULL,
+                    ])
+                    ->count();
+
+            if (empty($inactivePerson)) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    \app\models\Fregat\Employee::deleteAll(['id_person' => $ar->id_person]);
+                    \app\models\Config\Authuser::deleteAll(['auth_user_id' => $ar->id_person]);
+                    $transaction->commit();
+                } catch (Exception $e) {
+                    $transaction->rollback();
+                    throw new Exception($e->getMessage());
+                }
+            }
+        }
+    }
+
     public function actionTest() {
-        echo Proc::switcher('H40');
-        echo Proc::switcher('h40');
-        echo Proc::switcher('р40');
-        echo Proc::switcher('Р40');
+        foreach (\app\models\Config\Authuser::find()->all() as $AR)
+            $AR->save();
+        foreach (\app\models\Fregat\Dolzh::find()->all() as $AR)
+            $AR->save();
+        foreach (\app\models\Fregat\Podraz::find()->all() as $AR)
+            $AR->save();
+        foreach (Build::find()->all() as $AR)
+            $AR->save();
+
+        echo 'OK_';
     }
 
 }
