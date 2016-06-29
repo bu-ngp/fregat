@@ -134,6 +134,17 @@ class FregatController extends Controller {
             if (empty($inactivePerson)) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
+                    $impemployee = \app\models\Fregat\Impemployee::find()
+                            ->andWhere(['id_employee' => $ar->employee_id])
+                            ->all();
+
+                    if (!empty($impemployee)) {
+                        foreach ($impemployee as $ar2) {
+                            \app\models\Fregat\Impemployee::deleteAll(['id_employee' => $ar2->id_employee]);
+                            \app\models\Fregat\Importemployee::deleteAll(['importemployee_id' => $ar2->id_importemployee]);
+                        }
+                    }
+
                     \app\models\Fregat\Employee::deleteAll(['id_person' => $ar->id_person]);
                     \app\models\Config\Authuser::deleteAll(['auth_user_id' => $ar->id_person]);
                     $transaction->commit();
