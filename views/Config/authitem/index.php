@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('/js/authitemfilter.js');
+\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl .'/js/authitemfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;

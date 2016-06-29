@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('/js/patientglaukfilter.js');
+\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl .'/js/patientglaukfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;

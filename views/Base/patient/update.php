@@ -1,6 +1,6 @@
 <?php
 if ($patienttype === 'glauk')
-    \Yii::$app->getView()->registerJsFile('js/glaukpatient.js');
+    \Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl .'/js/glaukpatient.js');
 
 use yii\helpers\Html;
 use app\func\Proc;
