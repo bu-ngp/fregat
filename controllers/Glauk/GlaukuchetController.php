@@ -53,7 +53,7 @@ class GlaukuchetController extends Controller {
                         'model' => new Employee,
                         'field' => $field,
                         'q' => $q,
-                        'methodquery' => 'selectinput',
+                        'methodquery' => 'selectinputactive',
             ]);
     }
 

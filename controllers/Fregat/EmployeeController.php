@@ -23,7 +23,7 @@ class EmployeeController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'assign-to-material'],
+                        'actions' => ['index', 'assign-to-material','foractiveemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -66,6 +66,16 @@ class EmployeeController extends Controller {
     public function actionForimportemployee() {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->searchforimportemployee(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionForactiveemployee() {
+        $searchModel = new EmployeeSearch();
+        $dataProvider = $searchModel->searchforactiveemployee(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,

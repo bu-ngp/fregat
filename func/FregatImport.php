@@ -636,6 +636,13 @@ class FregatImport {
 
 
 
+
+
+
+
+
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -660,6 +667,13 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
+
+
+
+
+
 
 
 
@@ -1078,7 +1092,7 @@ class FregatImport {
 
                 $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
-                if (empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
+                if (/* empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB) */true) {
                     /*   var_dump(self::$filename);
                       var_dump(self::$filelastdate);
                       var_dump($filelastdateFromDB);
@@ -1234,7 +1248,21 @@ class FregatImport {
                                                 if (isset($Employee->scenarios()['import1c']))
                                                     $Employee->scenario = 'import1c';
 
-                                                if (!empty($Employee->employee_dateinactive)) {
+                                                $inactivePerson = Employee::find()
+                                                        ->andWhere([
+                                                            'id_person' => $Employee->id_person,
+                                                            'employee_dateinactive' => NULL,
+                                                        ])
+                                                        ->count();
+
+                                                if (empty($inactivePerson)) {
+                                                    $Employee = Employee::find(['id_person' => $Employee->id_person])
+                                                            ->andWhere([
+                                                                'id_person' => $Employee->id_person,
+                                                            ])
+                                                            ->orderBy(['employee_id' => SORT_DESC])
+                                                            ->one();
+
                                                     $Employeelog = new Employeelog;
                                                     $Employeelog->id_logreport = self::$logreport_id;
                                                     $Employeelog->employeelog_type = 2;
@@ -1251,6 +1279,7 @@ class FregatImport {
                                                     $Employeelog->save(false);
 
                                                     $Employee->employee_dateinactive = null;
+                                                    self::$logreport_updates++;
                                                 }
 
                                                 $Employee->employee_forinactive = 1;
@@ -1276,7 +1305,7 @@ class FregatImport {
                             }
                             fclose($handle);
 
-                            self::InactiveEmployee();
+                            //  self::InactiveEmployee();
                         }
                         $logreport->logreport_amount += $i;
                         $logreport->logreport_employeelastdate = self::$filelastdate;

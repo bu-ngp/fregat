@@ -48,7 +48,7 @@ class Employee extends \yii\db\ActiveRecord {
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],
             [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
-            ['id_person', 'unique', 'targetAttribute' => ['id_person', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'На этого сотрудника уже есть такая специальность'],
+            [['id_person', 'id_dolzh'], 'unique', 'targetAttribute' => ['id_person', 'id_dolzh', 'id_podraz', 'id_build'], 'message' => 'На этого сотрудника уже есть такая специальность'],
             [['employee_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Специальность при импорте не изменяется, 1 - Специальность может быть изменена при импорте  
             [['employee_forinactive'], 'integer', 'min' => 1, 'max' => 1], // 1 - Сотрудник не найдет в файле импорта сотрудников, т.е. не работает по данной специальности, NULL по умолчанию
         ];
@@ -175,9 +175,11 @@ class Employee extends \yii\db\ActiveRecord {
                 return $query;
             }
 
-            public static function getEmployeeByID($IDEmployee) {
+            public function selectinputactive($params) {
+                $method = isset($params['init']) ? 'one' : 'all';
+
                 $query = self::find()
-                        ->select(['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                        ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                         ->joinWith([
                             'idperson' => function($query) {
                                 $query->from(['idperson' => 'auth_user']);
@@ -192,20 +194,46 @@ class Employee extends \yii\db\ActiveRecord {
                                 $query->from(['idbuild' => 'build']);
                             },
                                 ])
-                                ->where([ 'employee_id' => $IDEmployee])
+                                ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
+                                ->andWhere(['employee_dateinactive' => NULL])
+                                ->limit(20)
                                 ->asArray()
-                                ->one();
+                                ->$method();
 
-                        return $query['text'];
+                        return $query;
                     }
 
-                    public static function VariablesValues($attribute) {
-                        $values = [
-                            'employee_importdo' => [0 => 'Нет', 1 => 'Да'],
-                        ];
+                    public static function getEmployeeByID($IDEmployee) {
+                        $query = self::find()
+                                ->select(['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                                ->joinWith([
+                                    'idperson' => function($query) {
+                                        $query->from(['idperson' => 'auth_user']);
+                                    },
+                                            'iddolzh' => function($query) {
+                                        $query->from(['iddolzh' => 'dolzh']);
+                                    },
+                                            'idpodraz' => function($query) {
+                                        $query->from(['idpodraz' => 'podraz']);
+                                    },
+                                            'idbuild' => function($query) {
+                                        $query->from(['idbuild' => 'build']);
+                                    },
+                                        ])
+                                        ->where([ 'employee_id' => $IDEmployee])
+                                        ->asArray()
+                                        ->one();
 
-                        return isset($values[$attribute]) ? $values[$attribute] : NULL;
-                    }
+                                return $query['text'];
+                            }
 
-                }
-                
+                            public static function VariablesValues($attribute) {
+                                $values = [
+                                    'employee_importdo' => [0 => 'Нет', 1 => 'Да'],
+                                ];
+
+                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
+                            }
+
+                        }
+                        
