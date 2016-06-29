@@ -275,7 +275,7 @@ class Proc {
                         $initrecord = [$initrecord];
                 } else {
                     $initrecord = $resultmodel::find()
-                            ->select(array_merge(empty($multiple) ? [] : $multiple['idvalue'], $fields['showresultfields']))
+                            ->select(array_merge(empty($multiple) ? [] : [$multiple['idvalue']], $fields['showresultfields']))
                             ->where(['in', $resultmodel->primarykey()[0], $valuemodel])
                             ->asArray()
                             ->all();
