@@ -231,5 +231,39 @@ class MattrafficSearch extends Mattraffic {
                                 return $dataProvider;
                             }
 
+                            public function searchforinstallakt_mat($params) {
+                                $query = Mattraffic::find();
+
+                                $dataProvider = new ActiveDataProvider([
+                                    'query' => $query,
+                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+                                ]);
+
+                                $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                                        ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' )'); //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+
+
+                                $this->baseRelations($query);
+
+                                $query->andWhere('mattraffic_number > 0')
+                                        ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                                        ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                                        ->andWhere(['tr_mat.id_mattraffic' => NULL])
+                                        ->andWhere(['idMaterial.material_tip' => 2]);
+
+                                $this->load($params);
+
+                                if (!$this->validate()) {
+                                    // uncomment the following line if you do not want to return any records when validation fails
+                                    // $query->where('0=1');
+                                    return $dataProvider;
+                                }
+
+                                $this->baseFilter($query);
+                                $this->baseSort($dataProvider);
+
+                                return $dataProvider;
+                            }
+
                         }
                         

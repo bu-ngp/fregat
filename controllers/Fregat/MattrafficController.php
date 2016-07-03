@@ -22,7 +22,7 @@ class MattrafficController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt'],
+                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_mat', 'assign-to-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -59,6 +59,17 @@ class MattrafficController extends Controller {
         ]);
     }
 
+    public function actionForinstallakt_mat() {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchforinstallakt_mat(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+        ]);
+    }
+
     public function actionSelectinputformaterial($field, $q = null) {
         return Proc::select2request([
                     'model' => new Mattraffic,
@@ -66,6 +77,11 @@ class MattrafficController extends Controller {
                     'q' => $q,
                     'methodquery' => 'selectinput',
         ]);
+    }
+
+    public function actionAssignToMaterial() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

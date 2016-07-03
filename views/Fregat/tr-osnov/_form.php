@@ -33,6 +33,7 @@ use app\models\Fregat\Build;
                                 'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinputfortrosnov',
+                                'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
                                 'dopparams' => [
                                     'foreigndo' => '1',
                                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
@@ -46,6 +47,8 @@ use app\models\Fregat\Build;
             ?>
 
             <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList([0 => '', 1 => 'Основное средство', 2 => 'Материал'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
+
+            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 

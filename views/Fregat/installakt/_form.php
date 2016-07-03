@@ -65,7 +65,6 @@ use app\models\Fregat\Employee;
                             'idMattraffic.idMol.iddolzh.dolzh_name',
                         ],
                         'buttons' => [
-                            /*    'update' => ['Fregat/employee/update', 'employee_id'], */
                             'deleteajax' => ['Fregat/tr-osnov/delete', 'tr_osnov_id', 'trOsnovgrid'],
                         ],
                     ]),
@@ -95,22 +94,15 @@ use app\models\Fregat\Employee;
                             'idMattraffic.idMol.iddolzh.dolzh_name',
                         ],
                         'buttons' => [
-                        /*    'update' => ['Fregat/employee/update', 'employee_id'],
-                          'deletecustomemp' => function ($url, $model) {
-                          $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/employee/delete', 'id' => $model->employee_id]);
-                          return \yii\helpers\Html::a('<i class="glyphicon glyphicon-trash"></i>', $customurl, ['title' => 'Удалить', 'class' => 'btn btn-xs btn-danger', 'data' => [
-                          'confirm' => "Вы уверены, что хотите удалить запись?",
-                          'method' => 'post',
-                          ]]);
-                          },
-                         */                        ],
+                            'deleteajax' => ['Fregat/tr-mat/delete', 'tr_mat_id', 'trMatgrid'],
+                        ],
                     ]),
                     'gridOptions' => [
                         'dataProvider' => $dataProviderMat,
                         'filterModel' => $searchModelMat,
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Укомплектованные материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/trmat/create',
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-mat/create',
                                 'idinstallakt' => $model->primaryKey,
                                     ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],

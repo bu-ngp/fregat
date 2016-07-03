@@ -77,9 +77,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         ],
                     ],
                     'buttons' => array_merge(
-                            /* empty($foreign) ? [] : [
-                              'chooseajax' => ['Fregat/material/assign-to-']
-                              ], */ /* Yii::$app->user->can('MaterialEdit') */ true ? [
+                            empty($foreign) ? [] : [
+                                'chooseajax' => ['Fregat/material/assign-material']
+                                    ], /* Yii::$app->user->can('MaterialEdit') */ true ? [
                                 'karta' => function ($url, $model) {
                                     $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/material/update', 'id' => $model->material_id]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Карта материальной ценности', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);

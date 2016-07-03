@@ -92,7 +92,7 @@ use app\func\Proc;
                                 'resultrequest' => 'Base/fias/selectinputforstreet',
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinputforstreet',
-                                'ajaxparams' => ['fias_city' => '$(\'select[name="Fias[AOGUID]"]\').val()'],
+                                'methodparams' => ['fias_city' => '$(\'select[name="Fias[AOGUID]"]\').val()'],
                                 'minimuminputlength' => 2,
                                 'form' => $formname,
                                 'disabled' => $dopparams['DisableElements'],

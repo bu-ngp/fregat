@@ -3,25 +3,27 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Osmotrakt */
 
-$this->title = 'Составить акт осмотра основной материальной ценности';
+/* @var $this yii\web\View */
+/* @var $model app\models\Fregat\TrMat */
+
+$this->title = 'Добавить комплектуемую материальную ценность';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => $model,
+            'model' => [$model, $Mattraffic, $Material],
         ]);
 ?>
-<div class="osmotrakt-create">
+<div class="tr-osnov-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
             $this->render('_form', [
                 'model' => $model,
-                'Trosnov' => $Trosnov,
                 'Mattraffic' => $Mattraffic,
+                'Material' => $Material,
+                'mattraffic_number_max' => $mattraffic_number_max,
             ])
             ?>
         </div>
-    </div> 
+    </div>
 </div>

@@ -121,6 +121,22 @@ class Material extends \yii\db\ActiveRecord {
         return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id']);
     }
 
+    public function selectinputfortrmat_parent($params) {
+
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $query = self::find()
+                ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
+                ->where(['like', isset($params['init']) ? 'material_id' : 'material_inv', $params['q'], isset($params['init']) ? false : null])
+                ->andWhere(['material_number' => 1])
+                //  ->andWhere(['material_tip' => 2])
+                ->limit(20)
+                ->asArray()
+                ->$method();
+
+        return $query;
+    }
+
     public static function VariablesValues($attribute) {
         $values = [
             'material_tip' => [1 => 'Основное средство', 2 => 'Материал'],

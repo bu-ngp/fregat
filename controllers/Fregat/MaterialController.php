@@ -23,7 +23,7 @@ class MaterialController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update'],
+                        'actions' => ['index', 'create', 'update', 'forinstallakt_mat', 'assign-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -31,7 +31,7 @@ class MaterialController extends Controller {
             ],
         ];
     }
-    
+
     public function actionIndex() {
         $searchModel = new MaterialSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -103,6 +103,22 @@ class MaterialController extends Controller {
                         'model' => $model,
                         'Mattraffic' => $Mattraffic,
             ]);
+    }
+
+    public function actionForinstallakt_mat() {
+        $searchModel = new MaterialSearch();
+        $dataProvider = $searchModel->searchforinstallakt_mat(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+        ]);
+    }
+
+    public function actionAssignMaterial() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "973648411b3d45741a614c1d17fc39fe",
-    "content-hash": "84239bf53e4f09bcec7a4f7237086f20",
+    "hash": "b8c6576b4c69dbb1c9e7f304e68c906d",
+    "content-hash": "4d694eea6ce23b5965f43140fc5b55c3",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -1558,7 +1558,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "kartik-v/yii2-dynagrid": 0,
-        "kartik-v/yii2-widget-datepicker": 0,
         "kartik-v/yii2-datecontrol": 20
     },
     "prefer-stable": false,

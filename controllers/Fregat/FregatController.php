@@ -123,6 +123,9 @@ class FregatController extends Controller {
                 ->select(['employee_id', 'id_person'])
                 ->groupBy(['id_person'])
                 ->all();
+        $del = 0;
+        $nodel = 0;
+        $count = count((array) $au);
         foreach ($au as $ar) {
             $inactivePerson = \app\models\Fregat\Employee::find()
                     ->andWhere([
@@ -134,16 +137,20 @@ class FregatController extends Controller {
             if (empty($inactivePerson)) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
+                    $au2 = \app\models\Config\Authuser::findOne($ar->id_person)->auth_user_fullname;
                     \app\models\Fregat\Employee::deleteAll(['id_person' => $ar->id_person]);
-                    $au = \app\models\Config\Authuser::findOne($ar->id_person)->auth_user_fullname;
                     \app\models\Config\Authuser::deleteAll(['auth_user_id' => $ar->id_person]);
                     $transaction->commit();
-                } catch (Exception $e) {
-                    echo 'Can\'t delete "' . $au . '"';
+                    $del++;
+                    echo 'Deleted "' . $au2 . '"<br>';
+                } catch (\yii\db\IntegrityException $e) {
+                    $nodel++;
+                    echo 'Can\'t delete "' . $au2 . '"<br>';
                     $transaction->rollback();
                 }
             }
         }
+        echo 'Removed ' . $del . ' from ' . $count . '. Errors = ' . $nodel;
     }
 
     public function actionTest() {

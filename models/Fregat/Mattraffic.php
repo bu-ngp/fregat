@@ -53,32 +53,39 @@ class Mattraffic extends \yii\db\ActiveRecord {
         }],
             [['mattraffic_username'], 'string', 'max' => 128],
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
-            [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 3], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами
+            [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 4], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами, 4 - Движение, как состовная часть мат ценности
             [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
             ['mattraffic_number', 'MaxNumberMove', 'on' => 'traffic'],
+          //  [['mattraffic_id'], 'safe'],
         ];
     }
 
     // Определяем максимальное кол-во мат. цен-ти для перемещения (Основное средство - кол-во всегда не более 1, Материал - кол-во не более (Общее кол-во материала МОЛ'а - кол-во перемещенного материала МОЛ'а))
     public function MaxNumberMove($attribute) {
-        $query = self::find()
-                ->join('LEFT JOIN', 'material', 'material.material_id = mattraffic.id_material')
-                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)')
-                ->andWhere('mattraffic_number > 0')
-                ->andWhere([
-                    'id_material' => $this->id_material,
-                    'id_mol' => $this->id_mol,
-                ])
-                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-                ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                ->andWhere(['tr_osnov.id_mattraffic' => NULL])
-                ->one();
+        $idinstallakt = (string) filter_input(INPUT_GET, 'idinstallakt');
 
-        $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id);
+        if (empty($idinstallakt))
+            throw new \Exception('Отсутствует ID акта установки');
+        else {
+            $query = self::find()
+                    ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
+                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                    ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $idinstallakt . ' )')
+                    ->andWhere('mattraffic_number > 0')
+                    ->andWhere([
+                        'id_material' => $this->id_material,
+                        'id_mol' => $this->id_mol,
+                    ])
+                    ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere(['tr_osnov.id_mattraffic' => NULL])
+                    ->one();
 
-        if (!empty($query) && $this->mattraffic_number > $max_number)
-            $this->addError($attribute, 'Количество не может превышать ' . $max_number);
+            $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id, ['idinstallakt' => $idinstallakt]);
+
+            if (!empty($query) && $this->mattraffic_number > $max_number)
+                $this->addError($attribute, 'Количество не может превышать ' . $max_number);
+        }
     }
 
     /**
@@ -109,13 +116,6 @@ class Mattraffic extends \yii\db\ActiveRecord {
      */
     public function getIdMaterial() {
         return $this->hasOne(Material::className(), ['material_id' => 'id_material']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOsmotrakts() {
-        return $this->hasMany(Osmotrakt::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
 
     /**
@@ -191,7 +191,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                 ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                                 ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
                                 ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)') //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+                                ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )') //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
                                 ->joinWith([
                                     'idMol' => function($query) {
                                         $query->from(['idMol' => 'employee']);
@@ -223,40 +223,87 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                         return $query;
                                     }
 
-                                    // Выводит максимально возможное количество материальной ценноси для перемещения
-                                    public static function GetMaxNumberMattrafficForInstallAkt($mattraffic_id) {
-                                        $mattraffic = self::findOne($mattraffic_id);
-                                        $mattraffic_number = $mattraffic->mattraffic_number;
+                                    public function selectinputfortrmat_child($params) {
 
-                                        $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
+                                        $method = isset($params['init']) ? 'one' : 'all';
 
-                                        $mattraffic_number_remove = self::find()
-                                                ->joinWith(['idMaterial' => function($query) {
-                                                        $query->from(['idMaterial' => 'material']);
-                                                    }])
-                                                        ->andWhere([
-                                                            'id_material' => $mattraffic->id_material,
-                                                            'id_mol' => $mattraffic->id_mol,
-                                                            'mattraffic_tip' => 3,
-                                                        ])
-                                                        ->sum('mattraffic_number');
+                                        $query = self::find()
+                                                ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                                                ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
+                                                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                                                ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' )') //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+                                                ->joinWith([
+                                                    'idMol' => function($query) {
+                                                        $query->from(['idMol' => 'employee']);
+                                                        $query->joinWith([
+                                                            'idperson' => function($query) {
+                                                                $query->from(['idperson' => 'auth_user']);
+                                                            },
+                                                                    'iddolzh' => function($query) {
+                                                                $query->from(['iddolzh' => 'dolzh']);
+                                                            },
+                                                                    'idpodraz' => function($query) {
+                                                                $query->from(['idpodraz' => 'podraz']);
+                                                            },
+                                                                    'idbuild' => function($query) {
+                                                                $query->from(['idbuild' => 'build']);
+                                                            },
+                                                                ]);
+                                                            },
+                                                                ])
+                                                                ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                                                                ->andWhere('mattraffic_number > 0')
+                                                                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                                                                ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                                                                ->andWhere(['tr_mat.id_mattraffic' => NULL])
+                                                                ->andWhere(['idMaterial.material_tip' => 2])
+                                                                ->limit(20)
+                                                                ->asArray()
+                                                                ->$method();
+
+                                                        return $query;
+                                                    }
+
+                                                    // Выводит максимально возможное количество материальной ценноси для перемещения
+                                                    public static function GetMaxNumberMattrafficForInstallAkt($mattraffic_id, $dopparams = null) {
+                                                        if (!is_array($dopparams))
+                                                            $dopparams = [];
+
+                                                        $mattraffic = self::findOne($mattraffic_id);
+                                                        $mattraffic_number = $mattraffic->mattraffic_number;
+
+                                                        $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
+
+                                                        $mattraffic_number_remove = self::find()
+                                                                ->joinWith(['idMaterial' => function($query) {
+                                                                        $query->from(['idMaterial' => 'material']);
+                                                                    },
+                                                                            'trOsnovs' => function($query) {
+                                                                        $query->from(['trOsnovs' => 'tr_osnov']);
+                                                                    },])
+                                                                        ->andWhere(array_merge([
+                                                                            'id_material' => $mattraffic->id_material,
+                                                                            'id_mol' => $mattraffic->id_mol,
+                                                                            'mattraffic_tip' => 3,
+                                                                        ]/* , isset($dopparams['idinstallakt']) ? [] : ['trosnovs.id_installakt' => $dopparams['idinstallakt']] */))
+                                                                        ->sum('mattraffic_number');
 
 
-                                                if ($os && !isset($mattraffic_number_remove))
-                                                    $mattraffic_number_remove = 0;
+                                                                if ($os && !isset($mattraffic_number_remove))
+                                                                    $mattraffic_number_remove = 0;
 
-                                                $mattraffic_number = $mattraffic_number - $mattraffic_number_remove;
+                                                                $mattraffic_number = $os ? 1 : ($mattraffic_number - $mattraffic_number_remove);
 
-                                                return $mattraffic_number;
-                                            }
+                                                                return $mattraffic_number;
+                                                            }
 
-                                            public static function VariablesValues($attribute) {
-                                                $values = [
-                                                    'mattraffic_tip' => [1 => 'Приход', 2 => 'Списание'],
-                                                ];
+                                                            public static function VariablesValues($attribute) {
+                                                                $values = [
+                                                                    'mattraffic_tip' => [1 => 'Приход', 2 => 'Списание'],
+                                                                ];
 
-                                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
-                                            }
+                                                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
+                                                            }
 
-                                        }
-                                        
+                                                        }
+                                                        

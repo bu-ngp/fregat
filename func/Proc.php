@@ -66,12 +66,9 @@ class Proc {
 
             if (isset($param['model']) && is_array($param['model'])) {
                 foreach ($param['model'] as $model) {
-
-                    $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
-
-                    if (!isset($result[$id]['dopparams'][$fmodel])) {
+                    if (!isset($result[$id]['dopparams'][$model->formName()])) {
                         $result[$id] = array_replace_recursive($result[$id], [
-                            'dopparams' => [$fmodel => $model->attributes],
+                            'dopparams' => [$model->formName() => $model->attributes],
                         ]);
                     } else {
                         end($result);
@@ -83,7 +80,11 @@ class Proc {
                         if (count($result) > 0 && $id !== key($result))
                             prev($result);
 
-                        $model->load($result[key($result)]['dopparams'], $fmodel);
+                        // Массовое присваивание не походит, нужно пройти по всем атрибутам
+                        foreach ($model->attributes as $attr => $value)
+                            $model->$attr = $result[key($result)]['dopparams'][$model->formName()][$attr];
+
+                        //  $model->load($result[key($result)]['dopparams'], $model->formName());
                     }
                 }
 
@@ -102,7 +103,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*    echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -246,7 +247,6 @@ class Proc {
             $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
             $methodquery = isset($params['methodquery']) ? $params['methodquery'] : '';
             $methodparams = isset($params['methodparams']) ? $params['methodparams'] : '';
-            $ajaxparams = isset($params['ajaxparams']) && is_array($params['ajaxparams']) ? $params['ajaxparams'] : [];
             $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
             $form = isset($params['form']) ? $params['form'] : '';
             $options = isset($params['options']) ? $params['options'] : '';
@@ -256,7 +256,7 @@ class Proc {
             $showToggleAll = isset($params['multiple']['multipleshowall']) ? $params['multiple']['multipleshowall'] : true;
 
             $ajaxparamsString = '';
-            foreach ($ajaxparams as $key => $value)
+            foreach ($methodparams as $key => $value)
                 $ajaxparamsString.= ',' . $key . ': ' . $value;
 
             if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
@@ -379,6 +379,17 @@ class Proc {
         return $bc;
     }
 
+    // Возвращает предпоследний элемент хлебных крошек из сессии
+    public static function GetPreviusBreadcrumbsFromSession() {
+        $session = new Session;
+        $session->open();
+        $bc = $session['breadcrumbs'];
+        end($bc);
+        prev($bc);
+        $session->close();
+        return $bc[key($bc)];
+    }
+
     // Возвращает последний элемент хлебных крошек из сессии
     public static function GetLastBreadcrumbsFromSession() {
         $session = new Session;
@@ -414,13 +425,12 @@ class Proc {
     public static function SetSessionValuesFromAR($model, $PreviusBC = false) {
         if ($model instanceof ActiveRecord) {
             $BC = self::GetBreadcrumbsFromSession();
-            $fmodel = substr($model->className(), strrpos($model->className(), '\\') + 1);
             end($BC);
             if ($PreviusBC)
                 prev($BC);
 
             foreach ($model as $attr => $value)
-                $BC[key($BC)]['dopparams'][$fmodel][$attr] = $value;
+                $BC[key($BC)]['dopparams'][$model->formName()][$attr] = $value;
             $session = new Session;
             $session->open();
             $session['breadcrumbs'] = $BC;
@@ -1019,15 +1029,15 @@ class Proc {
     // Берет значение сначала из справочника (посредством перехода на страницу выбора), если нет, то вытаскивает из сессии (для простого обновления страницы)
     // выводит $kl - для последующей передачи в функцию Proc::SetSessionValuesFromAR, т.е. установить в последнюю сессию или предыдущую
     public static function GetValueForFillARs(&$attrvar, $modelname, $attrname) {
-        $kl = true;
+        $kl = false;
         $lastses = self::GetLastBreadcrumbsFromSession();
-        if (empty($attrvar))
-            if (isset(Yii::$app->request->get($modelname)[$attrname]) && isset($lastses['dopparams']['foreign']))
-                $attrvar = Yii::$app->request->get($modelname)[$attrname];
-            elseif (isset($lastses['dopparams'][$modelname][$attrname])) {
-                $attrvar = $lastses['dopparams'][$modelname][$attrname];
-                $kl = false;
-            }
+        if (isset($lastses['dopparams']['foreign']) && $lastses['dopparams']['foreign']['model'] === $modelname && $lastses['dopparams']['foreign']['field'] === $attrname) {
+            $lastses = self::GetPreviusBreadcrumbsFromSession();
+            $kl = true;
+        }
+
+        if (empty($attrvar) && isset($lastses['dopparams'][$modelname][$attrname]))
+            $attrvar = $lastses['dopparams'][$modelname][$attrname];
 
         return $kl;
     }
@@ -1168,6 +1178,24 @@ class Proc {
         $str[0] = array('й' => 'q', 'ц' => 'w', 'у' => 'e', 'к' => 'r', 'е' => 't', 'н' => 'y', 'г' => 'u', 'ш' => 'i', 'щ' => 'o', 'з' => 'p', 'х' => '[', 'ъ' => ']', 'ф' => 'a', 'ы' => 's', 'в' => 'd', 'а' => 'f', 'п' => 'g', 'р' => 'h', 'о' => 'j', 'л' => 'k', 'д' => 'l', 'ж' => ';', 'э' => '\'', 'я' => 'z', 'ч' => 'x', 'с' => 'c', 'м' => 'v', 'и' => 'b', 'т' => 'n', 'ь' => 'm', 'б' => ',', 'ю' => '.', 'Й' => 'Q', 'Ц' => 'W', 'У' => 'E', 'К' => 'R', 'Е' => 'T', 'Н' => 'Y', 'Г' => 'U', 'Ш' => 'I', 'Щ' => 'O', 'З' => 'P', 'Х' => '[', 'Ъ' => ']', 'Ф' => 'A', 'Ы' => 'S', 'В' => 'D', 'А' => 'F', 'П' => 'G', 'Р' => 'H', 'О' => 'J', 'Л' => 'K', 'Д' => 'L', 'Ж' => ';', 'Э' => '\'', '?' => 'Z', 'ч' => 'X', 'С' => 'C', 'М' => 'V', 'И' => 'B', 'Т' => 'N', 'Ь' => 'M', 'Б' => ',', 'Ю' => '.',);
         $str[1] = array('q' => 'й', 'w' => 'ц', 'e' => 'у', 'r' => 'к', 't' => 'е', 'y' => 'н', 'u' => 'г', 'i' => 'ш', 'o' => 'щ', 'p' => 'з', '[' => 'х', ']' => 'ъ', 'a' => 'ф', 's' => 'ы', 'd' => 'в', 'f' => 'а', 'g' => 'п', 'h' => 'р', 'j' => 'о', 'k' => 'л', 'l' => 'д', ';' => 'ж', '\'' => 'э', 'z' => 'я', 'x' => 'ч', 'c' => 'с', 'v' => 'м', 'b' => 'и', 'n' => 'т', 'm' => 'ь', ',' => 'б', '.' => 'ю', 'Q' => 'Й', 'W' => 'Ц', 'E' => 'У', 'R' => 'К', 'T' => 'Е', 'Y' => 'Н', 'U' => 'Г', 'I' => 'Ш', 'O' => 'Щ', 'P' => 'З', '[' => 'Х', ']' => 'Ъ', 'A' => 'Ф', 'S' => 'Ы', 'D' => 'В', 'F' => 'А', 'G' => 'П', 'H' => 'Р', 'J' => 'О', 'K' => 'Л', 'L' => 'Д', ';' => 'Ж', '\'' => 'Э', 'Z' => '?', 'X' => 'ч', 'C' => 'С', 'V' => 'М', 'B' => 'И', 'N' => 'Т', 'M' => 'Ь', ',' => 'Б', '.' => 'Ю',);
         return strtr($text, isset($str[$arrow]) ? $str[$arrow] : array_merge($str[0], $str[1]));
+    }
+
+    // Используется для полей формы со связью, чтобы укоротить код (isset($model->idTrosnov->idMattraffic->idMaterial) ? $model->idTrosnov->idMattraffic->idMaterial : new Material)
+    public static function RelatModelValue($ActiverecordRelat, $Relationstring, $ActiverecordNew) {
+        if ($ActiverecordRelat instanceof ActiveRecord && is_string($Relationstring) && !empty($Relationstring) && $ActiverecordNew instanceof ActiveRecord) {
+            $RelatArr = explode('.', $Relationstring);
+            $fail = false;
+            foreach ($RelatArr as $relat)
+                if (isset($ActiverecordRelat->$relat))
+                    $ActiverecordRelat = $ActiverecordRelat->$relat;
+                else {
+                    $fail = true;
+                    break;
+                }
+
+            return $fail ? $ActiverecordNew : $ActiverecordRelat;
+        } else
+            throw new \Exception('Ошибка в Proc::RelatModelValue()');
     }
 
 }

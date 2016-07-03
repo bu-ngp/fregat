@@ -10,6 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Fregat\TrOsnov;
+use app\models\Fregat\Mattraffic;
 
 /**
  * OsmotraktController implements the CRUD actions for Osmotrakt model.
@@ -32,7 +34,7 @@ class OsmotraktController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                        'roles' => ['OsmotraktEdit' ],
+                        'roles' => ['OsmotraktEdit'],
                     ],
                 ],
             ],
@@ -57,12 +59,17 @@ class OsmotraktController extends Controller {
 
     public function actionCreate() {
         $model = new Osmotrakt();
+        $Trosnov = new TrOsnov;
+        $Mattraffic = new Mattraffic;
+        $model->osmotrakt_date = date('Y-m-d');
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->osmotrakt_id]);
         } else {
             return $this->render('create', [
                         'model' => $model,
+                        'Trosnov' => $Trosnov,
+                        'Mattraffic' => $Mattraffic,
             ]);
         }
     }

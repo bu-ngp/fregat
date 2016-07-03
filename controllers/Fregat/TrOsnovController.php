@@ -12,6 +12,7 @@ use yii\filters\AccessControl;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Material;
 use app\models\Fregat\Employee;
+use app\models\Fregat\TrOsnovSearch;
 
 /**
  * TrOsnovController implements the CRUD actions for TrOsnov model.
@@ -27,14 +28,14 @@ class TrOsnovController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrosnov', 'filltrosnov'],
+                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
                         'actions' => ['create', 'delete'],
                         'allow' => true,
-                    // 'roles' => ['BuildEdit'],
+                        'roles' => ['InstallEdit'],
                     ],
                 ],
             ],
@@ -45,6 +46,16 @@ class TrOsnovController extends Controller {
                 ],
             ],
         ];
+    }
+
+    public function actionForosmotrakt() {
+        $searchModel = new TrOsnovSearch();
+        $dataProvider = $searchModel->searchforosmotrakt(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
     }
 
     public function actionCreate() {
@@ -128,13 +139,14 @@ class TrOsnovController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrosnov($field, $q = null) {
+    public function actionSelectinputfortrosnov($field, $q = null, $idinstallakt = null) {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
                         'model' => new Mattraffic,
                         'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputfortrosnov',
+                        'methodparams' => ['idinstallakt' => $idinstallakt],
             ]);
     }
 
@@ -158,6 +170,17 @@ class TrOsnovController extends Controller {
                 }
             }
         }
+    }
+
+    // Действие наполнения списка Select2 при помощи ajax
+    public function actionSelectinputforosmotrakt($field, $q = null) {
+        if (Yii::$app->request->isAjax)
+            return Proc::select2request([
+                        'model' => new TrOsnov,
+                        'field' => $field,
+                        'q' => $q,
+                        'methodquery' => 'selectinputforosmotrakt',
+            ]);
     }
 
     // Удаление перемещаемой мат. цен-ти из акта установки

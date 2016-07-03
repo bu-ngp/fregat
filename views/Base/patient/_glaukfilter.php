@@ -77,7 +77,7 @@ use app\func\Proc;
                                     'resultrequest' => 'Base/fias/selectinputforstreet',
                                     'thisroute' => $this->context->module->requestedRoute,
                                     'methodquery' => 'selectinputforstreet',
-                                    'ajaxparams' => ['fias_city' => '$(\'select[name="PatientFilter[fias_city]"]\').val()'],
+                                    'methodparams' => ['fias_city' => '$(\'select[name="PatientFilter[fias_city]"]\').val()'],
                                     'minimuminputlength' => 2,
                         ]))
                         ?>

@@ -20,7 +20,7 @@
         "yiisoft/yii2-swiftmailer": "*",
         "kartik-v/yii2-dynagrid": "@stable",
         "phpoffice/phpexcel": "1.8.0",
-        "kartik-v/yii2-widget-datepicker": "@stable",
+        "kartik-v/yii2-widget-datepicker": "v1.3.9",
         "kartik-v/yii2-widget-datetimepicker": "*",
         "kartik-v/yii2-money": "*",
         "kartik-v/yii2-widget-touchspin": "*",
