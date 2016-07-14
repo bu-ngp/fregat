@@ -129,9 +129,11 @@ class PatientSearch extends Patient {
                                         $query->andFilterWhere(['LIKE', 'patient_ot', $this->getAttribute('patient_ot')]);
                                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'patient_dr', 'date'));
                                         $query->andFilterWhere(['LIKE', 'patient_pol', $this->getAttribute('patient_pol')]);
-                                        if (!empty($this->getAttribute('idFias.fias_city')))
+                                        $fias_city = $this->getAttribute('idFias.fias_city');
+                                        if (!empty($fias_city))
                                             $query->andFilterWhere(['or', ['and', ['LIKE', 'idFias.OFFNAME', $this->getAttribute('idFias.fias_city')], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.OFFNAME', $this->getAttribute('idFias.fias_city')], 'idFias.AOLEVEL >= 7']]);
-                                        if (!empty($this->getAttribute('idFias.fias_street')))
+                                        $fias_street = $this->getAttribute('idFias.fias_street');
+                                        if (!empty($fias_street))
                                             $query->andFilterWhere(['and', ['LIKE', 'idFias.OFFNAME', $this->getAttribute('idFias.fias_street')], 'idFias.AOLEVEL >= 7']);
                                         $query->andFilterWhere(['LIKE', 'patient_dom', $this->getAttribute('patient_dom')]);
                                         $query->andFilterWhere(['LIKE', 'patient_korp', $this->getAttribute('patient_korp')]);
@@ -354,7 +356,7 @@ class PatientSearch extends Patient {
                                             $attr = 'glprep_preparat_mark';
                                             if ($filter[$attr] === '1')
                                                 $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
-                                            
+
                                             $attr = 'glaukuchet_comment_mark';
                                             if ($filter[$attr] === '1')
                                                 $query->andWhere("glaukuchets.glaukuchet_comment <> ''");

@@ -18,7 +18,7 @@ use app\func\Proc;
     ]);
     ?>
 
-    <?= $form->field($model, 'grupa_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
+    <?= $form->field($model, 'grupa_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true]) ?>
 
     <?php ActiveForm::end(); ?>
 

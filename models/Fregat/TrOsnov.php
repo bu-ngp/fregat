@@ -29,7 +29,7 @@ class TrOsnov extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['tr_osnov_kab', 'id_installakt', 'id_mattraffic'], 'required'],
+            [['tr_osnov_kab', 'id_installakt', 'id_mattraffic'], 'required', 'except' => 'forosmotrakt'],
             [['id_installakt', 'id_mattraffic'], 'integer'],
             [['tr_osnov_kab'], 'string', 'max' => 255],
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
@@ -75,7 +75,7 @@ class TrOsnov extends \yii\db\ActiveRecord {
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-                ->select(array_merge(isset($params['init']) ? [] : ['idMattraffic.mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                ->select(array_merge(isset($params['init']) ? [] : ['tr_osnov_id AS id'], ['CONCAT(idMaterial.material_inv, ", каб. ", tr_osnov_kab, ", ", IF(idbuild.build_name IS NULL, "Здание отсутствует", idbuild.build_name), ", ", idMaterial.material_name) AS text']))
                 ->joinWith([
                     'idMattraffic' => function($query) {
                         $query->from(['idMattraffic' => 'mattraffic']);
@@ -99,10 +99,13 @@ class TrOsnov extends \yii\db\ActiveRecord {
                                     },
                                         ]);
                                     },
+                                            'idInstallakt' => function($query) {
+                                        $query->from(['idInstallakt' => 'installakt']);
+                                    },
                                         ])
                                         ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
                                         ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'idMattraffic.id_material = m2.id_material_m2 and idMattraffic.id_mol = m2.id_mol_m2 and idMattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                        ->where(['like', isset($params['init']) ? 'idMattraffic.mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                                        ->where(['like', isset($params['init']) ? 'tr_osnov_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
                                         ->andWhere('idMattraffic.mattraffic_number > 0')
                                         ->andWhere(['in', 'idMattraffic.mattraffic_tip', [3]])
                                         ->andWhere(['m2.mattraffic_date_m2' => NULL])

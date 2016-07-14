@@ -13,7 +13,7 @@ use app\func\Proc;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'organ_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
+    <?= $form->field($model, 'organ_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true]) ?>
 
     <div class="form-group">
         <div class="form-group">

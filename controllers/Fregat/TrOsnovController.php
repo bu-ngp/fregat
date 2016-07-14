@@ -28,7 +28,7 @@ class TrOsnovController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt'],
+                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt', 'assign-to-osmotrakt', 'fillinstalledmat'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -181,6 +181,32 @@ class TrOsnovController extends Controller {
                         'q' => $q,
                         'methodquery' => 'selectinputforosmotrakt',
             ]);
+    }
+
+    public function actionAssignToOsmotrakt() {
+        Proc::AssignToModelFromGrid();
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    // Заполнение полей формы после выбора материальной ценности по инвентарнику
+    public function actionFillinstalledmat() {
+        if (Yii::$app->request->isAjax) {
+            $id_tr_osnov = Yii::$app->request->post('id_tr_osnov');
+            if (!empty($id_tr_osnov)) {
+                $query = TrOsnov::findOne($id_tr_osnov);
+                if (!empty($query)) {
+                    echo json_encode([
+                        'material_name' => $query->idMattraffic->idMaterial->material_name,
+                        'material_inv' => $query->idMattraffic->idMaterial->material_inv,
+                        'material_serial' => $query->idMattraffic->idMaterial->material_serial,
+                        'build_name' => $query->idMattraffic->idMol->idbuild->build_name,
+                        'tr_osnov_kab' => $query->tr_osnov_kab,
+                        'auth_user_fullname' => $query->idMattraffic->idMol->idperson->auth_user_fullname,
+                        'dolzh_name' => $query->idMattraffic->idMol->iddolzh->dolzh_name,
+                    ]);
+                }
+            }
+        }
     }
 
     // Удаление перемещаемой мат. цен-ти из акта установки

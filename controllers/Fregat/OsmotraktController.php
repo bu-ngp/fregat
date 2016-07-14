@@ -12,6 +12,8 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\TrOsnov;
 use app\models\Fregat\Mattraffic;
+use app\models\Fregat\Installakt;
+use app\models\Fregat\Recoveryrecieveakt;
 
 /**
  * OsmotraktController implements the CRUD actions for Osmotrakt model.
@@ -27,7 +29,7 @@ class OsmotraktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -57,20 +59,75 @@ class OsmotraktController extends Controller {
         ]);
     }
 
+    public function actionForrecoveryrecieveakt() {
+        $searchModel = new OsmotraktSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
     public function actionCreate() {
         $model = new Osmotrakt();
+        $model->scenario = 'forosmotrakt';
         $Trosnov = new TrOsnov;
+        $Trosnov->scenario = 'forosmotrakt';
         $Mattraffic = new Mattraffic;
         $model->osmotrakt_date = date('Y-m-d');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->osmotrakt_id]);
-        } else {
-            return $this->render('create', [
-                        'model' => $model,
-                        'Trosnov' => $Trosnov,
-                        'Mattraffic' => $Mattraffic,
-            ]);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+
+            $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : NULL;
+            $id_tr_osnov = isset(Yii::$app->request->post('Osmotrakt')['id_tr_osnov']) ? Yii::$app->request->post('Osmotrakt')['id_tr_osnov'] : NULL;
+
+            $instakterror = false;
+            if (empty($id_tr_osnov) && !empty($id_mattraffic)) {
+                $Trosnov->scenario = 'default';
+                $instakterror = true;
+                $Installakt = new Installakt;
+                $Installakt->installakt_date = date('Y-m-d');
+                $Installakt->id_installer = isset(Yii::$app->request->post('Osmotrakt')['id_master']) ? Yii::$app->request->post('Osmotrakt')['id_master'] : NULL;
+                if ($Installakt->validate()) {
+                    $Installakt->save(false);
+                    $Trosnov->load(Yii::$app->request->post());
+                    $Trosnov->id_installakt = $Installakt->primaryKey;
+                    if ($Trosnov->validate()) {
+                        $Trosnov->save(false);
+                        $instakterror = false;
+                    }
+                }
+            } elseif (!empty($id_tr_osnov))
+                $model->scenario = 'default';
+
+            if ($model->load(Yii::$app->request->post())) {
+                if (empty($id_tr_osnov) && !$instakterror)
+                    $model->id_tr_osnov = $Trosnov->primaryKey;
+
+                if ($model->save()) {
+                    $transaction->commit();
+                    return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+                } else {
+                    $transaction->rollback();
+                    return $this->render('create', [
+                                'model' => $model,
+                                'Trosnov' => $Trosnov,
+                                'Mattraffic' => $Mattraffic,
+                    ]);
+                }
+            } else {
+                $transaction->rollback();
+                return $this->render('create', [
+                            'model' => $model,
+                            'Trosnov' => $Trosnov,
+                            'Mattraffic' => $Mattraffic,
+                ]);
+            }
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -84,6 +141,40 @@ class OsmotraktController extends Controller {
                         'model' => $model,
             ]);
         }
+    }
+
+    // Действие наполнения списка Select2 при помощи ajax
+    public function actionSelectinputforosmotrakt($field, $q = null) {
+        if (Yii::$app->request->isAjax)
+            return Proc::select2request([
+                        'model' => new Mattraffic,
+                        'field' => $field,
+                        'q' => $q,
+                        'methodquery' => 'selectinputforosmotrakt',
+            ]);
+    }
+
+    // Заполнение полей формы после выбора материальной ценности по инвентарнику
+    public function actionFillnewinstallakt() {
+        if (Yii::$app->request->isAjax) {
+            $id_mattraffic = Yii::$app->request->post('id_mattraffic');
+            if (!empty($id_mattraffic)) {
+                $query = Mattraffic::findOne($id_mattraffic);
+                if (!empty($query)) {
+                    echo json_encode([
+                        'material_name' => $query->idMaterial->material_name,
+                        'auth_user_fullname' => $query->idMol->idperson->auth_user_fullname,
+                        'dolzh_name' => $query->idMol->iddolzh->dolzh_name,
+                        'build_name' => $query->idMol->idbuild->build_name,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public function actionAssignToRecoveryrecieveakt() {
+        Proc::AssignToModelFromGrid(new Recoveryrecieveakt, 'id_recoverysendakt');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     public function actionDelete($id) {

@@ -176,7 +176,7 @@ class Proc {
             // Если есть кнопка удаления записи посредством ajax
             if (isset($params['buttons']['deleteajax']) && is_array($params['buttons']['deleteajax'])) {
                 $params['buttons']['deleteajax'] = function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => $model[$params['buttons']['deleteajax'][1]]]);
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => isset($params['buttons']['deleteajax'][1]) ? $model[$params['buttons']['deleteajax'][1]] : $model->primarykey]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
                                 'type' => 'button',
                                 'title' => 'Удалить',

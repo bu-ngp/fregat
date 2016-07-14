@@ -33,7 +33,7 @@ use app\models\Fregat\Employee;
                 ],
                 'placeholder' => 'Выберете установщика',
                 'fromgridroute' => 'Fregat/employee/index',
-                'resultrequest' => 'Fregat/employee/selectinputformaterial',
+                'resultrequest' => 'Fregat/employee/selectinputemloyee',
                 'thisroute' => $this->context->module->requestedRoute,
                 'methodquery' => 'selectinput',
     ]));

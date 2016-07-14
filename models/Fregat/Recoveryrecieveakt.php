@@ -17,21 +17,19 @@ use Yii;
  * @property Osmotrakt $idOsmotrakt
  * @property Recoverysendakt $idRecoverysendakt
  */
-class Recoveryrecieveakt extends \yii\db\ActiveRecord
-{
+class Recoveryrecieveakt extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'recoveryrecieveakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id_osmotrakt', 'id_recoverysendakt'], 'required'],
             [['id_osmotrakt', 'id_recoverysendakt', 'recoveryrecieveakt_repaired'], 'integer'],
@@ -45,8 +43,7 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'recoveryrecieveakt_id' => 'Recoveryrecieveakt ID',
             'id_osmotrakt' => 'Акт осмотра',
@@ -60,16 +57,23 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdOsmotrakt()
-    {
+    public function getIdOsmotrakt() {
         return $this->hasOne(Osmotrakt::className(), ['osmotrakt_id' => 'id_osmotrakt'])->inverseOf('recoveryrecieveakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdRecoverysendakt()
-    {
+    public function getIdRecoverysendakt() {
         return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->inverseOf('recoveryrecieveakts');
     }
+
+    public static function VariablesValues($attribute) {
+        $values = [
+            'recoveryrecieveakt_repaired' => [0 => 'Восстановлению не подлежит', 1 => 'Восстановлено'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
 }

@@ -1,27 +1,23 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/osmotraktform.js');
 
 use yii\helpers\Html;
 use app\func\Proc;
-use app\models\Fregat\TrOsnov;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Osmotrakt */
+/* @var $model app\models\Fregat\Recoverysendakt */
 
-$this->title = 'Составить акт осмотра основной материальной ценности';
+$this->title = 'Добавить акт восстановления материальных ценностей';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Trosnov],
+            'model' => $model,
         ]);
 ?>
-<div class="osmotrakt-create">
+<div class="recoverysendakt-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
             $this->render('_form', [
                 'model' => $model,
-                'Trosnov' => $Trosnov,
-                'Mattraffic' => $Mattraffic,
             ])
             ?>
         </div>

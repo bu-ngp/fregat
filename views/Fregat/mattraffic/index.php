@@ -191,7 +191,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                                                     ['label' => 'Составить акт перемещения материальной ценности <i class="glyphicon glyphicon-random"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                                     '<li role="presentation" class="divider"></li>',
                                                                     ['label' => 'Журнал осмотров материальных ценностей', 'url' => ['Fregat/osmotrakt/index'], 'linkOptions' => ['data-pjax' => '0']],
-                                                                    ['label' => 'Журнал восстановления материальных ценностей', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
+                                                                    ['label' => 'Журнал восстановления материальных ценностей', 'url' => ['Fregat/recoverysendakt/index'], 'linkOptions' => ['data-pjax' => '0']],
                                                                     ['label' => 'Составить акт осмотра материальной ценности <i class="glyphicon glyphicon-search"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                                     ['label' => 'Составить акт восстановления материальных ценностей <i class="glyphicon glyphicon-wrench"></i>', 'url' => '#', 'linkOptions' => ['data-pjax' => '0']],
                                                                 ],

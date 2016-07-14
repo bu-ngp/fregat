@@ -132,7 +132,7 @@ use app\models\Fregat\Mattraffic;
                         ],
                         'placeholder' => 'Выберете материально отчетственное лицо',
                         'fromgridroute' => 'Fregat/employee/index',
-                        'resultrequest' => 'Fregat/employee/selectinputformaterial',
+                        'resultrequest' => 'Fregat/employee/selectinputemloyee',
                         'thisroute' => $this->context->module->requestedRoute,
                         'methodquery' => 'selectinput',
             ]));

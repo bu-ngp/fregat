@@ -281,6 +281,8 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                     gridpjax = $("div[data-pjax-container]").attr("id");
                 else if (typeof (gridpjax) !== "undefined")
                     gridpjax = gridpjax + "-pjax";
+                
+                
 
                 $.ajax({
                     url: url,
@@ -295,6 +297,8 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                             funcafteraccess.apply($(this));
                     },
                     error: function (err) {
+                        console.debug(err)
+                        
                         if (err.status == "500" && (err.responseText).indexOf("Integrity constraint violation") >= 0)
                             bootbox.alert("Удаление записи невозможно, т. к. она имеется в других таблицах!");
                         else if ((err.responseText).indexOf("Internal Server Error (#500): ") >= 0)

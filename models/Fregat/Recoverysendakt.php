@@ -43,7 +43,7 @@ class Recoverysendakt extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'recoverysendakt_id' => 'Recoverysendakt ID',
+            'recoverysendakt_id' => 'Номер акта восстановления мат. ценности',
             'recoverysendakt_date' => 'Дата отправки',
             'id_organ' => 'Организация',
         ];

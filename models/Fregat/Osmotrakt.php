@@ -34,8 +34,9 @@ class Osmotrakt extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['id_reason', 'id_user', 'id_master', 'id_mattraffic'], 'integer'],
-            [['id_user', 'id_master', 'id_mattraffic'], 'required'],
+            [['id_reason', 'id_user', 'id_master', 'id_tr_osnov'], 'integer'],
+            [['id_tr_osnov'], 'required', 'except' => 'forosmotrakt'],
+            [['id_user', 'id_master'], 'required'],
             [['osmotrakt_comment'], 'string', 'max' => 400],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_user' => 'employee_id']],
             [['id_master'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_master' => 'employee_id']],

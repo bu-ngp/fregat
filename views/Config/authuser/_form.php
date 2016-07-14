@@ -20,7 +20,7 @@ use yii\web\Session;
     ?>
 
     <?php
-    echo $form->field($model, 'auth_user_fullname')->textInput(array_merge(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $model->scenario === 'Changepassword'], $model->scenario === 'Changepassword' ? [] : ['autofocus' => true]));
+    echo $form->field($model, 'auth_user_fullname')->textInput(array_merge(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'disabled' => $model->scenario === 'Changepassword'], $model->scenario === 'Changepassword' ? [] : ['autofocus' => true]));
     echo $form->field($model, 'auth_user_login')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $model->scenario === 'Changepassword']);
 
 

@@ -13,8 +13,11 @@ $this->title = 'Журнал осмотров материальных ценн�
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="osmotrakt-index">
-    <?=
-    DynaGrid::widget(Proc::DGopts([
+    <?php
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
+
+    echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'osmotraktgrid'],
                 'columns' => Proc::DGcols([
                     'buttonsfirst' => true,
@@ -24,7 +27,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'attribute' => 'idTrosnov.idMattraffic.idMaterial.idMatv.matvid_name',
                             'visible' => false,
                         ],
-                        'osmotrakt_date',
+                        [
+                            'attribute' => 'osmotrakt_date',
+                            'format' => 'date',
+                        ],
                         'idTrosnov.idMattraffic.idMaterial.material_name',
                         'idTrosnov.idMattraffic.idMaterial.material_inv',
                         [
@@ -67,7 +73,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/osmotrakt/assign-to-']], Yii::$app->user->can('OsmotraktEdit') ? [
+                                'chooseajax' => ['Fregat/osmotrakt/assign-to-recoveryrecieveakt']], Yii::$app->user->can('OsmotraktEdit') ? [
                                 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
                                 'deleteajax' => ['Fregat/osmotrakt/delete', 'osmotrakt_id'],
                                     ] : []

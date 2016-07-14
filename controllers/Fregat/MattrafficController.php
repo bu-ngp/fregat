@@ -22,7 +22,7 @@ class MattrafficController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_mat', 'assign-to-material'],
+                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_mat', 'assign-to-material', 'forosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -51,6 +51,17 @@ class MattrafficController extends Controller {
     public function actionForinstallakt() {
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->searchforinstallakt(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+        ]);
+    }
+
+    public function actionForosmotrakt() {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchforosmotrakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,

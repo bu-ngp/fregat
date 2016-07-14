@@ -11,7 +11,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             'model' => $model,
         ]);
 ?>
-<div class="izmer-create">
+<div class="installakt-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">

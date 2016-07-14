@@ -28,7 +28,7 @@ class EmployeeController extends Controller {
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['selectinputformaterial', 'forimportemployee'],
+                        'actions' => ['selectinputemloyee', 'forimportemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -83,7 +83,7 @@ class EmployeeController extends Controller {
         ]);
     }
 
-    public function actionSelectinputformaterial($field, $q = null) {
+    public function actionSelectinputemloyee($field, $q = null) {
         return Proc::select2request([
                     'model' => new Employee,
                     'field' => $field,
