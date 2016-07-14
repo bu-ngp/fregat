@@ -246,7 +246,7 @@ class Proc {
             $fields = $params['fields'];
             $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
             $methodquery = isset($params['methodquery']) ? $params['methodquery'] : '';
-            $methodparams = isset($params['methodparams']) ? $params['methodparams'] : '';
+            $methodparams = isset($params['methodparams']) ? $params['methodparams'] : [];
             $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
             $form = isset($params['form']) ? $params['form'] : '';
             $options = isset($params['options']) ? $params['options'] : '';
