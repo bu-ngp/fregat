@@ -50,9 +50,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' =>
                     [
-                        'download' => function ($model) {
-                            var_dump($model);
-                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-download-alt"></i>', 'importreports/Отчет импорта в систему Фрегат N' . (is_array($model) ? $model['logreport_id'] : '') . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
+                        'download' => function ($url, $model) {
+                            return \yii\helpers\Html::a('<i class="glyphicon glyphicon-download-alt"></i>', 'importreports/Отчет импорта в систему Фрегат N' . $model['logreport_id'] . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                         },
                             ],
                         ]),
