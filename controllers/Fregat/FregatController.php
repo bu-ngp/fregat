@@ -97,6 +97,9 @@ class FregatController extends Controller {
     }
 
     public function actionGenpass() {
+        $Importconfig = \app\models\Fregat\Import\Importconfig::findOne(1);
+        ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+        ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
         $users = \app\models\Config\Authuser::find()->where('auth_user_id <> 1')->all();
         foreach ($users as $ar) {
             $ar->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
