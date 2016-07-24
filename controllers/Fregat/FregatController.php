@@ -105,7 +105,7 @@ class FregatController extends Controller {
             $ar->auth_user_password = Yii::$app->getSecurity()->generatePasswordHash('11111111');
             $ar->save();
         }
-        echo 'готово: ' . (array) count($users);
+        echo 'готово: ' . count((array) $users);
     }
 
     public function actionUppercaseemployee() {
