@@ -281,8 +281,8 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                     gridpjax = $("div[data-pjax-container]").attr("id");
                 else if (typeof (gridpjax) !== "undefined")
                     gridpjax = gridpjax + "-pjax";
-                
-                
+
+
 
                 $.ajax({
                     url: url,
@@ -298,7 +298,7 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                     },
                     error: function (err) {
                         console.debug(err)
-                        
+
                         if (err.status == "500" && (err.responseText).indexOf("Integrity constraint violation") >= 0)
                             bootbox.alert("Удаление записи невозможно, т. к. она имеется в других таблицах!");
                         else if ((err.responseText).indexOf("Internal Server Error (#500): ") >= 0)
@@ -359,6 +359,63 @@ function SetScrollFilter(ThisElement) {
         localStorage.setItem('scrollfilter', JSON.stringify(tmpsc_obj));
     }
     $("input.searchfilterform").focus();
+}
+
+function SetStyleFilterBehavior() {
+    $("div.insideforms input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
+
+    $("div.insideforms span.select2-selection__rendered").each(function (key, value) {
+        if (($(value).attr("id")).indexOf("znak-container") < 0) {
+            var select2single = $.trim($(value).clone().children().remove().end().text());
+
+            if (select2single !== "")
+                $(value).parent("span").addClass("applyfiltercolor");
+        }
+    });
+
+    $("div.insideforms input[type='text'].form-control").each(function (key, value) {
+        if ($(value).val() !== "") {
+            $(value).addClass("applyfiltercolor");
+            if ($("#" + value.id + "_znak").length)
+                $("#" + value.id + "_znak").next("span").children("span.selection").children("span.select2-selection").addClass("applyfiltercolor");
+        }
+    });
+
+    $("div.insideforms input[type='checkbox']").each(function (key, value) {
+        if ($(value).is(":checked"))
+            $(value).parent("label").addClass("applyfiltercolor");
+    });
+
+    $("div.insideforms ul.select2-selection__rendered").each(function (key, value) {
+        if ($(value).children("li").length > 1) {
+            $(value).addClass("applyfiltercolor");
+            $(value).children("li").addClass("applyfiltercolor")
+        }
+    });
+
+    /* ----------------------------- */
+
+    $(document).on("change", "div.insideforms input[type='text'].form-control", function () {
+        if (this.value === "")
+            $(this).removeClass("applyfiltercolor")
+        else
+            $(this).addClass("applyfiltercolor")
+    });
+
+    $("div.insideforms select.form-control").change(function () {
+        if ($(this).val())
+            $(this).next("span.select2.select2-container").children("span.selection").children("span.select2-selection").addClass("applyfiltercolor").children("ul.select2-selection__rendered").children("li").addClass("applyfiltercolor");
+        else
+            $(this).next("span.select2.select2-container").children("span.selection").children("span.select2-selection").removeClass("applyfiltercolor").children("ul.select2-selection__rendered").children("li").removeClass("applyfiltercolor");
+        ;
+    });
+
+    $("div.insideforms input[type='checkbox']").change(function () {
+        if ($(this).is(":checked"))
+            $(this).parent("label").addClass("applyfiltercolor");
+        else
+            $(this).parent("label").removeClass("applyfiltercolor");
+    });
 }
 
 

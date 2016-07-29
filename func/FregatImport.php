@@ -72,6 +72,7 @@ class FregatImport {
     private static $mattraffic_exist; // Проверка, найден ли у материальнной ценности сотрудник
     private static $xls;
     private static $materialexists; // Если количество материалов больше 0, то True, иначе False
+    private static $Mishanya; // Ограничение на кол-во писем с новыми сотрудницами для Мишани
 
     private static function Setxls() {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
@@ -485,8 +486,10 @@ class FregatImport {
                 // Убераем атрибуты, чтобы он не попали в $diff_attr
                 unset($xls_attributes_material['material_tip_nomenklaturi']);
                 unset($xls_attributes_material['material_number']);
-                if (!self::$os)
+                if (!self::$os) {
                     unset($xls_attributes_material['material_price']);
+                    $Material->material_writeoff = 0;
+                }
 
                 // Если в Excel отсутствует инвентарный номер, а в базе он есть, то сделать так, что бы импорт не видел изменения
                 if (empty($xls_attributes_material['material_inv']) && !empty($Material->material_inv))
@@ -631,21 +634,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
+           
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
@@ -669,21 +658,7 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
+          
 // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
@@ -1010,65 +985,70 @@ class FregatImport {
 
     // Ищем жену Михаилу
     static function Mishanya($Authuser, $Employee, $matches) {
-        $dr = Yii::$app->formatter->asDate($matches[16]);
-        $pol = $matches[15];
-        $d1 = new \DateTime($dr);
-        $d2 = new \DateTime(date('Y-m-d'));
-        $diff = $d2->diff($d1);
+        if (self::$Mishanya < 3) {
+            $dr = Yii::$app->formatter->asDate($matches[16]);
+            $pol = $matches[15];
+            $d1 = new \DateTime($dr);
+            $d2 = new \DateTime(date('Y-m-d'));
+            $diff = $d2->diff($d1);
 
-        $subthemes = [
-            'Мишаня, новые телочки, пора за работу',
-            'Мишаня, настало твое время',
-            'Мишаня, мы все верим в тебя',
-            'Мишаня, все в твоих руках, за работу',
-            'Мишаня, на этот раз у тебя полюбому все получится',
-            'Мишаня, я лично в тебя верю, давай',
-            'Мишаня, мы будем болеть за тебя всем отделом',
-            'Мишаня, Президент лично одобрил',
-            'Мишаня, все схвачено, дело за тобой',
-            'Мишаня, давай пацан',
-            'Мишаня, у тебя все получится',
-            'Мишаня, вперед, в атаку',
-            'Мишаня, хватит распиздяйничать, займись делом',
-            'Мишаня, появилась непыльная работенка',
-            'Мишаня, кажется ты нашел свою новую жену',
-            'Мишаня, тебе пора жениться',
-            'Мишаня, она ждет',
-            'Мишаня, кажется кто-то нуждается в твоих комплементах',
-            'Мишаня, найден новый объект для комплиментиков',
-            'Мишаня, с ней только серьезные отношения',
-            'Мишаня, она думает о тебе',
-            'Мишаня, хватит душить удава, займись делом',
-            'Мишаня, тут Кондратьевские подсуетились',
-            'Мишаня, получи новое задание Кунимена',
-            'Мишаня, киевская развед-школа поработала на тебя',
-            'Мишаня, у нее компьютер сломался, нужно проверить',
-            'Мишаня, пора поработать с низкого старта',
-            'Мишаня, партийное задание',
-            'Мишаня, надевай тапки пиздуна, есть задание',
-        ];
+            $subthemes = [
+                'Мишаня, новые телочки, пора за работу',
+                'Мишаня, настало твое время',
+                'Мишаня, мы все верим в тебя',
+                'Мишаня, все в твоих руках, за работу',
+                'Мишаня, на этот раз у тебя полюбому все получится',
+                'Мишаня, я лично в тебя верю, давай',
+                'Мишаня, мы будем болеть за тебя всем отделом',
+                'Мишаня, Президент лично одобрил',
+                'Мишаня, все схвачено, дело за тобой',
+                'Мишаня, давай пацан',
+                'Мишаня, у тебя все получится',
+                'Мишаня, вперед, в атаку',
+                'Мишаня, хватит распиздяйничать, займись делом',
+                'Мишаня, появилась непыльная работенка',
+                'Мишаня, кажется ты нашел свою новую жену',
+                'Мишаня, тебе пора жениться',
+                'Мишаня, она ждет',
+                'Мишаня, кажется кто-то нуждается в твоих комплементах',
+                'Мишаня, найден новый объект для комплиментиков',
+                'Мишаня, с ней только серьезные отношения',
+                'Мишаня, она думает о тебе',
+                'Мишаня, хватит душить удава, займись делом',
+                'Мишаня, тут Кондратьевские подсуетились',
+                'Мишаня, получи новое задание Кунимена',
+                'Мишаня, киевская развед-школа поработала на тебя',
+                'Мишаня, у нее компьютер сломался, нужно проверить',
+                'Мишаня, пора поработать с низкого старта',
+                'Мишаня, партийное задание',
+                'Мишаня, надевай тапки пиздуна, есть задание',
+            ];
 
-        if ($pol == 'Ж' && $diff->y <= 35)
-            Yii::$app->mailer->compose('/site/misha', [
-                        'fio' => $Authuser->auth_user_fullname,
-                        'dr' => $dr,
-                        'vozrast' => $diff->y,
-                        'dolzh' => Dolzh::findOne($Employee->id_dolzh)->dolzh_name,
-                        'podraz' => Podraz::findOne($Employee->id_podraz)->podraz_name,
-                        'build' => (!empty($Employee->id_build)) ? Build::findOne($Employee->id_build)->build_name : '',
-                        'address' => $matches[10],
-                    ])
-                    ->setFrom('portal@mugp-nv.ru')
-                    ->setTo([
-                        'karpovvv@mugp-nv.ru',
-                        'dnn@mugp-nv.ru',
-                        'mns@mugp-nv.ru',
-                        'dvg@mugp-nv.ru',
-                        'chepenkoav@mugp-nv.ru',
-                        'valikanovae@mugp-nv.ru',
-                    ])
-                    ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
-                    ->send();
+            if ($pol == 'Ж' && $diff->y <= 35) {
+                self::$Mishanya++;
+                Yii::$app->mailer->compose('/site/misha', [
+                            'fio' => $Authuser->auth_user_fullname,
+                            'dr' => $dr,
+                            'vozrast' => $diff->y,
+                            'dolzh' => Dolzh::findOne($Employee->id_dolzh)->dolzh_name,
+                            'podraz' => Podraz::findOne($Employee->id_podraz)->podraz_name,
+                            'build' => (!empty($Employee->id_build)) ? Build::findOne($Employee->id_build)->build_name : '',
+                            'address' => $matches[10],
+                        ])
+                        ->setFrom('portal@mugp-nv.ru')
+                        ->setTo([
+                            'karpovvv@mugp-nv.ru',
+                            'mns@mugp-nv.ru',
+                                /*   'dnn@mugp-nv.ru',
+                                  'mns@mugp-nv.ru',
+                                  'dvg@mugp-nv.ru',
+                                  'chepenkoav@mugp-nv.ru',
+                                  'valikanovae@mugp-nv.ru', */
+                        ])
+                        ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
+                        ->send();
+            }
+        }
     }
 
     // Производим импорт материальных ценностей                                             // Не забыть про InactiveEmployee
@@ -1078,6 +1058,7 @@ class FregatImport {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
         self::$os_start = $Importconfig['os_startrow'];
         self::$mat_start = $Importconfig['mat_startrow'];
+        self::$Mishanya = 0;
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
@@ -1223,8 +1204,8 @@ class FregatImport {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                    //                                              if ($newEmployee)
-                                                    //                                                  self::Mishanya($Authuser, $Employee, $matches);
+                                                    if ($newEmployee)
+                                                        self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
