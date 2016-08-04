@@ -73,6 +73,7 @@ class FregatImport {
     private static $xls;
     private static $materialexists; // Если количество материалов больше 0, то True, иначе False
     private static $Mishanya; // Ограничение на кол-во писем с новыми сотрудницами для Мишани
+    private static $Debug; // Отключает функционал при отладке
 
     private static function Setxls() {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
@@ -634,7 +635,9 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
-           
+
+
+                
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
@@ -658,7 +661,9 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
-          
+
+
+                
 // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
@@ -1059,6 +1064,7 @@ class FregatImport {
         self::$os_start = $Importconfig['os_startrow'];
         self::$mat_start = $Importconfig['mat_startrow'];
         self::$Mishanya = 0;
+        self::$Debug = true;
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
@@ -1077,7 +1083,7 @@ class FregatImport {
 
                 $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
-                if (empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
+                if (self::$Debug || empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
                     /*   var_dump(self::$filename);
                       var_dump(self::$filelastdate);
                       var_dump($filelastdateFromDB);
@@ -1204,8 +1210,8 @@ class FregatImport {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                  //  if ($newEmployee)
-                                                  //      self::Mishanya($Authuser, $Employee, $matches);
+                                                    if ($newEmployee && !self::$Debug)
+                                                        self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
@@ -1290,7 +1296,8 @@ class FregatImport {
                             }
                             fclose($handle);
 
-                            self::InactiveEmployee();
+                            if (!self::$Debug)
+                                self::InactiveEmployee();
                         }
                         $logreport->logreport_amount += $i;
                         $logreport->logreport_employeelastdate = self::$filelastdate;
