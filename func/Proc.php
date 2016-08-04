@@ -262,6 +262,24 @@ class Proc {
             if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
+            $errorstring = '';
+            if (empty($model))
+                $errorstring.='empty($model); ';
+            if (empty($resultmodel))
+                $errorstring.='empty($resultmodel); ';
+            if (empty($fields['keyfield']))
+                $errorstring.='empty($fields[\'keyfield\']); ';
+            if (empty($fields['resultfield']))
+                $errorstring.='empty($fields[\'resultfield\']); ';
+            if (empty($params['methodquery']))
+                $errorstring.='empty($params[\'methodquery\']); ';
+            if (empty($thisroute))
+                $errorstring.='empty($thisroute); ';
+            if (empty($multiple))
+                $errorstring.='empty($multiple); ';
+            if (isset($multiple['idvalue']))
+                $errorstring.='isset($multiple[\'idvalue\']); ';
+
             if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute) && (!empty($multiple) && isset($multiple['idvalue']) || empty($multiple))) {
 
                 $valuemodel = is_array($model->$fields['keyfield']) ? $model->$fields['keyfield'] : [$model->$fields['keyfield']];
@@ -320,7 +338,7 @@ class Proc {
                                 ] : []
                 );
             } else
-                throw new \Exception('Ошибка в Proc::DGselect2()');
+                throw new \Exception('Ошибка в Proc::DGselect2(): ' . $errorstring);
         }
     }
 
