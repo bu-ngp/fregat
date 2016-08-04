@@ -16,6 +16,7 @@ class TrOsnovSearch extends TrOsnov {
     public function attributes() {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
+            'idMattraffic.mattraffic_date',
             'idMattraffic.idMaterial.material_name',
             'idMattraffic.idMaterial.material_inv',
             'idMattraffic.idMaterial.material_serial',
@@ -35,6 +36,7 @@ class TrOsnovSearch extends TrOsnov {
         return [
             [['tr_osnov_id', 'id_installakt', 'id_mattraffic'], 'integer'],
             [['tr_osnov_kab', 'idMattraffic.idMaterial.material_name',
+            'idMattraffic.mattraffic_date',
             'idMattraffic.idMaterial.material_inv',
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
@@ -182,6 +184,7 @@ class TrOsnovSearch extends TrOsnov {
                                                         Proc::AssignRelatedAttributes($dataProvider, [
                                                             'idInstallakt.installakt_id',
                                                             'idInstallakt.installakt_date',
+                                                            'idMattraffic.mattraffic_date',
                                                             'idMattraffic.idMaterial.material_name',
                                                             'idMattraffic.idMaterial.material_inv',
                                                             'idMattraffic.idMaterial.material_serial',

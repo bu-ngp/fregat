@@ -637,6 +637,8 @@ class FregatImport {
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
 
 
+
+
                 
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
@@ -661,6 +663,8 @@ class FregatImport {
             $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name; //self::GetNameByID('podraz', 'podraz_name', $Employee->id_podraz);
             if (!empty($Employee->id_build))
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
+
+
 
 
                 
@@ -1133,9 +1137,9 @@ class FregatImport {
                                         $matches[3] = preg_replace($pattern, '$1', $matches[3]);
 
                                         $employee_fio = $matches[1];
-                                        $location = self::AssignLocationForEmployeeImport($matches[3], $matches[2]);
+                                        $location = self::AssignLocationForEmployeeImport(trim($matches[3]), trim($matches[2]));
 
-                                        $id_dolzh = self::AssignDolzh($matches[4]);
+                                        $id_dolzh = self::AssignDolzh(trim($matches[4]));
 
                                         //            $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
 

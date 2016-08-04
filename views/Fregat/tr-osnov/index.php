@@ -17,7 +17,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
     echo DynaGrid::widget(Proc::DGopts([
-                'options' => ['id' => 'tr-oanovgrid'],
+                'options' => ['id' => 'tr-osnovgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'idInstallakt.installakt_id',
