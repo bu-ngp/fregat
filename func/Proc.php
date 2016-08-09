@@ -348,7 +348,7 @@ class Proc {
     // $params[q] - Текстовая строка поиска
     // $params[showresultfields] - Массив полей, которые возвращаются, как результат поиска
     public static function select2request($params) {
-        if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && is_string($params['field'])) {
+        if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && (is_string($params['field']) || isset($params['methodquery']))) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $out = ['results' => ['id' => '', 'text' => '']];
             $model = $params['model'];
@@ -463,7 +463,7 @@ class Proc {
         $isHome = (($controller->id === $default_controller) && ($controller->action->id === $controller->defaultAction)) ? true : false;
 
         $urls = [
-            'fregat_matcen' => 'Fregat/mattraffic/index',
+            'fregat_mainmenu' => 'Fregat/fregat/mainmenu',
             'fregat_conf' => 'Fregat/fregat/config',
             'config_conf' => 'Config/config/index',
             'glauk_index' => 'Base/patient/glaukindex',
@@ -486,8 +486,8 @@ class Proc {
             switch ($menubuttons) {
                 case 'fregat':
                     $result = array_merge(
-                            Yii::$app->user->can('FregatUserPermission') ? [['label' => 'Материальные ценности', 'url' => [$urls['fregat_matcen']],
-                            'options' => $session['currentmenuurl'] === $urls['fregat_matcen'] ? ['class' => 'active'] : []
+                            Yii::$app->user->can('FregatUserPermission') ? [['label' => 'Основное меню', 'url' => [$urls['fregat_mainmenu']],
+                            'options' => $session['currentmenuurl'] === $urls['fregat_mainmenu'] ? ['class' => 'active'] : []
                                 ]] : [], Yii::$app->user->can('FregatUserPermission') ? [['label' => 'Настройки', 'url' => [$urls['fregat_conf']],
                             'options' => $session['currentmenuurl'] === $urls['fregat_conf'] ? ['class' => 'active'] : []
                                 ]] : []

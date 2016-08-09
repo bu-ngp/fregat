@@ -15,34 +15,32 @@ use Yii;
  * @property TrMat[] $trMats
  * @property TrOsnov[] $trOsnovs
  */
-class Installakt extends \yii\db\ActiveRecord
-{
+class Installakt extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'installakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['installakt_date', 'id_installer'], 'required'],
-            [['installakt_date'], 'safe'],
             [['id_installer'], 'integer'],
             [['id_installer'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_installer' => 'employee_id']],
+            [['installakt_date'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['installakt_date'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение {attribute} должно быть меньше или равно значения «' . Yii::$app->formatter->asDate(date('Y-m-d')) . '».'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'installakt_id' => '№ акта установки',
             'installakt_date' => 'Дата установки',
@@ -53,24 +51,22 @@ class Installakt extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdInstaller()
-    {
+    public function getIdInstaller() {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_installer'])->inverseOf('installakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrMats()
-    {
+    public function getTrMats() {
         return $this->hasMany(TrMat::className(), ['id_installakt' => 'installakt_id'])->inverseOf('idInstallakt');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrOsnovs()
-    {
+    public function getTrOsnovs() {
         return $this->hasMany(TrOsnov::className(), ['id_installakt' => 'installakt_id'])->inverseOf('idInstallakt');
     }
+
 }

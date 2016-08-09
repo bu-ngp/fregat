@@ -6,7 +6,7 @@ use app\func\Proc;
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoveryrecieveakt */
 
-$this->title = 'Обновить акт восстановления материальных ценностей';
+$this->title = 'Результат восстановления материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             'model' => $model,
         ]);
@@ -18,8 +18,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?=
             $this->render('_form', [
                 'model' => $model,
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
             ])
             ?>
         </div>

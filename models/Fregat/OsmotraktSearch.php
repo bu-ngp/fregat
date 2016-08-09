@@ -207,19 +207,27 @@ class OsmotraktSearch extends Osmotrakt {
 
                                                                 $this->baseRelations($query);
 
-                                                                $this->load($params);
+                                                                $query->joinWith([
+                                                                    'recoveryrecieveakts' => function($query) {
+                                                                        $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
+                                                                    },
+                                                                        ]);
+                                                                        $query->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date');
 
-                                                                if (!$this->validate()) {
-                                                                    // uncomment the following line if you do not want to return any records when validation fails
-                                                                    // $query->where('0=1');
-                                                                    return $dataProvider;
+                                                                        $this->load($params);
+
+                                                                        if (!$this->validate()) {
+                                                                            // uncomment the following line if you do not want to return any records when validation fails
+                                                                            // $query->where('0=1');
+                                                                            return $dataProvider;
+                                                                        }
+
+                                                                        $this->baseFilter($query);
+                                                                        $query->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired = 2 or recoveryrecieveakts.recoveryrecieveakt_id IS NULL)');
+                                                                        $this->baseSort($dataProvider);
+
+                                                                        return $dataProvider;
+                                                                    }
+
                                                                 }
-
-                                                                $this->baseFilter($query);
-                                                                $this->baseSort($dataProvider);
-
-                                                                return $dataProvider;
-                                                            }
-
-                                                        }
-                                                        
+                                                                

@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\func\Proc;
+use app\models\Fregat\Osmotrakt;
 
 /**
  * RecoveryrecieveaktController implements the CRUD actions for Recoveryrecieveakt model.
@@ -25,7 +26,7 @@ class RecoveryrecieveaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['delete'],
+                        'actions' => ['delete', 'addosmotrakt', 'update'],
                         'allow' => true,
                     // 'roles' => ['RecoveryEdit'],
                     ],
@@ -38,6 +39,34 @@ class RecoveryrecieveaktController extends Controller {
                 ],
             ],
         ];
+    }
+
+    public function actionUpdate($id) {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else {
+            return $this->render('update', [
+                        'model' => $model,
+            ]);
+        }
+    }
+
+    // Для быстрого добавления материальной ценности в таблицу актов осмотра на форме "Акт восстановления материальной ценности"
+    public function actionAddosmotrakt() {
+        if (Yii::$app->request->isAjax) {
+            $id_osmotrakt = Yii::$app->request->post('id_osmotrakt');
+            $id_recoverysendakt = Yii::$app->request->post('id_recoverysendakt');
+            if (!empty($id_osmotrakt) && !empty($id_recoverysendakt)) {
+                $Recoveryrecieveakt = new Recoveryrecieveakt;
+                $Recoveryrecieveakt->id_osmotrakt = $id_osmotrakt;
+                $Recoveryrecieveakt->id_recoverysendakt = $id_recoverysendakt;
+                echo json_encode([
+                    'status' => $Recoveryrecieveakt->save(),
+                ]);
+            }
+        }
     }
 
     public function actionDelete($id) {

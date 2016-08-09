@@ -19,6 +19,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'tr-osnovgrid'],
                 'columns' => Proc::DGcols([
+                    'buttonsfirst' => true,
                     'columns' => [
                         'idInstallakt.installakt_id',
                         [

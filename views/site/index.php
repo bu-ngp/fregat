@@ -11,7 +11,7 @@ use yii\helpers\Html;
         <ul class="nav nav-pills nav-stacked">
             <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
                 <li>
-                    <?php echo Html::a('<i class="glyphicon glyphicon-list-alt"></i> Система "Фрегат"', ['Fregat/mattraffic/index'], ['class' => 'btn btn-default']); ?>
+                    <?php echo Html::a('<i class="glyphicon glyphicon-list-alt"></i> Система "Фрегат"', ['Fregat/fregat/mainmenu'], ['class' => 'btn btn-default']); ?>
                 </li>
             <?php endif; ?>            
             <?php if (Yii::$app->user->can('GlaukUserPermission')): ?>

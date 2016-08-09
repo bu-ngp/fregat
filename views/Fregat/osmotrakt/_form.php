@@ -78,45 +78,53 @@ use app\models\Fregat\Mattraffic;
 
     <?= $form->field(Proc::RelatModelValue($model, 'idTrosnov.idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
 
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Акт установки материальной ценности') ?></div>
-        <div class="panel-body">
-            <div class="alert alert-warning" role="alert"><a data-toggle="collapse" href="#Newinstallakt">Этот блок заполняется только, если материальная ценность не была установлена в кабинет, что позволит автоматически создать акт установки материальной ценности.</a></div>
-            <div id="Newinstallakt" class="panel-collapse collapse">
-                <?=
-                $form->field($Trosnov, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                    'model' => $Trosnov,
-                                    'resultmodel' => new Mattraffic,
-                                    'fields' => [
-                                        'keyfield' => 'id_mattraffic',
-                                    ],
-                                    'placeholder' => 'Введите инвентарный номер материальной ценности',
-                                    'fromgridroute' => 'Fregat/mattraffic/forosmotrakt',
-                                    'resultrequest' => 'Fregat/osmotrakt/selectinputforosmotrakt',
-                                    'thisroute' => $this->context->module->requestedRoute,
-                                    'methodquery' => 'selectinputforosmotrakt',
-                                    'dopparams' => ['foreigndo' => 1],
-                                ]), [
-                    'pluginEvents' => [
-                        "select2:select" => "function() { FillNewinstallakt(); }",
-                        "select2:unselect" => "function() { ClearNewinstallakt(); }"
-                    ],
-                ]));
-                ?>
+    <?php if ($model->isNewRecord): ?>
 
-                <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+            <div class="panel-heading"><?= Html::encode('Акт установки материальной ценности') ?></div>
+            <div class="panel-body">
+                <div class="alert alert-warning" role="alert"><a data-toggle="collapse" href="#Newinstallakt">Этот блок заполняется только, если материальная ценность не была установлена в кабинет, что позволит автоматически создать акт установки материальной ценности.</a></div>
+                <div id="Newinstallakt" class="panel-collapse collapse
+                <?php
+                if ($Trosnov instanceof yii\db\ActiveRecord && !empty($Trosnov->id_mattraffic))
+                    echo ' in';
+                ?>">
+                         <?=
+                         $form->field($Trosnov, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                                             'model' => $Trosnov,
+                                             'resultmodel' => new Mattraffic,
+                                             'fields' => [
+                                                 'keyfield' => 'id_mattraffic',
+                                             ],
+                                             'placeholder' => 'Введите инвентарный номер материальной ценности',
+                                             'fromgridroute' => 'Fregat/mattraffic/forosmotrakt',
+                                             'resultrequest' => 'Fregat/osmotrakt/selectinputforosmotrakt',
+                                             'thisroute' => $this->context->module->requestedRoute,
+                                             'methodquery' => 'selectinputforosmotrakt',
+                                             'dopparams' => ['foreigndo' => 1],
+                                         ]), [
+                             'pluginEvents' => [
+                                 "select2:select" => "function() { FillNewinstallakt(); }",
+                                 "select2:unselect" => "function() { ClearNewinstallakt(); }"
+                             ],
+                         ]));
+                         ?>
 
-                <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                <?= $form->field($Trosnov, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?> 
+                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
+                    <?= $form->field($Trosnov, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?> 
+
+                </div>
             </div>
         </div>
-    </div>
+
+    <?php endif; ?>
 
     <?=
     $form->field($model, 'id_user')->widget(Select2::classname(), Proc::DGselect2([

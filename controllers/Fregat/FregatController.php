@@ -23,7 +23,7 @@ class FregatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['sprav'],
+                        'actions' => ['sprav', 'mainmenu'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -45,6 +45,11 @@ class FregatController extends Controller {
                 ],
             ],
         ];
+    }
+
+    public function actionMainmenu() {
+        Proc::SetMenuButtons('fregat');
+        return $this->render('//Fregat/mainmenu/index');
     }
 
     public function actionConfig() {
@@ -208,10 +213,10 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                         \app\models\Fregat\Employee::updateAll(['id_build' => 1], ['employee_id' => $ar->employee_id]);
 
                     $Organ = new \app\models\Fregat\Organ;
-                    $Organ->organ_name = 'Северная линия';
+                    $Organ->organ_name = 'ООО "Северная линия"';
                     $Organ->save();
                     $Organ = new \app\models\Fregat\Organ;
-                    $Organ->organ_name = 'Копимастер';
+                    $Organ->organ_name = 'ООО «Копи-Мастер»';
                     $Organ->save();
 
 
@@ -365,8 +370,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                                                                                 $Recoverysendakt = new \app\models\Fregat\Recoverysendakt;
 
                                                                                                 $organname = 'Северная линия';
-                                                                                                if (strtotime($row['akt_closedate']) >= strtotime('2016-04-01'))
-                                                                                                    $organname = 'Копимастер';
+                                                                                                if (strtotime($row['akt_closedate']) >= strtotime('2016-05-04'))
+                                                                                                    $organname = 'Копи-Мастер';
 
                                                                                                 $Organ = \app\models\Fregat\Organ::find()->andWhere(['like', 'organ_name', $organname])->one();
                                                                                                 $Recoverysendakt->id_organ = $Organ->PrimaryKey;
@@ -380,7 +385,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                                                                                     $Recoveryrecieveakt->id_osmotrakt = $osmotrakt->primaryKey;
                                                                                                     $Recoveryrecieveakt->id_recoverysendakt = $Recoverysendakt->primaryKey;
                                                                                                     $Recoveryrecieveakt->recoveryrecieveakt_result = 'Импортировано из старой программы';
-                                                                                                    $Recoveryrecieveakt->recoveryrecieveakt_repaired = mb_stripos($row['obor_name'], 'ИБП', 0, 'UTF-8') === false ? 1 : 2;
+                                                                                                    $Recoveryrecieveakt->recoveryrecieveakt_repaired = mb_stripos($row['obor_name'], 'ИБП', 0, 'UTF-8') === false ? 2 : 1;
                                                                                                     $Recoveryrecieveakt->recoveryrecieveakt_date = substr($row['akt_closedate'], 0, 10);
                                                                                                     if (!$Recoveryrecieveakt->save()) {
                                                                                                         $mes.='<BR>' . print_r($Recoveryrecieveakt->errors, true);

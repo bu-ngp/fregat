@@ -105,10 +105,13 @@ class TrOsnov extends \yii\db\ActiveRecord {
                                         ])
                                         ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
                                         ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'idMattraffic.id_material = m2.id_material_m2 and idMattraffic.id_mol = m2.id_mol_m2 and idMattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                                        // Последнее перемещение
+                                        ->join('LEFT JOIN', '(select mt.id_material, inst.installakt_date from installakt inst RIGHT JOIN tr_osnov ts ON inst.installakt_id = ts.id_installakt LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastinst', 'lastinst.id_material = idMattraffic.id_material and idInstallakt.installakt_date < lastinst.installakt_date')  
                                         ->where(['like', isset($params['init']) ? 'tr_osnov_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
                                         ->andWhere('idMattraffic.mattraffic_number > 0')
                                         ->andWhere(['in', 'idMattraffic.mattraffic_tip', [3]])
                                         ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                                        ->andWhere(['lastinst.installakt_date' => NULL])  // Последнее перемещение
                                         ->limit(20)
                                         ->asArray()
                                         ->$method();

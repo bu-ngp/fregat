@@ -152,12 +152,17 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                                 $class = [];
                                 if ($model->idMaterial->material_tip == 1) {
                                     $class = ['class' => 'warning'];
-                                } else {
+                                } else 
                                     $class = ['class' => 'danger'];
-                                }
+                                
                                 if ($model->idMaterial->material_writeoff == 1) {
                                     $class = ['class' => 'spisanie'];
                                 }
+                                
+                                if ($model->mattraffic_tip == 3) {
+                                    $class = ['class' => 'success'];
+                                }
+                                
                                 return $class;
                             },
                                     'panel' => [

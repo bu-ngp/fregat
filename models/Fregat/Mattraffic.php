@@ -340,7 +340,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
 
                                                                             public static function VariablesValues($attribute) {
                                                                                 $values = [
-                                                                                    'mattraffic_tip' => [1 => 'Приход', 2 => 'Списание'],
+                                                                                    'mattraffic_tip' => [1 => 'Приход', 2 => 'Списание', 3 => 'Перемещение', 4 => 'Включен в состав'],
                                                                                 ];
 
                                                                                 return isset($values[$attribute]) ? $values[$attribute] : NULL;

@@ -29,7 +29,7 @@ class OsmotraktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -85,18 +85,32 @@ class OsmotraktController extends Controller {
 
             $instakterror = false;
             if (empty($id_tr_osnov) && !empty($id_mattraffic)) {
-                $Trosnov->scenario = 'default';
-                $instakterror = true;
-                $Installakt = new Installakt;
-                $Installakt->installakt_date = date('Y-m-d');
-                $Installakt->id_installer = isset(Yii::$app->request->post('Osmotrakt')['id_master']) ? Yii::$app->request->post('Osmotrakt')['id_master'] : NULL;
-                if ($Installakt->validate()) {
-                    $Installakt->save(false);
-                    $Trosnov->load(Yii::$app->request->post());
-                    $Trosnov->id_installakt = $Installakt->primaryKey;
-                    if ($Trosnov->validate()) {
-                        $Trosnov->save(false);
-                        $instakterror = false;
+
+                $Mattrafficcurrent = Mattraffic::findOne($id_mattraffic);
+
+                $Mattraffic->attributes = $Mattrafficcurrent->attributes;
+
+                $Mattraffic->mattraffic_date = date('Y-m-d');
+                $Mattraffic->mattraffic_number = 1;
+                $Mattraffic->mattraffic_tip = 3;
+
+                if ($Mattraffic->validate()) {
+                    $Mattraffic->save(false);
+
+                    $Trosnov->scenario = 'default';
+                    $instakterror = true;
+                    $Installakt = new Installakt;
+                    $Installakt->installakt_date = date('Y-m-d');
+                    $Installakt->id_installer = isset(Yii::$app->request->post('Osmotrakt')['id_master']) ? Yii::$app->request->post('Osmotrakt')['id_master'] : NULL;
+                    if ($Installakt->validate()) {
+                        $Installakt->save(false);
+                        $Trosnov->load(Yii::$app->request->post());
+                        $Trosnov->id_mattraffic = $Mattraffic->mattraffic_id;
+                        $Trosnov->id_installakt = $Installakt->primaryKey;
+                        if ($Trosnov->validate()) {
+                            $Trosnov->save(false);
+                            $instakterror = false;
+                        }
                     }
                 }
             } elseif (!empty($id_tr_osnov))
@@ -135,10 +149,12 @@ class OsmotraktController extends Controller {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->osmotrakt_id]);
+            return $this->redirect(['index']);
         } else {
+            $Trosnov = empty($model->id_tr_osnov) ? new TrOsnov : TrOsnov::findOne($model->id_tr_osnov);
             return $this->render('update', [
                         'model' => $model,
+                        'Trosnov' => $Trosnov,
             ]);
         }
     }
@@ -175,6 +191,16 @@ class OsmotraktController extends Controller {
     public function actionAssignToRecoveryrecieveakt() {
         Proc::AssignToModelFromGrid(new Recoveryrecieveakt, 'id_recoverysendakt');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    // Действие наполнения списка Select2 при помощи ajax
+    public function actionSelectinputforrecoverysendakt($q = null) {
+        if (Yii::$app->request->isAjax)
+            return Proc::select2request([
+                        'model' => new Osmotrakt,
+                        'q' => $q,
+                        'methodquery' => 'selectinputforrecoverysendakt',
+            ]);
     }
 
     public function actionDelete($id) {

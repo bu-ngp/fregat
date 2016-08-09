@@ -58,7 +58,7 @@ use yii\web\JsExpression;
                 'allowClear' => true,
                 'minimumInputLength' => 3,
                 'ajax' => [
-                    'url' => 'Fregat/osmotrakt/selectinput',
+                    'url' => \yii\helpers\Url::to(['Fregat/osmotrakt/selectinputforrecoverysendakt']),
                     'dataType' => 'json',
                     'data' => new JsExpression('function(params) { return {q:params.term} }'),
                 ],
@@ -66,7 +66,7 @@ use yii\web\JsExpression;
             ],
             'addon' => [
                 'append' => [
-                    'content' => Html::a('<i class="glyphicon glyphicon-arrow-down"></i>  Вставить в таблицу', '#', ['class' => 'btn btn-success', 'id' => 'addrecoveryrecieveakt']),
+                    'content' => Html::button('<i class="glyphicon glyphicon-arrow-down"></i>  Вставить в таблицу', ['class' => 'btn btn-success', 'id' => 'addrecoveryrecieveakt', 'onclick' => 'AddOsmotrakt(' . $_GET['id'] . ')']),
                     'asButton' => true
                 ]
             ],
@@ -78,6 +78,7 @@ use yii\web\JsExpression;
                     'columns' => Proc::DGcols([
                         'buttonsfirst' => true,
                         'columns' => [
+                            'idOsmotrakt.osmotrakt_id',
                             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
                             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
                             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
@@ -112,6 +113,7 @@ use yii\web\JsExpression;
                             ],
                         ],
                         'buttons' => [
+                            'update' => ['Fregat/recoveryrecieveakt/update', 'recoveryrecieveakt_id'],
                             'deleteajax' => ['Fregat/recoveryrecieveakt/delete'],
                         ],
                     ]),
@@ -120,7 +122,7 @@ use yii\web\JsExpression;
                         'filterModel' => $searchModel,
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-compressed"></i> Восстанавливаемые материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/osmotrakt/index',
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить акт осмотра', ['Fregat/osmotrakt/index',
                                 'foreignmodel' => 'Recoveryrecieveakt',
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_osmotrakt',

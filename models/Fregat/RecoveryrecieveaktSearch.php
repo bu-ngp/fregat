@@ -16,6 +16,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
     public function attributes() {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
+            'idOsmotrakt.osmotrakt_id',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
@@ -36,6 +37,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
             [['recoveryrecieveakt_id', 'id_osmotrakt', 'id_recoverysendakt', 'recoveryrecieveakt_repaired'], 'integer'],
             [['recoveryrecieveakt_result', 'recoveryrecieveakt_date'], 'safe'],
             [[
+            'idOsmotrakt.osmotrakt_id',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
@@ -108,6 +110,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
                                                             'recoveryrecieveakt_repaired' => $this->recoveryrecieveakt_repaired,
                                                         ]);
 
+                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idOsmotrakt.osmotrakt_id'));
                                                         $query->andFilterWhere(['like', 'recoveryrecieveakt_result', $this->recoveryrecieveakt_result]);
                                                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoveryrecieveakt_date', 'date'));
                                                         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv')]);
@@ -123,6 +126,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
 
                                                     private function baseSort(&$dataProvider) {
                                                         Proc::AssignRelatedAttributes($dataProvider, [
+                                                            'idOsmotrakt.osmotrakt_id',
                                                             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
                                                             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
                                                             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
@@ -161,6 +165,10 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
                                                             // $query->where('0=1');
                                                             return $dataProvider;
                                                         }
+
+                                                        $query->andFilterWhere([
+                                                            'id_recoverysendakt' => (string) filter_input(INPUT_GET, 'id'),
+                                                        ]);
 
                                                         $this->baseFilter($query);
                                                         $this->baseSort($dataProvider);
