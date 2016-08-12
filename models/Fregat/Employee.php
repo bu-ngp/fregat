@@ -133,6 +133,14 @@ class Employee extends \yii\db\ActiveRecord {
     public function getOsmotrakts0() {
         return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id']);
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRemoveakts()
+    {
+        return $this->hasMany(Removeakt::className(), ['id_remover' => 'employee_id']);
+    }
 
     public function beforeValidate() {
         if ((empty($this->employee_lastchange) || empty($this->employee_forinactive)) && $this->isAttributeRequired('employee_lastchange'))

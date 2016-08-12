@@ -7,6 +7,7 @@ use app\func\Proc;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
 use app\models\Fregat\Employee;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Installakt */
@@ -117,6 +118,10 @@ use app\models\Fregat\Employee;
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Installaktform']) ?>
+                <?php
+                if (!$model->isNewRecord)
+                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", $(this)[0].id, {id: ' . $model->installakt_id . '} )']);
+                ?>
             </div>
         </div> 
     </div>

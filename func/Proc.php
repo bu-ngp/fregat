@@ -198,6 +198,18 @@ class Proc {
                 };
             }
 
+            // Если есть кнопка скачивания отчета по ИД
+            if (isset($params['buttons']['downloadreport']) && is_array($params['buttons']['downloadreport'])) {
+                $params['buttons']['downloadreport'] = function ($url, $model) use ($params) {
+                    return Html::button('<i class="glyphicon glyphicon-list"></i>', [
+                                'type' => 'button',
+                                'title' => 'Скачать отчет',
+                                'class' => 'btn btn-xs btn-info',
+                                'onclick' => 'DownloadReport("' . Url::to([$params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '} )'
+                    ]);
+                };
+            }
+
             $mascolumns = isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [];
             $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons']) > 0 ? [
                 [ 'class' => 'kartik\grid\ActionColumn',
@@ -1214,6 +1226,48 @@ class Proc {
             return $fail ? $ActiverecordNew : $ActiverecordRelat;
         } else
             throw new \Exception('Ошибка в Proc::RelatModelValue()');
+    }
+
+    // Создаем объект PHPExcel по шаблону в папке templates
+    public static function CreateExcelPHP($TemplateName) {
+        if (is_string($TemplateName))
+            return \PHPExcel_IOFactory::load(Yii::$app->basePath . '/templates/' . $TemplateName . '.xlsx');
+        else
+            throw new \Exception('Ошибка в Proc::CreateExcelPHP()');
+    }
+
+    // Скачиваем файл Excel ($Protect - установить пароль для изменений на отчет)
+    public static function DownloadExcelPHP($objPHPExcel, $FileName = 'Файл.xlsx', $Protect = true) {
+        if ($objPHPExcel instanceof \PHPExcel) {
+
+            if ($Protect) {
+                $objPHPExcel->getSecurity()->setLockWindows(true);
+                $objPHPExcel->getSecurity()->setLockStructure(true);
+                $objPHPExcel->getSecurity()->setWorkbookPassword("265463");
+                $objPHPExcel->getActiveSheet()->getProtection()->setPassword('265463');
+                $objPHPExcel->getActiveSheet()->getProtection()->setSheet(true); // This should be enabled in order to enable any of the following!
+                $objPHPExcel->getActiveSheet()->getProtection()->setSort(true);
+                $objPHPExcel->getActiveSheet()->getProtection()->setInsertRows(true);
+                $objPHPExcel->getActiveSheet()->getProtection()->setFormatCells(true);
+                $objPHPExcel->getActiveSheet()->getProtection()->setObjects(true);
+                $objPHPExcel->getActiveSheet()->getProtection()->setFormatColumns(true);
+                $objPHPExcel->getActiveSheet()->getProtection()->setFormatRows(true);
+            }
+
+            $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+            $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+            //Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
+            $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
+            // Сохраняем файл в папку "files"
+            $objWriter->save('files/' . $fileroot);
+            // Возвращаем имя файла Excel
+            if (DIRECTORY_SEPARATOR === '/')
+                echo $fileroot;
+            else
+                echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+        } else
+            throw new \Exception('Ошибка в Proc::DownloadExcelPHP()');
     }
 
 }

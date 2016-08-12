@@ -14,6 +14,7 @@ use app\models\Fregat\Build;
 use app\models\Fregat\Dolzh;
 use app\models\Config\Authuser;
 use app\models\Fregat\Mattraffic;
+use \yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Osmotrakt */
@@ -190,6 +191,10 @@ use app\models\Fregat\Mattraffic;
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Osmotraktform']) ?>
+                <?php
+                if (!$model->isNewRecord)
+                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotrakt/osmotrakt-report']) . '", $(this)[0].id, {id: ' . $model->osmotrakt_id . '} )']);
+                ?>
             </div>
         </div> 
     </div>

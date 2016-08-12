@@ -25,6 +25,10 @@ $("#mb_install_j").click(function () {
     window.location.href = "?r=Fregat%2Finstallakt%2Findex";
 });
 
+$("#mb_remove_j").click(function () {
+    window.location.href = "?r=Fregat%2Fremoveakt%2Findex";
+});
+
 $("#mb_osmotr_j").click(function () {
     window.location.href = "?r=Fregat%2Fosmotrakt%2Findex";
 });

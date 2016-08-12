@@ -12,6 +12,7 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\Recoveryrecieveakt;
 use app\models\Fregat\RecoveryrecieveaktSearch;
+use app\func\ReportTemplates;
 
 /**
  * RecoverysendaktController implements the CRUD actions for Recoverysendakt model.
@@ -27,7 +28,7 @@ class RecoverysendaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'recoverysendakt-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -94,6 +95,11 @@ class RecoverysendaktController extends Controller {
             echo $this->findModel($id)->delete();
     }
 
+    // Печать акта осмотра
+    public function actionRecoverysendaktReport() {
+        ReportTemplates::Recoverysendakt();
+    }
+    
     /**
      * Finds the Recoverysendakt model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

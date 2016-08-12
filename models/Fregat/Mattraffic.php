@@ -135,6 +135,13 @@ class Mattraffic extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getTrRmMats() {
+        return $this->hasMany(TrRmMat::className(), ['id_mattraffic' => 'mattraffic_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getWriteoffakts() {
         return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id']);
     }

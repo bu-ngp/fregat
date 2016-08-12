@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'reasongrid'],
                 'columns' => Proc::DGcols([
+                    'buttonsfirst' => true,
                     'columns' => [
                         'reason_text',
                     ],

@@ -299,7 +299,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                                             $transaction = Yii::$app->db->beginTransaction();
                                                             try {
                                                                 $installakt = new \app\models\Fregat\Installakt;
-                                                                $installakt->installakt_date = $row['akt_date'];
+                                                                $installakt->installakt_date = substr($row['akt_date'], 0, 10);
                                                                 $installakt->id_installer = $installer[0]->primaryKey;
                                                                 if (!$installakt->save()) {
                                                                     $mes.='<BR>' . print_r($installakt->errors, true);
@@ -446,6 +446,10 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                                     $AR->save();
 
                                                 echo 'OK_';
+                                            }
+
+                                            function actionAkt2() {
+                                                
                                             }
 
                                         }

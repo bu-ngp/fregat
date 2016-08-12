@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\func\Proc;
 use app\models\Fregat\Osmotrakt;
+use app\func\ReportTemplates;
 
 /**
  * RecoveryrecieveaktController implements the CRUD actions for Recoveryrecieveakt model.
@@ -26,7 +27,7 @@ class RecoveryrecieveaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['delete', 'addosmotrakt', 'update'],
+                        'actions' => ['delete', 'addosmotrakt', 'update','recoveryrecieveakt-report'],
                         'allow' => true,
                     // 'roles' => ['RecoveryEdit'],
                     ],
@@ -67,6 +68,11 @@ class RecoveryrecieveaktController extends Controller {
                 ]);
             }
         }
+    }
+    
+    // Печать акта получения материальной ценности
+    public function actionRecoveryrecieveaktReport() {
+        ReportTemplates::Recoveryrecieveakt();
     }
 
     public function actionDelete($id) {

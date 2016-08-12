@@ -280,7 +280,7 @@ div#scrollupbutton>span {
     }
 }
 
-.menublock .menubutton[data-state="init"] {
+.menublock .menubutton/*[data-state="init"]*/ {
     display: none;
 }
 

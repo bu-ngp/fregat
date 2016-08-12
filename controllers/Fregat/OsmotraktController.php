@@ -14,6 +14,7 @@ use app\models\Fregat\TrOsnov;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\Recoveryrecieveakt;
+use app\func\ReportTemplates;
 
 /**
  * OsmotraktController implements the CRUD actions for Osmotrakt model.
@@ -29,7 +30,7 @@ class OsmotraktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -61,7 +62,7 @@ class OsmotraktController extends Controller {
 
     public function actionForrecoveryrecieveakt() {
         $searchModel = new OsmotraktSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->searchforrecoveryrecieveakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,
@@ -201,6 +202,11 @@ class OsmotraktController extends Controller {
                         'q' => $q,
                         'methodquery' => 'selectinputforrecoverysendakt',
             ]);
+    }
+
+    // Печать акта осмотра
+    public function actionOsmotraktReport() {
+        ReportTemplates::Osmotrakt();
     }
 
     public function actionDelete($id) {

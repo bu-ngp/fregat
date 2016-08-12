@@ -189,6 +189,31 @@ function ExportExcel(model, url, button, dopfields) {
     }
 }
 
+function DownloadReport(url, button, dopparams) {
+    $.ajax({
+        url: url,
+        type: "post",
+        data: {buttonloadingid: button, dopparams: JSON.stringify(dopparams)}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+        async: true,
+        success: function (response) {
+            /* response - Путь к новому файлу  */
+            window.location.href = "files/" + response; /* Открываем файл */
+            /* Удаляем файл через 5 секунд*/
+            setTimeout(function () {
+                $.ajax({
+                    url: "?r=site%2Fdelete-excel-file",
+                    type: "post",
+                    data: {filename: response},
+                    async: true
+                });
+            }, 5000);
+        },
+        error: function (data) {
+            console.error('Ошибка');
+        }
+    });
+}
+
 /**
  * Показываем индикатор ожидания на кнопке
  * 
@@ -197,6 +222,7 @@ function ExportExcel(model, url, button, dopfields) {
  */
 function LoadingButtonShow(param) {
     if (typeof param !== "undefined" && ("buttonelem" in param)) {
+        param.buttonelem.width(param.buttonelem.width());
         param.buttonelem.attr("disabled", true);
         param.buttonelem.html('<img src="images/progress.gif">');
     }

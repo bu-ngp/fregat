@@ -1,4 +1,5 @@
 <?php
+use kartik\mpdf\Pdf;
 
 $params = require(__DIR__ . '/params.php');
 

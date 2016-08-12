@@ -9,6 +9,8 @@ use kartik\select2\Select2;
 use app\models\Fregat\Organ;
 use app\models\Fregat\Recoveryrecieveakt;
 use yii\web\JsExpression;
+use yii\helpers\Url;
+use yii\bootstrap\ButtonDropdown;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoverysendakt */
@@ -22,6 +24,8 @@ use yii\web\JsExpression;
                 'id' => 'Recoverysendaktform',
     ]);
     ?>
+
+    <?= !$model->isNewRecord ? $form->field($model, 'recoverysendakt_id')->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) : '' ?>
 
     <?=
     $form->field($model, 'recoverysendakt_date')->widget(DateControl::classname(), [
@@ -122,7 +126,7 @@ use yii\web\JsExpression;
                         'filterModel' => $searchModel,
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-compressed"></i> Восстанавливаемые материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить акт осмотра', ['Fregat/osmotrakt/index',
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить акт осмотра', ['Fregat/osmotrakt/forrecoveryrecieveakt',
                                 'foreignmodel' => 'Recoveryrecieveakt',
                                 'url' => $this->context->module->requestedRoute,
                                 'field' => 'id_osmotrakt',
@@ -139,6 +143,23 @@ use yii\web\JsExpression;
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Recoverysendaktform']) ?>
+                <?php
+                if (!$model->isNewRecord)
+                //    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/recoverysendakt/recoverysendakt-report']) . '", $(this)[0].id, {id: ' . $model->recoverysendakt_id . '} )']);
+                    echo ButtonDropdown::widget([
+                        'label' => '<i class="glyphicon glyphicon-list"></i> Скачать акт',
+                        'encodeLabel' => false,
+                        'id' => 'DownloadReport',
+                        'dropdown' => [
+                            'encodeLabels' => false,
+                            'items' => [
+                                ['label' => '<i class="glyphicon glyphicon-export"></i> Акт передачи материальных ценностей сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'DownloadReport("' . Url::to(['Fregat/recoverysendakt/recoverysendakt-report']) . '", "DownloadReport", {id: ' . $model->recoverysendakt_id . '} ); return false;']],
+                                ['label' => '<i class="glyphicon glyphicon-import"></i> Акт получения материальных ценностей от сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'DownloadReport("' . Url::to(['Fregat/recoveryrecieveakt/recoveryrecieveakt-report']) . '", "DownloadReport", {id: ' . $model->recoverysendakt_id . '} ); return false;']],
+                            ],
+                        ],
+                        'options' => ['class' => 'btn btn-info']
+                    ])
+                    ?>
             </div>
         </div> 
     </div>

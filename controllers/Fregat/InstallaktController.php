@@ -12,6 +12,7 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\TrOsnovSearch;
 use app\models\Fregat\TrMatSearch;
+use app\func\ReportTemplates;
 
 /**
  * InstallaktController implements the CRUD actions for Installakt model.
@@ -27,14 +28,14 @@ class InstallaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'installakt-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                      'roles' => ['InstallEdit'],
+                        'roles' => ['InstallEdit'],
                     ],
                 ],
             ],
@@ -92,6 +93,11 @@ class InstallaktController extends Controller {
                         'dataProviderMat' => $dataProviderMat,
             ]);
         }
+    }
+
+    // Печать акта перемещения материальных ценностей
+    public function actionInstallaktReport() {
+        ReportTemplates::Installakt();
     }
 
     public function actionDelete($id) {

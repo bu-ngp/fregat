@@ -207,6 +207,30 @@ class OsmotraktSearch extends Osmotrakt {
 
                                                                 $this->baseRelations($query);
 
+                                                                $this->load($params);
+
+                                                                if (!$this->validate()) {
+                                                                    // uncomment the following line if you do not want to return any records when validation fails
+                                                                    // $query->where('0=1');
+                                                                    return $dataProvider;
+                                                                }
+
+                                                                $this->baseFilter($query);
+                                                                $this->baseSort($dataProvider);
+
+                                                                return $dataProvider;
+                                                            }
+
+                                                            public function searchforrecoveryrecieveakt($params) {
+                                                                $query = Osmotrakt::find();
+
+                                                                $dataProvider = new ActiveDataProvider([
+                                                                    'query' => $query,
+                                                                    'sort' => ['defaultOrder' => ['osmotrakt_id' => SORT_DESC]],
+                                                                ]);
+
+                                                                $this->baseRelations($query);
+
                                                                 $query->joinWith([
                                                                     'recoveryrecieveakts' => function($query) {
                                                                         $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
@@ -223,7 +247,8 @@ class OsmotraktSearch extends Osmotrakt {
                                                                         }
 
                                                                         $this->baseFilter($query);
-                                                                        $query->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired = 2 or recoveryrecieveakts.recoveryrecieveakt_id IS NULL)');
+                                                                        //$query->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired = 2 or recoveryrecieveakts.recoveryrecieveakt_id IS NULL)');
+                                                                        $query->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired IS NULL and recoveryrecieveakts.recoveryrecieveakt_id IS NULL)');
                                                                         $this->baseSort($dataProvider);
 
                                                                         return $dataProvider;

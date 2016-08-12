@@ -22,6 +22,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     <div class="menubutton mb_yellow" id="mb_install_j">
         <div class="menubutton_cn">Журнал перемещений материальных ценностей</div>
     </div>
+    <div class="menubutton mb_yellow" id="mb_remove_j">
+        <div class="menubutton_cn">Журнал снятия комплектующих с материальных ценностей</div>
+    </div>
     <div class="menubutton mb_red" id="mb_osmotr_j">
         <div class="menubutton_cn">Журнал осмотров материальных ценностей</div>
     </div>
