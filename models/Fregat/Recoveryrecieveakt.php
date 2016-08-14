@@ -91,12 +91,52 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord {
         return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->inverseOf('recoveryrecieveakts');
     }
 
-    public static function VariablesValues($attribute) {
-        $values = [
-            'recoveryrecieveakt_repaired' => [1 => 'Восстановлению не подлежит', 2 => 'Восстановлено'],
-        ];
+    public static function getMolsByRecoverysendakt($Recoverysendakt_id) {
+        if (is_integer($Recoverysendakt_id)) {
+            return self::find()
+                            ->select(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+                            ->joinWith([
+                                'idOsmotrakt' => function($query) {
+                                    $query->from(['idOsmotrakt' => 'osmotrakt']);
+                                    $query->joinWith([
+                                        'idTrosnov' => function($query) {
+                                            $query->from(['idTrosnov' => 'tr_osnov']);
+                                            $query->joinWith([
+                                                'idMattraffic' => function($query) {
+                                                    $query->from(['idMattraffic' => 'mattraffic']);
+                                                    $query->joinWith([
+                                                        'idMol' => function($query) {
+                                                            $query->from(['idMol' => 'employee']);
+                                                            $query->joinWith([
+                                                                'idperson' => function($query) {
+                                                                    $query->from(['idperson' => 'auth_user']);
+                                                                },
+                                                                        'iddolzh' => function($query) {
+                                                                    $query->from(['iddolzh' => 'dolzh']);
+                                                                },
+                                                                    ]);
+                                                                }
+                                                                    ]);
+                                                                }
+                                                                    ]);
+                                                                }
+                                                                    ]);
+                                                                }
+                                                                    ])
+                                                                    ->andWhere(['id_recoverysendakt' => self::$Dopparams->id])
+                                                                    ->groupBy(['idMol.id_person', 'idMol.id_dolzh'])
+                                                                    ->asArray()
+                                                                    ->all();
+                                                }
+                                            }
 
-        return isset($values[$attribute]) ? $values[$attribute] : NULL;
-    }
+                                            public static function VariablesValues($attribute) {
+                                                $values = [
+                                                    'recoveryrecieveakt_repaired' => [1 => 'Восстановлению не подлежит', 2 => 'Восстановлено'],
+                                                ];
 
-}
+                                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
+                                            }
+
+                                        }
+                                        
