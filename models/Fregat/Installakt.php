@@ -17,9 +17,13 @@ use Yii;
  */
 class Installakt extends \yii\db\ActiveRecord {
 
+    public $auth_user_fullname_tmp; // Для формирования акта установки в Excel
+    public $dolzh_name_tmp; // Для формирования акта установки в Excel
+
     /**
      * @inheritdoc
      */
+
     public static function tableName() {
         return 'installakt';
     }
@@ -67,6 +71,20 @@ class Installakt extends \yii\db\ActiveRecord {
      */
     public function getTrOsnovs() {
         return $this->hasMany(TrOsnov::className(), ['id_installakt' => 'installakt_id'])->inverseOf('idInstallakt');
+    }
+
+    public static function getMolsByInstallakt($installakt_id) {
+        return Installakt::find()
+                        ->select(['idperson.auth_user_fullname auth_user_fullname_tmp', 'iddolzh.dolzh_name dolzh_name_tmp'])
+                        ->leftJoin('tr_osnov trOsnovs', 'installakt.installakt_id = trOsnovs.id_installakt')
+                        ->leftJoin('tr_mat trMats', 'installakt.installakt_id = trMats.id_installakt')
+                        ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnovs.id_mattraffic or idMattraffic.mattraffic_id = trMats.id_mattraffic')
+                        ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                        ->leftJoin('auth_user idperson', 'idMol.id_person = idperson.auth_user_id')
+                        ->leftJoin('dolzh iddolzh', 'iddolzh.dolzh_id = idMol.id_dolzh')
+                        ->andWhere(['installakt_id' => $installakt_id])
+                        ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+                        ->all();
     }
 
 }

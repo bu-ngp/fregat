@@ -106,8 +106,8 @@ class TrOsnovController extends Controller {
                 $PreviusBC = Proc::GetValueForFillARs($id_mattraffic, 'TrOsnov', 'id_mattraffic');
 
                 // Очистить ошибку id_mattraffic, если есть ошибка по mattraffic_number (Превышено допустимое кол-во для перемещения матер. цен-ти)
-                if (isset($Mattraffic->errors['mattraffic_number']))
-                    $model->clearErrors('id_mattraffic');
+                //if (isset($Mattraffic->errors['mattraffic_number']))
+                //    $model->clearErrors('id_mattraffic');
 
                 // Если выбрана мат. цен-ть, то заполнить информацию для отображения на форме по мат. цен-ти и МОЛ
                 if (!empty($id_mattraffic)) {

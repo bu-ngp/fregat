@@ -18,16 +18,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <?=
     DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'installaktgrid'],
-                'columns' => Proc::DGcols([
+                'columns' => Proc::DGcols([                    
                     'columns' => [
                         'installakt_id',
                         [
                             'attribute' => 'installakt_date',
                             'format' => 'date',
-                            'visible' => false,
+                        //   'visible' => false,
                         ],
-                        'idInstaller.idperson.auth_user_fullname',
-                        'idInstaller.iddolzh.dolzh_name',
+                        [
+                            'attribute' => 'idInstaller.idperson.auth_user_fullname',
+                            'label' => 'ФИО мастера',
+                        ],
+                        [
+                            'attribute' => 'idInstaller.iddolzh.dolzh_name',
+                            'label' => 'Должность мастера',
+                        ],
                     ],
                     'buttons' => array_merge(Yii::$app->user->can('InstallEdit') ? [
                                 'update' => ['Fregat/installakt/update', 'installakt_id'],

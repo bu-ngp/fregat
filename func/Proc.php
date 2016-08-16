@@ -219,7 +219,7 @@ class Proc {
                     'buttons' => is_array($params['buttons']) ? $params['buttons'] : [],]
                     ] : [];
 
-            $masitog = (isset($params['buttonsfirst']) && $params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
+            $masitog = (!isset($params['buttonsfirst']) || $params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
 
             return array_merge([
                 ['class' => 'kartik\grid\SerialColumn',

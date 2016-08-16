@@ -14,13 +14,13 @@ use kartik\touchspin\TouchSpin;
 <div class="tr-mat-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
+    
     <?=
-    $form->field($Material, 'material_id')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $Material,
+    $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
                 'resultmodel' => new app\models\Fregat\Material,
                 'fields' => [
-                    'keyfield' => 'material_id',
+                    'keyfield' => 'id_parent',
                 ],
                 'placeholder' => 'Введите инвентарный номер материальной ценности',
                 'fromgridroute' => 'Fregat/material/forinstallakt_mat',
@@ -29,10 +29,9 @@ use kartik\touchspin\TouchSpin;
                 'methodquery' => 'selectinputfortrmat_parent',
                 'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
                 'dopparams' => [
-                    'foreigndo' => '1',
                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
                 ],
-    ]))->label('Комплектуемая материальная ценность');
+    ]));
     ?>
 
     <?=

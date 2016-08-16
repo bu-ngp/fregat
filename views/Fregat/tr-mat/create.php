@@ -9,7 +9,7 @@ use app\func\Proc;
 
 $this->title = 'Добавить комплектуемую материальную ценность';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Mattraffic, $Material],
+            'model' => [$model, $Mattraffic],
         ]);
 ?>
 <div class="tr-osnov-create">
@@ -20,7 +20,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             $this->render('_form', [
                 'model' => $model,
                 'Mattraffic' => $Mattraffic,
-                'Material' => $Material,
                 'mattraffic_number_max' => $mattraffic_number_max,
             ])
             ?>

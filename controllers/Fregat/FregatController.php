@@ -436,16 +436,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                             }
 
                                             public function actionTest() {
-                                                foreach (\app\models\Config\Authuser::find()->all() as $AR)
-                                                    $AR->save();
-                                                foreach (\app\models\Fregat\Dolzh::find()->all() as $AR)
-                                                    $AR->save();
-                                                foreach (\app\models\Fregat\Podraz::find()->all() as $AR)
-                                                    $AR->save();
-                                                foreach (Build::find()->all() as $AR)
-                                                    $AR->save();
-
-                                                echo 'OK_';
+                                                var_dump(\app\models\Fregat\TrMat::find(['id_installakt' => 116])->GroupBy('id_parent')->all());
                                             }
 
                                             function actionAkt2() {

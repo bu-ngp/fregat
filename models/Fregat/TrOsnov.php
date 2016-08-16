@@ -34,7 +34,14 @@ class TrOsnov extends \yii\db\ActiveRecord {
             [['tr_osnov_kab'], 'string', 'max' => 255],
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
+            [['id_mattraffic'], 'CheckBuild'],
         ];
+    }
+
+    // Проверка на заполненность Здания у МОЛ
+    public function CheckBuild($attribute) {
+        if (empty($this->idMattraffic->idMol->id_build))
+            $this->addError($attribute, 'У материально ответственного лица "' . $this->idMattraffic->idMol->idperson->auth_user_fullname . '" не заполнено "Здание", в которое устанавливается материальная ценность');
     }
 
     /**
@@ -106,7 +113,7 @@ class TrOsnov extends \yii\db\ActiveRecord {
                                         ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
                                         ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'idMattraffic.id_material = m2.id_material_m2 and idMattraffic.id_mol = m2.id_mol_m2 and idMattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
                                         // Последнее перемещение
-                                        ->join('LEFT JOIN', '(select mt.id_material, inst.installakt_date from installakt inst RIGHT JOIN tr_osnov ts ON inst.installakt_id = ts.id_installakt LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastinst', 'lastinst.id_material = idMattraffic.id_material and idInstallakt.installakt_date < lastinst.installakt_date')  
+                                        ->join('LEFT JOIN', '(select mt.id_material, inst.installakt_date from installakt inst RIGHT JOIN tr_osnov ts ON inst.installakt_id = ts.id_installakt LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastinst', 'lastinst.id_material = idMattraffic.id_material and idInstallakt.installakt_date < lastinst.installakt_date')
                                         ->where(['like', isset($params['init']) ? 'tr_osnov_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
                                         ->andWhere('idMattraffic.mattraffic_number > 0')
                                         ->andWhere(['in', 'idMattraffic.mattraffic_tip', [3]])

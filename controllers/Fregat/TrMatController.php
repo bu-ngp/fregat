@@ -50,7 +50,6 @@ class TrMatController extends Controller {
     public function actionCreate() {
         $model = new TrMat();
         $Mattraffic = new Mattraffic;
-        $Material = new Material;
         $mattraffic_number_max = NULL;
         // Если форма отправлена на сервер, получаем выбранную материальную ценность
         $id_mattraffic = isset(Yii::$app->request->post('TrMat')['id_mattraffic']) ? Yii::$app->request->post('TrMat')['id_mattraffic'] : '';
@@ -72,14 +71,12 @@ class TrMatController extends Controller {
 
                 if ($Mattraffic->validate()) {
                     $Mattraffic->save(false);
+                    $model->load(Yii::$app->request->post());
                     $model->id_mattraffic = $Mattraffic->mattraffic_id;
                 }
 
                 //Акт установки уже создан и берется из URL параметра
                 $model->id_installakt = (string) filter_input(INPUT_GET, 'idinstallakt');
-
-                //Сохраняем кабинет в модель из отправленной формы
-                $model->id_parent = isset(Yii::$app->request->post('Material')['material_id']) ? Yii::$app->request->post('Material')['material_id'] : NULL;
             }
 
             // Сохраняем модель с отправленными данными и сохраненным mattraffic
@@ -95,7 +92,6 @@ class TrMatController extends Controller {
                 return $this->render('create', [
                             'model' => $model,
                             'Mattraffic' => $Mattraffic,
-                            'Material' => $Material,
                             'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
                 ]);
             }

@@ -106,6 +106,7 @@ class TrMatSearch extends TrMat {
                                     'id_installakt' => $this->id_installakt,
                                     'id_mattraffic' => $this->id_mattraffic,
                                     'id_parent' => $this->id_parent,
+                                    'id_installakt' => (string) filter_input(INPUT_GET, 'id'),
                                 ]);
 
                                 $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);

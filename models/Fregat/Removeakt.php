@@ -43,7 +43,7 @@ class Removeakt extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'removeakt_id' => 'Removeakt ID',
+            'removeakt_id' => '№ акта снятия',
             'removeakt_date' => 'Дата снятия материала',
             'id_remover' => 'Демонтировщик',
         ];

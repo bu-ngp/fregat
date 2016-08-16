@@ -8,18 +8,29 @@ use app\models\Fregat\TrRmMatSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\func\Proc;
+use yii\filters\AccessControl;
 
 /**
  * TrRmMatController implements the CRUD actions for TrRmMat model.
  */
-class TrRmMatController extends Controller
-{
+class TrRmMatController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['create', 'delete'],
+                        'allow' => true,
+                       // 'roles' => ['RemoveEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -29,81 +40,22 @@ class TrRmMatController extends Controller
         ];
     }
 
-    /**
-     * Lists all TrRmMat models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new TrRmMatSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    // Удаление снимаемой мат. цен-ти из акта снятия комплектующих с материальной ценности
+    public function actionDelete($id) {
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $tr_rm_mat = $this->findModel($id);
+                $id_mattraffic = $tr_rm_mat->id_mattraffic;
+                $tr_rm_mat->delete();
+                echo Mattraffic::findOne($id_mattraffic)->delete();
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single TrRmMat model.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new TrRmMat model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new TrRmMat();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->tr_rm_mat_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollback();
+                throw new Exception($e->getMessage());
+            }
         }
-    }
-
-    /**
-     * Updates an existing TrRmMat model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->tr_rm_mat_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing TrRmMat model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
@@ -113,12 +65,12 @@ class TrRmMatController extends Controller
      * @return TrRmMat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = TrRmMat::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

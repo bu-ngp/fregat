@@ -78,7 +78,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
                     ])
                     ->andWhere(['in', 'mattraffic_tip', [1, 2]])
                     ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                    ->andWhere(['tr_osnov.id_mattraffic' => NULL])
+                    ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]])
                     ->one();
 
             $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id, ['idinstallakt' => $idinstallakt]);
@@ -130,13 +130,6 @@ class Mattraffic extends \yii\db\ActiveRecord {
      */
     public function getTrOsnovs() {
         return $this->hasMany(TrOsnov::className(), ['id_mattraffic' => 'mattraffic_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTrRmMats() {
-        return $this->hasMany(TrRmMat::className(), ['id_mattraffic' => 'mattraffic_id']);
     }
 
     /**
@@ -222,7 +215,7 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                                 ->andWhere('mattraffic_number > 0')
                                                 ->andWhere(['in', 'mattraffic_tip', [1, 2]])
                                                 ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                                                ->andWhere(['tr_osnov.id_mattraffic' => NULL])
+                                                ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]])
                                                 ->limit(20)
                                                 ->asArray()
                                                 ->$method();
@@ -343,6 +336,14 @@ class Mattraffic extends \yii\db\ActiveRecord {
                                                                                 $mattraffic_number = $os ? 1 : ($mattraffic_number - $mattraffic_number_remove);
 
                                                                                 return $mattraffic_number;
+                                                                            }
+
+                                                                            public static function GetPreviousMattrafficByInstallaktMaterial($installakt_id, $material_id) {
+                                                                                $mattr_prev_max = self::find()
+                                                                                        ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
+                                                                                        ->andWhere(['id_material' => $material_id])
+                                                                                        ->max('mattraffic_id');
+                                                                                return self::findOne($mattr_prev_max);
                                                                             }
 
                                                                             public static function VariablesValues($attribute) {
