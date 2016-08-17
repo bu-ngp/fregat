@@ -82,7 +82,14 @@ class TrMat extends \yii\db\ActiveRecord {
     public function getIdMattraffic() {
         return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->inverseOf('trMats');
     }
-    
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTrMatOsmotrs() {
+        return $this->hasMany(TrMatOsmotr::className(), ['id_tr_mat' => 'tr_mat_id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

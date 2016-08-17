@@ -14,21 +14,19 @@ use Yii;
  * @property Recoveryrecieveakt[] $recoveryrecieveakts
  * @property Organ $idOrgan
  */
-class Recoverysendakt extends \yii\db\ActiveRecord
-{
+class Recoverysendakt extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'recoverysendakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['recoverysendakt_date', 'id_organ'], 'required'],
             [['recoverysendakt_date'], 'safe'],
@@ -40,8 +38,7 @@ class Recoverysendakt extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'recoverysendakt_id' => 'Номер акта восстановления мат. ценности',
             'recoverysendakt_date' => 'Дата отправки',
@@ -52,16 +49,22 @@ class Recoverysendakt extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRecoveryrecieveakts()
-    {
+    public function getRecoveryrecieveakts() {
         return $this->hasMany(Recoveryrecieveakt::className(), ['id_recoverysendakt' => 'recoverysendakt_id'])->inverseOf('idRecoverysendakt');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdOrgan()
-    {
+    public function getRecoveryrecieveaktmats() {
+        return $this->hasMany(Recoveryrecieveaktmat::className(), ['id_recoverysendakt' => 'recoverysendakt_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdOrgan() {
         return $this->hasOne(Organ::className(), ['organ_id' => 'id_organ'])->inverseOf('recoverysendakts');
     }
+
 }
