@@ -28,11 +28,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     <div class="menubutton mb_red" id="mb_osmotr_j">
         <div class="menubutton_cn">Журнал осмотров материальных ценностей</div>
     </div>
+    <div class="menubutton mb_red" id="mb_osmotrmat_j">
+        <div class="menubutton_cn">Журнал осмотров материалов</div>
+    </div>
     <div class="menubutton mb_blue" id="mb_recovery_j">
         <div class="menubutton_cn">Журнал восстановления материальных ценностей</div>
     </div>
 </div>
-<div class="menublock">
+<!--<div class="menublock">
     <div class="menubutton mb_green" id="mb_prihod_new">   
         <div class="menubutton_cn">Составить акт прихода материальнной ценности</div>  
     </div>
@@ -45,7 +48,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     <div class="menubutton mb_blue" id="mb_recovery_new">    
         <div class="menubutton_cn">Составить акт восстановления материальных ценностей</div>  
     </div>
-</div>
+</div>-->
 <div class="menublock">
     <div class="menubutton mb_gray" id="mb_importdata" data-height="200">   
         <div class="menubutton_cn">Импорт данных</div>  

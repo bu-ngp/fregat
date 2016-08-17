@@ -13,10 +13,118 @@ use app\models\Fregat\TrOsnov;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Material;
 use app\models\Fregat\Employee;
+use app\models\Fregat\Removeakt;
 
 class ReportTemplates {
 
     private static $Dopparams; // Дополнительные переменные POST, отправленные Ajax запросом
+    private static $style = [ // Стиль ячеек в Excel
+        'title' => [
+            'font' => [
+                'bold' => true,
+                'name' => 'Tahoma',
+                'size' => 9,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            ],
+        ],
+        'titleleft' => [
+            'font' => [
+                'bold' => true,
+                'name' => 'Tahoma',
+                'size' => 9,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+            ],
+            'borders' => [
+                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+            ],
+        ],
+        'caption' => [
+            'font' => [
+                'bold' => true,
+                'name' => 'Tahoma',
+                'size' => 9,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+            ],
+        ],
+        'nums' => [
+            'font' => [
+                'bold' => false,
+                'name' => 'Tahoma',
+                'size' => 8,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+            ],
+        ],
+        'data' => [
+            'font' => [
+                'bold' => false,
+                'name' => 'Tahoma',
+                'size' => 8,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+            ],
+            'borders' => [
+                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+            ],
+        ],
+        'sign' => [
+            'font' => [
+                'bold' => false,
+                'name' => 'Tahoma',
+                'size' => 7,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            ],
+        ],
+        'signdata' => [
+            'font' => [
+                'bold' => false,
+                'name' => 'Tahoma',
+                'size' => 9,
+            ],
+            'alignment' => [
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+            ],
+            'borders' => [
+                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+            ],
+        ],
+    ];
+
+    private static function CellsWrapAndTop(&$objPHPExcel, $CellCoordinate) {
+        $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setWrapText(true);
+        $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    }
 
     // Читаем дополнительные параметры из URL
 
@@ -170,7 +278,7 @@ class ReportTemplates {
         }
         $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
 
-        Proc::DownloadExcelPHP($objPHPExcel, 'Акт получения матер-ных цен-тей от сторонней организации №' . $Osmotrakt->osmotrakt_id); // Скачиваем сформированный отчет
+        Proc::DownloadExcelPHP($objPHPExcel, 'Акт получения матер-ных цен-тей от сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
     }
 
     // Вывод акта перемещения материальной ценности по id
@@ -183,109 +291,6 @@ class ReportTemplates {
         $Trosnov = TrOsnov::findAll(['id_installakt' => self::$Dopparams->id]);
         $Trmat = TrMat::find()->andWhere(['id_installakt' => self::$Dopparams->id])->GroupBy('id_parent')->all();
 
-        $styles = [
-            'title' => [
-                'font' => [
-                    'bold' => true,
-                    'name' => 'Tahoma',
-                    'size' => 9,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                ],
-            ],
-            'titleleft' => [
-                'font' => [
-                    'bold' => true,
-                    'name' => 'Tahoma',
-                    'size' => 9,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
-                ],
-                'borders' => [
-                    'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                ],
-            ],
-            'caption' => [
-                'font' => [
-                    'bold' => true,
-                    'name' => 'Tahoma',
-                    'size' => 9,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                ],
-                'borders' => [
-                    'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                ],
-            ],
-            'nums' => [
-                'font' => [
-                    'bold' => false,
-                    'name' => 'Tahoma',
-                    'size' => 8,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                ],
-                'borders' => [
-                    'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                ],
-            ],
-            'data' => [
-                'font' => [
-                    'bold' => false,
-                    'name' => 'Tahoma',
-                    'size' => 8,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
-                ],
-                'borders' => [
-                    'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                ],
-            ],
-            'sign' => [
-                'font' => [
-                    'bold' => false,
-                    'name' => 'Tahoma',
-                    'size' => 7,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                ],
-            ],
-            'signdata' => [
-                'font' => [
-                    'bold' => false,
-                    'name' => 'Tahoma',
-                    'size' => 9,
-                ],
-                'alignment' => [
-                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
-                ],
-                'borders' => [
-                    'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                    'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                ],
-            ],
-        ];
-
         $objPHPExcel->getActiveSheet()->setCellValue('A3', 'материальных ценностей № ' . $Installakt->installakt_id . ' от ' . Yii::$app->formatter->asDate($Installakt->installakt_date));
 
         $num = 5;
@@ -293,7 +298,7 @@ class ReportTemplates {
         if ($c_Trosnov > 0) {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Перемещение материальных ценностей');
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray($styles['title']);
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['title']);
             $num++;
 
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
@@ -308,17 +313,15 @@ class ReportTemplates {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Лицо получатель');
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Здание, кабинет, куда перемещено');
             for ($i = 0; $i <= 10; $i++)
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['caption']);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+            self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
             $num++;
 
             for ($i = 0; $i <= 10; $i++) {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $num, $i + 1);
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['nums']);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['nums']);
             }
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
             $num++;
 
             $startrow = $num;
@@ -341,11 +344,10 @@ class ReportTemplates {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idMattraffic->idMol->idbuild->build_name . ', ' . $ar->tr_osnov_kab);
                 for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['data']);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
                 $num++;
             }
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $startrow . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $startrow . ':K' . $num)->getAlignment()->setWrapText(true);
+            self::CellsWrapAndTop($objPHPExcel, 'A' . $startrow . ':K' . $num);
             $num++;
         }
 
@@ -353,12 +355,12 @@ class ReportTemplates {
         if ($c_Trmat > 0) {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Установка комплектующих');
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray($styles['title']);
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['title']);
             $num++;
             foreach ($Trmat as $arm) {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материальная ценность');
                 $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray($styles['titleleft']);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
@@ -373,17 +375,15 @@ class ReportTemplates {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
                 for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['caption']);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
                 for ($i = 0; $i <= 10; $i++) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $num, $i + 1);
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['nums']);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['nums']);
                 }
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
                 $Matparent = TrOsnov::find()
@@ -399,7 +399,7 @@ class ReportTemplates {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $Matparent->idMattraffic->idMaterial->material_name);
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $Matparent->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $Matparent->idMattraffic->idMaterial->material_serial);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($Matparent->idMattraffic->idMaterial->material_release));
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($Matparent->idMattraffic->idMaterial->material_release, 'YYYY'));
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $Matparent->idMattraffic->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Matparent->idMattraffic->idMol->idbuild->build_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $Matparent->tr_osnov_kab);
@@ -407,14 +407,13 @@ class ReportTemplates {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$Matparent->idMattraffic->idMaterial->material_tip]);
 
                 for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['data']);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Установленные комплектующие');
                 $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray($styles['titleleft']);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
@@ -429,17 +428,15 @@ class ReportTemplates {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
                 for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['caption']);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
                 for ($i = 0; $i <= 10; $i++) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $num, $i + 1);
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['nums']);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['nums']);
                 }
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
                 $MatbyParent = TrMat::find()
@@ -459,16 +456,15 @@ class ReportTemplates {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idMattraffic->idMaterial->material_release);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release, 'YYYY'));
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idMattraffic->idMaterial->material_price);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$ar->idMattraffic->idMaterial->material_tip]);
                     for ($i = 0; $i <= 10; $i++)
-                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['data']);
+                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
                     $num++;
                 }
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $startrow . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $startrow . ':K' . $num)->getAlignment()->setWrapText(true);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $startrow . ':K' . $num);
                 $num++;
             }
         }
@@ -477,37 +473,36 @@ class ReportTemplates {
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, '(Ф.И.О.)');
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
-        $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray($styles['sign']);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['sign']);
         $num++;
 
         $Mols = Installakt::getMolsByInstallakt($Installakt->installakt_id);
         foreach ($Mols as $ar) {
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материально ответственное лицо');
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray($styles['titleleft']);
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray($styles['titleleft']);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
 
             for ($i = 2; $i <= 10; $i++)
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['signdata']);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
 
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->dolzh_name_tmp);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->auth_user_fullname_tmp);
 
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
             $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
 
             $num++;
         }
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Мастер');
-        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray($styles['titleleft']);
-        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray($styles['titleleft']);
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
         for ($i = 2; $i <= 10; $i++)
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($styles['signdata']);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
 
         $Master = Employee::findOne($Installakt->id_installer);
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
@@ -515,11 +510,197 @@ class ReportTemplates {
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $Master->iddolzh->dolzh_name);
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Master->idperson->auth_user_fullname);
 
-        $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setWrapText(true);
-        $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+        self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
         $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
 
         Proc::DownloadExcelPHP($objPHPExcel, 'Акт перемещения матер-ых цен-тей №' . $Installakt->installakt_id); // Скачиваем сформированный отчет
     }
 
-}
+    // Вывод акта снятия комплектующих с материальных ценностей по id
+    public static function Removeakt() {
+        self::GetDopparams(); // Читаем дополнительные параметры из URL
+
+        $objPHPExcel = Proc::CreateExcelPHP('removeakt'); // Создаем объект PHPExcel
+
+        $Removeakt = Removeakt::findOne(self::$Dopparams->id);
+        $Trmat = TrMat::find()
+                ->innerJoinWith(['trRmMats'])
+                ->andWhere(['tr_rm_mat.id_removeakt' => self::$Dopparams->id])
+                ->GroupBy('id_parent')
+                ->all();
+
+        $objPHPExcel->getActiveSheet()->setCellValue('A3', 'комплектующих № ' . $Removeakt->removeakt_id . ' от ' . Yii::$app->formatter->asDate($Removeakt->removeakt_date));
+
+        $num = 5;
+        $c_Trmat = count($Trmat);
+        if ($c_Trmat > 0) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Снятие комплектующих');
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['title']);
+            $num++;
+            foreach ($Trmat as $arm) {
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материальная ценность');
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
+                $num++;
+
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Год выпуска');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Стоимость');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Здание');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Кабинет');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
+                for ($i = 0; $i <= 10; $i++)
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $num++;
+
+                for ($i = 0; $i <= 10; $i++) {
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $num, $i + 1);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['nums']);
+                }
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $num++;
+
+                $Matparent = TrOsnov::find()
+                        ->joinWith(['idMattraffic', 'idInstallakt'])
+                        ->andWhere(['mattraffic.id_material' => $arm->id_parent])
+                        ->orderBy(['installakt.installakt_date' => SORT_DESC])
+                        ->one();
+
+                $material_tip = Material::VariablesValues('material_tip');
+
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 1);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $Matparent->idMattraffic->idMaterial->idMatv->matvid_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $Matparent->idMattraffic->idMaterial->material_name);
+                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $Matparent->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $Matparent->idMattraffic->idMaterial->material_serial);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($Matparent->idMattraffic->idMaterial->material_release, 'YYYY'));
+                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $Matparent->idMattraffic->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Matparent->idMattraffic->idMol->idbuild->build_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $Matparent->tr_osnov_kab);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $Matparent->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $Matparent->idMattraffic->idMol->iddolzh->dolzh_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$Matparent->idMattraffic->idMaterial->material_tip]);
+
+                for ($i = 0; $i <= 10; $i++)
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $num++;
+
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Снятые комплектующие');
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
+                $num++;
+
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Кол-во');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Единица измерения');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Год выпуска');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Стоимость');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
+                for ($i = 0; $i <= 10; $i++)
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $num++;
+
+                for ($i = 0; $i <= 10; $i++) {
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $num, $i + 1);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['nums']);
+                }
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $num++;
+
+                $MatbyParent = TrMat::find()
+                        ->joinWith([
+                            'trRmMats' => function($query) {
+                                $query->from(['trRmMats' => 'tr_rm_mat']);
+                            },
+                                ])
+                                ->andWhere([
+                                    'id_parent' => $Matparent->idMattraffic->id_material,
+                                    'trRmMats.id_removeakt' => $Removeakt->removeakt_id,
+                                ])
+                                ->all();
+
+                        $c_MatbyParent = count($MatbyParent);
+                        $startrow = $num;
+                        foreach ($MatbyParent as $ar) {
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - $startrow + 1);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idMattraffic->idMaterial->idMatv->matvid_name);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idMattraffic->idMaterial->material_name);
+                            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release, 'YYYY'));
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idMattraffic->idMaterial->material_price);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
+                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$ar->idMattraffic->idMaterial->material_tip]);
+                            for ($i = 0; $i <= 10; $i++)
+                                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
+                            $num++;
+                        }
+                        self::CellsWrapAndTop($objPHPExcel, 'A' . $startrow . ':K' . $num);
+                        $num++;
+                    }
+                }
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, '(Подпись)');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, '(Должность)');
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, '(Ф.И.О.)');
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['sign']);
+                $num++;
+
+                $Mols = Removeakt::getMolsByRemoveakt($Removeakt->removeakt_id);
+                foreach ($Mols as $ar) {
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материально ответственное лицо');
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
+                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
+
+                    for ($i = 2; $i <= 10; $i++)
+                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
+
+                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->dolzh_name_tmp);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->auth_user_fullname_tmp);
+
+                    self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                    $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
+
+                    $num++;
+                }
+
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Демонтажник');
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
+                for ($i = 2; $i <= 10; $i++)
+                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
+
+                $Remover = Employee::findOne($Removeakt->id_remover);
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $Remover->iddolzh->dolzh_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Remover->idperson->auth_user_fullname);
+
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+                $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
+
+                Proc::DownloadExcelPHP($objPHPExcel, 'Акт снятия комплектующих с матер-ых цен-тей №' . $Removeakt->removeakt_id); // Скачиваем сформированный отчет
+            }
+
+        }
+        

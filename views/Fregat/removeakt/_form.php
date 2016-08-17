@@ -87,8 +87,11 @@ use yii\helpers\Url;
                         'filterModel' => $searchModel,
                         'panel' => [
                             'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Снятие материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-rm-mat/create',
-                                'idremoveakt' => $model->primaryKey,
+                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-mat/fortrrmmat',
+                                'foreignmodel' => 'TrRmMat',
+                                'url' => $this->context->module->requestedRoute,
+                                'field' => 'id_tr_mat',
+                                'id' => $model->primaryKey,
                                     ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
                         ],
                     ]

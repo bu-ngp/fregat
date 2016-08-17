@@ -53,9 +53,9 @@ class Osmotrakt extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'osmotrakt_id' => 'Номер акта осмотра',
-            'osmotrakt_comment' => 'Описание причины поломки',
-            'id_reason' => 'Причина поломки',
-            'id_user' => 'Пользователь оборудования',
+            'osmotrakt_comment' => 'Описание причины неисправности',
+            'id_reason' => 'Причина неисправности',
+            'id_user' => 'Эксплуататор материальной ценности',
             'id_master' => 'Составитель акта',
             'id_tr_osnov' => 'Материальная ценность',
             'osmotrakt_date' => 'Дата осмотра материальной ценности',

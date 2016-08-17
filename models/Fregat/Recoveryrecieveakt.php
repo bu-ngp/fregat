@@ -123,7 +123,7 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord {
                                                                     ]);
                                                                 }
                                                                     ])
-                                                                    ->andWhere(['id_recoverysendakt' => self::$Dopparams->id])
+                                                                    ->andWhere(['id_recoverysendakt' => $Recoverysendakt_id])
                                                                     ->groupBy(['idMol.id_person', 'idMol.id_dolzh'])
                                                                     ->asArray()
                                                                     ->all();

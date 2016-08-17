@@ -33,6 +33,10 @@ $("#mb_osmotr_j").click(function () {
     window.location.href = "?r=Fregat%2Fosmotrakt%2Findex";
 });
 
+$("#mb_osmotrmat_j").click(function () {
+    window.location.href = "?r=Fregat%2Fosmotrakt%2Findexmat";
+});
+
 $("#mb_recovery_j").click(function () {
     window.location.href = "?r=Fregat%2Frecoverysendakt%2Findex";
 });

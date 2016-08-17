@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\TrRmMatSearch;
+use app\func\ReportTemplates;
 
 /**
  * RemoveaktController implements the CRUD actions for Removeakt model.

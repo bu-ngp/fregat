@@ -25,9 +25,9 @@ class TrRmMatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['delete'],
                         'allow' => true,
-                       // 'roles' => ['RemoveEdit'],
+                    // 'roles' => ['RemoveEdit'],
                     ],
                 ],
             ],
@@ -42,20 +42,8 @@ class TrRmMatController extends Controller {
 
     // Удаление снимаемой мат. цен-ти из акта снятия комплектующих с материальной ценности
     public function actionDelete($id) {
-        if (Yii::$app->request->isAjax) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $tr_rm_mat = $this->findModel($id);
-                $id_mattraffic = $tr_rm_mat->id_mattraffic;
-                $tr_rm_mat->delete();
-                echo Mattraffic::findOne($id_mattraffic)->delete();
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                $transaction->rollback();
-                throw new Exception($e->getMessage());
-            }
-        }
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**

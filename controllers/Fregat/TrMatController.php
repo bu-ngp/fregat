@@ -12,6 +12,7 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Material;
+use app\models\Fregat\TrRmMat;
 
 /**
  * TrMatController implements the CRUD actions for TrMat model.
@@ -35,6 +36,11 @@ class TrMatController extends Controller {
                         'actions' => ['create', 'delete'],
                         'allow' => true,
                         'roles' => ['InstallEdit'],
+                    ],
+                    [
+                        'actions' => ['fortrrmmat', 'assign-to-trrmmat'],
+                        'allow' => true,
+                    // 'roles' => ['RemoveEdit'],
                     ],
                 ],
             ],
@@ -140,6 +146,21 @@ class TrMatController extends Controller {
                         'methodquery' => 'selectinputfortrmat_parent',
                         'methodparams' => ['idinstallakt' => $idinstallakt],
             ]);
+    }
+
+    public function actionFortrrmmat() {
+        $searchModel = new TrMatSearch();
+        $dataProvider = $searchModel->searchfortrrmmat(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionAssignToTrrmmat() {
+        Proc::AssignToModelFromGrid(new TrRmMat, 'id_removeakt');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

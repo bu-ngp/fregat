@@ -74,7 +74,7 @@ class Installakt extends \yii\db\ActiveRecord {
     }
 
     public static function getMolsByInstallakt($installakt_id) {
-        return Installakt::find()
+        return self::find()
                         ->select(['idperson.auth_user_fullname auth_user_fullname_tmp', 'iddolzh.dolzh_name dolzh_name_tmp'])
                         ->leftJoin('tr_osnov trOsnovs', 'installakt.installakt_id = trOsnovs.id_installakt')
                         ->leftJoin('tr_mat trMats', 'installakt.installakt_id = trMats.id_installakt')

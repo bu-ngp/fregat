@@ -1,35 +1,52 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\dynagrid\DynaGrid;
+use app\func\Proc;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\TrMatSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Tr Mats';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Установленные комплектующие';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="tr-mat-index">
+    <?php
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'trmatgrid'],
+                'columns' => Proc::DGcols([
+                    'columns' => [
+                        'idMattraffic.idMaterial.material_name',
+                        'idMattraffic.idMaterial.material_inv',
+                        'idParent.material_name',
+                        'idParent.material_inv',
+                        'idMattraffic.mattraffic_number',
+                        'idMattraffic.idMol.idperson.auth_user_fullname',
+                        'idMattraffic.idMol.iddolzh.dolzh_name',
+                    ],
+                    'buttons' => array_merge(
+                            /* empty($foreign) */ false ? [] : [
+                                'chooseajax' => ['Fregat/tr-mat/assign-to-trrmmat']]
+                    ),
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-align-paste"></i> ' . $this->title,
+                    ],
+                ]
+    ]));
+    ?>
 
-    <p>
-        <?= Html::a('Create Tr Mat', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'tr_mat_id',
-            'id_installakt',
-            'id_mattraffic',
-            'id_parent',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+    </div>
 </div>

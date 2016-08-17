@@ -14,21 +14,23 @@ use Yii;
  * @property Employee $idRemover
  * @property TrRmMat[] $trRmMats
  */
-class Removeakt extends \yii\db\ActiveRecord
-{
+class Removeakt extends \yii\db\ActiveRecord {
+
+    public $auth_user_fullname_tmp; // Для формирования акта установки в Excel
+    public $dolzh_name_tmp; // Для формирования акта установки в Excel
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+
+    public static function tableName() {
         return 'removeakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['removeakt_date', 'id_remover'], 'required'],
             [['removeakt_date'], 'safe'],
@@ -40,8 +42,7 @@ class Removeakt extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'removeakt_id' => '№ акта снятия',
             'removeakt_date' => 'Дата снятия материала',
@@ -52,16 +53,29 @@ class Removeakt extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdRemover()
-    {
+    public function getIdRemover() {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_remover']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrRmMats()
-    {
+    public function getTrRmMats() {
         return $this->hasMany(TrRmMat::className(), ['id_removeakt' => 'removeakt_id']);
     }
+
+    public static function getMolsByRemoveakt($removeakt_id) {
+        return self::find()
+                        ->select(['idperson.auth_user_fullname auth_user_fullname_tmp', 'iddolzh.dolzh_name dolzh_name_tmp'])
+                        ->leftJoin('tr_rm_mat trRmMats', 'removeakt.removeakt_id = trRmMats.id_removeakt')
+                        ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = trRmMats.id_tr_mat')
+                        ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrMat.id_mattraffic')
+                        ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                        ->leftJoin('auth_user idperson', 'idMol.id_person = idperson.auth_user_id')
+                        ->leftJoin('dolzh iddolzh', 'iddolzh.dolzh_id = idMol.id_dolzh')
+                        ->andWhere(['removeakt_id' => $removeakt_id])
+                        ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+                        ->all();
+    }
+
 }
