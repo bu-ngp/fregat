@@ -72,7 +72,7 @@ class RecoverysendaktSearch extends Recoverysendakt {
 
                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoverysendakt_id'));
                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoverysendakt_date', 'date'));
-                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idOrgan.organ_name')]);
+                $query->andFilterWhere(['LIKE', 'idOrgan.organ_name', $this->getAttribute('idOrgan.organ_name')]);
 
                 Proc::AssignRelatedAttributes($dataProvider, ['idOrgan.organ_name']);
 

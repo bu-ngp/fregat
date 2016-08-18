@@ -30,7 +30,7 @@ class OsmotraktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'indexmat', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -53,16 +53,6 @@ class OsmotraktController extends Controller {
     public function actionIndex() {
         $searchModel = new OsmotraktSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
-    }
-    
-    public function actionIndexmat() {
-        $searchModel = new OsmotraktSearch();
-        $dataProvider = $searchModel->searchmat(Yii::$app->request->queryParams);
 
         return $this->render('index', [
                     'searchModel' => $searchModel,

@@ -1,37 +1,68 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use kartik\dynagrid\DynaGrid;
+use app\func\Proc;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\OsmotraktmatSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Osmotraktmats';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Журнал осмотров материалов';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="osmotraktmat-index">
+    <?php
+    $result = Proc::GetLastBreadcrumbsFromSession();
+    $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Create Osmotraktmat', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'osmotraktmat_id',
-            'osmotraktmat_comment',
-            'osmotraktmat_date',
-            'id_reason',
-            'id_tr_mat',
-            // 'id_master',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+    echo DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'osmotraktmatgrid'],
+                'columns' => Proc::DGcols([
+                    'columns' => [
+                        'osmotraktmat_id',
+                        [
+                            'attribute' => 'osmotraktmat_date',
+                            'format' => 'date',
+                        ],
+                        [
+                            'attribute' => 'idMaster.idperson.auth_user_fullname',
+                            'label' => 'ФИО составителя акта',
+                        ],
+                        [
+                            'attribute' => 'idMaster.iddolzh.dolzh_name',
+                            'visible' => false,
+                            'label' => 'Должность составителя акта',
+                        ],
+                        [
+                            'attribute' => 'osmotraktmat_countmat',
+                        ],
+                    ],
+                    'buttons' => array_merge(
+                            empty($foreign) ? [
+                                'downloadreport' => ['Fregat/osmotraktmat/osmotraktmat-report']] : [
+                                'chooseajax' => ['Fregat/osmotrakt/assign-to-recoveryrecieveakt']], Yii::$app->user->can('OsmotraktEdit') ? [
+                                'update' => ['Fregat/osmotraktmat/update'],
+                                'deleteajax' => ['Fregat/osmotraktmat/delete'],
+                                    ] : []
+                    ),
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-search"></i> ' . $this->title,
+                        'before' => Yii::$app->user->can('OsmotraktEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                    ],
+                ]
+    ]));
+    ?>
+</div>
+<div class="form-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+        </div>
+    </div>
 </div>

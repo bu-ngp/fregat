@@ -1,21 +1,25 @@
 <?php
 
 use yii\helpers\Html;
-
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrMatOsmotr */
 
-$this->title = 'Create Tr Mat Osmotr';
-$this->params['breadcrumbs'][] = ['label' => 'Tr Mat Osmotrs', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Добавить осмотренный материал';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
 <div class="tr-mat-osmotr-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div> 
 </div>

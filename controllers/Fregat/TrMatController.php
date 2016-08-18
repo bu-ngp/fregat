@@ -28,7 +28,7 @@ class TrMatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrmatchild', 'selectinputfortrmatparent'],
+                        'actions' => ['selectinputfortrmatchild', 'selectinputfortrmatparent', 'selectinputfortrmatosmotr'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -42,6 +42,11 @@ class TrMatController extends Controller {
                         'allow' => true,
                     // 'roles' => ['RemoveEdit'],
                     ],
+                    [
+                        'actions' => ['fortrmatosmotr', 'assign-to-trmatosmotr'],
+                        'allow' => true,
+                        'roles' => ['OsmotraktEdit'],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -161,6 +166,32 @@ class TrMatController extends Controller {
     public function actionAssignToTrrmmat() {
         Proc::AssignToModelFromGrid(new TrRmMat, 'id_removeakt');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    public function actionFortrmatosmotr() {
+        $searchModel = new TrMatSearch();
+        $dataProvider = $searchModel->searchfortrmatosmotr(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionAssignToTrmatosmotr() {
+        Proc::AssignToModelFromGrid(new \app\models\Fregat\TrMatOsmotr, 'id_osmotraktmat');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    public function actionSelectinputfortrmatosmotr($field, $q = null, $idosmotraktmat = null) {
+        if (Yii::$app->request->isAjax)
+            return Proc::select2request([
+                        'model' => new TrMat,
+                        'field' => $field,
+                        'q' => $q,
+                        'methodquery' => 'selectinputfortrmatosmotr',
+                        'methodparams' => ['idosmotraktmat' => $idosmotraktmat],
+            ]);
     }
 
     /**

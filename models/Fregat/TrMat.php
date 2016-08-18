@@ -97,4 +97,43 @@ class TrMat extends \yii\db\ActiveRecord {
         return $this->hasMany(TrRmMat::className(), ['id_tr_mat' => 'tr_mat_id']);
     }
 
-}
+    public function selectinputfortrmatosmotr($params) {
+
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $where = isset($params['init']) ? ['like', 'tr_mat_id', $params['q'], false] : ['or', ['like', 'material_inv', $params['q']], ['like', 'material_name', $params['q']]];
+
+        $query = self::find()
+                ->select(array_merge(isset($params['init']) ? [] : ['tr_mat_id AS id'], ['CONCAT_WS(", ", idMaterial.material_name, idperson.auth_user_fullname, iddolzh.dolzh_name, idMattraffic.mattraffic_number) AS text']))
+                ->joinWith([
+                    'idMattraffic' => function($query) {
+                        $query->from(['idMattraffic' => 'mattraffic']);
+                        $query->joinWith([
+                            'idMaterial' => function($query) {
+                                $query->from(['idMaterial' => 'material']);
+                            },
+                                    'idMol' => function($query) {
+                                $query->from(['idMol' => 'employee']);
+                                $query->joinWith([
+                                    'idperson' => function($query) {
+                                        $query->from(['idperson' => 'auth_user']);
+                                    },
+                                            'iddolzh' => function($query) {
+                                        $query->from(['iddolzh' => 'dolzh']);
+                                    },
+                                        ]);
+                                    },
+                                        ]);
+                                    },
+                                        ])
+                                        ->where($where)
+                                     //   ->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')')
+                                        ->limit(20)
+                                        ->asArray()
+                                        ->$method();
+
+                                return $query;
+                            }
+
+                        }
+                        

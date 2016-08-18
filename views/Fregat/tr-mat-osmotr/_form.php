@@ -1,7 +1,10 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
+use kartik\select2\Select2;
+use app\func\Proc;
+use kartik\touchspin\TouchSpin;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrMatOsmotr */
@@ -12,12 +15,75 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'id_tr_mat')->textInput(['maxlength' => true]) ?>
+    <?=
+    $form->field($model, 'id_tr_mat')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
+                'resultmodel' => new app\models\Fregat\TrMat,
+                'fields' => [
+                    'keyfield' => 'id_tr_mat',
+                ],
+                'placeholder' => 'Введите инвентарный номер или наименование материала',
+                'fromgridroute' => 'Fregat/tr-mat/fortrmatosmotr',
+                'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatosmotr',
+                'thisroute' => $this->context->module->requestedRoute,
+                'methodquery' => 'selectinputfortrmatosmotr',
+                'methodparams' => ['idosmotraktmat' => (string) filter_input(INPUT_GET, 'id')],
+                'dopparams' => [
+                    'idosmotraktmat' => (string) filter_input(INPUT_GET, 'id'),
+                ],
+    ]));
+    ?>
 
-    <?= $form->field($model, 'id_osmotraktmat')->textInput(['maxlength' => true]) ?>
+    <?=
+    $form->field($model, 'tr_mat_osmotr_number')->widget(TouchSpin::classname(), [
+        'options' => ['class' => 'form-control setsession'],
+        'pluginOptions' => [
+            'verticalbuttons' => true,
+            'min' => 1,
+            'max' => 10000000000,
+            'step' => 1,
+            'decimals' => 3,
+            'forcestepdivisibility' => 'none',
+        ]
+    ]);
+    ?> 
+
+    <?=
+    $form->field($model, 'id_reason')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
+                'resultmodel' => new app\models\Fregat\Reason,
+                'fields' => [
+                    'keyfield' => 'id_reason',
+                    'resultfield' => 'reason_text',
+                ],
+                'placeholder' => 'Выберете причину неисправности',
+                'fromgridroute' => 'Fregat/reason/index',
+                'resultrequest' => 'Fregat/reason/selectinput',
+                'thisroute' => $this->context->module->requestedRoute,
+    ]));
+    ?>
+
+    <?=
+    $form->field($model, 'tr_mat_osmotr_comment')->textarea([
+        'class' => 'form-control setsession',
+        'maxlength' => 1024,
+        'placeholder' => 'Введите дополнительную информацию о неисправности',
+        'rows' => 10,
+        'style' => 'resize: none',
+    ]);
+    ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                <?php
+                if (!$model->isNewRecord)
+                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotraktmat/osmotraktmat-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
+                ?>
+            </div>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

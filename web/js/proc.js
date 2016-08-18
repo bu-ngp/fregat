@@ -45,17 +45,20 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 }
 
 function SetSession(thiselem) {
-    var field = $(thiselem).attr("name");
+    setTimeout(function () {
+        var field = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").attr("name") : $(thiselem).attr("name");
+        var elemval = $(thiselem).hasClass("krajee-datepicker") ? ($(thiselem).parent("div").next("input")).attr("value") : $(thiselem).val();
 
-    $.ajax({
-        url: "?r=site%2Fsetsession",
-        type: "post",
-        data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: $(thiselem).val()},
-        async: false,
-        error: function (data) {
-            console.error("Ошибка SetSession");
-        }
-    });
+        $.ajax({
+            url: "?r=site%2Fsetsession",
+            type: "post",
+            data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: elemval},
+            async: false,
+            error: function (data) {
+                console.error("Ошибка SetSession");
+            }
+        });
+    }, 500);
 }
 
 function SetSessionEach(thiselems_array) {

@@ -155,7 +155,8 @@ class Proc {
             // Если есть кнопка обновления записи
             if (isset($params['buttons']['update']) && is_array($params['buttons']['update'])) {
                 $params['buttons']['update'] = function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['update'][0], 'id' => $model[$params['buttons']['update'][1]]]);
+                    $id = isset($params['buttons']['update'][1]) ? $model[$params['buttons']['update'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['update'][0], 'id' => $id]);
                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                 };
             }
@@ -163,7 +164,8 @@ class Proc {
             // Если есть кнопка удаления записи
             if (isset($params['buttons']['delete']) && is_array($params['buttons']['delete'])) {
                 $params['buttons']['delete'] = function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['delete'][0], 'id' => $model[$params['buttons']['delete'][1]]]);
+                    $id = isset($params['buttons']['delete'][1]) ? $model[$params['buttons']['delete'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['delete'][0], 'id' => $id]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
                                 'type' => 'button',
                                 'title' => 'Удалить',
@@ -176,7 +178,8 @@ class Proc {
             // Если есть кнопка удаления записи посредством ajax
             if (isset($params['buttons']['deleteajax']) && is_array($params['buttons']['deleteajax'])) {
                 $params['buttons']['deleteajax'] = function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => isset($params['buttons']['deleteajax'][1]) ? $model[$params['buttons']['deleteajax'][1]] : $model->primarykey]);
+                    $id = isset($params['buttons']['deleteajax'][1]) ? $model[$params['buttons']['deleteajax'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => $id]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
                                 'type' => 'button',
                                 'title' => 'Удалить',

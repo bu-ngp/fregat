@@ -19,76 +19,55 @@ use Yii;
  * @property TrMat $idTrMat
  * @property TrMatOsmotr[] $trMatOsmotrs
  */
-class Osmotraktmat extends \yii\db\ActiveRecord
-{
+class Osmotraktmat extends \yii\db\ActiveRecord {
+
+    public $osmotraktmat_countmat;
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'osmotraktmat';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['osmotraktmat_date', 'id_tr_mat', 'id_master'], 'required'],
+            [['osmotraktmat_date', 'id_master'], 'required'],
             [['osmotraktmat_date'], 'safe'],
-            [['id_reason', 'id_tr_mat', 'id_master'], 'integer'],
-            [['osmotraktmat_comment'], 'string', 'max' => 400],
             [['id_master'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_master' => 'employee_id']],
-            [['id_reason'], 'exist', 'skipOnError' => true, 'targetClass' => Reason::className(), 'targetAttribute' => ['id_reason' => 'reason_id']],
-            [['id_tr_mat'], 'exist', 'skipOnError' => true, 'targetClass' => TrMat::className(), 'targetAttribute' => ['id_tr_mat' => 'tr_mat_id']],
+            [['osmotraktmat_date'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['osmotraktmat_date'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение {attribute} должно быть меньше или равно значения «' . Yii::$app->formatter->asDate(date('Y-m-d')) . '».'],
+            [['osmotraktmat_countmat'], 'safe'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'osmotraktmat_id' => 'Номер акта осмотра',
-            'osmotraktmat_comment' => 'Описание причины неисправности',
             'osmotraktmat_date' => 'Дата осмотра материала',
-            'id_reason' => 'Причина неисправности',
-            'id_tr_mat' => 'Материал',
             'id_master' => 'Составитель акта',
+            'osmotraktmat_countmat' => 'Количество материалов',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMaster()
-    {
+    public function getIdMaster() {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_master']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdReason()
-    {
-        return $this->hasOne(Reason::className(), ['reason_id' => 'id_reason']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getIdTrMat()
-    {
-        return $this->hasOne(TrMat::className(), ['tr_mat_id' => 'id_tr_mat']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTrMatOsmotrs()
-    {
+    public function getTrMatOsmotrs() {
         return $this->hasMany(TrMatOsmotr::className(), ['id_osmotraktmat' => 'osmotraktmat_id']);
     }
+
 }
