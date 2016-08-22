@@ -624,7 +624,7 @@ class ReportTemplates {
 
                 $MatbyParent = TrMat::find()
                         ->joinWith([
-                            'trRmMats' => function($query) {
+                            'trRmMats' => function ($query) {
                                 $query->from(['trRmMats' => 'tr_rm_mat']);
                             },
                                 ])
@@ -728,15 +728,14 @@ class ReportTemplates {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idReason->reason_text . (empty($ar->idReason->reason_text) ? '' : '. ') . $ar->tr_mat_osmotr_comment);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->primaryKey));
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, '');
                     $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
                     $num++;
                 }
                 $objPHPExcel->getActiveSheet()->removeRow($num);
 
                 $crows = count($TrMatOsmotr);
-                $molscount = count($Mols);
-                $num = 8;
+                $num = 10;
                 foreach ($Mols as $ar) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
                     $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
@@ -748,11 +747,6 @@ class ReportTemplates {
                     $num++;
                 }
                 $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
-
-
-                $Master = Employee::findOne($Osmotraktmat->id_master);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows + $molscount - 1, $Master->iddolzh->dolzh_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows + $molscount - 1, $Master->idperson->auth_user_fullname);
 
                 Proc::DownloadExcelPHP($objPHPExcel, 'Акт осмотра материалов №' . $Osmotraktmat->primaryKey); // Скачиваем сформированный отчет
             }
