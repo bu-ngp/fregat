@@ -1,21 +1,25 @@
 <?php
 
 use yii\helpers\Html;
+use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoveryrecieveaktmat */
 
-$this->title = 'Update Recoveryrecieveaktmat: ' . $model->recoveryrecieveaktmat_id;
-$this->params['breadcrumbs'][] = ['label' => 'Recoveryrecieveaktmats', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->recoveryrecieveaktmat_id, 'url' => ['view', 'id' => $model->recoveryrecieveaktmat_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Результат восстановления материала';
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
+            'model' => $model,
+        ]);
 ?>
-<div class="recoveryrecieveaktmat-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+<div class="recoveryrecieveakt-update">
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-body">
+            <?=
+            $this->render('_form', [
+                'model' => $model,
+            ])
+            ?>
+        </div>
+    </div>
 </div>

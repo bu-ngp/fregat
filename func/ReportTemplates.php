@@ -728,14 +728,15 @@ class ReportTemplates {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idReason->reason_text . (empty($ar->idReason->reason_text) ? '' : '. ') . $ar->tr_mat_osmotr_comment);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, '');
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->primaryKey));
                     $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
                     $num++;
                 }
                 $objPHPExcel->getActiveSheet()->removeRow($num);
 
                 $crows = count($TrMatOsmotr);
-                $num = 10;
+                $molscount = count($Mols);
+                $num = 8;
                 foreach ($Mols as $ar) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
                     $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
@@ -748,7 +749,32 @@ class ReportTemplates {
                 }
                 $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
 
+
+                $Master = Employee::findOne($Osmotraktmat->id_master);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows + $molscount - 1, $Master->iddolzh->dolzh_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows + $molscount - 1, $Master->idperson->auth_user_fullname);
+
                 Proc::DownloadExcelPHP($objPHPExcel, 'Акт осмотра материалов №' . $Osmotraktmat->primaryKey); // Скачиваем сформированный отчет
+            }
+
+            // Вывод акта отправки материала от сторонней организации
+            public static function Recoverysendaktmat() {
+                self::GetDopparams(); // Читаем дополнительные параметры из URL
+                $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
+
+                $objPHPExcel = Proc::CreateExcelPHP('recoverysendaktmat'); // Создаем объект PHPExcel
+
+                Proc::DownloadExcelPHP($objPHPExcel, 'Акт передачи материалов сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
+            }
+
+            // Вывод акта получения материала у сторонней организации
+            public static function Recoveryrecieveaktmat() {
+                self::GetDopparams(); // Читаем дополнительные параметры из URL
+                $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
+
+                $objPHPExcel = Proc::CreateExcelPHP('recoveryrecieveaktmat'); // Создаем объект PHPExcel
+
+                Proc::DownloadExcelPHP($objPHPExcel, 'Акт получения материалов у сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
             }
 
         }

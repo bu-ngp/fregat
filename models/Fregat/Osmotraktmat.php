@@ -49,7 +49,7 @@ class Osmotraktmat extends \yii\db\ActiveRecord {
      */
     public function attributeLabels() {
         return [
-            'osmotraktmat_id' => 'Номер акта осмотра',
+            'osmotraktmat_id' => 'Номер акта осмотра материала',
             'osmotraktmat_date' => 'Дата осмотра материала',
             'id_master' => 'Составитель акта',
             'osmotraktmat_countmat' => 'Количество материалов',

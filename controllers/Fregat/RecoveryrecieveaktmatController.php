@@ -8,18 +8,35 @@ use app\models\Fregat\RecoveryrecieveaktmatSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\func\Proc;
+use yii\filters\AccessControl;
+use app\func\ReportTemplates;
 
 /**
  * RecoveryrecieveaktmatController implements the CRUD actions for Recoveryrecieveaktmat model.
  */
-class RecoveryrecieveaktmatController extends Controller
-{
+class RecoveryrecieveaktmatController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['recoveryrecieveaktmat-report'],
+                        'allow' => true,
+                        'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['update', 'delete'],
+                        'allow' => true,
+                    // 'roles' => ['RecoveryEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -29,68 +46,21 @@ class RecoveryrecieveaktmatController extends Controller
         ];
     }
 
-    /**
-     * Lists all Recoveryrecieveaktmat models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new RecoveryrecieveaktmatSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Recoveryrecieveaktmat model.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Recoveryrecieveaktmat model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Recoveryrecieveaktmat();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->recoveryrecieveaktmat_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Recoveryrecieveaktmat model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->recoveryrecieveaktmat_id]);
-        } else {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
+    }
+
+    // Печать акта получения материалов у сторонней организации
+    public function actionRecoveryrecieveaktmatReport() {
+        ReportTemplates::Recoveryrecieveaktmat();
     }
 
     /**
@@ -99,11 +69,9 @@ class RecoveryrecieveaktmatController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+    public function actionDelete($id) {
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**
@@ -113,12 +81,12 @@ class RecoveryrecieveaktmatController extends Controller
      * @return Recoveryrecieveaktmat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Recoveryrecieveaktmat::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

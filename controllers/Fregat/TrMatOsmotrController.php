@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
+use app\models\Fregat\Recoverysendakt;
 
 /**
  * TrMatOsmotrController implements the CRUD actions for TrMatOsmotr model.
@@ -25,7 +26,7 @@ class TrMatOsmotrController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'forrecoveryrecieveaktmat', 'assign-to-recoverysendakt'],
                         'allow' => true,
                         'roles' => ['OsmotraktEdit'],
                     ],
@@ -38,6 +39,16 @@ class TrMatOsmotrController extends Controller {
                 ],
             ],
         ];
+    }
+
+    public function actionForrecoveryrecieveaktmat() {
+        $searchModel = new TrMatOsmotrSearch();
+        $dataProvider = $searchModel->forrecoveryrecieveaktmat(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
     }
 
     public function actionCreate() {
@@ -68,6 +79,11 @@ class TrMatOsmotrController extends Controller {
     public function actionDelete($id) {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
+    }
+
+    public function actionAssignToRecoverysendakt() {
+        Proc::AssignToModelFromGrid(new \app\models\Fregat\Recoveryrecieveaktmat, 'id_recoverysendakt');
+        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -103,7 +103,7 @@ class Proc {
 
             $session['breadcrumbs'] = $result;
 
-            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+             /*  echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
               $s1 = $_SESSION;
               unset($s1['__flash']);
               print_r($s1);
@@ -581,7 +581,9 @@ class Proc {
     }
 
     static function WhereCunstruct($modelsearch, $field, $type = '') {
-        preg_match('/(>=|<=|>|<|=)?(.*)/', $modelsearch->getAttribute($field), $matches);
+        $attrval = empty($modelsearch->getAttribute($field)) ? $modelsearch->$field : $modelsearch->getAttribute($field);
+
+        preg_match('/(>=|<=|>|<|=)?(.*)/', $attrval, $matches);
         $operator = $matches[1];
         $value = $matches[2];
 

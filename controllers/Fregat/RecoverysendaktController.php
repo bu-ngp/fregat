@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use app\models\Fregat\Recoveryrecieveakt;
 use app\models\Fregat\RecoveryrecieveaktSearch;
 use app\func\ReportTemplates;
+use app\models\Fregat\RecoveryrecieveaktmatSearch;
 
 /**
  * RecoverysendaktController implements the CRUD actions for Recoverysendakt model.
@@ -28,7 +29,7 @@ class RecoverysendaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'recoverysendakt-report'],
+                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -81,11 +82,15 @@ class RecoverysendaktController extends Controller {
         } else {
             $searchModel = new RecoveryrecieveaktSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $searchModelmat = new RecoveryrecieveaktmatSearch();
+            $dataProvidermat = $searchModelmat->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                         'model' => $model,
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
+                        'searchModelmat' => $searchModelmat,
+                        'dataProvidermat' => $dataProvidermat,
             ]);
         }
     }
@@ -99,7 +104,12 @@ class RecoverysendaktController extends Controller {
     public function actionRecoverysendaktReport() {
         ReportTemplates::Recoverysendakt();
     }
-    
+
+    // Печать акта отправки материалов сторонней организации
+    public function actionRecoverysendaktmatReport() {
+        ReportTemplates::Recoverysendaktmat();
+    }
+
     /**
      * Finds the Recoverysendakt model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

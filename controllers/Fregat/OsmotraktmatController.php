@@ -94,7 +94,7 @@ class OsmotraktmatController extends Controller {
     }
     
     // Печать акта осмотра материалов
-    public function actionOsmotraktReport() {
+    public function actionOsmotraktmatReport() {
         ReportTemplates::Osmotraktmat();
     }
 

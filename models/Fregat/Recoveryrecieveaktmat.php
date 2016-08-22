@@ -17,21 +17,19 @@ use Yii;
  * @property Recoverysendakt $idRecoverysendakt
  * @property TrMatOsmotr $idTrMatOsmotr
  */
-class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
-{
+class Recoveryrecieveaktmat extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'recoveryrecieveaktmat';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['recoveryrecieveaktmat_repaired', 'id_recoverysendakt', 'id_tr_mat_osmotr'], 'integer'],
             [['recoveryrecieveaktmat_date'], 'safe'],
@@ -45,8 +43,7 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'recoveryrecieveaktmat_id' => 'Recoveryrecieveaktmat ID',
             'recoveryrecieveaktmat_result' => 'Результат восстановления',
@@ -60,16 +57,23 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdRecoverysendakt()
-    {
+    public function getIdRecoverysendakt() {
         return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdTrMatOsmotr()
-    {
+    public function getIdTrMatOsmotr() {
         return $this->hasOne(TrMatOsmotr::className(), ['tr_mat_osmotr_id' => 'id_tr_mat_osmotr']);
     }
+
+    public static function VariablesValues($attribute) {
+        $values = [
+            'recoveryrecieveaktmat_repaired' => [1 => 'Восстановлению не подлежит', 2 => 'Восстановлено'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
+
 }

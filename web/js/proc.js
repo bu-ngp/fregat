@@ -47,7 +47,7 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 function SetSession(thiselem) {
     setTimeout(function () {
         var field = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").attr("name") : $(thiselem).attr("name");
-        var elemval = $(thiselem).hasClass("krajee-datepicker") ? ($(thiselem).parent("div").next("input")).attr("value") : $(thiselem).val();
+        var elemval = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").val() : $(thiselem).val();
 
         $.ajax({
             url: "?r=site%2Fsetsession",
@@ -58,7 +58,7 @@ function SetSession(thiselem) {
                 console.error("Ошибка SetSession");
             }
         });
-    }, 500);
+    }, 1000);  // Переделать ready change для datacontrol
 }
 
 function SetSessionEach(thiselems_array) {

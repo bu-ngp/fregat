@@ -85,17 +85,25 @@ class OsmotraktmatSearch extends Osmotraktmat {
                             'id_master' => $this->id_master,
                         ]);
 
+
                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_id'));
                         $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_date', 'date'));
-                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_countmat'));
 
                         $query->groupBy(['osmotraktmat_id']);
+                        if (!empty($this->osmotraktmat_countmat)) {
+                            $w = Proc::WhereCunstruct($this, 'osmotraktmat_countmat');
+                            $query->having('count(osmotraktmat_id) ' . $w[0] . $w[2]);
+                        }
 
                         Proc::AssignRelatedAttributes($dataProvider, [
                             'idMaster.idperson.auth_user_fullname',
                             'idMaster.iddolzh.dolzh_name',
-                            'osmotraktmat_countmat',
                         ]);
+
+                        $dataProvider->sort->attributes['osmotraktmat_countmat'] = [
+                            'asc' => ['count(osmotraktmat_id)' => SORT_ASC],
+                            'desc' => ['count(osmotraktmat_id)' => SORT_DESC],
+                        ];
 
                         return $dataProvider;
                     }
