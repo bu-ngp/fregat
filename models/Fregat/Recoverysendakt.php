@@ -15,7 +15,7 @@ use Yii;
  * @property Organ $idOrgan
  */
 class Recoverysendakt extends \yii\db\ActiveRecord {
-
+    
     /**
      * @inheritdoc
      */
@@ -32,7 +32,7 @@ class Recoverysendakt extends \yii\db\ActiveRecord {
             [['recoverysendakt_date'], 'safe'],
             [['id_organ'], 'integer'],
             [['id_organ'], 'exist', 'skipOnError' => true, 'targetClass' => Organ::className(), 'targetAttribute' => ['id_organ' => 'organ_id']],
-        ];
+         ];
     }
 
     /**

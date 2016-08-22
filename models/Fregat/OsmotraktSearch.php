@@ -271,5 +271,107 @@ class OsmotraktSearch extends Osmotrakt {
                                                                         return $dataProvider;
                                                                     }
 
-                                                                }
-                                                                
+                                                                    public function searchformaterialkarta($params) {
+                                                                        $query = Osmotrakt::find();
+
+                                                                        $dataProvider = new ActiveDataProvider([
+                                                                            'query' => $query,
+                                                                            'sort' => ['defaultOrder' => ['osmotrakt_id' => SORT_DESC]],
+                                                                        ]);
+
+                                                                        $query->joinWith([
+                                                                            'idTrosnov' => function($query) {
+                                                                                $query->from(['idTrosnov' => 'tr_osnov']);
+                                                                                $query->joinWith([
+                                                                                    'idMattraffic' => function($query) {
+                                                                                        $query->from(['idMattraffic' => 'mattraffic']);
+                                                                                    },
+                                                                                        ]);
+                                                                                    },
+                                                                                            'idUser' => function($query) {
+                                                                                        $query->from(['idUser' => 'employee']);
+                                                                                        $query->joinWith([
+                                                                                            'idperson' => function($query) {
+                                                                                                $query->from(['idpersonuser' => 'auth_user']);
+                                                                                            },
+                                                                                                    'iddolzh' => function($query) {
+                                                                                                $query->from(['iddolzhuser' => 'dolzh']);
+                                                                                            },
+                                                                                                    'idbuild' => function($query) {
+                                                                                                $query->from(['idbuilduser' => 'build']);
+                                                                                            },
+                                                                                                ]);
+                                                                                            },
+                                                                                                    'idMaster' => function($query) {
+                                                                                                $query->from(['idMaster' => 'employee']);
+                                                                                                $query->joinWith([
+                                                                                                    'idperson' => function($query) {
+                                                                                                        $query->from(['idpersonmaster' => 'auth_user']);
+                                                                                                    },
+                                                                                                            'iddolzh' => function($query) {
+                                                                                                        $query->from(['iddolzhmaster' => 'dolzh']);
+                                                                                                    },
+                                                                                                        ]);
+                                                                                                    },
+                                                                                                            'idReason' => function($query) {
+                                                                                                        $query->from(['idReason' => 'reason']);
+                                                                                                    },
+                                                                                                        ]);
+
+                                                                                                        if (!$this->validate()) {
+                                                                                                            // uncomment the following line if you do not want to return any records when validation fails
+                                                                                                            // $query->where('0=1');
+                                                                                                            return $dataProvider;
+                                                                                                        }
+
+                                                                                                        $query->andWhere(['idMattraffic.id_material' => $params['id']]);
+
+                                                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_id'));
+                                                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_date', 'date'));
+                                                                                                        $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'osmotrakt_comment', $this->getAttribute('osmotrakt_comment')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'idpersonuser.auth_user_fullname', $this->getAttribute('idUser.idperson.auth_user_fullname')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'iddolzhuser.dolzh_name', $this->getAttribute('idUser.iddolzh.dolzh_name')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'idbuilduser.build_name', $this->getAttribute('idUser.idbuild.build_name')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'idpersonmaster.auth_user_fullname', $this->getAttribute('idMaster.idperson.auth_user_fullname')]);
+                                                                                                        $query->andFilterWhere(['LIKE', 'iddolzhmaster.dolzh_name', $this->getAttribute('idMaster.iddolzh.dolzh_name')]);
+
+                                                                                                        Proc::AssignRelatedAttributes($dataProvider, [
+                                                                                                            'idReason.reason_text',
+                                                                                                            'idUser.idperson.auth_user_fullname',
+                                                                                                            'idUser.iddolzh.dolzh_name',
+                                                                                                            'idUser.idbuild.build_name',
+                                                                                                            'idMaster.idperson.auth_user_fullname',
+                                                                                                            'idMaster.iddolzh.dolzh_name',
+                                                                                                        ]);
+
+                                                                                                        $dataProvider->sort->attributes['idUser.idperson.auth_user_fullname'] = [
+                                                                                                            'asc' => ["idpersonuser.auth_user_fullname" => SORT_ASC],
+                                                                                                            'desc' => ["idpersonuser.auth_user_fullname" => SORT_DESC],
+                                                                                                        ];
+
+                                                                                                        $dataProvider->sort->attributes['idUser.iddolzh.dolzh_name'] = [
+                                                                                                            'asc' => ["iddolzhuser.dolzh_name" => SORT_ASC],
+                                                                                                            'desc' => ["iddolzhuser.dolzh_name" => SORT_DESC],
+                                                                                                        ];
+
+                                                                                                        $dataProvider->sort->attributes['idUser.idbuild.build_name'] = [
+                                                                                                            'asc' => ["idbuilduser.build_name" => SORT_ASC],
+                                                                                                            'desc' => ["idbuilduser.build_name" => SORT_DESC],
+                                                                                                        ];
+
+                                                                                                        $dataProvider->sort->attributes['idMaster.idperson.auth_user_fullname'] = [
+                                                                                                            'asc' => ["idpersonmaster.auth_user_fullname" => SORT_ASC],
+                                                                                                            'desc' => ["idpersonmaster.auth_user_fullname" => SORT_DESC],
+                                                                                                        ];
+
+                                                                                                        $dataProvider->sort->attributes['idMaster.iddolzh.dolzh_name'] = [
+                                                                                                            'asc' => ["idpersonmaster.dolzh_name" => SORT_ASC],
+                                                                                                            'desc' => ["idpersonmaster.dolzh_name" => SORT_DESC],
+                                                                                                        ];
+
+                                                                                                        return $dataProvider;
+                                                                                                    }
+
+                                                                                                }
+                                                                                                

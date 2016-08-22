@@ -8,7 +8,7 @@ $this->title = 'Настройки';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             'addfirst' => [
                 'label' => 'Фрегат',
-                'url' => Url::toRoute('Fregat/fregat/index'),
+                'url' => Url::toRoute('Fregat/fregat/mainmenu'),
             ],
             'clearbefore' => true,
         ]);

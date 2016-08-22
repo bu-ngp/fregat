@@ -26,6 +26,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
             'idOsmotrakt.idMaster.idperson.auth_user_fullname',
             'idOsmotrakt.idMaster.iddolzh.dolzh_name',
             'idOsmotrakt.osmotrakt_date',
+            'idRecoverysendakt.recoverysendakt_date',
         ]);
     }
 
@@ -47,6 +48,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
             'idOsmotrakt.idMaster.idperson.auth_user_fullname',
             'idOsmotrakt.idMaster.iddolzh.dolzh_name',
             'idOsmotrakt.osmotrakt_date',
+            'idRecoverysendakt.recoverysendakt_date',
                 ], 'safe'],
         ];
     }
@@ -176,5 +178,60 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt {
                                                         return $dataProvider;
                                                     }
 
-                                                }
-                                                
+                                                    public function searchformaterialkarta($params) {
+                                                        $query = Recoveryrecieveakt::find();
+
+                                                        // add conditions that should always apply here
+
+                                                        $dataProvider = new ActiveDataProvider([
+                                                            'query' => $query,
+                                                            'sort' => ['defaultOrder' => ['idRecoverysendakt.recoverysendakt_date' => SORT_DESC, 'recoveryrecieveakt_date' => SORT_DESC]],
+                                                        ]);
+
+                                                        $query->joinWith([
+                                                            'idRecoverysendakt' => function($query) {
+                                                                $query->from(['idRecoverysendakt' => 'recoverysendakt']);
+                                                            },
+                                                                    'idOsmotrakt' => function($query) {
+                                                                $query->from(['idOsmotrakt' => 'osmotrakt']);
+                                                                $query->joinWith([
+                                                                    'idTrosnov' => function($query) {
+                                                                        $query->from(['idTrosnov' => 'tr_osnov']);
+                                                                        $query->joinWith([
+                                                                            'idMattraffic' => function($query) {
+                                                                                $query->from(['idMattraffic' => 'mattraffic']);
+                                                                            },
+                                                                                ]);
+                                                                            },
+                                                                                ]);
+                                                                            },
+                                                                                ]);
+
+                                                                                $this->load($params);
+
+                                                                                if (!$this->validate()) {
+                                                                                    // uncomment the following line if you do not want to return any records when validation fails
+                                                                                    // $query->where('0=1');
+                                                                                    return $dataProvider;
+                                                                                }
+
+                                                                                $query->andFilterWhere([
+                                                                                    'recoveryrecieveakt_repaired' => $this->recoveryrecieveakt_repaired,
+                                                                                    'idMattraffic.id_material' => $params['id'],
+                                                                                ]);
+
+                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'id_recoverysendakt'));
+                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idRecoverysendakt.recoverysendakt_date'), 'date');
+                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoveryrecieveakt_date'), 'date');
+                                                                                $query->andFilterWhere(['LIKE', 'recoveryrecieveakt_result', $this->getAttribute('recoveryrecieveakt_result')]);
+                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'id_osmotrakt'));
+
+                                                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                                                    'idRecoverysendakt.recoverysendakt_date',
+                                                                                ]);
+
+                                                                                return $dataProvider;
+                                                                            }
+
+                                                                        }
+                                                                        

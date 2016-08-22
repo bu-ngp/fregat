@@ -38,7 +38,6 @@ class TrMatOsmotr extends \yii\db\ActiveRecord {
             [['id_tr_mat'], 'exist', 'skipOnError' => true, 'targetClass' => TrMat::className(), 'targetAttribute' => ['id_tr_mat' => 'tr_mat_id']],
             [['id_reason'], 'exist', 'skipOnError' => true, 'targetClass' => Reason::className(), 'targetAttribute' => ['id_reason' => 'reason_id']],
             [['tr_mat_osmotr_number'], 'MaxNumberMaterial'],
-            // [['id_reason', 'tr_mat_osmotr_comment'], 'ReasonCheck'],
             [['id_reason', 'tr_mat_osmotr_comment'], 'required', 'when' => function($model) {
             return empty($model->id_reason) && empty($model->tr_mat_osmotr_comment);
         }, 'message' => 'Необходимо заполнить одно из полей.', 'enableClientValidation' => false],
@@ -52,8 +51,10 @@ class TrMatOsmotr extends \yii\db\ActiveRecord {
                     'id_osmotraktmat' => $this->id_osmotraktmat,
                 ])->count();
 
-        if ($this->tr_mat_osmotr_number > $this->idTrMat->idMattraffic->mattraffic_number - $currentnumber)
-            $this->addError($attribute, 'Количество осмотренного материала не может превышать количество перемещенного материала в рамках текущего акта. Максимально допустимое количество осмотренного материала = ' . ($this->idTrMat->idMattraffic->mattraffic_number - $currentnumber) . ($currentnumber > 0 ? '. Этот материал уже присутствует в этом акте осмотра' : ''));
+        $thisnumber = $this->isNewRecord ? 0 : self::FindOne($this->tr_mat_osmotr_id)->tr_mat_osmotr_number;
+
+        if ($this->tr_mat_osmotr_number > $this->idTrMat->idMattraffic->mattraffic_number - $currentnumber + $thisnumber)
+            $this->addError($attribute, 'Количество осмотренного материала не может превышать количество перемещенного материала в рамках текущего акта. Максимально допустимое количество осмотренного материала = ' . ($this->idTrMat->idMattraffic->mattraffic_number - $currentnumber + $thisnumber) . ($currentnumber > 0 && $this->isNewRecord ? '. Этот материал уже присутствует в этом акте осмотра' : ''));
     }
 
     /**
@@ -99,47 +100,45 @@ class TrMatOsmotr extends \yii\db\ActiveRecord {
     }
 
     public static function getMolsByTrMatOsmotr($Osmotraktmat_id) {
-        if (is_integer($Osmotraktmat_id)) {
-            return self::find()
-                            ->select(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
-                            ->joinWith([
-                                'idTrMat' => function($query) {
-                                    $query->from(['idTrMat' => 'tr_mat']);
-                                    $query->joinWith([
-                                        'idParent' => function($query) {
-                                            $query->from(['idParent' => 'material']);
-                                            $query->joinWith([
-                                                'mattraffics' => function($query) {
-                                                    $query->from(['mattraffics' => 'mattraffic']);
-                                                    $query->joinWith([
-                                                        'idMol' => function($query) {
-                                                            $query->from(['idMol' => 'employee']);
-                                                            $query->joinWith([
-                                                                'idperson' => function($query) {
-                                                                    $query->from(['idperson' => 'auth_user']);
-                                                                },
-                                                                        'iddolzh' => function($query) {
-                                                                    $query->from(['iddolzh' => 'dolzh']);
-                                                                },
-                                                                    ]);
-                                                                },
-                                                                    ]);
-                                                                },
-                                                                    ]);
-                                                                },
-                                                                    ]);
-                                                                },
-                                                                    ])
-                                                                    ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
-                                                                    ->andWhere(['id_osmotraktmat' => $Osmotraktmat_id])
-                                                                    ->andWhere(['mattraffics.mattraffic_tip' => 3])
-                                                                    ->andWhere('`mt`.`mattraffic_date` IS NULL')
-                                                                    ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
-                                                                    ->asArray()
-                                                                    ->all();
-                                                }
+        return self::find()
+                        ->select(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+                        ->joinWith([
+                            'idTrMat' => function($query) {
+                                $query->from(['idTrMat' => 'tr_mat']);
+                                $query->joinWith([
+                                    'idParent' => function($query) {
+                                        $query->from(['idParent' => 'material']);
+                                        $query->joinWith([
+                                            'mattraffics' => function($query) {
+                                                $query->from(['mattraffics' => 'mattraffic']);
+                                                $query->joinWith([
+                                                    'idMol' => function($query) {
+                                                        $query->from(['idMol' => 'employee']);
+                                                        $query->joinWith([
+                                                            'idperson' => function($query) {
+                                                                $query->from(['idperson' => 'auth_user']);
+                                                            },
+                                                                    'iddolzh' => function($query) {
+                                                                $query->from(['iddolzh' => 'dolzh']);
+                                                            },
+                                                                ]);
+                                                            },
+                                                                ]);
+                                                            },
+                                                                ]);
+                                                            },
+                                                                ]);
+                                                            },
+                                                                ])
+                                                                ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
+                                                                ->andWhere(['id_osmotraktmat' => $Osmotraktmat_id])
+                                                                ->andWhere(['mattraffics.mattraffic_tip' => 3])
+                                                                ->andWhere('`mt`.`mattraffic_date` IS NULL')
+                                                                ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+                                                                ->asArray()
+                                                                ->all();
                                             }
-
+                                    
                                             public static function getBuildandKabByTrMatOsmotr($Tr_mat_osmotr_id) {
                                                 if (!empty($Tr_mat_osmotr_id)) {
                                                     $query = self::find()

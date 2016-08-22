@@ -11,6 +11,12 @@ use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\Mattraffic;
+use app\models\Fregat\MattrafficSearch;
+use app\models\Fregat\OsmotraktSearch;
+use app\models\Fregat\RecoverysendaktSearch;
+use app\models\Fregat\TrMatOsmotrSearch;
+use app\models\Fregat\RecoveryrecieveaktSearch;
+use app\models\Fregat\RecoveryrecieveaktmatSearch;
 
 /**
  * MaterialController implements the CRUD actions for Material model.
@@ -96,12 +102,37 @@ class MaterialController extends Controller {
                 ->orderBy('mattraffic_date desc, mattraffic_id desc')
                 ->one();
 
+        $searchModel_mattraffic = new MattrafficSearch();
+        $dataProvider_mattraffic = $searchModel_mattraffic->searchformaterialmattraffic(Yii::$app->request->queryParams);
+
+        $searchModel_recovery = new OsmotraktSearch();
+        $dataProvider_recovery = $searchModel_recovery->searchformaterialkarta(Yii::$app->request->queryParams);
+
+        $searchModel_recoverymat = new TrMatOsmotrSearch();
+        $dataProvider_recoverymat = $searchModel_recoverymat->searchformaterialkarta(Yii::$app->request->queryParams);
+
+        $searchModel_recoverysend = new RecoveryrecieveaktSearch();
+        $dataProvider_recoverysend = $searchModel_recoverysend->searchformaterialkarta(Yii::$app->request->queryParams);
+        
+        $searchModel_recoverysendmat = new RecoveryrecieveaktmatSearch();
+        $dataProvider_recoverysendmat = $searchModel_recoverysendmat->searchformaterialkarta(Yii::$app->request->queryParams);
+
         if ($model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
             return $this->render('update', [
                         'model' => $model,
                         'Mattraffic' => $Mattraffic,
+                        'searchModel_mattraffic' => $searchModel_mattraffic,
+                        'dataProvider_mattraffic' => $dataProvider_mattraffic,
+                        'searchModel_recovery' => $searchModel_recovery,
+                        'dataProvider_recovery' => $dataProvider_recovery,
+                        'searchModel_recoverymat' => $searchModel_recoverymat,
+                        'dataProvider_recoverymat' => $dataProvider_recoverymat,
+                        'searchModel_recoverysend' => $searchModel_recoverysend,
+                        'dataProvider_recoverysend' => $dataProvider_recoverysend,
+                        'searchModel_recoverysendmat' => $searchModel_recoverysendmat,
+                        'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
             ]);
     }
 

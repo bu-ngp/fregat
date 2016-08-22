@@ -23,14 +23,26 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'columns' => [
                         'idMattraffic.idMaterial.material_name',
                         'idMattraffic.idMaterial.material_inv',
-                        'idParent.material_name',
-                        'idParent.material_inv',
                         'idMattraffic.mattraffic_number',
-                        'idMattraffic.idMol.idperson.auth_user_fullname',
-                        'idMattraffic.idMol.iddolzh.dolzh_name',
+                        [
+                            'attribute' => 'idParent.material_name',
+                            'label' => 'Укомплекторано в мат-ую цен-ть',
+                        ],
+                        [
+                            'attribute' => 'idParent.material_inv',
+                            'label' => 'Инвентарный номер мат-ой цен-ти, в которую укомплектован материал',
+                        ],
+                        [
+                            'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
+                            'label' => 'ФИО материально-ответственного лица',
+                        ],
+                        [
+                            'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
+                            'label' => 'Должность материально-ответственного лица',
+                        ],
                     ],
                     'buttons' => array_merge(
-                            /* empty($foreign) */ false ? [] : [
+                            empty($foreign) ? [] : [
                                 'chooseajax' => ['Fregat/tr-mat/assign-to-trrmmat']]
                     ),
                 ]),

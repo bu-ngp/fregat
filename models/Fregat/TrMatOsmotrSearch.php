@@ -113,6 +113,9 @@ class TrMatOsmotrSearch extends TrMatOsmotr {
                                                     'idReason' => function($query) {
                                                 $query->from(['idReason' => 'reason']);
                                             },
+                                                    'idOsmotraktmat' => function($query) {
+                                                $query->from(['idOsmotraktmat' => 'osmotraktmat']);
+                                            },
                                                 ]);
 
 // add conditions that should always apply here
@@ -138,9 +141,8 @@ class TrMatOsmotrSearch extends TrMatOsmotr {
                                                 ]);
 
                                                 $query->andFilterWhere(['like', 'tr_mat_osmotr_comment', $this->tr_mat_osmotr_comment]);
-                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_id'));
-                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_date', 'date'));
-                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotraktmat_countmat'));
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idOsmotraktmat.osmotraktmat_id'));
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idOsmotraktmat.osmotraktmat_date', 'date'));
                                                 $query->andFilterWhere(Proc::WhereCunstruct($this, 'tr_mat_osmotr_number'));
                                                 $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idTrMat.idMattraffic.idMaterial.idMatv.matvid_name')]);
                                                 $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMat.idMattraffic.idMaterial.material_name')]);
@@ -283,5 +285,71 @@ class TrMatOsmotrSearch extends TrMatOsmotr {
                                                                                                 return $dataProvider;
                                                                                             }
 
-                                                                                        }
-                                                                                        
+                                                                                            public function searchformaterialkarta($params) {
+                                                                                                $query = TrMatOsmotr::find();
+
+                                                                                                $query->joinWith([
+                                                                                                    'idTrMat' => function($query) {
+                                                                                                        $query->from(['idTrMat' => 'tr_mat']);
+                                                                                                        $query->joinWith([
+                                                                                                            'idMattraffic' => function($query) {
+                                                                                                                $query->from(['idMattraffic' => 'mattraffic']);
+                                                                                                            },
+                                                                                                                ]);
+                                                                                                            },
+                                                                                                                    'idOsmotraktmat' => function($query) {
+                                                                                                                $query->from(['idOsmotraktmat' => 'osmotraktmat']);
+                                                                                                                $query->joinWith([
+                                                                                                                    'idMaster' => function($query) {
+                                                                                                                        $query->from(['idMaster' => 'employee']);
+                                                                                                                        $query->joinWith([
+                                                                                                                            'idperson' => function($query) {
+                                                                                                                                $query->from(['idperson' => 'auth_user']);
+                                                                                                                            },
+                                                                                                                                    'iddolzh' => function($query) {
+                                                                                                                                $query->from(['iddolzh' => 'dolzh']);
+                                                                                                                            },
+                                                                                                                                ]);
+                                                                                                                            },
+                                                                                                                                ]);
+                                                                                                                            },
+                                                                                                                                    'idReason' => function($query) {
+                                                                                                                                $query->from(['idReason' => 'reason']);
+                                                                                                                            },
+                                                                                                                                ]);
+
+                                                                                                                                $dataProvider = new ActiveDataProvider([
+                                                                                                                                    'query' => $query,
+                                                                                                                                ]);
+
+                                                                                                                                $this->load($params);
+
+                                                                                                                                if (!$this->validate()) {
+// uncomment the following line if you do not want to return any records when validation fails
+// $query->where('0=1');
+                                                                                                                                    return $dataProvider;
+                                                                                                                                }
+
+                                                                                                                                $query->andWhere(['idMattraffic.id_material' => $params['id']]);
+
+                                                                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idOsmotraktmat.osmotraktmat_id'));
+                                                                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idOsmotraktmat.osmotraktmat_date', 'date'));
+                                                                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'tr_mat_osmotr_number'));
+                                                                                                                                $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
+                                                                                                                                $query->andFilterWhere(['LIKE', 'tr_mat_osmotr_comment', $this->getAttribute('tr_mat_osmotr_comment')]);
+                                                                                                                                $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idOsmotraktmat.idMaster.idperson.auth_user_fullname')]);
+                                                                                                                                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idOsmotraktmat.idMaster.iddolzh.dolzh_name')]);
+
+                                                                                                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                                                                                                    'idOsmotraktmat.osmotraktmat_id',
+                                                                                                                                    'idOsmotraktmat.osmotraktmat_date',
+                                                                                                                                    'idReason.reason_text',
+                                                                                                                                    'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
+                                                                                                                                    'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
+                                                                                                                                ]);
+
+                                                                                                                                return $dataProvider;
+                                                                                                                            }
+                                                                                                                            
+                                                                                                                        }
+                                                                                                                        

@@ -26,6 +26,8 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat {
             'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
             'idTrMatOsmotr.idReason.reason_text',
             'idTrMatOsmotr.tr_mat_osmotr_comment',
+            'idRecoverysendakt.recoverysendakt_date',
+            'idTrMatOsmotr.id_osmotraktmat',
         ]);
     }
 
@@ -46,6 +48,8 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat {
             'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
             'idTrMatOsmotr.idReason.reason_text',
             'idTrMatOsmotr.tr_mat_osmotr_comment',
+            'idRecoverysendakt.recoverysendakt_date',
+            'idTrMatOsmotr.id_osmotraktmat',
                 ], 'safe'],
         ];
     }
@@ -66,7 +70,7 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat {
                     'idOsmotraktmat' => function($query) {
                         $query->from(['idOsmotraktmat' => 'osmotraktmat']);
                     },
-                    'idTrMat' => function($query) {
+                            'idTrMat' => function($query) {
                         $query->from(['idTrMat' => 'tr_mat']);
                         $query->joinWith([
                             'idMattraffic' => function($query) {
@@ -75,91 +79,146 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat {
                                     'idMaterial' => function($query) {
                                         $query->from(['idMaterial' => 'material']);
                                     },
-                                    'idMol' => function($query) {
+                                            'idMol' => function($query) {
                                         $query->from(['idMol' => 'employee']);
                                         $query->joinWith([
                                             'idperson' => function($query) {
                                                 $query->from(['idperson' => 'auth_user']);
                                             },
-                                            'iddolzh' => function($query) {
+                                                    'iddolzh' => function($query) {
                                                 $query->from(['iddolzh' => 'dolzh']);
                                             },
-                                            'idbuild' => function($query) {
+                                                    'idbuild' => function($query) {
                                                 $query->from(['idbuild' => 'build']);
                                             },
-                                        ]);
-                                    },
-                                ]);
-                            },
-                        ]);
-                    },
-                    'idReason' => function($query) {
-                        $query->from(['idReason' => 'reason']);
-                    },
-                ]);
-            },
-        ]);
-    }
-    
-    private function baseFilter(&$query) {
-        $query->andFilterWhere([
-            'recoveryrecieveaktmat_id' => $this->recoveryrecieveaktmat_id,
-            'recoveryrecieveaktmat_repaired' => $this->recoveryrecieveaktmat_repaired,
-            'id_recoverysendakt' => $this->id_recoverysendakt,
-            'id_tr_mat_osmotr' => $this->id_tr_mat_osmotr,
-        ]);
+                                                ]);
+                                            },
+                                                ]);
+                                            },
+                                                ]);
+                                            },
+                                                    'idReason' => function($query) {
+                                                $query->from(['idReason' => 'reason']);
+                                            },
+                                                ]);
+                                            },
+                                                ]);
+                                            }
 
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoveryrecieveaktmat_date', 'date'));
-        $query->andFilterWhere(['LIKE', 'recoveryrecieveaktmat_result', $this->getAttribute('recoveryrecieveaktmat_result')]);
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date', 'date'));
-        $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name')]);
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.tr_mat_osmotr_number'));
-        $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname')]);
-        $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name')]);
-        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idTrMatOsmotr.idReason.reason_text')]);
-        $query->andFilterWhere(['LIKE', 'idTrMatOsmotr.tr_mat_osmotr_comment', $this->getAttribute('idTrMatOsmotr.tr_mat_osmotr_comment')]);
-    }
+                                            private function baseFilter(&$query) {
+                                                $query->andFilterWhere([
+                                                    'recoveryrecieveaktmat_id' => $this->recoveryrecieveaktmat_id,
+                                                    'recoveryrecieveaktmat_repaired' => $this->recoveryrecieveaktmat_repaired,
+                                                    'id_recoverysendakt' => $this->id_recoverysendakt,
+                                                    'id_tr_mat_osmotr' => $this->id_tr_mat_osmotr,
+                                                ]);
 
-    private function baseSort(&$dataProvider) {
-        Proc::AssignRelatedAttributes($dataProvider, [
-            'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id',
-            'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date',
-            'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
-            'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
-            'idTrMatOsmotr.tr_mat_osmotr_number',
-            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
-            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
-            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
-            'idTrMatOsmotr.idReason.reason_text',
-            'idTrMatOsmotr.tr_mat_osmotr_comment',
-        ]);
-    }
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoveryrecieveaktmat_date', 'date'));
+                                                $query->andFilterWhere(['LIKE', 'recoveryrecieveaktmat_result', $this->getAttribute('recoveryrecieveaktmat_result')]);
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id'));
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date', 'date'));
+                                                $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv')]);
+                                                $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name')]);
+                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.tr_mat_osmotr_number'));
+                                                $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname')]);
+                                                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name')]);
+                                                $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name')]);
+                                                $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idTrMatOsmotr.idReason.reason_text')]);
+                                                $query->andFilterWhere(['LIKE', 'idTrMatOsmotr.tr_mat_osmotr_comment', $this->getAttribute('idTrMatOsmotr.tr_mat_osmotr_comment')]);
+                                            }
 
-    public function search($params) {
-        $query = Recoveryrecieveaktmat::find();
+                                            private function baseSort(&$dataProvider) {
+                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                    'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id',
+                                                    'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date',
+                                                    'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
+                                                    'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                                                    'idTrMatOsmotr.tr_mat_osmotr_number',
+                                                    'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
+                                                    'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+                                                    'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
+                                                    'idTrMatOsmotr.idReason.reason_text',
+                                                    'idTrMatOsmotr.tr_mat_osmotr_comment',
+                                                ]);
+                                            }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'sort' => ['defaultOrder' => ['recoveryrecieveaktmat_id' => SORT_DESC]],
-        ]);
+                                            public function search($params) {
+                                                $query = Recoveryrecieveaktmat::find();
 
-        $this->baseRelations($query);
+                                                $dataProvider = new ActiveDataProvider([
+                                                    'query' => $query,
+                                                    'sort' => ['defaultOrder' => ['recoveryrecieveaktmat_id' => SORT_DESC]],
+                                                ]);
 
-        $this->load($params);
+                                                $this->baseRelations($query);
 
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
+                                                $this->load($params);
 
-        $this->baseFilter($query);
-        $this->baseSort($dataProvider);
+                                                if (!$this->validate()) {
+                                                    // uncomment the following line if you do not want to return any records when validation fails
+                                                    // $query->where('0=1');
+                                                    return $dataProvider;
+                                                }
 
-        return $dataProvider;
-    }
+                                                $this->baseFilter($query);
+                                                $this->baseSort($dataProvider);
 
-}
+                                                return $dataProvider;
+                                            }
+
+                                            public function searchformaterialkarta($params) {
+                                                $query = Recoveryrecieveaktmat::find();
+
+                                                $dataProvider = new ActiveDataProvider([
+                                                    'query' => $query,
+                                                    'sort' => ['defaultOrder' => ['recoveryrecieveaktmat_id' => SORT_DESC]],
+                                                ]);
+
+                                                $query->joinWith([
+                                                    'idRecoverysendakt' => function($query) {
+                                                        $query->from(['idRecoverysendakt' => 'recoverysendakt']);
+                                                    },
+                                                            'idTrMatOsmotr' => function($query) {
+                                                        $query->from(['idTrMatOsmotr' => 'tr_mat_osmotr']);
+                                                        $query->joinWith([
+                                                            'idTrMat' => function($query) {
+                                                                $query->from(['idTrMat' => 'tr_mat']);
+                                                                $query->joinWith([
+                                                                    'idMattraffic' => function($query) {
+                                                                        $query->from(['idMattraffic' => 'mattraffic']);
+                                                                    },
+                                                                        ]);
+                                                                    },
+                                                                        ]);
+                                                                    },
+                                                                        ]);
+
+                                                                        $this->load($params);
+
+                                                                        if (!$this->validate()) {
+                                                                            // uncomment the following line if you do not want to return any records when validation fails
+                                                                            // $query->where('0=1');
+                                                                            return $dataProvider;
+                                                                        }
+
+                                                                        $query->andFilterWhere([
+                                                                            'recoveryrecieveaktmat_repaired' => $this->recoveryrecieveaktmat_repaired,
+                                                                            'idMattraffic.id_material' => $params['id'],
+                                                                        ]);
+
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'id_recoverysendakt'));
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idRecoverysendakt.recoverysendakt_date'), 'date');
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'recoveryrecieveaktmat_date'), 'date');
+                                                                        $query->andFilterWhere(['LIKE', 'recoveryrecieveakt_result', $this->getAttribute('recoveryrecieveaktmat_result')]);
+                                                                        $query->andFilterWhere(Proc::WhereCunstruct($this, 'idTrMatOsmotr.id_osmotraktmat'));
+
+                                                                        Proc::AssignRelatedAttributes($dataProvider, [
+                                                                            'idRecoverysendakt.recoverysendakt_date',
+                                                                            'idTrMatOsmotr.id_osmotraktmat',
+                                                                        ]);
+
+                                                                        return $dataProvider;
+                                                                    }
+
+                                                                }
+                                                                

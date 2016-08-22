@@ -53,27 +53,6 @@ use \yii\helpers\Url;
 
     <?php
     if (!$model->isNewRecord) {
-        /*    echo $form->field(new app\models\Fregat\Osmotrakt, 'osmotrakt_id')->widget(Select2::classname(), [
-          'options' => ['placeholder' => 'Введите инвентарный номер материальной ценности', 'class' => 'form-control'],
-          'theme' => Select2::THEME_BOOTSTRAP,
-          'pluginOptions' => [
-          'allowClear' => true,
-          'minimumInputLength' => 3,
-          'ajax' => [
-          'url' => \yii\helpers\Url::to(['Fregat/osmotrakt/selectinputforrecoverysendakt']),
-          'dataType' => 'json',
-          'data' => new JsExpression('function(params) { return {q:params.term} }'),
-          ],
-          'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-          ],
-          'addon' => [
-          'append' => [
-          'content' => Html::button('<i class="glyphicon glyphicon-arrow-down"></i>  Вставить в таблицу', ['class' => 'btn btn-success', 'id' => 'addrecoveryrecieveakt', 'onclick' => 'AddOsmotrakt(' . $_GET['id'] . ')']),
-          'asButton' => true
-          ]
-          ],
-          ])->label('Для быстрого добавления материальных ценностей'); */
-
         echo DynaGrid::widget(Proc::DGopts([
                     'options' => ['id' => 'tr-mat-osmotrgrid'],
                     'columns' => Proc::DGcols([

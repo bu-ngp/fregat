@@ -250,6 +250,9 @@ class TrMatSearch extends TrMat {
                                                                             },
                                                                                 ]);
                                                                             },
+                                                                                    'idParent' => function($query) {
+                                                                                $query->from(['idParent' => 'material']);
+                                                                            },
                                                                                 ]);
 
                                                                                 $this->load($params);
@@ -260,14 +263,32 @@ class TrMatSearch extends TrMat {
                                                                                     return $dataProvider;
                                                                                 }
 
-                                                                          //      $query->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')');
-
+                                                                                //      $query->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')');
                                                                                 // grid filtering conditions
                                                                                 $query->andFilterWhere([
                                                                                     'tr_mat_id' => $this->tr_mat_id,
                                                                                     'id_installakt' => $this->id_installakt,
                                                                                     'id_mattraffic' => $this->id_mattraffic,
                                                                                     'id_parent' => $this->id_parent,
+                                                                                ]);
+
+                                                                                $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
+                                                                                $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
+                                                                                $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.material_name')]);
+                                                                                $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.material_inv')]);
+                                                                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMattraffic.mattraffic_number'));
+                                                                                $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
+                                                                                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
+
+                                                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                                                    'idMattraffic.idMaterial.material_name',
+                                                                                    'idMattraffic.idMaterial.material_inv',
+                                                                                    'idParent.material_name',
+                                                                                    'idParent.material_inv',
+                                                                                    'idMattraffic.mattraffic_number',
+                                                                                    'idMattraffic.idMol.idperson.auth_user_fullname',
+                                                                                    'idMattraffic.idMol.iddolzh.dolzh_name',
+                                                                                    'idMattraffic.idMaterial.material_name',
                                                                                 ]);
 
                                                                                 return $dataProvider;

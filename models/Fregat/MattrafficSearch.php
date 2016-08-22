@@ -38,6 +38,8 @@ class MattrafficSearch extends Mattraffic {
             'idMol.employee_username',
             'idMol.employee_lastchange',
             'idMol.employee_importdo',
+            'trOsnovs.tr_osnov_kab',
+            'trMats.idParent.material_inv',
         ]);
     }
 
@@ -65,7 +67,10 @@ class MattrafficSearch extends Mattraffic {
             'idMol.employee_lastchange',
             'idMol.employee_importdo',
             'mattraffic_username',
-            'mattraffic_lastchange'], 'safe'],
+            'mattraffic_lastchange',
+            'trOsnovs.tr_osnov_kab',
+            'trMats.idParent.material_inv',
+                ], 'safe'],
             [['mattraffic_number', 'idMaterial.material_number', 'idMaterial.material_price'], 'number'],
         ];
     }
@@ -298,5 +303,51 @@ class MattrafficSearch extends Mattraffic {
                                 return $dataProvider;
                             }
 
-                        }
-                        
+                            public function searchformaterialmattraffic($params) {
+                                $query = Mattraffic::find();
+
+                                $dataProvider = new ActiveDataProvider([
+                                    'query' => $query,
+                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+                                ]);
+
+                                $this->baseRelations($query);
+                                $query->joinWith([
+                                    'trOsnovs' => function($query) {
+                                        $query->from(['trOsnovs' => 'tr_osnov']);
+                                    },
+                                            'trMats' => function($query) {
+                                        $query->from(['trMats' => 'tr_mat']);
+                                        $query->joinWith([
+                                            'idParent' => function($query) {
+                                                $query->from(['idParent' => 'material']);
+                                            },
+                                                ]);
+                                            },
+                                                ]);
+
+                                                $query->andWhere(['id_material' => $params['id']]);
+
+                                                $this->load($params);
+
+                                                if (!$this->validate()) {
+                                                    // uncomment the following line if you do not want to return any records when validation fails
+                                                    // $query->where('0=1');
+                                                    return $dataProvider;
+                                                }
+
+                                                $this->baseFilter($query);
+                                                $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
+                                                $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('trMats.idParent.material_inv')]);
+
+                                                $this->baseSort($dataProvider);
+                                                Proc::AssignRelatedAttributes($dataProvider, [
+                                                    'trOsnovs.tr_osnov_kab',
+                                                    'trMats.idParent.material_inv',
+                                                ]);
+
+                                                return $dataProvider;
+                                            }
+
+                                        }
+                                        

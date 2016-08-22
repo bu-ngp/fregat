@@ -5,6 +5,7 @@ use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
 use app\func\Proc;
 use kartik\touchspin\TouchSpin;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrMatOsmotr */
@@ -78,10 +79,6 @@ use kartik\touchspin\TouchSpin;
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-                <?php
-                if (!$model->isNewRecord)
-                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotraktmat/osmotraktmat-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
-                ?>
             </div>
         </div>
     </div>
