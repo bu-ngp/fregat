@@ -12,6 +12,7 @@ use kartik\datecontrol\DateControl;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Recoveryrecieveakt;
 use app\models\Fregat\Recoveryrecieveaktmat;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Material */
@@ -208,183 +209,199 @@ use app\models\Fregat\Recoveryrecieveaktmat;
                                 ],
                             ],
                             'buttons' => [
-                            // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                            ],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider_mattraffic,
-                            'filterModel' => $searchModel_mattraffic,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-random"></i> Движение материальной ценности',
-                            ],
-                        ]
-            ]));
-            ?>
-        </div>
-    </div>
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Восстановление материальной ценности') ?></div>
-        <div class="panel-body">
-            <?php
-            echo DynaGrid::widget(Proc::DGopts([
-                        'options' => ['id' => 'recoverygrid'],
-                        'columns' => Proc::DGcols([
-                            'columns' => [
-                                'osmotrakt_id',
-                                [
-                                    'attribute' => 'osmotrakt_date',
-                                    'format' => 'date',
-                                ],
-                                'idReason.reason_text',
-                                'osmotrakt_comment',
-                                [
-                                    'attribute' => 'idUser.idperson.auth_user_fullname',
-                                    'label' => 'ФИО пользоателя',
-                                ],
-                                [
-                                    'attribute' => 'idUser.iddolzh.dolzh_name',
-                                    'label' => 'Должность пользоателя',
-                                ],
-                                [
-                                    'attribute' => 'idUser.idbuild.build_name',
-                                    'label' => 'Здание пользоателя',
-                                ],
-                                [
-                                    'attribute' => 'idMaster.idperson.auth_user_fullname',
-                                    'label' => 'ФИО мастера',
-                                ],
-                                [
-                                    'attribute' => 'idMaster.iddolzh.dolzh_name',
-                                    'label' => 'Должность мастера',
-                                ],
-                            ],
-                            'buttons' => [
-                            // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                            ],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider_recovery,
-                            'filterModel' => $searchModel_recovery,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-random"></i> Осмотр, как основная материальная ценность',
-                            ],
-                        ]
-            ]));
-            echo DynaGrid::widget(Proc::DGopts([
-                        'options' => ['id' => 'recoverymatgrid'],
-                        'columns' => Proc::DGcols([
-                            'columns' => [
-                                'idOsmotraktmat.osmotraktmat_id',
-                                [
-                                    'attribute' => 'idOsmotraktmat.osmotraktmat_date',
-                                    'format' => 'date',
-                                ],
-                                'tr_mat_osmotr_number',
-                                'idReason.reason_text',
-                                'tr_mat_osmotr_comment',
-                                'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
-                                'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
-                            ],
-                            'buttons' => [
-                            // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                            ],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider_recoverymat,
-                            'filterModel' => $searchModel_recoverymat,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-random"></i> Осмотр, как материал',
-                            ],
-                        ]
-            ]));
+                                'installaktreport' => function ($url, $model) use ($params) {
+                                    if ($model->mattraffic_tip == 3)
+                                        $idinstallakt = $model->trOsnovs[0]->id_installakt;
+                                    elseif ($model->mattraffic_tip == 4)
+                                        $idinstallakt = $model->trMats[0]->id_installakt;
 
-            $recoveryrecieveakt_repaired = Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired');
-            echo DynaGrid::widget(Proc::DGopts([
-                        'options' => ['id' => 'recoverysend_grid'],
-                        'columns' => Proc::DGcols([
-                            'columns' => [
-                                'id_recoverysendakt',
-                                [
-                                    'attribute' => 'idRecoverysendakt.recoverysendakt_date',
-                                    'format' => 'date',
-                                ],
-                                [
-                                    'attribute' => 'recoveryrecieveakt_date',
-                                    'format' => 'date',
-                                ],
-                                'recoveryrecieveakt_result',
-                                [
-                                    'attribute' => 'recoveryrecieveakt_repaired',
-                                    'filter' => $recoveryrecieveakt_repaired,
-                                    'value' => function ($model) use ($recoveryrecieveakt_repaired) {
-                                        return isset($recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired]) ? $recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired] : '';
-                                    },
-                                ],
-                                'id_osmotrakt',
-                            ],
-                            'buttons' => [
-                            // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                            ],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider_recoverysend,
-                            'filterModel' => $searchModel_recoverysend,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-random"></i> Восстановление, как основная материальная ценность',
-                            ],
-                        ]
-            ]));
-
-            $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
-            echo DynaGrid::widget(Proc::DGopts([
-                        'options' => ['id' => 'recoverysendmat_grid'],
-                        'columns' => Proc::DGcols([
-                            'columns' => [
-                                'id_recoverysendakt',
-                                [
-                                    'attribute' => 'idRecoverysendakt.recoverysendakt_date',
-                                    'format' => 'date',
-                                ],
-                                [
-                                    'attribute' => 'recoveryrecieveaktmat_date',
-                                    'format' => 'date',
-                                ],
-                                'recoveryrecieveaktmat_result',
-                                [
-                                    'attribute' => 'recoveryrecieveaktmat_repaired',
-                                    'filter' => $recoveryrecieveaktmat_repaired,
-                                    'value' => function ($model) use ($recoveryrecieveaktmat_repaired) {
-                                        return isset($recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired]) ? $recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired] : '';
-                                    },
-                                ],
-                                'idTrMatOsmotr.id_osmotraktmat',
-                            ],
-                            'buttons' => [
-                            // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
-                            ],
-                        ]),
-                        'gridOptions' => [
-                            'dataProvider' => $dataProvider_recoverysendmat,
-                            'filterModel' => $searchModel_recoverysendmat,
-                            'panel' => [
-                                'heading' => '<i class="glyphicon glyphicon-random"></i> Восстановление, как материал',
-                            ],
-                        ]
-            ]));
-            ?>
-        </div>
-    </div>
-
-
-    <div class="form-group">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
-                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Materialform']) ?>
+                                    if ($model->mattraffic_tip == 3 || $model->mattraffic_tip == 4)
+                                        return Html::button('<i class="glyphicon glyphicon-list"></i>', [
+                                                    'type' => 'button',
+                                                    'title' => 'Скачать акт перемещения матер-ой цен-ти',
+                                                    'class' => 'btn btn-xs btn-default',
+                                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $idinstallakt . '} )'
+                                        ]);
+                                    else
+                                        return '';
+                                },
+                                    // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
+                                    ],
+                                ]),
+                                'gridOptions' => [
+                                    'dataProvider' => $dataProvider_mattraffic,
+                                    'filterModel' => $searchModel_mattraffic,
+                                    'panel' => [
+                                        'heading' => '<i class="glyphicon glyphicon-random"></i> Движение материальной ценности',
+                                    ],
+                                ]
+                    ]));
+                    ?>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+                <div class="panel-heading"><?= Html::encode('Восстановление материальной ценности') ?></div>
+                <div class="panel-body">
+                    <?php
+                    echo DynaGrid::widget(Proc::DGopts([
+                                'options' => ['id' => 'recoverygrid'],
+                                'columns' => Proc::DGcols([
+                                    'columns' => [
+                                        'osmotrakt_id',
+                                        [
+                                            'attribute' => 'osmotrakt_date',
+                                            'format' => 'date',
+                                        ],
+                                        'idReason.reason_text',
+                                        'osmotrakt_comment',
+                                        [
+                                            'attribute' => 'idUser.idperson.auth_user_fullname',
+                                            'label' => 'ФИО пользоателя',
+                                        ],
+                                        [
+                                            'attribute' => 'idUser.iddolzh.dolzh_name',
+                                            'label' => 'Должность пользоателя',
+                                        ],
+                                        [
+                                            'attribute' => 'idUser.idbuild.build_name',
+                                            'label' => 'Здание пользоателя',
+                                        ],
+                                        [
+                                            'attribute' => 'idMaster.idperson.auth_user_fullname',
+                                            'label' => 'ФИО мастера',
+                                        ],
+                                        [
+                                            'attribute' => 'idMaster.iddolzh.dolzh_name',
+                                            'label' => 'Должность мастера',
+                                        ],
+                                    ],
+                                    'buttons' => [
+                                    // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
+                                    ],
+                                ]),
+                                'gridOptions' => [
+                                    'dataProvider' => $dataProvider_recovery,
+                                    'filterModel' => $searchModel_recovery,
+                                    'panel' => [
+                                        'heading' => '<i class="glyphicon glyphicon-search"></i> Осмотр, как основная материальная ценность',
+                                    ],
+                                ]
+                    ]));
+                    echo DynaGrid::widget(Proc::DGopts([
+                                'options' => ['id' => 'recoverymatgrid'],
+                                'columns' => Proc::DGcols([
+                                    'columns' => [
+                                        'idOsmotraktmat.osmotraktmat_id',
+                                        [
+                                            'attribute' => 'idOsmotraktmat.osmotraktmat_date',
+                                            'format' => 'date',
+                                        ],
+                                        'tr_mat_osmotr_number',
+                                        'idReason.reason_text',
+                                        'tr_mat_osmotr_comment',
+                                        'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
+                                        'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
+                                    ],
+                                    'buttons' => [
+                                    // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
+                                    ],
+                                ]),
+                                'gridOptions' => [
+                                    'dataProvider' => $dataProvider_recoverymat,
+                                    'filterModel' => $searchModel_recoverymat,
+                                    'panel' => [
+                                        'heading' => '<i class="glyphicon glyphicon-search"></i> Осмотр, как материал',
+                                    ],
+                                ]
+                    ]));
 
-    <?php ActiveForm::end(); ?>
+                    $recoveryrecieveakt_repaired = Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired');
+                    echo DynaGrid::widget(Proc::DGopts([
+                                'options' => ['id' => 'recoverysend_grid'],
+                                'columns' => Proc::DGcols([
+                                    'columns' => [
+                                        'id_recoverysendakt',
+                                        [
+                                            'attribute' => 'idRecoverysendakt.recoverysendakt_date',
+                                            'format' => 'date',
+                                        ],
+                                        [
+                                            'attribute' => 'recoveryrecieveakt_date',
+                                            'format' => 'date',
+                                        ],
+                                        'recoveryrecieveakt_result',
+                                        [
+                                            'attribute' => 'recoveryrecieveakt_repaired',
+                                            'filter' => $recoveryrecieveakt_repaired,
+                                            'value' => function ($model) use ($recoveryrecieveakt_repaired) {
+                                                return isset($recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired]) ? $recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired] : '';
+                                            },
+                                        ],
+                                        'id_osmotrakt',
+                                    ],
+                                    'buttons' => [
+                                    // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
+                                    ],
+                                ]),
+                                'gridOptions' => [
+                                    'dataProvider' => $dataProvider_recoverysend,
+                                    'filterModel' => $searchModel_recoverysend,
+                                    'panel' => [
+                                        'heading' => '<i class="glyphicon glyphicon-wrench"></i> Восстановление, как основная материальная ценность',
+                                    ],
+                                ]
+                    ]));
+
+                    $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
+                    echo DynaGrid::widget(Proc::DGopts([
+                                'options' => ['id' => 'recoverysendmat_grid'],
+                                'columns' => Proc::DGcols([
+                                    'columns' => [
+                                        'id_recoverysendakt',
+                                        [
+                                            'attribute' => 'idRecoverysendakt.recoverysendakt_date',
+                                            'format' => 'date',
+                                        ],
+                                        [
+                                            'attribute' => 'recoveryrecieveaktmat_date',
+                                            'format' => 'date',
+                                        ],
+                                        'recoveryrecieveaktmat_result',
+                                        [
+                                            'attribute' => 'recoveryrecieveaktmat_repaired',
+                                            'filter' => $recoveryrecieveaktmat_repaired,
+                                            'value' => function ($model) use ($recoveryrecieveaktmat_repaired) {
+                                                return isset($recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired]) ? $recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired] : '';
+                                            },
+                                        ],
+                                        'idTrMatOsmotr.id_osmotraktmat',
+                                    ],
+                                    'buttons' => [
+                                    // 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
+                                    ],
+                                ]),
+                                'gridOptions' => [
+                                    'dataProvider' => $dataProvider_recoverysendmat,
+                                    'filterModel' => $searchModel_recoverysendmat,
+                                    'panel' => [
+                                        'heading' => '<i class="glyphicon glyphicon-wrench"></i> Восстановление, как материал',
+                                    ],
+                                ]
+                    ]));
+                    ?>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+                        <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Materialform']) ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php ActiveForm::end(); ?>
 
 </div>

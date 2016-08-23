@@ -29,7 +29,7 @@ class RecoverysendaktController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report'],
+                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report', 'toexcel'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -108,6 +108,19 @@ class RecoverysendaktController extends Controller {
     // Печать акта отправки материалов сторонней организации
     public function actionRecoverysendaktmatReport() {
         ReportTemplates::Recoverysendaktmat();
+    }
+
+    public function actionToexcel() {
+     //   $searchModel = new PatientSearch();
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+     //   $modelname = $searchModel->formName();
+     //   $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+        $selectvalues = json_decode($params['selectvalues']);
+        $labelvalues = isset($params['labelvalues']) ? json_decode($params['labelvalues']) : NULL;
+        
+        ReportTemplates::Recoverysendakt_ExportExcel();
+      //  Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter, $labelvalues);
     }
 
     /**
