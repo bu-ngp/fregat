@@ -5,6 +5,7 @@ namespace app\controllers\Fregat;
 use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
+use yii\base\Request;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -42,7 +43,7 @@ class FregatController extends Controller
                     [
                         'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-remont'],
                         'allow' => true,
-                        'ips' => ['172.19.17.30', '172.19.17.81'],
+                        'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81'],
                     ],
                 ],
             ],
@@ -455,7 +456,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        var_dump(\app\models\Fregat\TrMat::find(['id_installakt' => 116])->GroupBy('id_parent')->all());
+        $a = new \yii\web\Request;
+        var_dump($a->getUserIP());
     }
 
     function actionAkt2()
