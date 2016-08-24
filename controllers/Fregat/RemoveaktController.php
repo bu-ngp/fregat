@@ -34,7 +34,7 @@ class RemoveaktController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                    // 'roles' => ['RemoveaktEdit'],
+                        'roles' => ['RemoveaktEdit'],
                     ],
                 ],
             ],

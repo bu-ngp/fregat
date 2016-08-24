@@ -2,10 +2,13 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Employee;
+use app\models\Fregat\Material;
 use Yii;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\MattrafficSearch;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
@@ -14,9 +17,11 @@ use yii\filters\AccessControl;
 /**
  * MattrafficController implements the CRUD actions for Mattraffic model.
  */
-class MattrafficController extends Controller {
+class MattrafficController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -25,6 +30,16 @@ class MattrafficController extends Controller {
                         'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_mat', 'assign-to-material', 'forosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['MaterialEdit'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['MaterialMolDelete'],
                     ],
                 ],
             ],
@@ -37,62 +52,122 @@ class MattrafficController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         Proc::SetMenuButtons('fregat');
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionForinstallakt() {
+    public function actionCreate($id)
+    {
+        $model = new Mattraffic();
+
+        $Mattrafficlast = Mattraffic::find()
+            ->leftJoin('mattraffic mt', 'mattraffic.id_material = mt.id_material and  mattraffic.mattraffic_date < mt.mattraffic_date')
+            ->andWhere([
+                'mt.mattraffic_date' => NULL,
+                'mattraffic.id_material' => $id,
+                'mattraffic.mattraffic_tip' => [1, 2],
+            ])
+            ->one();
+
+        $Material = Material::findOne($id);
+        $Employee = Employee::findOne($Mattrafficlast->id_mol);
+
+        $model->attributes = $Mattrafficlast->attributes;
+        $model->id_material = $Material->primaryKey;
+        $model->id_mol = $model->primaryKey;
+        $model->mattraffic_date = date('Y-m-d');
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            if (!empty($model->getErrors('mattraffic_date'))) { // Костыль, не работает message у валидатора unique в Mattraffic
+                $model->clearErrors('mattraffic_date');
+                $model->addError('mattraffic_date', 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом');
+            }
+
+            return $this->render('create', [
+                'model' => $model,
+                'Material' => $Material,
+                'Employee' => $Employee,
+            ]);
+        }
+    }
+
+    public
+    function actionForinstallakt()
+    {
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->searchforinstallakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'foreigndo' => (string)filter_input(INPUT_GET, 'foreigndo'),
         ]);
     }
 
-    public function actionForosmotrakt() {
+    public
+    function actionForosmotrakt()
+    {
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->searchforosmotrakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'foreigndo' => (string)filter_input(INPUT_GET, 'foreigndo'),
         ]);
     }
 
-    public function actionForinstallakt_mat() {
+    public
+    function actionForinstallakt_mat()
+    {
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->searchforinstallakt_mat(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'foreigndo' => (string)filter_input(INPUT_GET, 'foreigndo'),
         ]);
     }
 
-    public function actionSelectinputformaterial($field, $q = null) {
+    public
+    function actionSelectinputformaterial($field, $q = null)
+    {
         return Proc::select2request([
-                    'model' => new Mattraffic,
-                    'field' => $field,
-                    'q' => $q,
-                    'methodquery' => 'selectinput',
+            'model' => new Mattraffic,
+            'field' => $field,
+            'q' => $q,
+            'methodquery' => 'selectinput',
         ]);
     }
 
-    public function actionAssignToMaterial() {
+    public
+    function actionAssignToMaterial()
+    {
         Proc::AssignToModelFromGrid();
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    public
+    function actionDelete($id)
+    {
+        if (Yii::$app->request->isAjax) {
+            $status = Mattraffic::CanIsDelete($id);
+            if (!empty($status))
+                throw new HttpException(500, $status);
+
+            echo $this->findModel($id)->delete();
+        }
     }
 
     /**
@@ -102,7 +177,9 @@ class MattrafficController extends Controller {
      * @return Mattraffic the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected
+    function findModel($id)
+    {
         if (($model = Mattraffic::findOne($id)) !== null) {
             return $model;
         } else {

@@ -17,12 +17,14 @@ use app\models\Fregat\TrRmMat;
 /**
  * TrMatController implements the CRUD actions for TrMat model.
  */
-class TrMatController extends Controller {
+class TrMatController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -40,7 +42,7 @@ class TrMatController extends Controller {
                     [
                         'actions' => ['fortrrmmat', 'assign-to-trrmmat'],
                         'allow' => true,
-                    // 'roles' => ['RemoveEdit'],
+                        'roles' => ['RemoveaktEdit'],
                     ],
                     [
                         'actions' => ['fortrmatosmotr', 'assign-to-trmatosmotr'],
@@ -58,7 +60,8 @@ class TrMatController extends Controller {
         ];
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new TrMat();
         $Mattraffic = new Mattraffic;
         $mattraffic_number_max = NULL;
@@ -87,7 +90,7 @@ class TrMatController extends Controller {
                 }
 
                 //Акт установки уже создан и берется из URL параметра
-                $model->id_installakt = (string) filter_input(INPUT_GET, 'idinstallakt');
+                $model->id_installakt = (string)filter_input(INPUT_GET, 'idinstallakt');
             }
 
             // Сохраняем модель с отправленными данными и сохраненным mattraffic
@@ -101,9 +104,9 @@ class TrMatController extends Controller {
 
                 $transaction->rollback();
                 return $this->render('create', [
-                            'model' => $model,
-                            'Mattraffic' => $Mattraffic,
-                            'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
+                    'model' => $model,
+                    'Mattraffic' => $Mattraffic,
+                    'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
                 ]);
             }
         } catch (Exception $e) {
@@ -112,7 +115,8 @@ class TrMatController extends Controller {
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -130,67 +134,74 @@ class TrMatController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrmatchild($field, $q = null, $idinstallakt = null) {
+    public function actionSelectinputfortrmatchild($field, $q = null, $idinstallakt = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                        'model' => new Mattraffic,
-                        'field' => $field,
-                        'q' => $q,
-                        'methodquery' => 'selectinputfortrmat_child',
-                        'methodparams' => ['idinstallakt' => $idinstallakt],
+                'model' => new Mattraffic,
+                'field' => $field,
+                'q' => $q,
+                'methodquery' => 'selectinputfortrmat_child',
+                'methodparams' => ['idinstallakt' => $idinstallakt],
             ]);
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrmatparent($field, $q = null, $idinstallakt = null) {
+    public function actionSelectinputfortrmatparent($field, $q = null, $idinstallakt = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                        'model' => new Material,
-                        'field' => $field,
-                        'q' => $q,
-                        'methodquery' => 'selectinputfortrmat_parent',
-                        'methodparams' => ['idinstallakt' => $idinstallakt],
+                'model' => new Material,
+                'field' => $field,
+                'q' => $q,
+                'methodquery' => 'selectinputfortrmat_parent',
+                'methodparams' => ['idinstallakt' => $idinstallakt],
             ]);
     }
 
-    public function actionFortrrmmat() {
+    public function actionFortrrmmat()
+    {
         $searchModel = new TrMatSearch();
         $dataProvider = $searchModel->searchfortrrmmat(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionAssignToTrrmmat() {
+    public function actionAssignToTrrmmat()
+    {
         Proc::AssignToModelFromGrid(new TrRmMat, 'id_removeakt');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
-    public function actionFortrmatosmotr() {
+    public function actionFortrmatosmotr()
+    {
         $searchModel = new TrMatSearch();
         $dataProvider = $searchModel->searchfortrmatosmotr(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionAssignToTrmatosmotr() {
+    public function actionAssignToTrmatosmotr()
+    {
         Proc::AssignToModelFromGrid(new \app\models\Fregat\TrMatOsmotr, 'id_osmotraktmat');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
-    public function actionSelectinputfortrmatosmotr($field, $q = null, $idosmotraktmat = null) {
+    public function actionSelectinputfortrmatosmotr($field, $q = null, $idosmotraktmat = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                        'model' => new TrMat,
-                        'field' => $field,
-                        'q' => $q,
-                        'methodquery' => 'selectinputfortrmatosmotr',
-                        'methodparams' => ['idosmotraktmat' => $idosmotraktmat],
+                'model' => new TrMat,
+                'field' => $field,
+                'q' => $q,
+                'methodquery' => 'selectinputfortrmatosmotr',
+                'methodparams' => ['idosmotraktmat' => $idosmotraktmat],
             ]);
     }
 
@@ -201,7 +212,8 @@ class TrMatController extends Controller {
      * @return TrMat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = TrMat::findOne($id)) !== null) {
             return $model;
         } else {

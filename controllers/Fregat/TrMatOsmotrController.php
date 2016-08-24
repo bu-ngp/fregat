@@ -15,20 +15,27 @@ use app\models\Fregat\Recoverysendakt;
 /**
  * TrMatOsmotrController implements the CRUD actions for TrMatOsmotr model.
  */
-class TrMatOsmotrController extends Controller {
+class TrMatOsmotrController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['create', 'update', 'delete', 'forrecoveryrecieveaktmat', 'assign-to-recoverysendakt'],
+                        'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['OsmotraktEdit'],
+                    ],
+                    [
+                        'actions' => ['forrecoveryrecieveaktmat', 'assign-to-recoverysendakt'],
+                        'allow' => true,
+                        'roles' => ['RecoveryEdit'],
                     ],
                 ],
             ],
@@ -41,47 +48,52 @@ class TrMatOsmotrController extends Controller {
         ];
     }
 
-    public function actionForrecoveryrecieveaktmat() {
+    public function actionForrecoveryrecieveaktmat()
+    {
         $searchModel = new TrMatOsmotrSearch();
         $dataProvider = $searchModel->forrecoveryrecieveaktmat(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new TrMatOsmotr();
-        $model->id_osmotraktmat = (string) filter_input(INPUT_GET, 'id');
+        $model->id_osmotraktmat = (string)filter_input(INPUT_GET, 'id');
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             $model->tr_mat_osmotr_number = 1;
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else {
             return $this->render('update', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToRecoverysendakt() {
+    public function actionAssignToRecoverysendakt()
+    {
         Proc::AssignToModelFromGrid(new \app\models\Fregat\Recoveryrecieveaktmat, 'id_recoverysendakt');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
@@ -93,7 +105,8 @@ class TrMatOsmotrController extends Controller {
      * @return TrMatOsmotr the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = TrMatOsmotr::findOne($id)) !== null) {
             return $model;
         } else {

@@ -36,7 +36,7 @@ class RecoverysendaktController extends Controller {
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
-                    // 'roles' => ['RecoveryEdit'],
+                        'roles' => ['RecoveryEdit'],
                     ],
                 ],
             ],

@@ -337,7 +337,7 @@ class Proc {
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                     ]
-                        ], !empty($fromgridroute) ? [
+                        ], !empty($fromgridroute) && (empty($params['disabled']) || $params['disabled'] === false) ? [
                             'addon' => [
                                 'append' => [
                                     'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,

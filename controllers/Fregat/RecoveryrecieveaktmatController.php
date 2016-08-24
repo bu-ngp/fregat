@@ -33,7 +33,7 @@ class RecoveryrecieveaktmatController extends Controller {
                     [
                         'actions' => ['update', 'delete'],
                         'allow' => true,
-                    // 'roles' => ['RecoveryEdit'],
+                        'roles' => ['RecoveryEdit'],
                     ],
                 ],
             ],

@@ -17,37 +17,37 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 <div class="removeakt-index">
     <?=
     DynaGrid::widget(Proc::DGopts([
-                'options' => ['id' => 'removeaktgrid'],
-                'columns' => Proc::DGcols([
-                    'columns' => [
-                        'removeakt_id',
-                        [
-                            'attribute' => 'removeakt_date',
-                            'format' => 'date',
-                        ],
-                        [
-                            'attribute' => 'idRemover.idperson.auth_user_fullname',
-                            'label' => 'ФИО демонтажника',
-                        ],
-                        [
-                            'attribute' => 'idRemover.iddolzh.dolzh_name',
-                            'label' => 'Должность демонтажника',
-                        ],
-                    ],
-                    'buttons' => array_merge(/* Yii::$app->user->can('RemoveEdit') */true ? [
-                                'update' => ['Fregat/removeakt/update', 'removeakt_id'],
-                                'deleteajax' => ['Fregat/removeakt/delete', 'removeakt_id'],
-                                    ] : []
-                    ),
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-paste"></i> ' . $this->title,
-                        'before' => /* Yii::$app->user->can('RemoveEdit') */true ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                    ],
-                ]
+        'options' => ['id' => 'removeaktgrid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                'removeakt_id',
+                [
+                    'attribute' => 'removeakt_date',
+                    'format' => 'date',
+                ],
+                [
+                    'attribute' => 'idRemover.idperson.auth_user_fullname',
+                    'label' => 'ФИО демонтажника',
+                ],
+                [
+                    'attribute' => 'idRemover.iddolzh.dolzh_name',
+                    'label' => 'Должность демонтажника',
+                ],
+            ],
+            'buttons' => array_merge(Yii::$app->user->can('RemoveaktEdit') ? [
+                'update' => ['Fregat/removeakt/update', 'removeakt_id'],
+                'deleteajax' => ['Fregat/removeakt/delete', 'removeakt_id'],
+            ] : []
+            ),
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-paste"></i> ' . $this->title,
+                'before' => Yii::$app->user->can('RemoveaktEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+            ],
+        ]
     ]));
     ?>
 </div>
@@ -56,5 +56,5 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         <div class="panel-heading">
             <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
         </div>
-    </div> 
+    </div>
 </div>

@@ -14,12 +14,14 @@ use yii\filters\AccessControl;
 /**
  * TrRmMatController implements the CRUD actions for TrRmMat model.
  */
-class TrRmMatController extends Controller {
+class TrRmMatController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -27,7 +29,7 @@ class TrRmMatController extends Controller {
                     [
                         'actions' => ['delete'],
                         'allow' => true,
-                    // 'roles' => ['RemoveEdit'],
+                        'roles' => ['RemoveaktEdit'],
                     ],
                 ],
             ],
@@ -41,7 +43,8 @@ class TrRmMatController extends Controller {
     }
 
     // Удаление снимаемой мат. цен-ти из акта снятия комплектующих с материальной ценности
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -53,7 +56,8 @@ class TrRmMatController extends Controller {
      * @return TrRmMat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = TrRmMat::findOne($id)) !== null) {
             return $model;
         } else {

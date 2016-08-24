@@ -21,34 +21,43 @@ use app\models\Fregat\RecoveryrecieveaktmatSearch;
 /**
  * MaterialController implements the CRUD actions for Material model.
  */
-class MaterialController extends Controller {
+class MaterialController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'forinstallakt_mat', 'assign-material'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['MaterialEdit'],
                     ],
                 ],
             ],
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new MaterialSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Material();
         if (isset($model->scenarios()['prihod']))
             $model->scenario = 'prihod';
@@ -64,17 +73,18 @@ class MaterialController extends Controller {
                 $Mattraffic->mattraffic_number = empty($Mattraffic->mattraffic_number) ? $model->material_number : $Mattraffic->mattraffic_number;
                 $Mattraffic->mattraffic_tip = empty($Mattraffic->mattraffic_tip) ? 1 : $Mattraffic->mattraffic_tip;
 
-                if ($Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
-                    return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-                else
+                if ($Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save()) {
+                    Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+                    return $this->redirect(['update', 'id' => $model->primaryKey]);
+                } else
                     return $this->render('create', [
-                                'model' => $model,
-                                'Mattraffic' => $Mattraffic,
+                        'model' => $model,
+                        'Mattraffic' => $Mattraffic,
                     ]);
             } else
                 return $this->render('create', [
-                            'model' => $model,
-                            'Mattraffic' => $Mattraffic,
+                    'model' => $model,
+                    'Mattraffic' => $Mattraffic,
                 ]);
         } else {
             $model->material_number = empty($model->material_number) ? 1 : $model->material_number;
@@ -86,21 +96,22 @@ class MaterialController extends Controller {
             $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
 
             return $this->render('create', [
-                        'model' => $model,
-                        'Mattraffic' => $Mattraffic,
+                'model' => $model,
+                'Mattraffic' => $Mattraffic,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
         $Mattraffic = Mattraffic::find()
-                ->andWhere([
-                    'id_material' => $model->material_id,
-                    'mattraffic_tip' => 1,
-                ])
-                ->orderBy('mattraffic_date desc, mattraffic_id desc')
-                ->one();
+            ->andWhere([
+                'id_material' => $model->material_id,
+                'mattraffic_tip' => 1,
+            ])
+            ->orderBy('mattraffic_date desc, mattraffic_id desc')
+            ->one();
 
         $searchModel_mattraffic = new MattrafficSearch();
         $dataProvider_mattraffic = $searchModel_mattraffic->searchformaterialmattraffic(Yii::$app->request->queryParams);
@@ -113,41 +124,43 @@ class MaterialController extends Controller {
 
         $searchModel_recoverysend = new RecoveryrecieveaktSearch();
         $dataProvider_recoverysend = $searchModel_recoverysend->searchformaterialkarta(Yii::$app->request->queryParams);
-        
+
         $searchModel_recoverysendmat = new RecoveryrecieveaktmatSearch();
         $dataProvider_recoverysendmat = $searchModel_recoverysendmat->searchformaterialkarta(Yii::$app->request->queryParams);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
+        if (Yii::$app->user->can('MaterialEdit') && $model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
             return $this->render('update', [
-                        'model' => $model,
-                        'Mattraffic' => $Mattraffic,
-                        'searchModel_mattraffic' => $searchModel_mattraffic,
-                        'dataProvider_mattraffic' => $dataProvider_mattraffic,
-                        'searchModel_recovery' => $searchModel_recovery,
-                        'dataProvider_recovery' => $dataProvider_recovery,
-                        'searchModel_recoverymat' => $searchModel_recoverymat,
-                        'dataProvider_recoverymat' => $dataProvider_recoverymat,
-                        'searchModel_recoverysend' => $searchModel_recoverysend,
-                        'dataProvider_recoverysend' => $dataProvider_recoverysend,
-                        'searchModel_recoverysendmat' => $searchModel_recoverysendmat,
-                        'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
+                'model' => $model,
+                'Mattraffic' => $Mattraffic,
+                'searchModel_mattraffic' => $searchModel_mattraffic,
+                'dataProvider_mattraffic' => $dataProvider_mattraffic,
+                'searchModel_recovery' => $searchModel_recovery,
+                'dataProvider_recovery' => $dataProvider_recovery,
+                'searchModel_recoverymat' => $searchModel_recoverymat,
+                'dataProvider_recoverymat' => $dataProvider_recoverymat,
+                'searchModel_recoverysend' => $searchModel_recoverysend,
+                'dataProvider_recoverysend' => $dataProvider_recoverysend,
+                'searchModel_recoverysendmat' => $searchModel_recoverysendmat,
+                'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
             ]);
     }
 
-    public function actionForinstallakt_mat() {
+    public function actionForinstallakt_mat()
+    {
         $searchModel = new MaterialSearch();
         $dataProvider = $searchModel->searchforinstallakt_mat(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'foreigndo' => (string) filter_input(INPUT_GET, 'foreigndo'),
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'foreigndo' => (string)filter_input(INPUT_GET, 'foreigndo'),
         ]);
     }
 
-    public function actionAssignMaterial() {
+    public function actionAssignMaterial()
+    {
         Proc::AssignToModelFromGrid();
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
@@ -159,7 +172,8 @@ class MaterialController extends Controller {
      * @return Material the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Material::findOne($id)) !== null) {
             return $model;
         } else {

@@ -16,20 +16,27 @@ use app\func\ReportTemplates;
 /**
  * RecoveryrecieveaktController implements the CRUD actions for Recoveryrecieveakt model.
  */
-class RecoveryrecieveaktController extends Controller {
+class RecoveryrecieveaktController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['delete', 'addosmotrakt', 'update','recoveryrecieveakt-report'],
+                        'actions' => ['recoveryrecieveakt-report'],
                         'allow' => true,
-                    // 'roles' => ['RecoveryEdit'],
+                        'roles' => ['FregatUserPermission'],
+                    ],
+                    [
+                        'actions' => ['delete', 'addosmotrakt', 'update'],
+                        'allow' => true,
+                        'roles' => ['RecoveryEdit'],
                     ],
                 ],
             ],
@@ -42,20 +49,22 @@ class RecoveryrecieveaktController extends Controller {
         ];
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else {
             return $this->render('update', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
     // Для быстрого добавления материальной ценности в таблицу актов осмотра на форме "Акт восстановления материальной ценности"
-    public function actionAddosmotrakt() {
+    public function actionAddosmotrakt()
+    {
         if (Yii::$app->request->isAjax) {
             $id_osmotrakt = Yii::$app->request->post('id_osmotrakt');
             $id_recoverysendakt = Yii::$app->request->post('id_recoverysendakt');
@@ -69,13 +78,15 @@ class RecoveryrecieveaktController extends Controller {
             }
         }
     }
-    
+
     // Печать акта получения материальной ценности
-    public function actionRecoveryrecieveaktReport() {
+    public function actionRecoveryrecieveaktReport()
+    {
         ReportTemplates::Recoveryrecieveakt();
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -87,7 +98,8 @@ class RecoveryrecieveaktController extends Controller {
      * @return Recoveryrecieveakt the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Recoveryrecieveakt::findOne($id)) !== null) {
             return $model;
         } else {
