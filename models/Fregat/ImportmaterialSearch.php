@@ -11,9 +11,11 @@ use app\func\Proc;
 /**
  * ImportmaterialSearch represents the model behind the search form about `app\models\Fregat\Importmaterial`.
  */
-class ImportmaterialSearch extends Importmaterial {
+class ImportmaterialSearch extends Importmaterial
+{
 
-    public function attributes() {
+    public function attributes()
+    {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), ['idmatvid.matvid_name']);
     }
@@ -21,7 +23,8 @@ class ImportmaterialSearch extends Importmaterial {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['importmaterial_id', 'id_matvid'], 'integer'],
             [['importmaterial_combination', 'idmatvid.matvid_name'], 'safe'],
@@ -31,7 +34,8 @@ class ImportmaterialSearch extends Importmaterial {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -43,7 +47,8 @@ class ImportmaterialSearch extends Importmaterial {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
+    public function search($params)
+    {
         $query = Importmaterial::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -51,32 +56,28 @@ class ImportmaterialSearch extends Importmaterial {
             'sort' => ['defaultOrder' => ['importmaterial_combination' => SORT_ASC]],
         ]);
 
-        $query->joinWith([
-            'idmatvid' => function($query) {
-                $query->from(['idmatvid' => 'matvid']);
-            },
-                ]);
+        $query->joinWith(['idmatvid']);
 
-                $this->load($params);
+        $this->load($params);
 
-                if (!$this->validate()) {
-                    // uncomment the following line if you do not want to return any records when validation fails
-                    // $query->where('0=1');
-                    return $dataProvider;
-                }
-
-                $query->andFilterWhere([
-                    'importmaterial_id' => $this->importmaterial_id,
-                    'id_matvid' => $this->id_matvid,
-                ]);
-
-                $query->andFilterWhere(['like', 'importmaterial_combination', $this->importmaterial_combination]);
-                $query->andFilterWhere(['LIKE', 'idmatvid.matvid_name', $this->getAttribute('idmatvid.matvid_name')]);
-
-                Proc::AssignRelatedAttributes($dataProvider, ['idmatvid.matvid_name']);
-
-                return $dataProvider;
-            }
-
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
         }
+
+        $query->andFilterWhere([
+            'importmaterial_id' => $this->importmaterial_id,
+            'id_matvid' => $this->id_matvid,
+        ]);
+
+        $query->andFilterWhere(['like', 'importmaterial_combination', $this->importmaterial_combination]);
+        $query->andFilterWhere(['LIKE', 'idmatvid.matvid_name', $this->getAttribute('idmatvid.matvid_name')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, ['idmatvid.matvid_name']);
+
+        return $dataProvider;
+    }
+
+}
         

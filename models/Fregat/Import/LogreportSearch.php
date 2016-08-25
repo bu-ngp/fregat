@@ -51,15 +51,15 @@ class LogreportSearch extends Logreport {
             return $dataProvider;
         }
 
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_id'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_executetime', 'time'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_date', 'date'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_errors'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_updates'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_additions'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_amount'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_missed'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'logreport_memoryused'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_id'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_executetime', 'time'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_errors'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_updates'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_additions'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_amount'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_missed'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_memoryused'));
 
         return $dataProvider;
     }

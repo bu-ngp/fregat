@@ -11,9 +11,11 @@ use app\func\Proc;
 /**
  * AuthassignmentSearch represents the model behind the search form about `app\models\Config\Authassignment`.
  */
-class AuthassignmentSearch extends Authassignment {
+class AuthassignmentSearch extends Authassignment
+{
 
-    public function attributes() {
+    public function attributes()
+    {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
             'itemname.description',
@@ -25,7 +27,8 @@ class AuthassignmentSearch extends Authassignment {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['item_name', 'itemname.description', 'itemname.type', 'itemname.name'], 'safe'],
             [['user_id', 'created_at'], 'integer'],
@@ -35,7 +38,8 @@ class AuthassignmentSearch extends Authassignment {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -47,44 +51,40 @@ class AuthassignmentSearch extends Authassignment {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
+    public function search($params)
+    {
         $query = Authassignment::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-        $query->joinWith([
-            'itemname' => function($query) {
-                $query->from(['itemname' => 'auth_item']);
-            },
-                ]);
+        $query->joinWith(['itemname']);
 
+        $this->load($params);
+        $this->user_id = $params['id'];
 
-                $this->load($params);
-                $this->user_id = $params['id'];
-
-                if (!$this->validate()) {
-                    // uncomment the following line if you do not want to return any records when validation fails
-                    // $query->where('0=1');
-                    return $dataProvider;
-                }
-
-                $query->andFilterWhere([
-                    'user_id' => $this->user_id,
-                    'created_at' => $this->created_at,
-                ]);
-
-                $query->andFilterWhere(['like', 'item_name', $this->item_name]);
-
-                $query->andFilterWhere(['LIKE', 'itemname.description', $this->getAttribute('itemname.description')]);
-                $query->andFilterWhere(['LIKE', 'itemname.type', $this->getAttribute('itemname.type')]);
-                $query->andFilterWhere(['LIKE', 'itemname.name', $this->getAttribute('itemname.name')]);
-
-                Proc::AssignRelatedAttributes($dataProvider, ['itemname.description', 'itemname.type', 'itemname.name']);
-
-                return $dataProvider;
-            }
-
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
         }
+
+        $query->andFilterWhere([
+            'user_id' => $this->user_id,
+            'created_at' => $this->created_at,
+        ]);
+
+        $query->andFilterWhere(['like', 'item_name', $this->item_name]);
+
+        $query->andFilterWhere(['LIKE', 'itemname.description', $this->getAttribute('itemname.description')]);
+        $query->andFilterWhere(['LIKE', 'itemname.type', $this->getAttribute('itemname.type')]);
+        $query->andFilterWhere(['LIKE', 'itemname.name', $this->getAttribute('itemname.name')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, ['itemname.description', 'itemname.type', 'itemname.name']);
+
+        return $dataProvider;
+    }
+
+}
         

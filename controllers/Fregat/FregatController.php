@@ -220,11 +220,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
               $Employee->save(); */
 
             $Employee = \app\models\Fregat\Employee::find()
-                ->joinWith([
-                    'idperson' => function ($query) {
-                        $query->from(['idperson' => 'auth_user']);
-                    }
-                ])
+                ->joinWith(['idperson'])
                 ->andWhere(['like', 'idperson.auth_user_fullname', 'БАЙТИНГЕР АНАСТАСИЯ ВЛАДИМИРОВНА'])
                 ->all();
 
@@ -249,10 +245,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $fail++;
 
                 $mattraffic = \app\models\Fregat\Mattraffic::find()
-                    ->joinWith([
-                        'idMaterial' => function ($query) {
-                            $query->from(['idMaterial' => 'material']);
-                        }])
+                    ->joinWith(['idMaterial'])
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
                     ->andWhere(['in', 'mattraffic_tip', [1, 2]])
                     ->andWhere(['m2.mattraffic_date_m2' => NULL])
@@ -261,10 +254,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
                 if (count($mattraffic) >= 2)
                     $mattraffic = \app\models\Fregat\Mattraffic::find()
-                        ->joinWith([
-                            'idMaterial' => function ($query) {
-                                $query->from(['idMaterial' => 'material']);
-                            }])
+                        ->joinWith(['idMaterial'])
                         ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
                         ->andWhere(['in', 'mattraffic_tip', [1, 2]])
                         ->andWhere(['m2.mattraffic_date_m2' => NULL])
@@ -288,20 +278,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                     } else {
 
                         $installer = \app\models\Fregat\Employee::find()
-                            ->joinWith([
-                                'idperson' => function ($query) {
-                                    $query->from(['idperson' => 'auth_user']);
-                                },
-                                'iddolzh' => function ($query) {
-                                    $query->from(['iddolzh' => 'dolzh']);
-                                },
-                                'idpodraz' => function ($query) {
-                                    $query->from(['idpodraz' => 'podraz']);
-                                },
-                                'idbuild' => function ($query) {
-                                    $query->from(['idbuild' => 'build']);
-                                },
-                            ])
+                            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild',])
                             ->andWhere(['like', 'idperson.auth_user_fullname', $row['prog_name']])
                             ->all();
 
@@ -345,20 +322,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
 
                                             $user = \app\models\Fregat\Employee::find()
-                                                ->joinWith([
-                                                    'idperson' => function ($query) {
-                                                        $query->from(['idperson' => 'auth_user']);
-                                                    },
-                                                    'iddolzh' => function ($query) {
-                                                        $query->from(['iddolzh' => 'dolzh']);
-                                                    },
-                                                    'idpodraz' => function ($query) {
-                                                        $query->from(['idpodraz' => 'podraz']);
-                                                    },
-                                                    'idbuild' => function ($query) {
-                                                        $query->from(['idbuild' => 'build']);
-                                                    },
-                                                ])
+                                                ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild',])
                                                 ->andWhere(['like', 'idperson.auth_user_fullname', $row['aktuser_name']])
                                                 // ->andWhere(['is not', 'idbuild.build_name', null])
                                                 ->all();

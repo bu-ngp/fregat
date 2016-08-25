@@ -94,8 +94,8 @@ class OsmotraktSearch extends Osmotrakt
         ]);
 
         $query->andFilterWhere(['like', 'osmotrakt_comment', $this->osmotrakt_comment]);
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_id'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotrakt_id'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotrakt_date', 'date'));
         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.idMatv.matvid_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_inv')]);
@@ -119,34 +119,15 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMaterial.material_inv',
             'idTrosnov.idMattraffic.idMaterial.material_serial',
             'idTrosnov.idMattraffic.idMol.idbuild.build_name',
+            'idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname',
+            'idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name',
             'idTrosnov.tr_osnov_kab',
             'idReason.reason_text',
+            'iduserperson' => 'idUser.idperson.auth_user_fullname',
+            'iduserdolzh' => 'idUser.iddolzh.dolzh_name',
+            'idmasterperson' => 'idMaster.idperson.auth_user_fullname',
+            'idmasterdolzh' => 'idMaster.iddolzh.dolzh_name',
         ]);
-
-        $dataProvider->sort->attributes['idUser.idperson.auth_user_fullname'] = [
-            'asc' => ["iduserperson.auth_user_fullname" => SORT_ASC],
-            'desc' => ["iduserperson.auth_user_fullname" => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idUser.iddolzh.dolzh_name'] = [
-            'asc' => ["iduserdolzh.dolzh_name" => SORT_ASC],
-            'desc' => ["iduserdolzh.dolzh_name" => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname'] = [
-            'asc' => ["idmolperson.auth_user_fullname" => SORT_ASC],
-            'desc' => ["idmolperson.auth_user_fullname" => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name'] = [
-            'asc' => ["idmoldolzh.dolzh_name" => SORT_ASC],
-            'desc' => ["idmoldolzh.dolzh_name" => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idMaster.idperson.auth_user_fullname'] = [
-            'asc' => ["idmasterperson.auth_user_fullname" => SORT_ASC],
-            'desc' => ["idmasterperson.auth_user_fullname" => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['idMaster.iddolzh.dolzh_name'] = [
-            'asc' => ["idmasterdolzh.dolzh_name" => SORT_ASC],
-            'desc' => ["idmasterdolzh.dolzh_name" => SORT_DESC],
-        ];
     }
 
     public function search($params)
@@ -210,11 +191,7 @@ class OsmotraktSearch extends Osmotrakt
 
         $this->baseRelations($query);
 
-        $query->joinWith([
-            'recoveryrecieveakts' => function ($query) {
-                $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
-            },
-        ]);
+        $query->joinWith(['recoveryrecieveakts']);
         $query->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date');
 
         $this->load($params);
@@ -243,42 +220,13 @@ class OsmotraktSearch extends Osmotrakt
         ]);
 
         $query->joinWith([
-            'idTrosnov' => function ($query) {
-                $query->from(['idTrosnov' => 'tr_osnov']);
-                $query->joinWith([
-                    'idMattraffic' => function ($query) {
-                        $query->from(['idMattraffic' => 'mattraffic']);
-                    },
-                ]);
-            },
-            'idUser' => function ($query) {
-                $query->from(['idUser' => 'employee']);
-                $query->joinWith([
-                    'idperson' => function ($query) {
-                        $query->from(['idpersonuser' => 'auth_user']);
-                    },
-                    'iddolzh' => function ($query) {
-                        $query->from(['iddolzhuser' => 'dolzh']);
-                    },
-                    'idbuild' => function ($query) {
-                        $query->from(['idbuilduser' => 'build']);
-                    },
-                ]);
-            },
-            'idMaster' => function ($query) {
-                $query->from(['idMaster' => 'employee']);
-                $query->joinWith([
-                    'idperson' => function ($query) {
-                        $query->from(['idpersonmaster' => 'auth_user']);
-                    },
-                    'iddolzh' => function ($query) {
-                        $query->from(['iddolzhmaster' => 'dolzh']);
-                    },
-                ]);
-            },
-            'idReason' => function ($query) {
-                $query->from(['idReason' => 'reason']);
-            },
+            'idTrosnov.idMattraffic',
+            'idUser.idperson idpersonuser',
+            'idUser.iddolzh iddolzhuser',
+            'idUser.idbuild idbuilduser',
+            'idMaster.idperson idpersonmaster',
+            'idMaster.iddolzh iddolzhmaster',
+            'idReason',
         ]);
 
         if (!$this->validate()) {
@@ -289,8 +237,8 @@ class OsmotraktSearch extends Osmotrakt
 
         $query->andWhere(['idMattraffic.id_material' => $params['id']]);
 
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_id'));
-        $query->andFilterWhere(Proc::WhereCunstruct($this, 'osmotrakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotrakt_id'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotrakt_date', 'date'));
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
         $query->andFilterWhere(['LIKE', 'osmotrakt_comment', $this->getAttribute('osmotrakt_comment')]);
         $query->andFilterWhere(['LIKE', 'idpersonuser.auth_user_fullname', $this->getAttribute('idUser.idperson.auth_user_fullname')]);
@@ -301,37 +249,12 @@ class OsmotraktSearch extends Osmotrakt
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idReason.reason_text',
-            'idUser.idperson.auth_user_fullname',
-            'idUser.iddolzh.dolzh_name',
-            'idUser.idbuild.build_name',
-            'idMaster.idperson.auth_user_fullname',
-            'idMaster.iddolzh.dolzh_name',
+            'idpersonuser' => 'idUser.idperson.auth_user_fullname',
+            'iddolzhuser' => 'idUser.iddolzh.dolzh_name',
+            'idbuilduser' => 'idUser.idbuild.build_name',
+            'idpersonmaster' => 'idMaster.idperson.auth_user_fullname',
+            'iddolzhmaster' => 'idMaster.iddolzh.dolzh_name',
         ]);
-
-        $dataProvider->sort->attributes['idUser.idperson.auth_user_fullname'] = [
-            'asc' => ["idpersonuser.auth_user_fullname" => SORT_ASC],
-            'desc' => ["idpersonuser.auth_user_fullname" => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['idUser.iddolzh.dolzh_name'] = [
-            'asc' => ["iddolzhuser.dolzh_name" => SORT_ASC],
-            'desc' => ["iddolzhuser.dolzh_name" => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['idUser.idbuild.build_name'] = [
-            'asc' => ["idbuilduser.build_name" => SORT_ASC],
-            'desc' => ["idbuilduser.build_name" => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['idMaster.idperson.auth_user_fullname'] = [
-            'asc' => ["idpersonmaster.auth_user_fullname" => SORT_ASC],
-            'desc' => ["idpersonmaster.auth_user_fullname" => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['idMaster.iddolzh.dolzh_name'] = [
-            'asc' => ["idpersonmaster.dolzh_name" => SORT_ASC],
-            'desc' => ["idpersonmaster.dolzh_name" => SORT_DESC],
-        ];
 
         return $dataProvider;
     }

@@ -16,19 +16,22 @@ use Yii;
  * @property Material $idParent
  * @property Mattraffic $idMattraffic
  */
-class TrMat extends \yii\db\ActiveRecord {
+class TrMat extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'tr_mat';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['id_installakt', 'id_mattraffic', 'id_parent'], 'required'],
             [['id_installakt', 'id_mattraffic', 'id_parent'], 'integer'],
@@ -40,11 +43,12 @@ class TrMat extends \yii\db\ActiveRecord {
     }
 
     // Проверка, что материальная ценность имеет акт установки
-    public function IsMaterialInstalled($attribute) {
+    public function IsMaterialInstalled($attribute)
+    {
         $query = TrOsnov::find()
-                ->joinWith(['idMattraffic'])
-                ->andWhere(['mattraffic.id_material' => $this->id_parent])
-                ->one();
+            ->joinWith(['idMattraffic'])
+            ->andWhere(['mattraffic.id_material' => $this->id_parent])
+            ->one();
 
         if (empty($query))
             $this->addError($attribute, 'Материальная ценность не установлена в кабинет. Необходимо добавить ее в акт перемещения материальной ценности в таблицу перемещения');
@@ -53,7 +57,8 @@ class TrMat extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'tr_mat_id' => 'Tr Mat ID',
             'id_installakt' => 'Акт установки',
@@ -65,75 +70,65 @@ class TrMat extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdInstallakt() {
+    public function getIdInstallakt()
+    {
         return $this->hasOne(Installakt::className(), ['installakt_id' => 'id_installakt'])->from(['idInstallakt' => Installakt::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdParent() {
+    public function getIdParent()
+    {
         return $this->hasOne(Material::className(), ['material_id' => 'id_parent'])->from(['idParent' => Material::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMattraffic() {
+    public function getIdMattraffic()
+    {
         return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->from(['idMattraffic' => Mattraffic::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrMatOsmotrs() {
+    public function getTrMatOsmotrs()
+    {
         return $this->hasMany(TrMatOsmotr::className(), ['id_tr_mat' => 'tr_mat_id'])->from(['trMatOsmotrs' => TrMatOsmotr::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrRmMats() {
+    public function getTrRmMats()
+    {
         return $this->hasMany(TrRmMat::className(), ['id_tr_mat' => 'tr_mat_id'])->from(['trRmMats' => TrRmMat::tableName()]);
     }
 
-    public function selectinputfortrmatosmotr($params) {
+    public function selectinputfortrmatosmotr($params)
+    {
 
         $method = isset($params['init']) ? 'one' : 'all';
 
         $where = isset($params['init']) ? ['like', 'tr_mat_id', $params['q'], false] : ['or', ['like', 'material_inv', $params['q']], ['like', 'material_name', $params['q']]];
 
         $query = self::find()
-                ->select(array_merge(isset($params['init']) ? [] : ['tr_mat_id AS id'], ['CONCAT_WS(", ", idMaterial.material_name, idperson.auth_user_fullname, iddolzh.dolzh_name, idMattraffic.mattraffic_number) AS text']))
-                ->joinWith([
-                    'idMattraffic' => function($query) {
-                        $query->from(['idMattraffic' => 'mattraffic']);
-                        $query->joinWith([
-                            'idMaterial' => function($query) {
-                                $query->from(['idMaterial' => 'material']);
-                            },
-                                    'idMol' => function($query) {
-                                $query->from(['idMol' => 'employee']);
-                                $query->joinWith([
-                                    'idperson' => function($query) {
-                                        $query->from(['idperson' => 'auth_user']);
-                                    },
-                                            'iddolzh' => function($query) {
-                                        $query->from(['iddolzh' => 'dolzh']);
-                                    },
-                                        ]);
-                                    },
-                                        ]);
-                                    },
-                                        ])
-                                        ->where($where)
-                                     //   ->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')')
-                                        ->limit(20)
-                                        ->asArray()
-                                        ->$method();
+            ->select(array_merge(isset($params['init']) ? [] : ['tr_mat_id AS id'], ['CONCAT_WS(", ", idMaterial.material_name, idperson.auth_user_fullname, iddolzh.dolzh_name, idMattraffic.mattraffic_number) AS text']))
+            ->joinWith([
+                'idMattraffic.idMaterial',
+                'idMattraffic.idMol.idperson',
+                'idMattraffic.idMol.iddolzh',
+            ])
+            ->where($where)
+            //   ->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')')
+            ->limit(20)
+            ->asArray()
+            ->$method();
 
-                                return $query;
-                            }
+        return $query;
+    }
 
-                        }
+}
                         

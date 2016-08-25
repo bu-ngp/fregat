@@ -114,39 +114,12 @@ class Osmotrakt extends \yii\db\ActiveRecord
         $query = self::find()
             ->select(array_merge(isset($params['init']) ? [] : ['osmotrakt_id AS id'], ['CONCAT_WS(", ", CONCAT("Акт №", osmotrakt_id), idMaterial.material_inv, idMaterial.material_name, idbuild.build_name, idTrosnov.tr_osnov_kab) AS text']))
             ->joinWith([
-                'idTrosnov' => function ($query) {
-                    $query->from(['idTrosnov' => 'tr_osnov']);
-                    $query->joinWith([
-                        'idMattraffic' => function ($query) {
-                            $query->from(['idMattraffic' => 'mattraffic']);
-                            $query->joinWith([
-                                'idMol' => function ($query) {
-                                    $query->from(['idMol' => 'employee']);
-                                    $query->joinWith([
-                                        'idperson' => function ($query) {
-                                            $query->from(['idperson' => 'auth_user']);
-                                        },
-                                        'iddolzh' => function ($query) {
-                                            $query->from(['iddolzh' => 'dolzh']);
-                                        },
-                                        'idpodraz' => function ($query) {
-                                            $query->from(['idpodraz' => 'podraz']);
-                                        },
-                                        'idbuild' => function ($query) {
-                                            $query->from(['idbuild' => 'build']);
-                                        },
-                                    ]);
-                                },
-                                'idMaterial' => function ($query) {
-                                    $query->from(['idMaterial' => 'material']);
-                                },
-                            ]);
-                        }
-                    ]);
-                },
-                'recoveryrecieveakts' => function ($query) {
-                    $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
-                },
+                'idTrosnov.idMattraffic.idMol.idperson',
+                'idTrosnov.idMattraffic.idMol.iddolzh',
+                'idTrosnov.idMattraffic.idMol.idpodraz',
+                'idTrosnov.idMattraffic.idMol.idbuild',
+                'idTrosnov.idMattraffic.idMaterial',
+                'recoveryrecieveakts',
             ])
             ->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date')
             ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])

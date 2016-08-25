@@ -11,9 +11,11 @@ use app\func\Proc;
 /**
  * MatvidSearch represents the model behind the search form about `app\models\Fregat\Matvid`.
  */
-class MatvidSearch extends Matvid {
+class MatvidSearch extends Matvid
+{
 
-    public function attributes() {
+    public function attributes()
+    {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), ['grupavids.grupavid_main']);
     }
@@ -21,7 +23,8 @@ class MatvidSearch extends Matvid {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['matvid_id'], 'integer'],
             [['matvid_name', 'grupavids.grupavid_main'], 'safe'],
@@ -31,7 +34,8 @@ class MatvidSearch extends Matvid {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -43,7 +47,8 @@ class MatvidSearch extends Matvid {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
+    public function search($params)
+    {
         $query = Matvid::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -68,7 +73,8 @@ class MatvidSearch extends Matvid {
         return $dataProvider;
     }
 
-    public function searchforgrupavid($params) {
+    public function searchforgrupavid($params)
+    {
         $query = Matvid::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -76,30 +82,28 @@ class MatvidSearch extends Matvid {
             'sort' => ['defaultOrder' => ['matvid_name' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['grupavids' => function($query) {
-                $query->from(['grupavids' => 'grupavid']);
-            }]);
+        $query->joinWith(['grupavids']);
 
-                $this->load($params);
+        $this->load($params);
 
-                if (!$this->validate()) {
-                    // uncomment the following line if you do not want to return any records when validation fails
-                    // $query->where('0=1');
-                    return $dataProvider;
-                }
-
-                $query->andFilterWhere([
-                    'matvid_id' => $this->matvid_id,
-                ]);
-
-                $query->andFilterWhere(['like', 'matvid_name', $this->matvid_name]);
-
-                $query->andFilterWhere(['like', 'grupavids.grupa_main', $this->getAttribute('grupavids.grupa_main')]);
-
-                Proc::AssignRelatedAttributes($dataProvider, ['grupavids.grupa_main']);
-
-                return $dataProvider;
-            }
-
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
         }
+
+        $query->andFilterWhere([
+            'matvid_id' => $this->matvid_id,
+        ]);
+
+        $query->andFilterWhere(['like', 'matvid_name', $this->matvid_name]);
+
+        $query->andFilterWhere(['like', 'grupavids.grupa_main', $this->getAttribute('grupavids.grupa_main')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, ['grupavids.grupa_main']);
+
+        return $dataProvider;
+    }
+
+}
         

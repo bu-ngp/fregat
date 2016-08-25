@@ -11,9 +11,11 @@ use app\func\Proc;
 /**
  * MattrafficSearch represents the model behind the search form about `app\models\Fregat\Mattraffic`.
  */
-class MattrafficSearch extends Mattraffic {
+class MattrafficSearch extends Mattraffic
+{
 
-    public function attributes() {
+    public function attributes()
+    {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
             'idMaterial.material_tip',
@@ -46,31 +48,32 @@ class MattrafficSearch extends Mattraffic {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['mattraffic_id', 'id_material', 'id_mol', 'mattraffic_tip', 'idMaterial.material_tip', 'idMol.employee_id', 'idMaterial.material_writeoff', 'idMaterial.material_importdo'], 'integer'],
             [['mattraffic_date', 'mattraffic_username', 'mattraffic_lastchange',
-            'idMaterial.idMatv.matvid_name',
-            'idMaterial.material_name',
-            'idMaterial.material_inv',
-            'idMaterial.material_serial',
-            'idMaterial.material_release',
-            'idMaterial.idIzmer.izmer_name',
-            'idMol.idperson.auth_user_fullname',
-            'idMol.iddolzh.dolzh_name',
-            'idMol.idpodraz.podraz_name',
-            'idMol.idbuild.build_name',
-            'idMol.employee_dateinactive',
-            'idMaterial.material_username',
-            'idMaterial.material_lastchange',
-            'idMol.employee_username',
-            'idMol.employee_lastchange',
-            'idMol.employee_importdo',
-            'mattraffic_username',
-            'mattraffic_lastchange',
-            'trOsnovs.tr_osnov_kab',
-            'trMats.idParent.material_inv',
-                ], 'safe'],
+                'idMaterial.idMatv.matvid_name',
+                'idMaterial.material_name',
+                'idMaterial.material_inv',
+                'idMaterial.material_serial',
+                'idMaterial.material_release',
+                'idMaterial.idIzmer.izmer_name',
+                'idMol.idperson.auth_user_fullname',
+                'idMol.iddolzh.dolzh_name',
+                'idMol.idpodraz.podraz_name',
+                'idMol.idbuild.build_name',
+                'idMol.employee_dateinactive',
+                'idMaterial.material_username',
+                'idMaterial.material_lastchange',
+                'idMol.employee_username',
+                'idMol.employee_lastchange',
+                'idMol.employee_importdo',
+                'mattraffic_username',
+                'mattraffic_lastchange',
+                'trOsnovs.tr_osnov_kab',
+                'trMats.idParent.material_inv',
+            ], 'safe'],
             [['mattraffic_number', 'idMaterial.material_number', 'idMaterial.material_price'], 'number'],
         ];
     }
@@ -78,276 +81,252 @@ class MattrafficSearch extends Mattraffic {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    private function baseRelations(&$query) {
+    private function baseRelations(&$query)
+    {
         $query->joinWith([
-            'idMaterial' => function($query) {
-                $query->from(['idMaterial' => 'material']);
-                $query->joinWith([
-                    'idMatv' => function($query) {
-                        $query->from(['idMatv' => 'matvid']);
-                    },
-                            'idIzmer' => function($query) {
-                        $query->from(['idIzmer' => 'izmer']);
-                    },
-                        ]);
-                    },
-                            'idMol' => function($query) {
-                        $query->from(['idMol' => 'employee']);
-                        $query->joinWith([
-                            'idperson' => function($query) {
-                                $query->from(['idperson' => 'auth_user']);
-                            },
-                                    'iddolzh' => function($query) {
-                                $query->from(['iddolzh' => 'dolzh']);
-                            },
-                                    'idpodraz' => function($query) {
-                                $query->from(['idpodraz' => 'podraz']);
-                            },
-                                    'idbuild' => function($query) {
-                                $query->from(['idbuild' => 'build']);
-                            },
-                                ]);
-                            }]);
-                            }
+            'idMaterial.idMatv',
+            'idMaterial.idIzmer',
+            'idMol.idperson',
+            'idMol.iddolzh',
+            'idMol.idpodraz',
+            'idMol.idbuild',
+        ]);
+    }
 
-                            private function baseFilter(&$query) {
-                                $query->andFilterWhere([
-                                    'mattraffic_id' => $this->mattraffic_id,
-                                    'mattraffic_date' => $this->mattraffic_date,
-                                    'mattraffic_number' => $this->mattraffic_number,
-                                    'mattraffic_tip' => $this->mattraffic_tip,
-                                    'id_material' => $this->id_material,
-                                    'id_mol' => $this->id_mol,
-                                ]);
+    private function baseFilter(&$query)
+    {
+        $query->andFilterWhere([
+            'mattraffic_id' => $this->mattraffic_id,
+            'mattraffic_date' => $this->mattraffic_date,
+            'mattraffic_number' => $this->mattraffic_number,
+            'mattraffic_tip' => $this->mattraffic_tip,
+            'id_material' => $this->id_material,
+            'id_mol' => $this->id_mol,
+        ]);
 
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
-                                $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMaterial.idMatv.matvid_name')]);
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMaterial.material_release', 'date'));
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMaterial.material_number'));
-                                $query->andFilterWhere(['LIKE', 'idIzmer.izmer_name', $this->getAttribute('idMaterial.idIzmer.izmer_name')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMaterial.material_price'));
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMol.employee_id'));
-                                $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMol.idperson.auth_user_fullname')]);
-                                $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMol.iddolzh.dolzh_name')]);
-                                $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idMol.idpodraz.podraz_name')]);
-                                $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMol.employee_dateinactive', 'date'));
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_writeoff', $this->getAttribute('idMaterial.material_writeoff')]);
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_username', $this->getAttribute('idMaterial.material_username')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMaterial.material_lastchange', 'datetime'));
-                                $query->andFilterWhere(['LIKE', 'idMaterial.material_importdo', $this->getAttribute('idMaterial.material_importdo')]);
-                                $query->andFilterWhere(['LIKE', 'idMol.employee_username', $this->getAttribute('idMol.employee_username')]);
-                                $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'idMol.employee_lastchange', 'datetime'));
-                                $query->andFilterWhere(['LIKE', 'idMol.employee_importdo', $this->getAttribute('idMol.employee_importdo')]);
-                                $query->andFilterWhere(['LIKE', 'mattraffic_username', $this->getAttribute('mattraffic_username')]);
-                                $query->andFilterWhere(Proc::WhereCunstruct($this, 'mattraffic_lastchange', 'datetime'));
-                            }
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
+        $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMaterial.idMatv.matvid_name')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_release', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_number'));
+        $query->andFilterWhere(['LIKE', 'idIzmer.izmer_name', $this->getAttribute('idMaterial.idIzmer.izmer_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_price'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_id'));
+        $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMol.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idMol.idpodraz.podraz_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_dateinactive', 'date'));
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_writeoff', $this->getAttribute('idMaterial.material_writeoff')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_username', $this->getAttribute('idMaterial.material_username')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_lastchange', 'datetime'));
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_importdo', $this->getAttribute('idMaterial.material_importdo')]);
+        $query->andFilterWhere(['LIKE', 'idMol.employee_username', $this->getAttribute('idMol.employee_username')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_lastchange', 'datetime'));
+        $query->andFilterWhere(['LIKE', 'idMol.employee_importdo', $this->getAttribute('idMol.employee_importdo')]);
+        $query->andFilterWhere(['LIKE', 'mattraffic_username', $this->getAttribute('mattraffic_username')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_lastchange', 'datetime'));
+    }
 
-                            private function baseSort(&$dataProvider) {
-                                Proc::AssignRelatedAttributes($dataProvider, [
-                                    'idMaterial.material_tip',
-                                    'idMaterial.idMatv.matvid_name',
-                                    'idMaterial.material_name',
-                                    'idMaterial.material_inv',
-                                    'idMaterial.material_serial',
-                                    'idMaterial.material_release',
-                                    'idMaterial.material_number',
-                                    'idMaterial.idIzmer.izmer_name',
-                                    'idMaterial.material_price',
-                                    'idMol.employee_id',
-                                    'idMol.idperson.auth_user_fullname',
-                                    'idMol.iddolzh.dolzh_name',
-                                    'idMol.idpodraz.podraz_name',
-                                    'idMol.idbuild.build_name',
-                                    'idMol.employee_dateinactive',
-                                    'idMaterial.material_writeoff',
-                                    'idMaterial.material_username',
-                                    'idMaterial.material_lastchange',
-                                    'idMaterial.material_importdo',
-                                    'idMol.employee_username',
-                                    'idMol.employee_lastchange',
-                                    'idMol.employee_importdo',
-                                ]);
-                            }
+    private function baseSort(&$dataProvider)
+    {
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idMaterial.material_tip',
+            'idMaterial.idMatv.matvid_name',
+            'idMaterial.material_name',
+            'idMaterial.material_inv',
+            'idMaterial.material_serial',
+            'idMaterial.material_release',
+            'idMaterial.material_number',
+            'idMaterial.idIzmer.izmer_name',
+            'idMaterial.material_price',
+            'idMol.employee_id',
+            'idMol.idperson.auth_user_fullname',
+            'idMol.iddolzh.dolzh_name',
+            'idMol.idpodraz.podraz_name',
+            'idMol.idbuild.build_name',
+            'idMol.employee_dateinactive',
+            'idMaterial.material_writeoff',
+            'idMaterial.material_username',
+            'idMaterial.material_lastchange',
+            'idMaterial.material_importdo',
+            'idMol.employee_username',
+            'idMol.employee_lastchange',
+            'idMol.employee_importdo',
+        ]);
+    }
 
-                            public function search($params) {
-                                $query = Mattraffic::find();
+    public function search($params)
+    {
+        $query = Mattraffic::find();
 
-                                $dataProvider = new ActiveDataProvider([
-                                    'query' => $query,
-                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
-                                ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
 
-                                $this->baseRelations($query);
+        $this->baseRelations($query);
 
-                                $this->load($params);
+        $this->load($params);
 
-                                if (!$this->validate()) {
-                                    // uncomment the following line if you do not want to return any records when validation fails
-                                    // $query->where('0=1');
-                                    return $dataProvider;
-                                }
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
-                                $this->baseFilter($query);
-                                $this->baseSort($dataProvider);
+        $this->baseFilter($query);
+        $this->baseSort($dataProvider);
 
-                                return $dataProvider;
-                            }
+        return $dataProvider;
+    }
 
-                            public function searchforinstallakt($params) {
-                                $query = Mattraffic::find();
+    public function searchforinstallakt($params)
+    {
+        $query = Mattraffic::find();
 
-                                $dataProvider = new ActiveDataProvider([
-                                    'query' => $query,
-                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
-                                ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
 
-                                $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                        ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
 
-                                $this->baseRelations($query);
+        $this->baseRelations($query);
 
-                                $query->andWhere('mattraffic_number > 0')
-                                        ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-                                        ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                                        ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]]);
+        $query->andWhere('mattraffic_number > 0')
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]]);
 
-                                $this->load($params);
+        $this->load($params);
 
-                                if (!$this->validate()) {
-                                    // uncomment the following line if you do not want to return any records when validation fails
-                                    // $query->where('0=1');
-                                    return $dataProvider;
-                                }
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
-                                $this->baseFilter($query);
-                                $this->baseSort($dataProvider);
+        $this->baseFilter($query);
+        $this->baseSort($dataProvider);
 
-                                return $dataProvider;
-                            }
+        return $dataProvider;
+    }
 
-                            public function searchforosmotrakt($params) {
-                                $query = Mattraffic::find();
+    public function searchforosmotrakt($params)
+    {
+        $query = Mattraffic::find();
 
-                                $dataProvider = new ActiveDataProvider([
-                                    'query' => $query,
-                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
-                                ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
 
-                                $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                        ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
 
-                                $this->baseRelations($query);
+        $this->baseRelations($query);
 
-                                $query->andWhere('mattraffic_number > 0')
-                                        ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-                                        ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                                        ->andWhere(['tr_osnov.id_mattraffic' => NULL])
-                                        ->andWhere(['idMaterial.material_tip' => 1]);
+        $query->andWhere('mattraffic_number > 0')
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->andWhere(['tr_osnov.id_mattraffic' => NULL])
+            ->andWhere(['idMaterial.material_tip' => 1]);
 
-                                $this->load($params);
+        $this->load($params);
 
-                                if (!$this->validate()) {
-                                    // uncomment the following line if you do not want to return any records when validation fails
-                                    // $query->where('0=1');
-                                    return $dataProvider;
-                                }
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
-                                $this->baseFilter($query);
-                                $this->baseSort($dataProvider);
+        $this->baseFilter($query);
+        $this->baseSort($dataProvider);
 
-                                return $dataProvider;
-                            }
+        return $dataProvider;
+    }
 
-                            public function searchforinstallakt_mat($params) {
-                                $query = Mattraffic::find();
+    public function searchforinstallakt_mat($params)
+    {
+        $query = Mattraffic::find();
 
-                                $dataProvider = new ActiveDataProvider([
-                                    'query' => $query,
-                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
-                                ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
 
-                                $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                                        ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' )'); //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' )'); //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
 
 
-                                $this->baseRelations($query);
+        $this->baseRelations($query);
 
-                                $query->andWhere('mattraffic_number > 0')
-                                        ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-                                        ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                                        ->andWhere(['tr_mat.id_mattraffic' => NULL])
-                                        ->andWhere(['idMaterial.material_tip' => 2]);
+        $query->andWhere('mattraffic_number > 0')
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->andWhere(['tr_mat.id_mattraffic' => NULL])
+            ->andWhere(['idMaterial.material_tip' => 2]);
 
-                                $this->load($params);
+        $this->load($params);
 
-                                if (!$this->validate()) {
-                                    // uncomment the following line if you do not want to return any records when validation fails
-                                    // $query->where('0=1');
-                                    return $dataProvider;
-                                }
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
-                                $this->baseFilter($query);
-                                $this->baseSort($dataProvider);
+        $this->baseFilter($query);
+        $this->baseSort($dataProvider);
 
-                                return $dataProvider;
-                            }
+        return $dataProvider;
+    }
 
-                            public function searchformaterialmattraffic($params) {
-                                $query = Mattraffic::find();
+    public function searchformaterialmattraffic($params)
+    {
+        $query = Mattraffic::find();
 
-                                $dataProvider = new ActiveDataProvider([
-                                    'query' => $query,
-                                    'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
-                                ]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
 
-                                $this->baseRelations($query);
-                                $query->joinWith([
-                                    'trOsnovs' => function($query) {
-                                        $query->from(['trOsnovs' => 'tr_osnov']);
-                                    },
-                                            'trMats' => function($query) {
-                                        $query->from(['trMats' => 'tr_mat']);
-                                        $query->joinWith([
-                                            'idParent' => function($query) {
-                                                $query->from(['idParent' => 'material']);
-                                            },
-                                                ]);
-                                            },
-                                                ]);
+        $this->baseRelations($query);
+        $query->joinWith(['trOsnovs', 'trMats.idParent']);
 
-                                                $query->andWhere(['id_material' => $params['id']]);
+        $query->andWhere(['id_material' => $params['id']]);
 
-                                                $this->load($params);
+        $this->load($params);
 
-                                                if (!$this->validate()) {
-                                                    // uncomment the following line if you do not want to return any records when validation fails
-                                                    // $query->where('0=1');
-                                                    return $dataProvider;
-                                                }
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
-                                                $this->baseFilter($query);
-                                                $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
-                                                $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('trMats.idParent.material_inv')]);
+        $this->baseFilter($query);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('trMats.idParent.material_inv')]);
 
-                                                $this->baseSort($dataProvider);
-                                                Proc::AssignRelatedAttributes($dataProvider, [
-                                                    'trOsnovs.tr_osnov_kab',
-                                                    'trMats.idParent.material_inv',
-                                                ]);
+        $this->baseSort($dataProvider);
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'trOsnovs.tr_osnov_kab',
+            'trMats.idParent.material_inv',
+        ]);
 
-                                                return $dataProvider;
-                                            }
+        return $dataProvider;
+    }
 
-                                        }
+}
                                         

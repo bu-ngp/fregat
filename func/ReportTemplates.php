@@ -18,7 +18,8 @@ use app\models\Fregat\Removeakt;
 use app\models\Fregat\Osmotraktmat;
 use app\models\Fregat\TrMatOsmotr;
 
-class ReportTemplates {
+class ReportTemplates
+{
 
     private static $Dopparams; // Дополнительные переменные POST, отправленные Ajax запросом
     private static $style = [ // Стиль ячеек в Excel
@@ -124,14 +125,16 @@ class ReportTemplates {
         ],
     ];
 
-    private static function CellsWrapAndTop(&$objPHPExcel, $CellCoordinate) {
+    private static function CellsWrapAndTop(&$objPHPExcel, $CellCoordinate)
+    {
         $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
     }
 
     // Читаем дополнительные параметры из URL
 
-    public static function GetDopparams() {
+    public static function GetDopparams()
+    {
         $dopparams = json_decode(Yii::$app->request->post()['dopparams']);
         if (!empty($dopparams))
             self::$Dopparams = $dopparams;
@@ -140,7 +143,8 @@ class ReportTemplates {
     }
 
     // Вывод акта осмотра по id
-    public static function Osmotrakt() {
+    public static function Osmotrakt()
+    {
         self::GetDopparams(); // Читаем дополнительные параметры из URL
 
         $objPHPExcel = Proc::CreateExcelPHP('osmotrakt'); // Создаем объект PHPExcel
@@ -163,7 +167,8 @@ class ReportTemplates {
     }
 
     // Вывод акта отправки материальной ценности от сторонней организации
-    public static function Recoverysendakt() {
+    public static function Recoverysendakt()
+    {
         self::GetDopparams(); // Читаем дополнительные параметры из URL
 
         $objPHPExcel = Proc::CreateExcelPHP('recoverysendakt'); // Создаем объект PHPExcel
@@ -211,7 +216,8 @@ class ReportTemplates {
     }
 
     // Вывод акта получения материальной ценности от сторонней организации 
-    public static function Recoveryrecieveakt() {
+    public static function Recoveryrecieveakt()
+    {
         self::GetDopparams(); // Читаем дополнительные параметры из URL
 
         $objPHPExcel = Proc::CreateExcelPHP('recoveryrecieveakt'); // Создаем объект PHPExcel
@@ -219,8 +225,8 @@ class ReportTemplates {
         $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
         $Recoveryrecieveakt_ok = Recoveryrecieveakt::findAll(['id_recoverysendakt' => self::$Dopparams->id, 'recoveryrecieveakt_repaired' => 2]);
         $Recoveryrecieveakt_fail = Recoveryrecieveakt::find()
-                ->andWhere(['and', ['id_recoverysendakt' => self::$Dopparams->id], ['or', ['recoveryrecieveakt_repaired' => 1], ['recoveryrecieveakt_repaired' => NULL]]])
-                ->all();
+            ->andWhere(['and', ['id_recoverysendakt' => self::$Dopparams->id], ['or', ['recoveryrecieveakt_repaired' => 1], ['recoveryrecieveakt_repaired' => NULL]]])
+            ->all();
         $Mols = Recoveryrecieveakt::getMolsByRecoverysendakt(self::$Dopparams->id);
 
         $objPHPExcel->getActiveSheet()->setCellValue('F4', $Recoverysendakt->idOrgan->organ_name);
@@ -285,7 +291,8 @@ class ReportTemplates {
     }
 
     // Вывод акта перемещения материальной ценности по id
-    public static function Installakt() {
+    public static function Installakt()
+    {
         self::GetDopparams(); // Читаем дополнительные параметры из URL
 
         $objPHPExcel = Proc::CreateExcelPHP('installakt'); // Создаем объект PHPExcel
@@ -390,10 +397,10 @@ class ReportTemplates {
                 $num++;
 
                 $Matparent = TrOsnov::find()
-                        ->joinWith(['idMattraffic', 'idInstallakt'])
-                        ->andWhere(['mattraffic.id_material' => $arm->id_parent])
-                        ->orderBy(['installakt.installakt_date' => SORT_DESC])
-                        ->one();
+                    ->joinWith(['idMattraffic', 'idInstallakt'])
+                    ->andWhere(['mattraffic.id_material' => $arm->id_parent])
+                    ->orderBy(['installakt.installakt_date' => SORT_DESC])
+                    ->one();
 
                 $material_tip = Material::VariablesValues('material_tip');
 
@@ -443,11 +450,11 @@ class ReportTemplates {
                 $num++;
 
                 $MatbyParent = TrMat::find()
-                        ->andWhere([
-                            'id_parent' => $Matparent->idMattraffic->id_material,
-                            'id_installakt' => $Installakt->installakt_id,
-                        ])
-                        ->all();
+                    ->andWhere([
+                        'id_parent' => $Matparent->idMattraffic->id_material,
+                        'id_installakt' => $Installakt->installakt_id,
+                    ])
+                    ->all();
 
                 $c_MatbyParent = count($MatbyParent);
                 $startrow = $num;
@@ -520,17 +527,18 @@ class ReportTemplates {
     }
 
     // Вывод акта снятия комплектующих с материальных ценностей по id
-    public static function Removeakt() {
+    public static function Removeakt()
+    {
         self::GetDopparams(); // Читаем дополнительные параметры из URL
 
         $objPHPExcel = Proc::CreateExcelPHP('removeakt'); // Создаем объект PHPExcel
 
         $Removeakt = Removeakt::findOne(self::$Dopparams->id);
         $Trmat = TrMat::find()
-                ->innerJoinWith(['trRmMats'])
-                ->andWhere(['tr_rm_mat.id_removeakt' => self::$Dopparams->id])
-                ->GroupBy('id_parent')
-                ->all();
+            ->innerJoinWith(['trRmMats'])
+            ->andWhere(['tr_rm_mat.id_removeakt' => self::$Dopparams->id])
+            ->GroupBy('id_parent')
+            ->all();
 
         $objPHPExcel->getActiveSheet()->setCellValue('A3', 'комплектующих № ' . $Removeakt->removeakt_id . ' от ' . Yii::$app->formatter->asDate($Removeakt->removeakt_date));
 
@@ -571,10 +579,10 @@ class ReportTemplates {
                 $num++;
 
                 $Matparent = TrOsnov::find()
-                        ->joinWith(['idMattraffic', 'idInstallakt'])
-                        ->andWhere(['mattraffic.id_material' => $arm->id_parent])
-                        ->orderBy(['installakt.installakt_date' => SORT_DESC])
-                        ->one();
+                    ->joinWith(['idMattraffic', 'idInstallakt'])
+                    ->andWhere(['mattraffic.id_material' => $arm->id_parent])
+                    ->orderBy(['installakt.installakt_date' => SORT_DESC])
+                    ->one();
 
                 $material_tip = Material::VariablesValues('material_tip');
 
@@ -624,503 +632,503 @@ class ReportTemplates {
                 $num++;
 
                 $MatbyParent = TrMat::find()
-                        ->joinWith([
-                            'trRmMats' => function ($query) {
-                                $query->from(['trRmMats' => 'tr_rm_mat']);
-                            },
-                                ])
-                                ->andWhere([
-                                    'id_parent' => $Matparent->idMattraffic->id_material,
-                                    'trRmMats.id_removeakt' => $Removeakt->removeakt_id,
-                                ])
-                                ->all();
+                    ->joinWith(['trRmMats'])
+                    ->andWhere([
+                        'id_parent' => $Matparent->idMattraffic->id_material,
+                        'trRmMats.id_removeakt' => $Removeakt->removeakt_id,
+                    ])
+                    ->all();
 
-                        $c_MatbyParent = count($MatbyParent);
-                        $startrow = $num;
-                        foreach ($MatbyParent as $ar) {
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - $startrow + 1);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idMattraffic->idMaterial->idMatv->matvid_name);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idMattraffic->idMaterial->material_name);
-                            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release, 'YYYY'));
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idMattraffic->idMaterial->material_price);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
-                            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$ar->idMattraffic->idMaterial->material_tip]);
-                            for ($i = 0; $i <= 10; $i++)
-                                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
-                            $num++;
-                        }
-                        self::CellsWrapAndTop($objPHPExcel, 'A' . $startrow . ':K' . $num);
-                        $num++;
-                    }
+                $c_MatbyParent = count($MatbyParent);
+                $startrow = $num;
+                foreach ($MatbyParent as $ar) {
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - $startrow + 1);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idMattraffic->idMaterial->idMatv->matvid_name);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idMattraffic->idMaterial->material_name);
+                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release, 'YYYY'));
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idMattraffic->idMaterial->material_price);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$ar->idMattraffic->idMaterial->material_tip]);
+                    for ($i = 0; $i <= 10; $i++)
+                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['data']);
+                    $num++;
                 }
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, '(Подпись)');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, '(Должность)');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, '(Ф.И.О.)');
-                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
-                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
-                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['sign']);
+                self::CellsWrapAndTop($objPHPExcel, 'A' . $startrow . ':K' . $num);
                 $num++;
-
-                $Mols = Removeakt::getMolsByRemoveakt($Removeakt->removeakt_id);
-                foreach ($Mols as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материально ответственное лицо');
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
-
-                    for ($i = 2; $i <= 10; $i++)
-                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
-
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->dolzh_name_tmp);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->auth_user_fullname_tmp);
-
-                    self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
-                    $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
-
-                    $num++;
-                }
-
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Демонтажник');
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
-                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
-                for ($i = 2; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
-
-                $Remover = Employee::findOne($Removeakt->id_remover);
-                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
-                $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $Remover->iddolzh->dolzh_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Remover->idperson->auth_user_fullname);
-
-                self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
-                $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
-
-                Proc::DownloadExcelPHP($objPHPExcel, 'Акт снятия комплектующих с матер-ых цен-тей №' . $Removeakt->removeakt_id); // Скачиваем сформированный отчет
             }
-
-            // Вывод акта осмотра материалов
-            public static function Osmotraktmat() {
-                self::GetDopparams(); // Читаем дополнительные параметры из URL
-
-                $objPHPExcel = Proc::CreateExcelPHP('osmotraktmat'); // Создаем объект PHPExcel
-
-                $Osmotraktmat = Osmotraktmat::findOne(self::$Dopparams->id);
-                $TrMatOsmotr = TrMatOsmotr::findAll(['id_osmotraktmat' => self::$Dopparams->id]);
-                $Mols = TrMatOsmotr::getMolsByTrMatOsmotr(self::$Dopparams->id);
-
-                $objPHPExcel->getActiveSheet()->setCellValue('A3', 'материалов № ' . $Osmotraktmat->osmotraktmat_id . ' от ' . Yii::$app->formatter->asDate($Osmotraktmat->osmotraktmat_date));
-
-                $num = 7;
-                foreach ($TrMatOsmotr as $ar) {
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 6);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMat->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, !empty($ar->idTrMat->idParent) ? ('Инв. номер: ' . $ar->idTrMat->idParent->material_inv . ', ' . $ar->idTrMat->idParent->material_name) : '');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->tr_mat_osmotr_number);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idReason->reason_text . (empty($ar->idReason->reason_text) ? '' : '. ') . $ar->tr_mat_osmotr_comment);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->primaryKey));
-                    $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num);
-
-                $crows = count($TrMatOsmotr);
-                $num = 8;
-                foreach ($Mols as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 9, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
-
-                Proc::DownloadExcelPHP($objPHPExcel, 'Акт осмотра материалов №' . $Osmotraktmat->primaryKey); // Скачиваем сформированный отчет
-            }
-
-            // Вывод акта отправки материала от сторонней организации
-            public static function Recoverysendaktmat() {
-                self::GetDopparams(); // Читаем дополнительные параметры из URL
-                $objPHPExcel = Proc::CreateExcelPHP('recoverysendaktmat'); // Создаем объект PHPExcel
-
-                $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
-                $Recoveryrecieveaktmat = Recoveryrecieveaktmat::findAll(['id_recoverysendakt' => self::$Dopparams->id]);
-                $Mols = Recoveryrecieveaktmat::getMolsByRecoverysendakt(self::$Dopparams->id);
-
-                $objPHPExcel->getActiveSheet()->setCellValue('A3', 'сторонней организации № ' . $Recoverysendakt->recoverysendakt_id . ' от ' . Yii::$app->formatter->asDate($Recoverysendakt->recoverysendakt_date));
-                $objPHPExcel->getActiveSheet()->setCellValue('C4', $Recoverysendakt->idOrgan->organ_name);
-
-                $material_tip = Material::VariablesValues('material_tip');
-
-                $num = 9;
-                foreach ($Recoveryrecieveaktmat as $ar) {
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 8);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idTrMatOsmotr->idReason->reason_text . (empty($ar->idTrMatOsmotr->idReason->reason_text) ? '' : '. ') . $ar->idTrMatOsmotr->tr_mat_osmotr_comment);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->idTrMatOsmotr->tr_mat_osmotr_id));
-                    $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num);
-
-                $crows = count($Recoveryrecieveaktmat);
-                $num = 10;
-                foreach ($Mols as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 9, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
-
-                Proc::DownloadExcelPHP($objPHPExcel, 'Акт передачи материалов сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
-            }
-
-            // Вывод акта получения материала у сторонней организации
-            public static function Recoveryrecieveaktmat() {
-                self::GetDopparams(); // Читаем дополнительные параметры из URL
-                $objPHPExcel = Proc::CreateExcelPHP('recoveryrecieveaktmat'); // Создаем объект PHPExcel
-
-                $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
-                $Recoveryrecieveaktmat_ok = Recoveryrecieveaktmat::find()
-                                ->andWhere(['id_recoverysendakt' => self::$Dopparams->id, 'recoveryrecieveaktmat_repaired' => 2])->all();
-                $Recoveryrecieveaktmat_fail = Recoveryrecieveaktmat::find()
-                        ->andWhere(['and', ['id_recoverysendakt' => self::$Dopparams->id], ['or', ['recoveryrecieveaktmat_repaired' => 1], ['recoveryrecieveaktmat_repaired' => NULL]]])
-                        ->all();
-                $Mols = Recoveryrecieveaktmat::getMolsByRecoverysendakt(self::$Dopparams->id);
-
-                $objPHPExcel->getActiveSheet()->setCellValue('F4', $Recoverysendakt->idOrgan->organ_name);
-                $objPHPExcel->getActiveSheet()->setCellValue('F5', $Recoverysendakt->recoverysendakt_id . ' от ' . Yii::$app->formatter->asDate($Recoverysendakt->recoverysendakt_date));
-                $objPHPExcel->getActiveSheet()->setCellValue('F6', Yii::$app->formatter->asDate(date('Y-m-d')));
-
-                $material_tip = Material::VariablesValues('material_tip');
-
-                $num = 11;
-                foreach ($Recoveryrecieveaktmat_ok as $ar) {
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 10);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->recoveryrecieveaktmat_result);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
-
-                    $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num);
-
-                $crows = count($Recoveryrecieveaktmat_ok);
-                $num = 15;
-                foreach ($Recoveryrecieveaktmat_fail as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, $num + $crows - 16);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num + $crows, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num + $crows, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar->recoveryrecieveaktmat_result);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num + $crows, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
-                    $objPHPExcel->getActiveSheet()->getStyle('A' . $num + $crows . ':K' . $num + $crows)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
-
-                $crows = count($Recoveryrecieveaktmat_ok) + count($Recoveryrecieveaktmat_fail);
-                $num = 17;
-                foreach ($Mols as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 10, $num + $crows);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
-                    $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
-                    $num++;
-                }
-                $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
-
-                Proc::DownloadExcelPHP($objPHPExcel, 'Акт получения материалов у сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
-            }
-
-            public static function Recoverysendakt_ExportExcel() {
-                $objPHPExcel = new \PHPExcel;
-                $reportName = 'Выгрузка';
-
-                /* Границы таблицы */
-                $ramka = array(
-                    'borders' => array(
-                        'allborders' => [
-                            'style' => \PHPExcel_Style_Border::BORDER_THIN,
-                        ],
-                    ),
-                );
-
-                /* Жирный шрифт для шапки таблицы */
-                $font = array(
-                    'font' => array(
-                        'bold' => true
-                    ),
-                    'alignment' => array(
-                        'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
-                    )
-                );
-
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                        'size' => 14
-                    ],
-                ]);
-
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 2)->applyFromArray([
-                    'font' => [
-                        'italic' => true
-                    ]
-                ]);
-
-                $params = Yii::$app->request->queryParams;
-                $inputdata = json_decode($params['inputdata']);
-                //   $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
-                //   $selectvalues = (array) $selectvalues;
-
-                $filter = 'Фильтр:';
-
-                /*  foreach ($fields[$modelName] as $attr => $value) {
-                  $val_result = $value;
-                  if (!empty($value)) {
-                  if (isset($selectvalues[$modelName . '[' . $attr . ']']))
-                  $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
-
-                  $filter .= ' ' . $labels[$attr] . ': "' . $val_result . '";';
-                  }
-                  } */
-
-                /*   if ($ModelFilter instanceof Model) {
-                  $dopfilter = self::ConstructFilterOutput($ModelFilter);
-                  if (!empty($dopfilter))
-                  $filter .= ' ' . $dopfilter;
-                  } */
-
-                $num = 5;
-
-                //  $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, 10, 1);
-
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Тип материальной ценности');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Вид материальной ценности');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Наименование');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Инвентарный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Серийный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Дата выпуска');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Стоимость');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Списание');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Количество');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Единица измерения');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, 'Материально-ответственное лицо');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, 'Здание');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, 'Кабинет');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, 'Укомплектовано в');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, 'Инвентарный номер мат-ой цен-ти в которую укомплектовано');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, 'Номер акта осмотра');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, 'Дата акта осмотра');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Вид акта осмотра');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, 'Мастер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, 'Причина неисправности');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, 'Пользователь');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, 'Организация');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, 'Дата отправки');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, 'Дата получения');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, 'Результат');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, 'Подлежит восстановлению');
-
-                for ($i = 1; $i <= 26; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($font);
-
-                $num++;
-
-                $Recoveryrecieveakt = Recoveryrecieveakt::find()
-                        ->joinWith([
-                            'idRecoverysendakt.idOrgan',
-                            'idOsmotrakt.idReason',
-                            'idOsmotrakt.idUser idUser',
-                            'idOsmotrakt.idMaster idMaster',
-                            'idOsmotrakt.idUser.idperson idpersonuser',
-                            'idOsmotrakt.idUser.iddolzh iddolzhuser',
-                            'idOsmotrakt.idMaster.idperson idpersonmaster',
-                            'idOsmotrakt.idMaster.iddolzh iddolzhmaster',
-                            'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.idMatv',
-                            'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.idIzmer',
-                            'idOsmotrakt.idTrosnov.idMattraffic.idMol.idperson',
-                            'idOsmotrakt.idTrosnov.idMattraffic.idMol.iddolzh',
-                            'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild',
-                        ])
-                        ->orderBy(['osmotrakt.osmotrakt_date' => SORT_ASC])
-                        ->all();
-
-                $material_tip = Material::VariablesValues('material_tip');
-                $material_writeoff = Material::VariablesValues('material_writeoff');
-                $recoveryrecieveakt_repaired = Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired');
-
-                foreach ($Recoveryrecieveakt as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 5);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $material_tip[$ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_tip]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(5, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, Yii::$app->formatter->asDate($ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_release));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_price);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $material_writeoff[$ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_writeoff]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 1);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, '');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, '');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idOsmotrakt->osmotrakt_id);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, Yii::$app->formatter->asDate($ar->idOsmotrakt->osmotrakt_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Материальная ценность');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, $ar->idOsmotrakt->idMaster->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idMaster->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, (empty($ar->idOsmotrakt->idReason->reason_text) ? '' : ($ar->idOsmotrakt->idReason->reason_text . ', ')) . $ar->idOsmotrakt->osmotrakt_comment);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, $ar->idOsmotrakt->idUser->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idUser->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, $ar->idRecoverysendakt->idOrgan->organ_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, Yii::$app->formatter->asDate($ar->idRecoverysendakt->recoverysendakt_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveakt_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, $ar->recoveryrecieveakt_result);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, empty($ar->recoveryrecieveakt_repaired) ? '' : $recoveryrecieveakt_repaired[$ar->recoveryrecieveakt_repaired]);
-
-                    $num++;
-                }
-
-                $Recoveryrecieveaktmat = Recoveryrecieveaktmat::find()
-                        ->joinWith([
-                            'idRecoverysendakt.idOrgan',
-                            'idTrMatOsmotr.idReason',
-                            'idTrMatOsmotr.idOsmotraktmat.idMaster idMaster',
-                            'idTrMatOsmotr.idOsmotraktmat.idMaster.idperson idpersonmaster',
-                            'idTrMatOsmotr.idOsmotraktmat.idMaster.iddolzh iddolzhmaster',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.idMatv',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.idIzmer',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild',
-                            'idTrMatOsmotr.idTrMat.idParent idParent',
-                        ])
-                        ->orderBy(['osmotraktmat.osmotraktmat_date' => SORT_ASC])
-                        ->all();
-
-                $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
-
-                foreach ($Recoveryrecieveaktmat as $ar) {
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 5);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(5, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, Yii::$app->formatter->asDate($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_release));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_price);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $material_writeoff[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_writeoff]);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(15, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_id);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, Yii::$app->formatter->asDate($ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Материал');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, $ar->idTrMatOsmotr->idOsmotraktmat->idMaster->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idOsmotraktmat->idMaster->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, (empty($ar->idTrMatOsmotr->idReason->reason_text) ? '' : ($ar->idTrMatOsmotr->idReason->reason_text . ', ')) . $ar->idTrMatOsmotr->tr_mat_osmotr_comment);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, '');
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, $ar->idRecoverysendakt->idOrgan->organ_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, Yii::$app->formatter->asDate($ar->idRecoverysendakt->recoverysendakt_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, $ar->recoveryrecieveaktmat_result);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, empty($ar->recoveryrecieveaktmat_repaired) ? '' : $recoveryrecieveaktmat_repaired[$ar->recoveryrecieveaktmat_repaired]);
-
-                    $num++;
-                }
-
-                /* Авторазмер колонок Excel */
-                $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn(0)->setWidth(6);
-
-                $objPHPExcel->getActiveSheet()->getStyle('A5:AA' . ($num - 1))->applyFromArray($ramka);
-
-
-                for ($i = 1; $i <= 26; $i++)
-                    $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
-
-                /*   if ($filter !== 'Фильтр:') {
-                  $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $filter);
-                  $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 3, $i, 3);
-                  $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 3)->applyFromArray([
-                  'font' => [
-                  'italic' => true
-                  ]
-                  ]);
-                  } */
-
-                // присваиваем имя файла от имени модели 
-                $FileName = $reportName;
-
-                // Устанавливаем имя листа
-                $objPHPExcel->getActiveSheet()->setTitle($FileName);
-
-                // Выбираем первый лист
-                $objPHPExcel->setActiveSheetIndex(0);
-                // Формируем файл Excel
-                $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-                $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
-                // Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
-                $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
-                // Сохраняем файл в папку "files"
-                $objWriter->save('files/' . $fileroot);
-                // Возвращаем имя файла Excel
-                if (DIRECTORY_SEPARATOR === '/')
-                    echo $fileroot;
-                else
-                    echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
-            }
-
         }
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, '(Подпись)');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, '(Должность)');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, '(Ф.И.О.)');
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['sign']);
+        $num++;
+
+        $Mols = Removeakt::getMolsByRemoveakt($Removeakt->removeakt_id);
+        foreach ($Mols as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Материально ответственное лицо');
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
+
+            for ($i = 2; $i <= 10; $i++)
+                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
+
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->dolzh_name_tmp);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->auth_user_fullname_tmp);
+
+            self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+            $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
+
+            $num++;
+        }
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Демонтажник');
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $num)->applyFromArray(self::$style['titleleft']);
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(1, $num)->applyFromArray(self::$style['titleleft']);
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 1, $num);
+        for ($i = 2; $i <= 10; $i++)
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['signdata']);
+
+        $Remover = Employee::findOne($Removeakt->id_remover);
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num, 6, $num);
+        $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num, 10, $num);
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $Remover->iddolzh->dolzh_name);
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Remover->idperson->auth_user_fullname);
+
+        self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
+        $objPHPExcel->getActiveSheet()->getRowDimension($num)->setRowHeight(45.75);
+
+        Proc::DownloadExcelPHP($objPHPExcel, 'Акт снятия комплектующих с матер-ых цен-тей №' . $Removeakt->removeakt_id); // Скачиваем сформированный отчет
+    }
+
+    // Вывод акта осмотра материалов
+    public static function Osmotraktmat()
+    {
+        self::GetDopparams(); // Читаем дополнительные параметры из URL
+
+        $objPHPExcel = Proc::CreateExcelPHP('osmotraktmat'); // Создаем объект PHPExcel
+
+        $Osmotraktmat = Osmotraktmat::findOne(self::$Dopparams->id);
+        $TrMatOsmotr = TrMatOsmotr::findAll(['id_osmotraktmat' => self::$Dopparams->id]);
+        $Mols = TrMatOsmotr::getMolsByTrMatOsmotr(self::$Dopparams->id);
+
+        $objPHPExcel->getActiveSheet()->setCellValue('A3', 'материалов № ' . $Osmotraktmat->osmotraktmat_id . ' от ' . Yii::$app->formatter->asDate($Osmotraktmat->osmotraktmat_date));
+
+        $num = 7;
+        foreach ($TrMatOsmotr as $ar) {
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 6);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMat->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, !empty($ar->idTrMat->idParent) ? ('Инв. номер: ' . $ar->idTrMat->idParent->material_inv . ', ' . $ar->idTrMat->idParent->material_name) : '');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->tr_mat_osmotr_number);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idReason->reason_text . (empty($ar->idReason->reason_text) ? '' : '. ') . $ar->tr_mat_osmotr_comment);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->primaryKey));
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num);
+
+        $crows = count($TrMatOsmotr);
+        $num = 8;
+        foreach ($Mols as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 9, $num + $crows);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
+
+        Proc::DownloadExcelPHP($objPHPExcel, 'Акт осмотра материалов №' . $Osmotraktmat->primaryKey); // Скачиваем сформированный отчет
+    }
+
+    // Вывод акта отправки материала от сторонней организации
+    public static function Recoverysendaktmat()
+    {
+        self::GetDopparams(); // Читаем дополнительные параметры из URL
+        $objPHPExcel = Proc::CreateExcelPHP('recoverysendaktmat'); // Создаем объект PHPExcel
+
+        $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
+        $Recoveryrecieveaktmat = Recoveryrecieveaktmat::findAll(['id_recoverysendakt' => self::$Dopparams->id]);
+        $Mols = Recoveryrecieveaktmat::getMolsByRecoverysendakt(self::$Dopparams->id);
+
+        $objPHPExcel->getActiveSheet()->setCellValue('A3', 'сторонней организации № ' . $Recoverysendakt->recoverysendakt_id . ' от ' . Yii::$app->formatter->asDate($Recoverysendakt->recoverysendakt_date));
+        $objPHPExcel->getActiveSheet()->setCellValue('C4', $Recoverysendakt->idOrgan->organ_name);
+
+        $material_tip = Material::VariablesValues('material_tip');
+
+        $num = 9;
+        foreach ($Recoveryrecieveaktmat as $ar) {
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 8);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idTrMatOsmotr->idReason->reason_text . (empty($ar->idTrMatOsmotr->idReason->reason_text) ? '' : '. ') . $ar->idTrMatOsmotr->tr_mat_osmotr_comment);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->idTrMatOsmotr->tr_mat_osmotr_id));
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num);
+
+        $crows = count($Recoveryrecieveaktmat);
+        $num = 10;
+        foreach ($Mols as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 9, $num + $crows);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
+
+        Proc::DownloadExcelPHP($objPHPExcel, 'Акт передачи материалов сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
+    }
+
+    // Вывод акта получения материала у сторонней организации
+    public static function Recoveryrecieveaktmat()
+    {
+        self::GetDopparams(); // Читаем дополнительные параметры из URL
+        $objPHPExcel = Proc::CreateExcelPHP('recoveryrecieveaktmat'); // Создаем объект PHPExcel
+
+        $Recoverysendakt = Recoverysendakt::findOne(self::$Dopparams->id);
+        $Recoveryrecieveaktmat_ok = Recoveryrecieveaktmat::find()
+            ->andWhere(['id_recoverysendakt' => self::$Dopparams->id, 'recoveryrecieveaktmat_repaired' => 2])->all();
+        $Recoveryrecieveaktmat_fail = Recoveryrecieveaktmat::find()
+            ->andWhere(['and', ['id_recoverysendakt' => self::$Dopparams->id], ['or', ['recoveryrecieveaktmat_repaired' => 1], ['recoveryrecieveaktmat_repaired' => NULL]]])
+            ->all();
+        $Mols = Recoveryrecieveaktmat::getMolsByRecoverysendakt(self::$Dopparams->id);
+
+        $objPHPExcel->getActiveSheet()->setCellValue('F4', $Recoverysendakt->idOrgan->organ_name);
+        $objPHPExcel->getActiveSheet()->setCellValue('F5', $Recoverysendakt->recoverysendakt_id . ' от ' . Yii::$app->formatter->asDate($Recoverysendakt->recoverysendakt_date));
+        $objPHPExcel->getActiveSheet()->setCellValue('F6', Yii::$app->formatter->asDate(date('Y-m-d')));
+
+        $material_tip = Material::VariablesValues('material_tip');
+
+        $num = 11;
+        foreach ($Recoveryrecieveaktmat_ok as $ar) {
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 10);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->recoveryrecieveaktmat_result);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
+
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num);
+
+        $crows = count($Recoveryrecieveaktmat_ok);
+        $num = 15;
+        foreach ($Recoveryrecieveaktmat_fail as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, $num + $crows - 16);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num + $crows, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num + $crows, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar->recoveryrecieveaktmat_result);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num + $crows, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num + $crows . ':K' . $num + $crows)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
+
+        $crows = count($Recoveryrecieveaktmat_ok) + count($Recoveryrecieveaktmat_fail);
+        $num = 17;
+        foreach ($Mols as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, 'Материально ответственное лицо');
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num + $crows, 1, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(3, $num + $crows, 6, $num + $crows);
+            $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(7, $num + $crows, 10, $num + $crows);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $ar['dolzh_name']);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar['auth_user_fullname']);
+            $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);
+            $num++;
+        }
+        $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
+
+        Proc::DownloadExcelPHP($objPHPExcel, 'Акт получения материалов у сторонней организации №' . $Recoverysendakt->recoverysendakt_id); // Скачиваем сформированный отчет
+    }
+
+    public static function Recoverysendakt_ExportExcel()
+    {
+        $objPHPExcel = new \PHPExcel;
+        $reportName = 'Выгрузка';
+
+        /* Границы таблицы */
+        $ramka = array(
+            'borders' => array(
+                'allborders' => [
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                ],
+            ),
+        );
+
+        /* Жирный шрифт для шапки таблицы */
+        $font = array(
+            'font' => array(
+                'bold' => true
+            ),
+            'alignment' => array(
+                'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        );
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 1, $reportName);
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 1)->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ],
+        ]);
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2, 'Дата: ' . date('d.m.Y'));
+        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 2)->applyFromArray([
+            'font' => [
+                'italic' => true
+            ]
+        ]);
+
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        //   $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
+        //   $selectvalues = (array) $selectvalues;
+
+        $filter = 'Фильтр:';
+
+        /*  foreach ($fields[$modelName] as $attr => $value) {
+          $val_result = $value;
+          if (!empty($value)) {
+          if (isset($selectvalues[$modelName . '[' . $attr . ']']))
+          $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
+
+          $filter .= ' ' . $labels[$attr] . ': "' . $val_result . '";';
+          }
+          } */
+
+        /*   if ($ModelFilter instanceof Model) {
+          $dopfilter = self::ConstructFilterOutput($ModelFilter);
+          if (!empty($dopfilter))
+          $filter .= ' ' . $dopfilter;
+          } */
+
+        $num = 5;
+
+        //  $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, 10, 1);
+
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Тип материальной ценности');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Вид материальной ценности');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Наименование');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Инвентарный номер');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Серийный номер');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Дата выпуска');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Стоимость');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Списание');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Количество');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Единица измерения');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, 'Материально-ответственное лицо');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, 'Здание');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, 'Кабинет');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, 'Укомплектовано в');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, 'Инвентарный номер мат-ой цен-ти в которую укомплектовано');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, 'Номер акта осмотра');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, 'Дата акта осмотра');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Вид акта осмотра');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, 'Мастер');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, 'Причина неисправности');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, 'Пользователь');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, 'Организация');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, 'Дата отправки');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, 'Дата получения');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, 'Результат');
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, 'Подлежит восстановлению');
+
+        for ($i = 1; $i <= 26; $i++)
+            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($font);
+
+        $num++;
+
+        $Recoveryrecieveakt = Recoveryrecieveakt::find()
+            ->joinWith([
+                'idRecoverysendakt.idOrgan',
+                'idOsmotrakt.idReason',
+                'idOsmotrakt.idUser idUser',
+                'idOsmotrakt.idMaster idMaster',
+                'idOsmotrakt.idUser.idperson idpersonuser',
+                'idOsmotrakt.idUser.iddolzh iddolzhuser',
+                'idOsmotrakt.idMaster.idperson idpersonmaster',
+                'idOsmotrakt.idMaster.iddolzh iddolzhmaster',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.idMatv',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.idIzmer',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMol.idperson',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMol.iddolzh',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild',
+            ])
+            ->orderBy(['osmotrakt.osmotrakt_date' => SORT_ASC])
+            ->all();
+
+        $material_tip = Material::VariablesValues('material_tip');
+        $material_writeoff = Material::VariablesValues('material_writeoff');
+        $recoveryrecieveakt_repaired = Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired');
+
+        foreach ($Recoveryrecieveakt as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 5);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $material_tip[$ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_tip]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(5, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, Yii::$app->formatter->asDate($ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_release));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_price);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $material_writeoff[$ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_writeoff]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 1);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, '');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, '');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idOsmotrakt->osmotrakt_id);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, Yii::$app->formatter->asDate($ar->idOsmotrakt->osmotrakt_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Материальная ценность');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, $ar->idOsmotrakt->idMaster->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idMaster->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, (empty($ar->idOsmotrakt->idReason->reason_text) ? '' : ($ar->idOsmotrakt->idReason->reason_text . ', ')) . $ar->idOsmotrakt->osmotrakt_comment);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, $ar->idOsmotrakt->idUser->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idUser->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, $ar->idRecoverysendakt->idOrgan->organ_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, Yii::$app->formatter->asDate($ar->idRecoverysendakt->recoverysendakt_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveakt_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, $ar->recoveryrecieveakt_result);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, empty($ar->recoveryrecieveakt_repaired) ? '' : $recoveryrecieveakt_repaired[$ar->recoveryrecieveakt_repaired]);
+
+            $num++;
+        }
+
+        $Recoveryrecieveaktmat = Recoveryrecieveaktmat::find()
+            ->joinWith([
+                'idRecoverysendakt.idOrgan',
+                'idTrMatOsmotr.idReason',
+                'idTrMatOsmotr.idOsmotraktmat.idMaster idMaster',
+                'idTrMatOsmotr.idOsmotraktmat.idMaster.idperson idpersonmaster',
+                'idTrMatOsmotr.idOsmotraktmat.idMaster.iddolzh iddolzhmaster',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.idMatv',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.idIzmer',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild',
+                'idTrMatOsmotr.idTrMat.idParent idParent',
+            ])
+            ->orderBy(['osmotraktmat.osmotraktmat_date' => SORT_ASC])
+            ->all();
+
+        $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
+
+        foreach ($Recoveryrecieveaktmat as $ar) {
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, $num - 5);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $material_tip[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_tip]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(5, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, Yii::$app->formatter->asDate($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_release));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_price);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $material_writeoff[$ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_writeoff]);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idTrMatOsmotr->tr_mat_osmotr_number);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(15, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_id);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, Yii::$app->formatter->asDate($ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Материал');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, $ar->idTrMatOsmotr->idOsmotraktmat->idMaster->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idOsmotraktmat->idMaster->iddolzh->dolzh_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, (empty($ar->idTrMatOsmotr->idReason->reason_text) ? '' : ($ar->idTrMatOsmotr->idReason->reason_text . ', ')) . $ar->idTrMatOsmotr->tr_mat_osmotr_comment);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, '');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, $ar->idRecoverysendakt->idOrgan->organ_name);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, Yii::$app->formatter->asDate($ar->idRecoverysendakt->recoverysendakt_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, $ar->recoveryrecieveaktmat_result);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, empty($ar->recoveryrecieveaktmat_repaired) ? '' : $recoveryrecieveaktmat_repaired[$ar->recoveryrecieveaktmat_repaired]);
+
+            $num++;
+        }
+
+        /* Авторазмер колонок Excel */
+        $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn(0)->setWidth(6);
+
+        $objPHPExcel->getActiveSheet()->getStyle('A5:AA' . ($num - 1))->applyFromArray($ramka);
+
+
+        for ($i = 1; $i <= 26; $i++)
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setAutoSize(true);
+
+        /*   if ($filter !== 'Фильтр:') {
+          $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $filter);
+          $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 3, $i, 3);
+          $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, 3)->applyFromArray([
+          'font' => [
+          'italic' => true
+          ]
+          ]);
+          } */
+
+        // присваиваем имя файла от имени модели
+        $FileName = $reportName;
+
+        // Устанавливаем имя листа
+        $objPHPExcel->getActiveSheet()->setTitle($FileName);
+
+        // Выбираем первый лист
+        $objPHPExcel->setActiveSheetIndex(0);
+        // Формируем файл Excel
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        // Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
+        $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
+        // Сохраняем файл в папку "files"
+        $objWriter->save('files/' . $fileroot);
+        // Возвращаем имя файла Excel
+        if (DIRECTORY_SEPARATOR === '/')
+            echo $fileroot;
+        else
+            echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+    }
+
+}
         
