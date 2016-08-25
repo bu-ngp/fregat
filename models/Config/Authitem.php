@@ -64,35 +64,35 @@ class Authitem extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getauthassignments() {
-        return $this->hasMany(Authassignment::className(), ['item_name' => 'name']);
+        return $this->hasMany(Authassignment::className(), ['item_name' => 'name'])->from(['authassignments' => Authassignment::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getusers() {
-        return $this->hasMany(Authuser::className(), ['auth_user_id' => 'user_id'])->viaTable('auth_assignment', ['item_name' => 'name']);
+        return $this->hasMany(Authuser::className(), ['auth_user_id' => 'user_id'])->from(['users' => Authuser::tableName()])->viaTable('auth_assignment', ['item_name' => 'name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRuleName() {
-        return $this->hasOne(AuthRule::className(), ['name' => 'rule_name']);
+        return $this->hasOne(AuthRule::className(), ['name' => 'rule_name'])->from(['ruleName' => AuthRule::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getauthitemchildrenparent() {
-        return $this->hasMany(Authitemchild::className(), ['parent' => 'name']);
+        return $this->hasMany(Authitemchild::className(), ['parent' => 'name'])->from(['authitemchildrenparent' => Authitemchild::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getAuthitemchildrenchild() {
-        return $this->hasMany(AuthItemChild::className(), ['child' => 'name']);
+        return $this->hasMany(AuthItemChild::className(), ['child' => 'name'])->from(['authitemchildrenchild' => Authitemchild::tableName()]);
     }
 
     public function save($runValidation = true, $attributeNames = null) {

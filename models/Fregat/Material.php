@@ -97,28 +97,28 @@ class Material extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdIzmer() {
-        return $this->hasOne(Izmer::className(), ['izmer_id' => 'id_izmer']);
+        return $this->hasOne(Izmer::className(), ['izmer_id' => 'id_izmer'])->from(['idIzmer' => Izmer::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdMatv() {
-        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid']);
+        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid'])->from(['idMatv' => Matvid::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getMattraffics() {
-        return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id']);
+        return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id'])->from(['mattraffics' => Mattraffic::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrMats() {
-        return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id']);
+        return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id'])->from(['trMats' => TrMat::tableName()]);
     }
 
     public function selectinputfortrmat_parent($params) {

@@ -60,21 +60,21 @@ class TrOsnov extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdInstallakt() {
-        return $this->hasOne(Installakt::className(), ['installakt_id' => 'id_installakt'])->inverseOf('trOsnovs');
+        return $this->hasOne(Installakt::className(), ['installakt_id' => 'id_installakt'])->from(['idInstallakt' => Installakt::tableName()])->inverseOf('trOsnovs');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdMattraffic() {
-        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->inverseOf('trOsnovs');
+        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->from(['idMattraffic' => Mattraffic::tableName()])->inverseOf('trOsnovs');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getOsmotrakts() {
-        return $this->hasOne(Osmotrakt::className(), ['id_tr_osnov' => 'tr_osnov_id']);
+        return $this->hasOne(Osmotrakt::className(), ['id_tr_osnov' => 'tr_osnov_id'])->from(['osmotrakts' => Osmotrakt::tableName()]);
     }
 
     public function selectinputforosmotrakt($params) {

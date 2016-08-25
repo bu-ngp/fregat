@@ -110,28 +110,28 @@ class Glaukuchet extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdClassMkb() {
-        return $this->hasOne(ClassMkb::className(), ['id' => 'id_class_mkb']);
+        return $this->hasOne(ClassMkb::className(), ['id' => 'id_class_mkb'])->from(['idClassMkb' => ClassMkb::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdEmployee() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee']);
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee'])->from(['idEmployee' => Employee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdPatient() {
-        return $this->hasOne(Patient::className(), ['patient_id' => 'id_patient']);
+        return $this->hasOne(Patient::className(), ['patient_id' => 'id_patient'])->from(['idPatient' => Patient::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getGlpreps() {
-        return $this->hasMany(Glprep::className(), ['id_glaukuchet' => 'glaukuchet_id']);
+        return $this->hasMany(Glprep::className(), ['id_glaukuchet' => 'glaukuchet_id'])->from(['glpreps' => Glprep::tableName()]);
     }
 
     public static function VariablesValues($attribute) {

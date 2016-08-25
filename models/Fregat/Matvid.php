@@ -49,21 +49,21 @@ class Matvid extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGrupavids() {
-        return $this->hasMany(Grupavid::className(), ['id_matvid' => 'matvid_id']);
+        return $this->hasMany(Grupavid::className(), ['id_matvid' => 'matvid_id'])->from(['grupavids' => Grupavid::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getImportmaterials() {
-        return $this->hasMany(Importmaterial::className(), ['id_matvid' => 'matvid_id']);
+        return $this->hasMany(Importmaterial::className(), ['id_matvid' => 'matvid_id'])->from(['importmaterials' => Importmaterial::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getMaterials() {
-        return $this->hasMany(Material::className(), ['id_matvid' => 'matvid_id']);
+        return $this->hasMany(Material::className(), ['id_matvid' => 'matvid_id'])->from(['materials' => Material::tableName()]);
     }
 
 }

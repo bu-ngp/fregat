@@ -55,6 +55,6 @@ class Authrule extends \yii\db\ActiveRecord
      */
     public function getAuthItems()
     {
-        return $this->hasMany(AuthItem::className(), ['rule_name' => 'name']);
+        return $this->hasMany(AuthItem::className(), ['rule_name' => 'name'])->from(['authItems' => Authitem::tableName()]);
     }
 }

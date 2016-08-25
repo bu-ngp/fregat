@@ -50,21 +50,21 @@ class Recoverysendakt extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getRecoveryrecieveakts() {
-        return $this->hasMany(Recoveryrecieveakt::className(), ['id_recoverysendakt' => 'recoverysendakt_id'])->inverseOf('idRecoverysendakt');
+        return $this->hasMany(Recoveryrecieveakt::className(), ['id_recoverysendakt' => 'recoverysendakt_id'])->from(['recoveryrecieveakts' => Recoveryrecieveakt::tableName()])->inverseOf('idRecoverysendakt');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRecoveryrecieveaktmats() {
-        return $this->hasMany(Recoveryrecieveaktmat::className(), ['id_recoverysendakt' => 'recoverysendakt_id']);
+        return $this->hasMany(Recoveryrecieveaktmat::className(), ['id_recoverysendakt' => 'recoverysendakt_id'])->from(['recoveryrecieveaktmats' => Recoveryrecieveaktmat::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdOrgan() {
-        return $this->hasOne(Organ::className(), ['organ_id' => 'id_organ'])->inverseOf('recoverysendakts');
+        return $this->hasOne(Organ::className(), ['organ_id' => 'id_organ'])->inverseOf('recoverysendakts')->from(['idOrgan' => Organ::tableName()]);
     }
 
 }

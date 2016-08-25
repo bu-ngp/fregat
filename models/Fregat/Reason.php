@@ -49,14 +49,14 @@ class Reason extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getOsmotrakts() {
-        return $this->hasMany(Osmotrakt::className(), ['id_reason' => 'reason_id'])->inverseOf('idReason');
+        return $this->hasMany(Osmotrakt::className(), ['id_reason' => 'reason_id'])->from(['osmotrakts' => Osmotrakt::tableName()])->inverseOf('idReason');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getOsmotraktmats() {
-        return $this->hasMany(Osmotraktmat::className(), ['id_reason' => 'reason_id']);
+        return $this->hasMany(Osmotraktmat::className(), ['id_reason' => 'reason_id'])->from(['osmotraktmats' => Osmotraktmat::tableName()]);
     }
 
 }

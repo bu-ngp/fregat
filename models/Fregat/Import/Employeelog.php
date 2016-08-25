@@ -66,14 +66,14 @@ class Employeelog extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdLogreport() {
-        return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport']);
+        return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport'])->from(['idLogreport' => Logreport::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTraflogs() {
-        return $this->hasMany(Traflog::className(), ['id_employeelog' => 'employeelog_id']);
+        return $this->hasMany(Traflog::className(), ['id_employeelog' => 'employeelog_id'])->from(['traflogs' => Traflog::tableName()]);
     }
 
 }

@@ -49,6 +49,6 @@ class Writeoffakt extends \yii\db\ActiveRecord
      */
     public function getIdMattraffic()
     {
-        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic']);
+        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->from(['idMattraffic' => Mattraffic::tableName()]);
     }
 }

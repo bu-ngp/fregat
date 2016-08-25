@@ -66,35 +66,35 @@ class TrMat extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdInstallakt() {
-        return $this->hasOne(Installakt::className(), ['installakt_id' => 'id_installakt'])->inverseOf('trMats');
+        return $this->hasOne(Installakt::className(), ['installakt_id' => 'id_installakt'])->from(['idInstallakt' => Installakt::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdParent() {
-        return $this->hasOne(Material::className(), ['material_id' => 'id_parent'])->inverseOf('trMats');
+        return $this->hasOne(Material::className(), ['material_id' => 'id_parent'])->from(['idParent' => Material::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdMattraffic() {
-        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->inverseOf('trMats');
+        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->from(['idMattraffic' => Mattraffic::tableName()])->inverseOf('trMats');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrMatOsmotrs() {
-        return $this->hasMany(TrMatOsmotr::className(), ['id_tr_mat' => 'tr_mat_id']);
+        return $this->hasMany(TrMatOsmotr::className(), ['id_tr_mat' => 'tr_mat_id'])->from(['trMatOsmotrs' => TrMatOsmotr::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrRmMats() {
-        return $this->hasMany(TrRmMat::className(), ['id_tr_mat' => 'tr_mat_id']);
+        return $this->hasMany(TrRmMat::className(), ['id_tr_mat' => 'tr_mat_id'])->from(['trRmMats' => TrRmMat::tableName()]);
     }
 
     public function selectinputfortrmatosmotr($params) {

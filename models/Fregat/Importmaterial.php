@@ -53,6 +53,6 @@ class Importmaterial extends \yii\db\ActiveRecord
      */
     public function getIdmatvid()
     {
-        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid']);
+        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid'])->from(['idmatvid' => Matvid::tableName()]);
     }
 }

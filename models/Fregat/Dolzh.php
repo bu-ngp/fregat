@@ -50,7 +50,7 @@ class Dolzh extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getEmployees() {
-        return $this->hasMany(Employee::className(), ['id_dolzh' => 'dolzh_id']);
+        return $this->hasMany(Employee::className(), ['id_dolzh' => 'dolzh_id'])->from(['employees' => Employee::tableName()]);
     }
 
     public static function getDolzhByID($ID) {

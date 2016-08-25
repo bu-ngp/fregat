@@ -51,14 +51,14 @@ class Build extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getEmployees() {
-        return $this->hasMany(Employee::className(), ['id_build' => 'build_id']);
+        return $this->hasMany(Employee::className(), ['id_build' => 'build_id'])->from(['employees' => Employee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getImportemployees() {
-        return $this->hasMany(Importemployee::className(), ['id_build' => 'build_id']);
+        return $this->hasMany(Importemployee::className(), ['id_build' => 'build_id'])->from(['importemployees' => Importemployee::tableName()]);
     }
 
     public static function getBuildByID($ID) {

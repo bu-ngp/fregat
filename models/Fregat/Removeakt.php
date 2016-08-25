@@ -54,14 +54,14 @@ class Removeakt extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdRemover() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_remover']);
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_remover'])->from(['idRemover' => Employee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrRmMats() {
-        return $this->hasMany(TrRmMat::className(), ['id_removeakt' => 'removeakt_id']);
+        return $this->hasMany(TrRmMat::className(), ['id_removeakt' => 'removeakt_id'])->from(['trRmMats' => TrRmMat::tableName()]);
     }
 
     public static function getMolsByRemoveakt($removeakt_id) {

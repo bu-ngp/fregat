@@ -75,28 +75,28 @@ class TrMatOsmotr extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getRecoveryrecieveaktmats() {
-        return $this->hasMany(Recoveryrecieveaktmat::className(), ['id_tr_mat_osmotr' => 'tr_mat_osmotr_id']);
+        return $this->hasMany(Recoveryrecieveaktmat::className(), ['id_tr_mat_osmotr' => 'tr_mat_osmotr_id'])->from(['recoveryrecieveaktmats' => Recoveryrecieveaktmat::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdOsmotraktmat() {
-        return $this->hasOne(Osmotraktmat::className(), ['osmotraktmat_id' => 'id_osmotraktmat']);
+        return $this->hasOne(Osmotraktmat::className(), ['osmotraktmat_id' => 'id_osmotraktmat'])->from(['idOsmotraktmat' => Osmotraktmat::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdTrMat() {
-        return $this->hasOne(TrMat::className(), ['tr_mat_id' => 'id_tr_mat']);
+        return $this->hasOne(TrMat::className(), ['tr_mat_id' => 'id_tr_mat'])->from(['idTrMat' => TrMat::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdReason() {
-        return $this->hasOne(Reason::className(), ['reason_id' => 'id_reason']);
+        return $this->hasOne(Reason::className(), ['reason_id' => 'id_reason'])->from(['idReason' => Reason::tableName()]);
     }
 
     public static function getMolsByTrMatOsmotr($Osmotraktmat_id) {

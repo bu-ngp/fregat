@@ -66,7 +66,7 @@ class Fias extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getPatients() {
-        return $this->hasOne(Patient::className(), ['id_fias' => 'AOGUID']);
+        return $this->hasOne(Patient::className(), ['id_fias' => 'AOGUID'])->from(['patients' => Patient::tableName()]);
     }
 
     // Выбор населенного пункта

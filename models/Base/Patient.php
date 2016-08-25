@@ -84,14 +84,14 @@ class Patient extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGlaukuchets() {
-        return $this->hasOne(Glaukuchet::className(), ['id_patient' => 'patient_id']);
+        return $this->hasOne(Glaukuchet::className(), ['id_patient' => 'patient_id'])->from(['glaukuchets' => Glaukuchet::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdFias() {
-        return $this->hasOne(Fias::className(), ['AOGUID' => 'id_fias']);
+        return $this->hasOne(Fias::className(), ['AOGUID' => 'id_fias'])->from(['idFias' => Fias::tableName()]);
     }
 
     public static function VariablesValues($attribute) {

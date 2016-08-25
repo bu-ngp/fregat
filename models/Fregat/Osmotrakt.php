@@ -20,19 +20,22 @@ use Yii;
  * @property Reason $idReason
  * @property Recoveryrecieveakt[] $recoveryrecieveakts
  */
-class Osmotrakt extends \yii\db\ActiveRecord {
+class Osmotrakt extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'osmotrakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['id_reason', 'id_user', 'id_master', 'id_tr_osnov'], 'integer'],
             [['id_tr_osnov'], 'required', 'except' => 'forosmotrakt'],
@@ -50,7 +53,8 @@ class Osmotrakt extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'osmotrakt_id' => 'Номер акта осмотра',
             'osmotrakt_comment' => 'Описание причины неисправности',
@@ -65,89 +69,95 @@ class Osmotrakt extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdUser() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_user'])->inverseOf('osmotrakts');
+    public function getIdUser()
+    {
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_user'])->from(['idUser' => Employee::tableName()])->inverseOf('osmotrakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMaster() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_master'])->inverseOf('osmotrakts0');
+    public function getIdMaster()
+    {
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_master'])->from(['idMaster' => Employee::tableName()])->inverseOf('osmotrakts0');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdTrosnov() {
-        return $this->hasOne(TrOsnov::className(), ['tr_osnov_id' => 'id_tr_osnov'])->inverseOf('osmotrakts');
+    public function getIdTrosnov()
+    {
+        return $this->hasOne(TrOsnov::className(), ['tr_osnov_id' => 'id_tr_osnov'])->from(['idTrosnov' => TrOsnov::tableName()])->inverseOf('osmotrakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdReason() {
-        return $this->hasOne(Reason::className(), ['reason_id' => 'id_reason'])->inverseOf('osmotrakts');
+    public function getIdReason()
+    {
+        return $this->hasOne(Reason::className(), ['reason_id' => 'id_reason'])->from(['idReason' => Reason::tableName()])->inverseOf('osmotrakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRecoveryrecieveakts() {
-        return $this->hasMany(Recoveryrecieveakt::className(), ['id_osmotrakt' => 'osmotrakt_id'])->inverseOf('idOsmotrakt');
+    public function getRecoveryrecieveakts()
+    {
+        return $this->hasMany(Recoveryrecieveakt::className(), ['id_osmotrakt' => 'osmotrakt_id'])->from(['recoveryrecieveakts' => Recoveryrecieveakt::tableName()])->inverseOf('idOsmotrakt');
     }
 
-    public function selectinputforrecoverysendakt($params) {
+    public function selectinputforrecoverysendakt($params)
+    {
 
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-                ->select(array_merge(isset($params['init']) ? [] : ['osmotrakt_id AS id'], ['CONCAT_WS(", ", CONCAT("Акт №", osmotrakt_id), idMaterial.material_inv, idMaterial.material_name, idbuild.build_name, idTrosnov.tr_osnov_kab) AS text']))
-                ->joinWith([
-                    'idTrosnov' => function($query) {
-                        $query->from(['idTrosnov' => 'tr_osnov']);
-                        $query->joinWith([
-                            'idMattraffic' => function($query) {
-                                $query->from(['idMattraffic' => 'mattraffic']);
-                                $query->joinWith([
-                                    'idMol' => function($query) {
-                                        $query->from(['idMol' => 'employee']);
-                                        $query->joinWith([
-                                            'idperson' => function($query) {
-                                                $query->from(['idperson' => 'auth_user']);
-                                            },
-                                                    'iddolzh' => function($query) {
-                                                $query->from(['iddolzh' => 'dolzh']);
-                                            },
-                                                    'idpodraz' => function($query) {
-                                                $query->from(['idpodraz' => 'podraz']);
-                                            },
-                                                    'idbuild' => function($query) {
-                                                $query->from(['idbuild' => 'build']);
-                                            },
-                                                ]);
-                                            },
-                                                    'idMaterial' => function($query) {
-                                                $query->from(['idMaterial' => 'material']);
-                                            },
-                                                ]);
-                                            }
-                                                ]);
-                                            },
-                                                    'recoveryrecieveakts' => function($query) {
-                                                $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
-                                            },
-                                                ])
-                                                ->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date')
-                                                ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
-                                                //->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired = 2 or recoveryrecieveakts.recoveryrecieveakt_id IS NULL)')
-                                                ->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired IS NULL and recoveryrecieveakts.recoveryrecieveakt_id IS NULL)')
-                                                ->limit(20)
-                                                ->asArray()
-                                                ->$method();
+            ->select(array_merge(isset($params['init']) ? [] : ['osmotrakt_id AS id'], ['CONCAT_WS(", ", CONCAT("Акт №", osmotrakt_id), idMaterial.material_inv, idMaterial.material_name, idbuild.build_name, idTrosnov.tr_osnov_kab) AS text']))
+            ->joinWith([
+                'idTrosnov' => function ($query) {
+                    $query->from(['idTrosnov' => 'tr_osnov']);
+                    $query->joinWith([
+                        'idMattraffic' => function ($query) {
+                            $query->from(['idMattraffic' => 'mattraffic']);
+                            $query->joinWith([
+                                'idMol' => function ($query) {
+                                    $query->from(['idMol' => 'employee']);
+                                    $query->joinWith([
+                                        'idperson' => function ($query) {
+                                            $query->from(['idperson' => 'auth_user']);
+                                        },
+                                        'iddolzh' => function ($query) {
+                                            $query->from(['iddolzh' => 'dolzh']);
+                                        },
+                                        'idpodraz' => function ($query) {
+                                            $query->from(['idpodraz' => 'podraz']);
+                                        },
+                                        'idbuild' => function ($query) {
+                                            $query->from(['idbuild' => 'build']);
+                                        },
+                                    ]);
+                                },
+                                'idMaterial' => function ($query) {
+                                    $query->from(['idMaterial' => 'material']);
+                                },
+                            ]);
+                        }
+                    ]);
+                },
+                'recoveryrecieveakts' => function ($query) {
+                    $query->from(['recoveryrecieveakts' => 'recoveryrecieveakt']);
+                },
+            ])
+            ->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date')
+            ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+            //->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired = 2 or recoveryrecieveakts.recoveryrecieveakt_id IS NULL)')
+            ->andWhere('(lastrra.recoveryrecieveakt_date IS NULL and recoveryrecieveakts.recoveryrecieveakt_repaired IS NULL and recoveryrecieveakts.recoveryrecieveakt_id IS NULL)')
+            ->limit(20)
+            ->asArray()
+            ->$method();
 
-                                        return $query;
-                                    }
+        return $query;
+    }
 
-                                }
+}
                                 

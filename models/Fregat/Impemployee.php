@@ -53,7 +53,7 @@ class Impemployee extends \yii\db\ActiveRecord
      */
     public function getIdemployee()
     {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee']);
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_employee'])->from(['idemployee' => Employee::tableName()]);
     }
 
     /**
@@ -61,6 +61,6 @@ class Impemployee extends \yii\db\ActiveRecord
      */
     public function getIdimportemployee()
     {
-        return $this->hasOne(Importemployee::className(), ['importemployee_id' => 'id_importemployee']);
+        return $this->hasOne(Importemployee::className(), ['importemployee_id' => 'id_importemployee'])->from(['idimportemployee' => Importemployee::tableName()]);
     }
 }

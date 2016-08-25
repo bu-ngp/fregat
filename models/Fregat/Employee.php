@@ -23,26 +23,29 @@ use app\models\Config\Authuser;
  * @property Osmotrakt[] $osmotrakts
  * @property Osmotrakt[] $osmotrakts0
  */
-class Employee extends \yii\db\ActiveRecord {
+class Employee extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'employee';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-            ['employee_username', 'filter', 'filter' => function($value) {
-                    return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
-                }],
-            ['employee_username', 'filter', 'filter' => function($value) {
-                    return 'IMPORT';
-                }, 'on' => 'import1c'],
+            ['employee_username', 'filter', 'filter' => function ($value) {
+                return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+            }],
+            ['employee_username', 'filter', 'filter' => function ($value) {
+                return 'IMPORT';
+            }, 'on' => 'import1c'],
             [['id_dolzh', 'id_podraz', 'id_person', 'employee_username', 'employee_lastchange'], 'required'],
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
@@ -57,7 +60,8 @@ class Employee extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'employee_id' => 'Код',
             'id_dolzh' => 'Должность',
@@ -74,174 +78,189 @@ class Employee extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdperson() {
-        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'id_person']);
+    public function getIdperson()
+    {
+        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'id_person'])->from(['idperson' => Authuser::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdbuild() {
-        return $this->hasOne(Build::className(), ['build_id' => 'id_build']);
+    public function getIdbuild()
+    {
+        return $this->hasOne(Build::className(), ['build_id' => 'id_build'])->from(['idbuild' => Build::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIddolzh() {
-        return $this->hasOne(Dolzh::className(), ['dolzh_id' => 'id_dolzh']);
+    public function getIddolzh()
+    {
+        return $this->hasOne(Dolzh::className(), ['dolzh_id' => 'id_dolzh'])->from(['iddolzh' => Dolzh::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdpodraz() {
-        return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz']);
+    public function getIdpodraz()
+    {
+        return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz'])->from(['idpodraz' => Podraz::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getimpemployees() {
-        return $this->hasMany(Impemployee::className(), ['id_employee' => 'employee_id']);
+    public function getimpemployees()
+    {
+        return $this->hasMany(Impemployee::className(), ['id_employee' => 'employee_id'])->from(['impemployees' => Impemployee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getInstallakts() {
-        return $this->hasMany(Installakt::className(), ['id_installer' => 'employee_id']);
+    public function getInstallakts()
+    {
+        return $this->hasMany(Installakt::className(), ['id_installer' => 'employee_id'])->from(['installakts' => Installakt::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMattraffics() {
-        return $this->hasMany(Mattraffic::className(), ['id_mol' => 'employee_id']);
+    public function getMattraffics()
+    {
+        return $this->hasMany(Mattraffic::className(), ['id_mol' => 'employee_id'])->from(['mattraffics' => Mattraffic::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts() {
-        return $this->hasMany(Osmotrakt::className(), ['id_user' => 'employee_id']);
+    public function getOsmotrakts()
+    {
+        return $this->hasMany(Osmotrakt::className(), ['id_user' => 'employee_id'])->from(['osmotraktsuser' => Osmotrakt::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts0() {
-        return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id']);
+    public function getOsmotrakts0()
+    {
+        return $this->hasMany(Osmotrakt::className(), ['id_master' => 'employee_id'])->from(['osmotraktsmaster' => Osmotrakt::tableName()]);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRemoveakts()
     {
-        return $this->hasMany(Removeakt::className(), ['id_remover' => 'employee_id']);
+        return $this->hasMany(Removeakt::className(), ['id_remover' => 'employee_id'])->from(['removeakts' => Removeakt::tableName()]);
     }
 
-    public function beforeValidate() {
+    public function beforeValidate()
+    {
         if ((empty($this->employee_lastchange) || empty($this->employee_forinactive)) && $this->isAttributeRequired('employee_lastchange'))
             $this->employee_lastchange = date('Y-m-d H:i:s');
 
         return parent::beforeValidate();
     }
 
-    public function beforeSave($insert) {
+    public function beforeSave($insert)
+    {
         if (empty($this->employee_lastchange) || empty($this->employee_forinactive))
             $this->employee_lastchange = date('Y-m-d H:i:s');
 
         return parent::beforeSave($insert);
     }
 
-    public function selectinput($params) {
+    public function selectinput($params)
+    {
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-                ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-                ->joinWith([
-                    'idperson' => function($query) {
-                        $query->from(['idperson' => 'auth_user']);
-                    },
-                            'iddolzh' => function($query) {
-                        $query->from(['iddolzh' => 'dolzh']);
-                    },
-                            'idpodraz' => function($query) {
-                        $query->from(['idpodraz' => 'podraz']);
-                    },
-                            'idbuild' => function($query) {
-                        $query->from(['idbuild' => 'build']);
-                    },
-                        ])
-                        ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
-                        ->limit(20)
-                        ->asArray()
-                        ->$method();
+            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+            ->joinWith([
+                'idperson' => function ($query) {
+                    $query->from(['idperson' => 'auth_user']);
+                },
+                'iddolzh' => function ($query) {
+                    $query->from(['iddolzh' => 'dolzh']);
+                },
+                'idpodraz' => function ($query) {
+                    $query->from(['idpodraz' => 'podraz']);
+                },
+                'idbuild' => function ($query) {
+                    $query->from(['idbuild' => 'build']);
+                },
+            ])
+            ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
+            ->limit(20)
+            ->asArray()
+            ->$method();
 
-                return $query;
-            }
+        return $query;
+    }
 
-            public function selectinputactive($params) {
-                $method = isset($params['init']) ? 'one' : 'all';
+    public function selectinputactive($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
 
-                $query = self::find()
-                        ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-                        ->joinWith([
-                            'idperson' => function($query) {
-                                $query->from(['idperson' => 'auth_user']);
-                            },
-                                    'iddolzh' => function($query) {
-                                $query->from(['iddolzh' => 'dolzh']);
-                            },
-                                    'idpodraz' => function($query) {
-                                $query->from(['idpodraz' => 'podraz']);
-                            },
-                                    'idbuild' => function($query) {
-                                $query->from(['idbuild' => 'build']);
-                            },
-                                ])
-                                ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
-                                ->andWhere(['employee_dateinactive' => NULL])
-                                ->limit(20)
-                                ->asArray()
-                                ->$method();
+        $query = self::find()
+            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+            ->joinWith([
+                'idperson' => function ($query) {
+                    $query->from(['idperson' => 'auth_user']);
+                },
+                'iddolzh' => function ($query) {
+                    $query->from(['iddolzh' => 'dolzh']);
+                },
+                'idpodraz' => function ($query) {
+                    $query->from(['idpodraz' => 'podraz']);
+                },
+                'idbuild' => function ($query) {
+                    $query->from(['idbuild' => 'build']);
+                },
+            ])
+            ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'], isset($params['init']) ? false : null])
+            ->andWhere(['employee_dateinactive' => NULL])
+            ->limit(20)
+            ->asArray()
+            ->$method();
 
-                        return $query;
-                    }
+        return $query;
+    }
 
-                    public static function getEmployeeByID($IDEmployee) {
-                        $query = self::find()
-                                ->select(['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
-                                ->joinWith([
-                                    'idperson' => function($query) {
-                                        $query->from(['idperson' => 'auth_user']);
-                                    },
-                                            'iddolzh' => function($query) {
-                                        $query->from(['iddolzh' => 'dolzh']);
-                                    },
-                                            'idpodraz' => function($query) {
-                                        $query->from(['idpodraz' => 'podraz']);
-                                    },
-                                            'idbuild' => function($query) {
-                                        $query->from(['idbuild' => 'build']);
-                                    },
-                                        ])
-                                        ->where([ 'employee_id' => $IDEmployee])
-                                        ->asArray()
-                                        ->one();
+    public static function getEmployeeByID($IDEmployee)
+    {
+        $query = self::find()
+            ->select(['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+            ->joinWith([
+                'idperson' => function ($query) {
+                    $query->from(['idperson' => 'auth_user']);
+                },
+                'iddolzh' => function ($query) {
+                    $query->from(['iddolzh' => 'dolzh']);
+                },
+                'idpodraz' => function ($query) {
+                    $query->from(['idpodraz' => 'podraz']);
+                },
+                'idbuild' => function ($query) {
+                    $query->from(['idbuild' => 'build']);
+                },
+            ])
+            ->where(['employee_id' => $IDEmployee])
+            ->asArray()
+            ->one();
 
-                                return $query['text'];
-                            }
+        return $query['text'];
+    }
 
-                            public static function VariablesValues($attribute) {
-                                $values = [
-                                    'employee_importdo' => [0 => 'Нет', 1 => 'Да'],
-                                ];
+    public static function VariablesValues($attribute)
+    {
+        $values = [
+            'employee_importdo' => [0 => 'Нет', 1 => 'Да'],
+        ];
 
-                                return isset($values[$attribute]) ? $values[$attribute] : NULL;
-                            }
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
+    }
 
-                        }
+}
                         

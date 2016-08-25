@@ -47,7 +47,7 @@ class Izmer extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getMaterials() {
-        return $this->hasMany(Material::className(), ['id_izmer' => 'izmer_id']);
+        return $this->hasMany(Material::className(), ['id_izmer' => 'izmer_id'])->from(['materials' => Material::tableName()]);
     }
 
 }

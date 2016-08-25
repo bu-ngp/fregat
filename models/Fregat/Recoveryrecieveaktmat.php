@@ -80,14 +80,14 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdRecoverysendakt() {
-        return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt']);
+        return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->from(['idRecoverysendakt' => Recoverysendakt::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdTrMatOsmotr() {
-        return $this->hasOne(TrMatOsmotr::className(), ['tr_mat_osmotr_id' => 'id_tr_mat_osmotr']);
+        return $this->hasOne(TrMatOsmotr::className(), ['tr_mat_osmotr_id' => 'id_tr_mat_osmotr'])->from(['idTrMatOsmotr' => TrMatOsmotr::tableName()]);
     }
 
     public static function getMolsByRecoverysendakt($Recoverysendakt_id) {

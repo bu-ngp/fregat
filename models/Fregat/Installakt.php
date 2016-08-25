@@ -56,21 +56,21 @@ class Installakt extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdInstaller() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_installer'])->inverseOf('installakts');
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_installer'])->from(['idInstaller' => Employee::tableName()])->inverseOf('installakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrMats() {
-        return $this->hasMany(TrMat::className(), ['id_installakt' => 'installakt_id'])->inverseOf('idInstallakt');
+        return $this->hasMany(TrMat::className(), ['id_installakt' => 'installakt_id'])->from(['trMats' => TrMat::tableName()])->inverseOf('idInstallakt');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrOsnovs() {
-        return $this->hasMany(TrOsnov::className(), ['id_installakt' => 'installakt_id'])->inverseOf('idInstallakt');
+        return $this->hasMany(TrOsnov::className(), ['id_installakt' => 'installakt_id'])->from(['trOsnovs' => TrOsnov::tableName()])->inverseOf('idInstallakt');
     }
 
     public static function getMolsByInstallakt($installakt_id) {

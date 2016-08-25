@@ -50,14 +50,14 @@ class Authassignment extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getitemname() {
-        return $this->hasOne(Authitem::className(), ['name' => 'item_name']);
+        return $this->hasOne(Authitem::className(), ['name' => 'item_name'])->from(['itemname' => Authitem::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getuser() {
-        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'user_id']);
+        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'user_id'])->from(['user' => Authuser::tableName()]);
     }
 
     public function save($runValidation = true, $attributeNames = null) {

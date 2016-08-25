@@ -51,14 +51,14 @@ class Grupavid extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdgrupa() {
-        return $this->hasOne(Grupa::className(), ['grupa_id' => 'id_grupa']);
+        return $this->hasOne(Grupa::className(), ['grupa_id' => 'id_grupa'])->from(['idgrupa' => Grupa::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdmatvid() {
-        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid']);
+        return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid'])->from(['idmatvid' => Matvid::tableName()]);
     }
 
     public static function VariablesValues($attribute) {

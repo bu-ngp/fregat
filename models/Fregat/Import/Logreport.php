@@ -67,21 +67,21 @@ class Logreport extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getEmployeelogs() {
-        return $this->hasMany(Employeelog::className(), ['id_logreport' => 'logreport_id']);
+        return $this->hasMany(Employeelog::className(), ['id_logreport' => 'logreport_id'])->from(['employeelogs' => Employeelog::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getMatlogs() {
-        return $this->hasMany(Matlog::className(), ['id_logreport' => 'logreport_id']);
+        return $this->hasMany(Matlog::className(), ['id_logreport' => 'logreport_id'])->from(['matlogs' => Matlog::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTraflogs() {
-        return $this->hasMany(Traflog::className(), ['id_logreport' => 'logreport_id']);
+        return $this->hasMany(Traflog::className(), ['id_logreport' => 'logreport_id'])->from(['traflogs' => Traflog::tableName()]);
     }
 
 }

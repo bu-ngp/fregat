@@ -62,21 +62,21 @@ class Classmkb extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getParent() {
-        return $this->hasOne(Classmkb::className(), ['id' => 'parent_id']);
+        return $this->hasOne(Classmkb::className(), ['id' => 'parent_id'])->from(['parent' => Classmkb::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getClassmkbs() {
-        return $this->hasMany(Classmkb::className(), ['parent_id' => 'id']);
+        return $this->hasMany(Classmkb::className(), ['parent_id' => 'id'])->from(['classmkbs' => Classmkb::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getGlaukuchets() {
-        return $this->hasMany(Glaukuchet::className(), ['id_class_mkb' => 'id']);
+        return $this->hasMany(Glaukuchet::className(), ['id_class_mkb' => 'id'])->from(['glaukuchets' => Glaukuchet::tableName()]);
     }
 
     public function selectinput($params) {

@@ -81,14 +81,14 @@ class Matlog extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdlogreport() {
-        return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport']);
+        return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport'])->from(['idlogreport' => Logreport::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTraflogs() {
-        return $this->hasMany(Traflog::className(), ['id_matlog' => 'matlog_id']);
+        return $this->hasMany(Traflog::className(), ['id_matlog' => 'matlog_id'])->from(['traflogs' => Traflog::tableName()]);
     }
 
 }

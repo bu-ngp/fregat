@@ -61,21 +61,21 @@ class Authuser extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getauthassignments() {
-        return $this->hasMany(Authassignment::className(), ['user_id' => 'auth_user_id']);
+        return $this->hasMany(Authassignment::className(), ['user_id' => 'auth_user_id'])->from(['authassignments' => Authassignment::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getitemnames() {
-        return $this->hasMany(Authitem::className(), ['name' => 'item_name'])->viaTable('auth_assignment', ['user_id' => 'auth_user_id']);
+        return $this->hasMany(Authitem::className(), ['name' => 'item_name'])->from(['itemnames' => Authitem::tableName()])->viaTable('auth_assignment', ['user_id' => 'auth_user_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getEmployees() {
-        return $this->hasMany(Employee::className(), ['id_person' => 'auth_user_id']);
+        return $this->hasMany(Employee::className(), ['id_person' => 'auth_user_id'])->from(['employees' => Employee::tableName()]);
     }
 
     public function save($runValidation = true, $attributeNames = null) {

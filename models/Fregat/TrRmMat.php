@@ -50,14 +50,14 @@ class TrRmMat extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdTrMat() {
-        return $this->hasOne(TrMat::className(), ['tr_mat_id' => 'id_tr_mat']);
+        return $this->hasOne(TrMat::className(), ['tr_mat_id' => 'id_tr_mat'])->from(['idTrMat' => TrMat::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdRemoveakt() {
-        return $this->hasOne(Removeakt::className(), ['removeakt_id' => 'id_removeakt']);
+        return $this->hasOne(Removeakt::className(), ['removeakt_id' => 'id_removeakt'])->from(['idRemoveakt' => Removeakt::tableName()]);
     }
 
 }

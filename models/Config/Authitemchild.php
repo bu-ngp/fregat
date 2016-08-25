@@ -47,14 +47,14 @@ class Authitemchild extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getparent() {
-        return $this->hasOne(Authitem::className(), ['name' => 'parent']);
+        return $this->hasOne(Authitem::className(), ['name' => 'parent'])->from(['parent' => Authitem::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getchildren() {
-        return $this->hasOne(Authitem::className(), ['name' => 'child']);
+        return $this->hasOne(Authitem::className(), ['name' => 'child'])->from(['children' => Authitem::tableName()]);
     }
 
     public function delete() {

@@ -70,14 +70,14 @@ class Glprep extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdGlaukuchet() {
-        return $this->hasOne(Glaukuchet::className(), ['glaukuchet_id' => 'id_glaukuchet']);
+        return $this->hasOne(Glaukuchet::className(), ['glaukuchet_id' => 'id_glaukuchet'])->from(['idGlaukuchet' => Glaukuchet::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdPreparat() {
-        return $this->hasOne(Preparat::className(), ['preparat_id' => 'id_preparat']);
+        return $this->hasOne(Preparat::className(), ['preparat_id' => 'id_preparat'])->from(['idPreparat' => Preparat::tableName()]);
     }
 
     public static function VariablesValues($attribute, $value = NULL) {

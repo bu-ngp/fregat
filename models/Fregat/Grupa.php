@@ -50,6 +50,6 @@ class Grupa extends \yii\db\ActiveRecord
      */
     public function getIdgrupavid()
     {
-        return $this->hasMany(Grupavid::className(), ['id_grupa' => 'grupa_id']);
+        return $this->hasMany(Grupavid::className(), ['id_grupa' => 'grupa_id'])->from(['idgrupavid' => Grupavid::tableName()]);
     }
 }

@@ -49,6 +49,6 @@ class Organ extends \yii\db\ActiveRecord
      */
     public function getRecoverysendakts()
     {
-        return $this->hasMany(Recoverysendakt::className(), ['id_organ' => 'organ_id'])->inverseOf('idOrgan');
+        return $this->hasMany(Recoverysendakt::className(), ['id_organ' => 'organ_id'])->from(['recoverysendakts' => Recoverysendakt::tableName()])->inverseOf('idOrgan');
     }
 }

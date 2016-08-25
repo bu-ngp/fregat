@@ -50,7 +50,7 @@ class Preparat extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getGlpreps() {
-        return $this->hasMany(Glprep::className(), ['id_preparat' => 'preparat_id']);
+        return $this->hasMany(Glprep::className(), ['id_preparat' => 'preparat_id'])->from(['glpreps' => Glprep::tableName()]);
     }
 
     public static function getPreparatByID($ID) {

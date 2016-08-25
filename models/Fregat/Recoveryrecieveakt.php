@@ -81,14 +81,14 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdOsmotrakt() {
-        return $this->hasOne(Osmotrakt::className(), ['osmotrakt_id' => 'id_osmotrakt'])->inverseOf('recoveryrecieveakts');
+        return $this->hasOne(Osmotrakt::className(), ['osmotrakt_id' => 'id_osmotrakt'])->from(['idOsmotrakt' => Osmotrakt::tableName()])->inverseOf('recoveryrecieveakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getIdRecoverysendakt() {
-        return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->inverseOf('recoveryrecieveakts');
+        return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->from(['idRecoverysendakt' => Recoverysendakt::tableName()])->inverseOf('recoveryrecieveakts');
     }
 
     public static function getMolsByRecoverysendakt($Recoverysendakt_id) {

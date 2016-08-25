@@ -57,7 +57,7 @@ class Importemployee extends \yii\db\ActiveRecord
      */
     public function getImpemployees()
     {
-        return $this->hasMany(Impemployee::className(), ['id_importemployee' => 'importemployee_id']);
+        return $this->hasMany(Impemployee::className(), ['id_importemployee' => 'importemployee_id'])->from(['impemployees' => Impemployee::tableName()]);
     }
 
     /**
@@ -65,7 +65,7 @@ class Importemployee extends \yii\db\ActiveRecord
      */
     public function getIdbuild()
     {
-        return $this->hasOne(Build::className(), ['build_id' => 'id_build']);
+        return $this->hasOne(Build::className(), ['build_id' => 'id_build'])->from(['idbuild' => Build::tableName()]);
     }
 
     /**
@@ -73,6 +73,6 @@ class Importemployee extends \yii\db\ActiveRecord
      */
     public function getIdpodraz()
     {
-        return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz']);
+        return $this->hasOne(Podraz::className(), ['podraz_id' => 'id_podraz'])->from(['idpodraz' => Podraz::tableName()]);
     }
 }

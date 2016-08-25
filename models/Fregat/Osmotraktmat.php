@@ -60,14 +60,14 @@ class Osmotraktmat extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getIdMaster() {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_master']);
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_master'])->from(['idMaster' => Employee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTrMatOsmotrs() {
-        return $this->hasMany(TrMatOsmotr::className(), ['id_osmotraktmat' => 'osmotraktmat_id']);
+        return $this->hasMany(TrMatOsmotr::className(), ['id_osmotraktmat' => 'osmotraktmat_id'])->from(['trMatOsmotrs' => TrMatOsmotr::tableName()]);
     }
 
 }

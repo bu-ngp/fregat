@@ -114,7 +114,7 @@ class Mattraffic extends \yii\db\ActiveRecord
      */
     public function getIdMol()
     {
-        return $this->hasOne(Employee::className(), ['employee_id' => 'id_mol']);
+        return $this->hasOne(Employee::className(), ['employee_id' => 'id_mol'])->from(['idMol' => Employee::tableName()]);
     }
 
     /**
@@ -122,7 +122,7 @@ class Mattraffic extends \yii\db\ActiveRecord
      */
     public function getIdMaterial()
     {
-        return $this->hasOne(Material::className(), ['material_id' => 'id_material']);
+        return $this->hasOne(Material::className(), ['material_id' => 'id_material'])->from(['idMaterial' => Material::tableName()]);
     }
 
     /**
@@ -130,7 +130,7 @@ class Mattraffic extends \yii\db\ActiveRecord
      */
     public function getTrMats()
     {
-        return $this->hasMany(TrMat::className(), ['id_mattraffic' => 'mattraffic_id']);
+        return $this->hasMany(TrMat::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['trMats' => TrMat::tableName()]);
     }
 
     /**
@@ -138,7 +138,7 @@ class Mattraffic extends \yii\db\ActiveRecord
      */
     public function getTrOsnovs()
     {
-        return $this->hasMany(TrOsnov::className(), ['id_mattraffic' => 'mattraffic_id']);
+        return $this->hasMany(TrOsnov::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['trOsnovs' => TrOsnov::tableName()]);
     }
 
     /**
@@ -146,7 +146,7 @@ class Mattraffic extends \yii\db\ActiveRecord
      */
     public function getWriteoffakts()
     {
-        return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id']);
+        return $this->hasMany(Writeoffakt::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['writeoffakts' => Writeoffakt::tableName()]);
     }
 
     public function beforeValidate()
