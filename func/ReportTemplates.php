@@ -59,10 +59,9 @@ class ReportTemplates
                 'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
             ],
             'borders' => [
-                'bottom' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                'top' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                'left' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
-                'right' => ['style' => \PHPExcel_Style_Border::BORDER_THIN],
+                'allborders' => [
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                ],
             ],
         ],
         'nums' => [
@@ -129,6 +128,12 @@ class ReportTemplates
     {
         $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle($CellCoordinate)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    }
+
+    private static function SetTitlebyArray(&$objPHPExcel, $TitleArrayNames, $RowNum)
+    {
+        foreach ($TitleArrayNames as $ColumnNum => $Title)
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($ColumnNum, $RowNum, $Title);
     }
 
     // Читаем дополнительные параметры из URL
@@ -311,19 +316,21 @@ class ReportTemplates
             $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['title']);
             $num++;
 
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Кол-во');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Единица измерения');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Лицо отправитель');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Здание, кабинет, откуда перемещено');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Лицо получатель');
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Здание, кабинет, куда перемещено');
-            for ($i = 0; $i <= 10; $i++)
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+            self::SetTitlebyArray($objPHPExcel, [
+                '№',
+                'Вид',
+                'Наименование',
+                'Инвентарный номер',
+                'Серийный номер',
+                'Кол-во',
+                'Единица измерения',
+                'Лицо отправитель',
+                'Здание, кабинет, откуда перемещено',
+                'Лицо получатель',
+                'Здание, кабинет, куда перемещено',
+            ], $num);
+
+            $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['caption']);
             self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
             $num++;
 
@@ -373,19 +380,21 @@ class ReportTemplates
                 $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Год выпуска');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Стоимость');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Здание');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Кабинет');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
-                for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::SetTitlebyArray($objPHPExcel, [
+                    '№',
+                    'Вид',
+                    'Наименование',
+                    'Инвентарный номер',
+                    'Серийный номер',
+                    'Год выпуска',
+                    'Стоимость',
+                    'Здание',
+                    'Кабинет',
+                    'Материально-ответственное лицо',
+                    'Тип',
+                ], $num);
+
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['caption']);
                 self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
@@ -426,19 +435,21 @@ class ReportTemplates
                 $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Кол-во');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Единица измерения');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Год выпуска');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Стоимость');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
-                for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::SetTitlebyArray($objPHPExcel, [
+                    '№',
+                    'Вид',
+                    'Наименование',
+                    'Инвентарный номер',
+                    'Серийный номер',
+                    'Кол-во',
+                    'Единица измерения',
+                    'Год выпуска',
+                    'Стоимость',
+                    'Материально-ответственное лицо',
+                    'Тип',
+                ], $num);
+
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['caption']);
                 self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
@@ -555,19 +566,21 @@ class ReportTemplates
                 $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Год выпуска');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Стоимость');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Здание');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Кабинет');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
-                for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::SetTitlebyArray($objPHPExcel, [
+                    '№',
+                    'Вид',
+                    'Наименование',
+                    'Инвентарный номер',
+                    'Серийный номер',
+                    'Год выпуска',
+                    'Стоимость',
+                    'Здание',
+                    'Кабинет',
+                    'Материально-ответственное лицо',
+                    'Тип',
+                ], $num);
+
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['caption']);
                 self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
@@ -608,19 +621,21 @@ class ReportTemplates
                 $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['titleleft']);
                 $num++;
 
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Вид');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Наименование');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Инвентарный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Серийный номер');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Кол-во');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Единица измерения');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Год выпуска');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Стоимость');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Материально-ответственное лицо');
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Тип');
-                for ($i = 0; $i <= 10; $i++)
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray(self::$style['caption']);
+                self::SetTitlebyArray($objPHPExcel, [
+                    '№',
+                    'Вид',
+                    'Наименование',
+                    'Инвентарный номер',
+                    'Серийный номер',
+                    'Кол-во',
+                    'Единица измерения',
+                    'Год выпуска',
+                    'Стоимость',
+                    'Материально-ответственное лицо',
+                    'Тип',
+                ], $num);
+
+                $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->applyFromArray(self::$style['caption']);
                 self::CellsWrapAndTop($objPHPExcel, 'A' . $num . ':K' . $num);
                 $num++;
 
@@ -950,35 +965,37 @@ class ReportTemplates
 
         //  $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, 10, 1);
 
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, '№');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, 'Тип материальной ценности');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, 'Вид материальной ценности');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num, 'Наименование');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, 'Инвентарный номер');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 'Серийный номер');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, 'Дата выпуска');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, 'Стоимость');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, 'Списание');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, 'Количество');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, 'Единица измерения');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, 'Материально-ответственное лицо');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, 'Здание');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, 'Кабинет');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, 'Укомплектовано в');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, 'Инвентарный номер мат-ой цен-ти в которую укомплектовано');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, 'Номер акта осмотра');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, 'Дата акта осмотра');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Вид акта осмотра');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(19, $num, 'Мастер');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(20, $num, 'Причина неисправности');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(21, $num, 'Пользователь');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(22, $num, 'Организация');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(23, $num, 'Дата отправки');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(24, $num, 'Дата получения');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(25, $num, 'Результат');
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(26, $num, 'Подлежит восстановлению');
+        self::SetTitlebyArray($objPHPExcel, [
+            '№',
+            'Тип материальной ценности',
+            'Вид материальной ценности',
+            'Наименование',
+            'Инвентарный номер',
+            'Серийный номер',
+            'Дата выпуска',
+            'Стоимость',
+            'Списание',
+            'Количество',
+            'Единица измерения',
+            'Материально-ответственное лицо',
+            'Здание',
+            'Кабинет',
+            'Укомплектовано в',
+            'Инвентарный номер мат-ой цен-ти в которую укомплектовано',
+            'Номер акта осмотра',
+            'Дата акта осмотра',
+            'Вид акта осмотра',
+            'Мастер',
+            'Причина неисправности',
+            'Пользователь',
+            'Организация',
+            'Дата отправки',
+            'Дата получения',
+            'Результат',
+            'Подлежит восстановлению',
+        ], $num);
 
-        for ($i = 1; $i <= 26; $i++)
+        for ($i = 0; $i <= 26; $i++)
             $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $num)->applyFromArray($font);
 
         $num++;
@@ -999,7 +1016,7 @@ class ReportTemplates
                 'idOsmotrakt.idTrosnov.idMattraffic.idMol.iddolzh',
                 'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild',
             ])
-            ->orderBy(['osmotrakt.osmotrakt_date' => SORT_ASC])
+            ->orderBy(['idOsmotrakt.osmotrakt_date' => SORT_ASC])
             ->all();
 
         $material_tip = Material::VariablesValues('material_tip');
@@ -1052,7 +1069,7 @@ class ReportTemplates
                 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild',
                 'idTrMatOsmotr.idTrMat.idParent idParent',
             ])
-            ->orderBy(['osmotraktmat.osmotraktmat_date' => SORT_ASC])
+            ->orderBy(['idOsmotraktmat.osmotraktmat_date' => SORT_ASC])
             ->all();
 
         $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
