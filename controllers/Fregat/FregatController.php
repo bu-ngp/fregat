@@ -264,6 +264,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             $Reason->save();
             $Reason = new Reason;
             $Reason->reason_text = 'Требуется заправка';
+            $Reason->save();
 
             // Prepare end
 
