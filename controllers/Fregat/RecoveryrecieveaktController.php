@@ -2,16 +2,14 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\RecoveryrecieveaktReport;
 use Yii;
 use app\models\Fregat\Recoveryrecieveakt;
-use app\models\Fregat\RecoveryrecieveaktSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\func\Proc;
-use app\models\Fregat\Osmotrakt;
-use app\func\ReportTemplates;
 
 /**
  * RecoveryrecieveaktController implements the CRUD actions for Recoveryrecieveakt model.
@@ -82,7 +80,8 @@ class RecoveryrecieveaktController extends Controller
     // Печать акта получения материальной ценности
     public function actionRecoveryrecieveaktReport()
     {
-        ReportTemplates::Recoveryrecieveakt();
+        $Report = new RecoveryrecieveaktReport();
+        $Report->Execute();
     }
 
     public function actionDelete($id)

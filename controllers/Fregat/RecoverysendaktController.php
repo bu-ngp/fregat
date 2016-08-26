@@ -2,6 +2,8 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\RecoverysendaktmatReport;
+use app\func\ReportTemplates;
 use Yii;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RecoverysendaktSearch;
@@ -12,18 +14,20 @@ use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\Recoveryrecieveakt;
 use app\models\Fregat\RecoveryrecieveaktSearch;
-use app\func\ReportTemplates;
+use app\func\ReportsTemplate\RecoverysendaktReport;
 use app\models\Fregat\RecoveryrecieveaktmatSearch;
 
 /**
  * RecoverysendaktController implements the CRUD actions for Recoverysendakt model.
  */
-class RecoverysendaktController extends Controller {
+class RecoverysendaktController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -49,17 +53,19 @@ class RecoverysendaktController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new RecoverysendaktSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Recoverysendakt();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -69,12 +75,13 @@ class RecoverysendaktController extends Controller {
             $model->recoverysendakt_date = empty($model->recoverysendakt_date) ? date('Y-m-d') : $model->recoverysendakt_date;
 
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -86,41 +93,47 @@ class RecoverysendaktController extends Controller {
             $dataProvidermat = $searchModelmat->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
-                        'searchModelmat' => $searchModelmat,
-                        'dataProvidermat' => $dataProvidermat,
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'searchModelmat' => $searchModelmat,
+                'dataProvidermat' => $dataProvidermat,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
 
     // Печать акта осмотра
-    public function actionRecoverysendaktReport() {
-        ReportTemplates::Recoverysendakt();
+    public function actionRecoverysendaktReport()
+    {
+        $Report = new RecoverysendaktReport();
+        $Report->Execute();
     }
 
     // Печать акта отправки материалов сторонней организации
-    public function actionRecoverysendaktmatReport() {
-        ReportTemplates::Recoverysendaktmat();
+    public function actionRecoverysendaktmatReport()
+    {
+        $Report = new RecoverysendaktmatReport();
+        $Report->Execute();
     }
 
-    public function actionToexcel() {
-     //   $searchModel = new PatientSearch();
+    public function actionToexcel()
+    {
+        //   $searchModel = new PatientSearch();
         $params = Yii::$app->request->queryParams;
         $inputdata = json_decode($params['inputdata']);
-     //   $modelname = $searchModel->formName();
-     //   $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+        //   $modelname = $searchModel->formName();
+        //   $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
         $selectvalues = json_decode($params['selectvalues']);
         $labelvalues = isset($params['labelvalues']) ? json_decode($params['labelvalues']) : NULL;
-        
+
         ReportTemplates::Recoverysendakt_ExportExcel();
-      //  Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter, $labelvalues);
+        //  Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter, $labelvalues);
     }
 
     /**
@@ -130,7 +143,8 @@ class RecoverysendaktController extends Controller {
      * @return Recoverysendakt the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Recoverysendakt::findOne($id)) !== null) {
             return $model;
         } else {

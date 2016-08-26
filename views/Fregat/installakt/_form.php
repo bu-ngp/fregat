@@ -62,8 +62,14 @@ use yii\helpers\Url;
                             'idMattraffic.idMaterial.material_inv',
                             'idMattraffic.mattraffic_number',
                             'tr_osnov_kab',
-                            'idMattraffic.idMol.idperson.auth_user_fullname',
-                            'idMattraffic.idMol.iddolzh.dolzh_name',
+                            [
+                                'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
+                                'label' => 'ФИО материально-ответственного лица',
+                            ],
+                            [
+                                'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
+                                'label' => 'Должность материально-ответственного лица',
+                            ],
                         ],
                         'buttons' => [
                             'deleteajax' => ['Fregat/tr-osnov/delete', 'tr_osnov_id', 'trOsnovgrid'],
@@ -86,13 +92,25 @@ use yii\helpers\Url;
                     'columns' => Proc::DGcols([
                         'buttonsfirst' => true,
                         'columns' => [
-                            'idParent.material_name',
-                            'idParent.material_inv',
+                            [
+                                'attribute' => 'idParent.material_name',
+                                'label' => 'В составе материальной ценности',
+                            ],
+                            [
+                                'attribute' => 'idParent.material_inv',
+                                'label' => 'Инвентарный номер материальной ценности, в составе которой материал',
+                            ],
                             'idMattraffic.idMaterial.material_name',
                             'idMattraffic.idMaterial.material_inv',
                             'idMattraffic.mattraffic_number',
-                            'idMattraffic.idMol.idperson.auth_user_fullname',
-                            'idMattraffic.idMol.iddolzh.dolzh_name',
+                            [
+                                'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
+                                'label' => 'ФИО материально-ответственного лица',
+                            ],
+                            [
+                                'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
+                                'label' => 'Должность материально-ответственного лица',
+                            ],
                         ],
                         'buttons' => [
                             'deleteajax' => ['Fregat/tr-mat/delete', 'tr_mat_id', 'trMatgrid'],

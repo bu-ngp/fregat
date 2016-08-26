@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\OsmotraktReport;
 use Yii;
 use app\models\Fregat\Osmotrakt;
 use app\models\Fregat\OsmotraktSearch;
@@ -14,17 +15,18 @@ use app\models\Fregat\TrOsnov;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\Recoveryrecieveakt;
-use app\func\ReportTemplates;
 
 /**
  * OsmotraktController implements the CRUD actions for Osmotrakt model.
  */
-class OsmotraktController extends Controller {
+class OsmotraktController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -50,27 +52,30 @@ class OsmotraktController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new OsmotraktSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionForrecoveryrecieveakt() {
+    public function actionForrecoveryrecieveakt()
+    {
         $searchModel = new OsmotraktSearch();
         $dataProvider = $searchModel->searchforrecoveryrecieveakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Osmotrakt();
         $model->scenario = 'forosmotrakt';
         $Trosnov = new TrOsnov;
@@ -127,17 +132,17 @@ class OsmotraktController extends Controller {
                 } else {
                     $transaction->rollback();
                     return $this->render('create', [
-                                'model' => $model,
-                                'Trosnov' => $Trosnov,
-                                'Mattraffic' => $Mattraffic,
+                        'model' => $model,
+                        'Trosnov' => $Trosnov,
+                        'Mattraffic' => $Mattraffic,
                     ]);
                 }
             } else {
                 $transaction->rollback();
                 return $this->render('create', [
-                            'model' => $model,
-                            'Trosnov' => $Trosnov,
-                            'Mattraffic' => $Mattraffic,
+                    'model' => $model,
+                    'Trosnov' => $Trosnov,
+                    'Mattraffic' => $Mattraffic,
                 ]);
             }
         } catch (Exception $e) {
@@ -146,7 +151,8 @@ class OsmotraktController extends Controller {
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -154,25 +160,27 @@ class OsmotraktController extends Controller {
         } else {
             $Trosnov = empty($model->id_tr_osnov) ? new TrOsnov : TrOsnov::findOne($model->id_tr_osnov);
             return $this->render('update', [
-                        'model' => $model,
-                        'Trosnov' => $Trosnov,
+                'model' => $model,
+                'Trosnov' => $Trosnov,
             ]);
         }
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforosmotrakt($field, $q = null) {
+    public function actionSelectinputforosmotrakt($field, $q = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                        'model' => new Mattraffic,
-                        'field' => $field,
-                        'q' => $q,
-                        'methodquery' => 'selectinputforosmotrakt',
+                'model' => new Mattraffic,
+                'field' => $field,
+                'q' => $q,
+                'methodquery' => 'selectinputforosmotrakt',
             ]);
     }
 
     // Заполнение полей формы после выбора материальной ценности по инвентарнику
-    public function actionFillnewinstallakt() {
+    public function actionFillnewinstallakt()
+    {
         if (Yii::$app->request->isAjax) {
             $id_mattraffic = Yii::$app->request->post('id_mattraffic');
             if (!empty($id_mattraffic)) {
@@ -189,27 +197,32 @@ class OsmotraktController extends Controller {
         }
     }
 
-    public function actionAssignToRecoveryrecieveakt() {
+    public function actionAssignToRecoveryrecieveakt()
+    {
         Proc::AssignToModelFromGrid(new Recoveryrecieveakt, 'id_recoverysendakt');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforrecoverysendakt($q = null) {
+    public function actionSelectinputforrecoverysendakt($q = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                        'model' => new Osmotrakt,
-                        'q' => $q,
-                        'methodquery' => 'selectinputforrecoverysendakt',
+                'model' => new Osmotrakt,
+                'q' => $q,
+                'methodquery' => 'selectinputforrecoverysendakt',
             ]);
     }
 
     // Печать акта осмотра
-    public function actionOsmotraktReport() {
-        ReportTemplates::Osmotrakt();
+    public function actionOsmotraktReport()
+    {
+        $Report = new OsmotraktReport();
+        $Report->Execute();
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -221,7 +234,8 @@ class OsmotraktController extends Controller {
      * @return Osmotrakt the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Osmotrakt::findOne($id)) !== null) {
             return $model;
         } else {

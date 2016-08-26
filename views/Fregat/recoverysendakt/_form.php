@@ -149,8 +149,14 @@ use yii\bootstrap\ButtonDropdown;
                             'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
                             'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
                             'idTrMatOsmotr.tr_mat_osmotr_number',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
-                            'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+                            [
+                                'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
+                                'label' => 'ФИО материально-ответственного лица',
+                            ],
+                            [
+                                'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+                                'label' => 'Должность материально-ответственного лица',
+                            ],
                             'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
                             'idTrMatOsmotr.idReason.reason_text',
                             'idTrMatOsmotr.tr_mat_osmotr_comment',

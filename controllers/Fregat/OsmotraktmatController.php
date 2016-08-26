@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\OsmotraktmatReport;
 use Yii;
 use app\models\Fregat\Osmotraktmat;
 use app\models\Fregat\OsmotraktmatSearch;
@@ -10,18 +11,19 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
-use app\func\ReportTemplates;
 use app\models\Fregat\TrMatOsmotrSearch;
 
 /**
  * OsmotraktmatController implements the CRUD actions for Osmotraktmat model.
  */
-class OsmotraktmatController extends Controller {
+class OsmotraktmatController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -47,17 +49,19 @@ class OsmotraktmatController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new OsmotraktmatSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Osmotraktmat();
         $model->osmotraktmat_date = date('Y-m-d');
 
@@ -66,12 +70,13 @@ class OsmotraktmatController extends Controller {
             return $this->redirect(['update', 'id' => $model->primaryKey]);
         } else {
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -81,24 +86,28 @@ class OsmotraktmatController extends Controller {
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
-    
+
     // Печать акта осмотра материалов
-    public function actionOsmotraktmatReport() {
-        ReportTemplates::Osmotraktmat();
+    public function actionOsmotraktmatReport()
+    {
+        $Report = new OsmotraktmatReport();
+        $Report->Execute();
     }
 
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Osmotraktmat::findOne($id)) !== null) {
             return $model;
         } else {

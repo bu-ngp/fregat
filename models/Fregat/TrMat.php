@@ -47,7 +47,7 @@ class TrMat extends \yii\db\ActiveRecord
     {
         $query = TrOsnov::find()
             ->joinWith(['idMattraffic'])
-            ->andWhere(['mattraffic.id_material' => $this->id_parent])
+            ->andWhere(['idMattraffic.id_material' => $this->id_parent])
             ->one();
 
         if (empty($query))

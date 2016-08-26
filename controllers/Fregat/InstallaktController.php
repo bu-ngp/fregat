@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\InstallaktReport;
 use Yii;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\InstallaktSearch;
@@ -17,12 +18,14 @@ use app\func\ReportTemplates;
 /**
  * InstallaktController implements the CRUD actions for Installakt model.
  */
-class InstallaktController extends Controller {
+class InstallaktController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -48,17 +51,19 @@ class InstallaktController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new InstallaktSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Installakt();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -68,12 +73,13 @@ class InstallaktController extends Controller {
             $model->installakt_date = empty($model->installakt_date) ? date('Y-m-d') : $model->installakt_date;
 
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -86,21 +92,24 @@ class InstallaktController extends Controller {
             $dataProviderMat = $searchModelMat->search($Request);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'searchModelOsn' => $searchModelOsn,
-                        'dataProviderOsn' => $dataProviderOsn,
-                        'searchModelMat' => $searchModelMat,
-                        'dataProviderMat' => $dataProviderMat,
+                'model' => $model,
+                'searchModelOsn' => $searchModelOsn,
+                'dataProviderOsn' => $dataProviderOsn,
+                'searchModelMat' => $searchModelMat,
+                'dataProviderMat' => $dataProviderMat,
             ]);
         }
     }
 
     // Печать акта перемещения материальных ценностей
-    public function actionInstallaktReport() {
-        ReportTemplates::Installakt();
+    public function actionInstallaktReport()
+    {
+        $Report = new InstallaktReport();
+        $Report->Execute();
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -112,7 +121,8 @@ class InstallaktController extends Controller {
      * @return Installakt the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Installakt::findOne($id)) !== null) {
             return $model;
         } else {

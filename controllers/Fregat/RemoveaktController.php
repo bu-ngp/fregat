@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\RemoveaktReport;
 use Yii;
 use app\models\Fregat\Removeakt;
 use app\models\Fregat\RemoveaktSearch;
@@ -11,7 +12,6 @@ use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\TrRmMatSearch;
-use app\func\ReportTemplates;
 
 /**
  * RemoveaktController implements the CRUD actions for Removeakt model.
@@ -92,7 +92,8 @@ class RemoveaktController extends Controller {
 
     // Печать акта снятия комплектующих с материальных ценностей
     public function actionRemoveaktReport() {
-        ReportTemplates::Removeakt();
+        $Report = new RemoveaktReport();
+        $Report->Execute();
     }
 
     public function actionDelete($id) {

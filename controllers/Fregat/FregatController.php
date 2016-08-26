@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Reason;
 use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
@@ -234,6 +235,35 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             $Organ->organ_name = 'ООО «Копи-Мастер»';
             $Organ->save();
 
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется замена термопленки';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется замена аккумулятора';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется замена резинового вала';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется замена фотобарабана';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется ремонт печки';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Неисправен податчик бумаги';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется замена инвертора подсветки матрицы';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Выводит на печать чистые листы';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Не определяет наличие бумаги в лотке';
+            $Reason->save();
+            $Reason = new Reason;
+            $Reason->reason_text = 'Требуется заправка';
 
             // Prepare end
 

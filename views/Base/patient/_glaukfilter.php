@@ -10,15 +10,15 @@ use app\func\Proc;
 ?>
 
 <div class="patientglaukfilter-form">
-    <div class="form-group">     
-        <div class="row">                         
+    <div class="form-group">
+        <div class="row">
             <div class="col-xs-12">
                 <?=
                 yii\bootstrap\Html::input('text', null, null, ['class' => 'form-control inputuppercase searchfilterform', 'placeholder' => 'ПОИСК...', 'autofocus' => true])
                 ?>
             </div>
         </div>
-    </div>  
+    </div>
 
     <?php $form = ActiveForm::begin(['options' => ['id' => $model->formName() . '-form', 'data-pjax' => true]]); ?>
     <div class="insideforms">
@@ -49,16 +49,16 @@ use app\func\Proc;
                     <div class="panel-body">
                         <?=
                         $form->field($model, 'fias_city')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                            'model' => $model,
-                                            'resultmodel' => new \app\models\Base\Fias,
-                                            'fields' => [
-                                                'keyfield' => 'fias_city',
-                                            ],
-                                            'placeholder' => 'Введите населенный пункт',
-                                            'resultrequest' => 'Base/fias/selectinputforcity',
-                                            'thisroute' => $this->context->module->requestedRoute,
-                                            'methodquery' => 'selectinputforcity',
-                                        ]), [
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Base\Fias,
+                            'fields' => [
+                                'keyfield' => 'fias_city',
+                            ],
+                            'placeholder' => 'Введите населенный пункт',
+                            'resultrequest' => 'Base/fias/selectinputforcity',
+                            'thisroute' => $this->context->module->requestedRoute,
+                            'methodquery' => 'selectinputforcity',
+                        ]), [
                             'pluginEvents' => [
                                 "select2:select" => "function() { FillCity(); }",
                                 "select2:unselect" => "function() { ClearCity(); }"
@@ -68,17 +68,17 @@ use app\func\Proc;
 
                         <?=
                         $form->field($model, 'fias_street')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new \app\models\Base\Fias,
-                                    'fields' => [
-                                        'keyfield' => 'fias_street',
-                                    ],
-                                    'placeholder' => 'Введите улицу',
-                                    'resultrequest' => 'Base/fias/selectinputforstreet',
-                                    'thisroute' => $this->context->module->requestedRoute,
-                                    'methodquery' => 'selectinputforstreet',
-                                    'methodparams' => ['fias_city' => '$(\'select[name="PatientFilter[fias_city]"]\').val()'],
-                                    'minimuminputlength' => 2,
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Base\Fias,
+                            'fields' => [
+                                'keyfield' => 'fias_street',
+                            ],
+                            'placeholder' => 'Введите улицу',
+                            'resultrequest' => 'Base/fias/selectinputforstreet',
+                            'thisroute' => $this->context->module->requestedRoute,
+                            'methodquery' => 'selectinputforstreet',
+                            'methodparams' => ['fias_city' => '$(\'select[name="PatientFilter[fias_city]"]\').val()'],
+                            'minimuminputlength' => 2,
                         ]))
                         ?>
 
@@ -129,76 +129,76 @@ use app\func\Proc;
 
                         <?=
                         $form->field($model, 'glaukuchet_id_employee')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new \app\models\Fregat\Employee,
-                                    'fields' => [
-                                        'keyfield' => 'glaukuchet_id_employee',
-                                    ],
-                                    'placeholder' => 'Введите врача',
-                                    'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
-                                    'thisroute' => $this->context->module->requestedRoute,
-                                    'methodquery' => 'selectinput',
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Fregat\Employee,
+                            'fields' => [
+                                'keyfield' => 'glaukuchet_id_employee',
+                            ],
+                            'placeholder' => 'Введите врача',
+                            'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
+                            'thisroute' => $this->context->module->requestedRoute,
+                            'methodquery' => 'selectinput',
                         ]));
                         ?>
 
                         <?=
                         $form->field($model, 'employee_id_dolzh')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new \app\models\Fregat\Dolzh,
-                                    'placeholder' => 'Введите должность',
-                                    'setsession' => false,
-                                    'multiple' => [
-                                        'multipleshowall' => false,
-                                        'idvalue' => 'dolzh_id',
-                                    ],
-                                    'fields' => [
-                                        'keyfield' => 'employee_id_dolzh',
-                                        'resultfield' => 'dolzh_name',
-                                    ],
-                                    'resultrequest' => 'Fregat/dolzh/selectinput',
-                                    'thisroute' => $this->context->module->requestedRoute,
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Fregat\Dolzh,
+                            'placeholder' => 'Введите должность',
+                            'setsession' => false,
+                            'multiple' => [
+                                'multipleshowall' => false,
+                                'idvalue' => 'dolzh_id',
+                            ],
+                            'fields' => [
+                                'keyfield' => 'employee_id_dolzh',
+                                'resultfield' => 'dolzh_name',
+                            ],
+                            'resultrequest' => 'Fregat/dolzh/selectinput',
+                            'thisroute' => $this->context->module->requestedRoute,
                         ]));
                         ?>
 
                         <?=
                         $form->field($model, 'employee_id_podraz')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new \app\models\Fregat\Podraz,
-                                    'placeholder' => 'Введите подразделение',
-                                    'setsession' => false,
-                                    'multiple' => [
-                                        'multipleshowall' => false,
-                                        'idvalue' => 'podraz_id',
-                                    ],
-                                    'fields' => [
-                                        'keyfield' => 'employee_id_podraz',
-                                        'resultfield' => 'podraz_name',
-                                    ],
-                                    'resultrequest' => 'Fregat/podraz/selectinput',
-                                    'thisroute' => $this->context->module->requestedRoute,
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Fregat\Podraz,
+                            'placeholder' => 'Введите подразделение',
+                            'setsession' => false,
+                            'multiple' => [
+                                'multipleshowall' => false,
+                                'idvalue' => 'podraz_id',
+                            ],
+                            'fields' => [
+                                'keyfield' => 'employee_id_podraz',
+                                'resultfield' => 'podraz_name',
+                            ],
+                            'resultrequest' => 'Fregat/podraz/selectinput',
+                            'thisroute' => $this->context->module->requestedRoute,
                         ]));
                         ?>
 
                         <?=
                         $form->field($model, 'employee_id_build')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new \app\models\Fregat\Build,
-                                    'placeholder' => 'Введите здание',
-                                    'setsession' => false,
-                                    'multiple' => [
-                                        'multipleshowall' => false,
-                                        'idvalue' => 'build_id',
-                                    ],
-                                    'fields' => [
-                                        'keyfield' => 'employee_id_build',
-                                        'resultfield' => 'build_name',
-                                    ],
-                                    'resultrequest' => 'Fregat/build/selectinput',
-                                    'thisroute' => $this->context->module->requestedRoute,
+                            'model' => $model,
+                            'resultmodel' => new \app\models\Fregat\Build,
+                            'placeholder' => 'Введите здание',
+                            'setsession' => false,
+                            'multiple' => [
+                                'multipleshowall' => false,
+                                'idvalue' => 'build_id',
+                            ],
+                            'fields' => [
+                                'keyfield' => 'employee_id_build',
+                                'resultfield' => 'build_name',
+                            ],
+                            'resultrequest' => 'Fregat/build/selectinput',
+                            'thisroute' => $this->context->module->requestedRoute,
                         ]));
                         ?>
 
-                    </div>   
+                    </div>
                 </div>
 
                 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
@@ -207,20 +207,20 @@ use app\func\Proc;
 
                         <?=
                         $form->field($model, 'glprep_id_preparat')->widget(Select2::classname(), Proc::DGselect2([
-                                    'model' => $model,
-                                    'resultmodel' => new app\models\Base\Preparat,
-                                    'placeholder' => 'Введите название препарата',
-                                    'setsession' => false,
-                                    'multiple' => [
-                                        'multipleshowall' => false,
-                                        'idvalue' => 'preparat_id',
-                                    ],
-                                    'fields' => [
-                                        'keyfield' => 'glprep_id_preparat',
-                                        'resultfield' => 'preparat_name',
-                                    ],
-                                    'resultrequest' => 'Base/preparat/selectinput',
-                                    'thisroute' => $this->context->module->requestedRoute,
+                            'model' => $model,
+                            'resultmodel' => new app\models\Base\Preparat,
+                            'placeholder' => 'Введите название препарата',
+                            'setsession' => false,
+                            'multiple' => [
+                                'multipleshowall' => false,
+                                'idvalue' => 'preparat_id',
+                            ],
+                            'fields' => [
+                                'keyfield' => 'glprep_id_preparat',
+                                'resultfield' => 'preparat_name',
+                            ],
+                            'resultrequest' => 'Base/preparat/selectinput',
+                            'thisroute' => $this->context->module->requestedRoute,
                         ]));
                         ?>
 
@@ -237,7 +237,7 @@ use app\func\Proc;
 
                 <?= $form->field($model, 'glaukuchet_comment')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
 
-            </div>   
+            </div>
         </div>
 
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
@@ -252,7 +252,7 @@ use app\func\Proc;
 
                 <?= Proc::FilterFieldDateRange($form, $model, 'glaukuchet_lastchange') ?>
 
-            </div> 
+            </div>
         </div>
 
     </div>
@@ -264,7 +264,7 @@ use app\func\Proc;
                 <?= Html::Button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => $model->formName() . '_close']) ?>
                 <?= Html::Button('<i class="glyphicon glyphicon-remove-sign"></i> Сброс', ['class' => 'btn btn-default', 'id' => $model->formName() . '_reset']) ?>
             </div>
-        </div> 
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

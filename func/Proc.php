@@ -1125,8 +1125,8 @@ class Proc
         if (!is_array($Options))
             $Options = [];
 
-        echo '<div class="form-group"><label class="control-label" for="patientfilter-patient_vozrast">';
-        echo $ActiveRecord->getAttributeLabel('patient_vozrast');
+        echo '<div class="form-group"><label class="control-label" for="' . $ActiveRecord->formName() . '-' . $FieldName . '">';
+        echo $ActiveRecord->getAttributeLabel($FieldName);
         echo '</label><div class="row"><div class="col-xs-5">';
         echo $Form->field($ActiveRecord, $FieldName . '_znak')->widget(Select2::classname(), [
             'hideSearch' => true,
@@ -1278,49 +1278,4 @@ class Proc
         } else
             throw new \Exception('Ошибка в Proc::RelatModelValue()');
     }
-
-    // Создаем объект PHPExcel по шаблону в папке templates
-    public static function CreateExcelPHP($TemplateName)
-    {
-        if (is_string($TemplateName))
-            return \PHPExcel_IOFactory::load(Yii::$app->basePath . '/templates/' . $TemplateName . '.xlsx');
-        else
-            throw new \Exception('Ошибка в Proc::CreateExcelPHP()');
-    }
-
-    // Скачиваем файл Excel ($Protect - установить пароль для изменений на отчет)
-    public static function DownloadExcelPHP($objPHPExcel, $FileName = 'Файл.xlsx', $Protect = true)
-    {
-        if ($objPHPExcel instanceof \PHPExcel) {
-
-            if ($Protect) {
-                $objPHPExcel->getSecurity()->setLockWindows(true);
-                $objPHPExcel->getSecurity()->setLockStructure(true);
-                $objPHPExcel->getSecurity()->setWorkbookPassword("265463");
-                $objPHPExcel->getActiveSheet()->getProtection()->setPassword('265463');
-                $objPHPExcel->getActiveSheet()->getProtection()->setSheet(true); // This should be enabled in order to enable any of the following!
-                $objPHPExcel->getActiveSheet()->getProtection()->setSort(true);
-                $objPHPExcel->getActiveSheet()->getProtection()->setInsertRows(true);
-                $objPHPExcel->getActiveSheet()->getProtection()->setFormatCells(true);
-                $objPHPExcel->getActiveSheet()->getProtection()->setObjects(true);
-                $objPHPExcel->getActiveSheet()->getProtection()->setFormatColumns(true);
-                $objPHPExcel->getActiveSheet()->getProtection()->setFormatRows(true);
-            }
-
-            $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-
-            $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
-            //Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
-            $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
-            // Сохраняем файл в папку "files"
-            $objWriter->save('files/' . $fileroot);
-            // Возвращаем имя файла Excel
-            if (DIRECTORY_SEPARATOR === '/')
-                echo $fileroot;
-            else
-                echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
-        } else
-            throw new \Exception('Ошибка в Proc::DownloadExcelPHP()');
-    }
-
 }

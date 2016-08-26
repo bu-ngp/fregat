@@ -35,7 +35,8 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
     {
         return [
             [['recoveryrecieveaktmat_repaired', 'id_recoverysendakt', 'id_tr_mat_osmotr'], 'integer'],
-            [['recoveryrecieveaktmat_date'], 'safe'],
+            [['recoveryrecieveaktmat_date'], 'date', 'format' => 'yyyy-MM-dd'],
+            [['recoveryrecieveaktmat_date'], 'compare', 'compareValue' => $this->idRecoverysendakt->recoverysendakt_date, 'operator' => '>', 'message' => 'Значение {attribute} должно быть больше или равно даты акта отправки материала сторонней организации «' . Yii::$app->formatter->asDate($this->idRecoverysendakt->recoverysendakt_date) . '».'],
             [['id_recoverysendakt', 'id_tr_mat_osmotr'], 'required'],
             [['recoveryrecieveaktmat_result'], 'string', 'max' => 255],
             [['id_recoverysendakt'], 'exist', 'skipOnError' => true, 'targetClass' => Recoverysendakt::className(), 'targetAttribute' => ['id_recoverysendakt' => 'recoverysendakt_id']],
@@ -48,16 +49,18 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
     // Проверяет на уникальность записи в таблице recoveryrecieveaktmat по полям id_osmotraktmat, id_recoverysendakt, recoveryrecieveaktmat_date, где recoveryrecieveaktmat_date может быть NULL
     public function UniqueRecoveryrecieveaktmat($attribute, $params)
     {
-        $query = self::find()
-            ->andWhere([
-                'id_tr_mat_osmotr' => $this->id_tr_mat_osmotr,
-                'id_recoverysendakt' => $this->id_recoverysendakt,
-                'recoveryrecieveaktmat_date' => empty($this->recoveryrecieveaktmat_date) ? NULL : $this->recoveryrecieveaktmat_date,
-            ])
-            ->all();
+        if ($this->isNewRecord) {
+            $query = self::find()
+                ->andWhere([
+                    'id_tr_mat_osmotr' => $this->id_tr_mat_osmotr,
+                    'id_recoverysendakt' => $this->id_recoverysendakt,
+                    'recoveryrecieveaktmat_date' => empty($this->recoveryrecieveaktmat_date) ? NULL : $this->recoveryrecieveaktmat_date,
+                ])
+                ->all();
 
-        if (count($query) > 0)
-            $this->addError('recoveryrecieveaktmat_date', 'Нарушена уникальность записи. Запись уже существует.');
+            if (count($query) > 0)
+                $this->addError('recoveryrecieveaktmat_date', 'Нарушена уникальность записи. Запись уже существует.');
+        }
     }
 
     // Проверяет чтобы при сохранении результата восстановления были заполнены поля recoveryrecieveakt_repaired и recoveryrecieveakt_date
