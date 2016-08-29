@@ -23,7 +23,10 @@ use yii\helpers\Html;
                 <li>
                     <?= Html::a('<i class="glyphicon glyphicon-wrench"></i> Настройки портала', ['Config/config/index'], ['class' => 'btn btn-default']); ?>
                 </li>
-            <?php endif; ?>            
+            <?php endif; ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-lock"></i> Сменить пароль', ['Config/authuser/change-self-password'], ['class' => 'btn btn-default']); ?>
+                </li>
         </ul>
     </div>
 </div>

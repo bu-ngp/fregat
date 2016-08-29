@@ -25,7 +25,7 @@ use yii\web\Session;
 
 
     if ($model->isNewRecord || $model->scenario === 'Changepassword') {
-        echo $form->field($model, 'auth_user_password')->passwordInput(array_merge(['maxlength' => true, 'autocomplete' => 'off'], $model->scenario === 'Changepassword' ? ['autofocus' => true] : []));
+        echo $form->field($model, 'auth_user_password')->passwordInput(array_merge(['maxlength' => true, 'autocomplete' => 'off'], $model->scenario === 'Changepassword' ? ['autofocus' => true] : []))->label('Новый пароль');
         echo $form->field($model, 'auth_user_password2')->passwordInput(['maxlength' => true, 'autocomplete' => 'off']);
     }
     ?>

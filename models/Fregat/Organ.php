@@ -29,7 +29,8 @@ class Organ extends \yii\db\ActiveRecord
     {
         return [
             [['organ_name'], 'required'],
-            [['organ_name'], 'string', 'max' => 255],
+            [['organ_name', 'organ_phones'], 'string', 'max' => 255],
+            [['organ_email'], 'email'],
         ];
     }
 
@@ -41,6 +42,8 @@ class Organ extends \yii\db\ActiveRecord
         return [
             'organ_id' => 'Organ ID',
             'organ_name' => 'Организация',
+            'organ_email' => 'Электронная почта организации',
+            'organ_phones' => 'Телефоны организации',
         ];
     }
 

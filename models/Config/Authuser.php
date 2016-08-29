@@ -53,7 +53,7 @@ class Authuser extends \yii\db\ActiveRecord {
             'auth_user_fullname' => 'ФИО сотрудника',
             'auth_user_login' => 'Логин сотрудника',
             'auth_user_password' => 'Пароль',
-            'auth_user_password2' => 'Подтвердите пароль',
+            'auth_user_password2' => 'Подтвердите новый пароль',
         ];
     }
 

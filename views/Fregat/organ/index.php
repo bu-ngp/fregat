@@ -22,6 +22,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'columns' => Proc::DGcols([
                     'columns' => [
                         'organ_name',
+                        'organ_email',
+                        'organ_phones',
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [

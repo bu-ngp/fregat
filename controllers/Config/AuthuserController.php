@@ -11,6 +11,7 @@ use app\models\Fregat\Employee;
 use app\models\Fregat\EmployeeSearch;
 use Yii;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -18,9 +19,11 @@ use yii\filters\VerbFilter;
 /**
  * AuthuserController implements the CRUD actions for Authuser model.
  */
-class AuthuserController extends Controller {
+class AuthuserController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -29,6 +32,11 @@ class AuthuserController extends Controller {
                         'actions' => ['index', 'create', 'update', 'delete', 'changepassword'],
                         'allow' => true,
                         'roles' => ['UserEdit'],
+                    ],
+                    [
+                        'actions' => ['change-self-password'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -41,19 +49,21 @@ class AuthuserController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new AuthuserSearch();
-        $emp = (string) filter_input(INPUT_GET, 'emp');
+        $emp = (string)filter_input(INPUT_GET, 'emp');
         $dataProvider = $emp ? $searchModel->searchemployee(Yii::$app->request->queryParams) : $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'emp' => $emp,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'emp' => $emp,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Authuser();
         $model->scenario = 'Newuser';
 
@@ -62,17 +72,18 @@ class AuthuserController extends Controller {
             return $this->redirect(['update', 'id' => $model->auth_user_id]);
         } else
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else {
-            $emp = (string) filter_input(INPUT_GET, 'emp');
+            $emp = (string)filter_input(INPUT_GET, 'emp');
 
             $searchModel = new AuthassignmentSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -81,22 +92,27 @@ class AuthuserController extends Controller {
             $dataProviderEmp = $searchModelEmp->searchforauthuser(Yii::$app->request->queryParams);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'emp' => $emp,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
-                        'searchModelEmp' => $searchModelEmp,
-                        'dataProviderEmp' => $dataProviderEmp,
+                'model' => $model,
+                'emp' => $emp,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'searchModelEmp' => $searchModelEmp,
+                'dataProviderEmp' => $dataProviderEmp,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+            if ($id == 1)
+                throw new HttpException(500, 'Администратора удалить нельзя');
+            else
+                echo $this->findModel($id)->delete();
     }
 
-    public function actionChangepassword($id) {
+    public function actionChangepassword($id)
+    {
         $model = $this->findModel($id);
         $model->auth_user_password = '';
         $model->auth_user_password2 = '';
@@ -106,18 +122,35 @@ class AuthuserController extends Controller {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('changepassword', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionIndexemployee() {
+    public function actionChangeSelfPassword()
+    {
+        $model = $this->findModel(Yii::$app->user->getId());
+        $model->auth_user_password = '';
+        $model->auth_user_password2 = '';
+        $model->scenario = 'Changepassword';
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            return $this->render('changepassword', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionIndexemployee()
+    {
         $searchModel = new AuthuserSearch();
         $dataProvider = $searchModel->searchemployee(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -128,7 +161,8 @@ class AuthuserController extends Controller {
      * @return Authuser the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Authuser::findOne($id)) !== null) {
             return $model;
         } else {

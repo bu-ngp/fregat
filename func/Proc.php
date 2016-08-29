@@ -450,10 +450,13 @@ class Proc
         $session = new Session;
         $session->open();
         $bc = $session['breadcrumbs'];
-        end($bc);
-        prev($bc);
-        $session->close();
-        return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
+        if (count($bc) > 1) {
+            end($bc);
+            prev($bc);
+            $session->close();
+            return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
+        } else
+            return Yii::$app->homeUrl;
     }
 
     // Возвращает последний URL из хлебных крошек из сессии

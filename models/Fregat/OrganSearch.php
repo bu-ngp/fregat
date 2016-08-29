@@ -10,22 +10,25 @@ use app\models\Fregat\Organ;
 /**
  * OrganSearch represents the model behind the search form about `app\models\Fregat\Organ`.
  */
-class OrganSearch extends Organ {
+class OrganSearch extends Organ
+{
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['organ_id'], 'integer'],
-            [['organ_name'], 'safe'],
+            [['organ_name', 'organ_phones', 'organ_email'], 'safe'],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -37,7 +40,8 @@ class OrganSearch extends Organ {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
+    public function search($params)
+    {
         $query = Organ::find();
 
         // add conditions that should always apply here
@@ -61,6 +65,8 @@ class OrganSearch extends Organ {
         ]);
 
         $query->andFilterWhere(['like', 'organ_name', $this->organ_name]);
+        $query->andFilterWhere(['like', 'organ_email', $this->organ_email]);
+        $query->andFilterWhere(['like', 'organ_phones', $this->organ_phones]);
 
         return $dataProvider;
     }
