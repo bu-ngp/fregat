@@ -95,6 +95,7 @@ class EmployeeController extends Controller {
     public function actionCreate($iduser) {
         $model = new Employee();
         $model->id_person = $iduser;
+        $model->employee_importdo = 1;
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());

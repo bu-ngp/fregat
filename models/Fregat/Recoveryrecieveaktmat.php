@@ -36,7 +36,7 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
         return [
             [['recoveryrecieveaktmat_repaired', 'id_recoverysendakt', 'id_tr_mat_osmotr'], 'integer'],
             [['recoveryrecieveaktmat_date'], 'date', 'format' => 'yyyy-MM-dd'],
-            [['recoveryrecieveaktmat_date'], 'compare', 'compareValue' => $this->idRecoverysendakt->recoverysendakt_date, 'operator' => '>', 'message' => 'Значение {attribute} должно быть больше или равно даты акта отправки материала сторонней организации «' . Yii::$app->formatter->asDate($this->idRecoverysendakt->recoverysendakt_date) . '».'],
+            [['recoveryrecieveaktmat_date'], 'compare', 'compareValue' => $this->idRecoverysendakt->recoverysendakt_date, 'operator' => '>=', 'message' => 'Значение {attribute} должно быть больше или равно даты акта отправки материала сторонней организации «' . Yii::$app->formatter->asDate($this->idRecoverysendakt->recoverysendakt_date) . '».'],
             [['id_recoverysendakt', 'id_tr_mat_osmotr'], 'required'],
             [['recoveryrecieveaktmat_result'], 'string', 'max' => 255],
             [['id_recoverysendakt'], 'exist', 'skipOnError' => true, 'targetClass' => Recoverysendakt::className(), 'targetAttribute' => ['id_recoverysendakt' => 'recoverysendakt_id']],

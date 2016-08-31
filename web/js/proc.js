@@ -2,9 +2,9 @@ bootbox.setDefaults({locale: "ru"});
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -52,7 +52,11 @@ function SetSession(thiselem) {
         $.ajax({
             url: "?r=site%2Fsetsession",
             type: "post",
-            data: {modelclass: field.substring(0, field.indexOf("[")), field: field.substring(field.indexOf("[") + 1, field.indexOf("]")), value: elemval},
+            data: {
+                modelclass: field.substring(0, field.indexOf("[")),
+                field: field.substring(field.indexOf("[") + 1, field.indexOf("]")),
+                value: elemval
+            },
             async: false,
             error: function (data) {
                 console.error("Ошибка SetSession");
@@ -104,9 +108,9 @@ function InitWindowGUID() {
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split('=');
@@ -163,7 +167,12 @@ function ExportExcel(model, url, button, dopfields) {
             }
         });
 
-        var data = {inputdata: JSON.stringify(inputdata), selectvalues: JSON.stringify(selectvalues), labelvalues: JSON.stringify(labelvalues), sort: getUrlParameter("sort")};
+        var data = {
+            inputdata: JSON.stringify(inputdata),
+            selectvalues: JSON.stringify(selectvalues),
+            labelvalues: JSON.stringify(labelvalues),
+            sort: getUrlParameter("sort")
+        };
 
         $.ajax({
             url: url + '&' + $.param(data),
@@ -172,7 +181,8 @@ function ExportExcel(model, url, button, dopfields) {
             async: true,
             success: function (response) {
                 /* response - Путь к новому файлу  */
-                window.location.href = "files/" + response; /* Открываем файл */
+                window.location.href = "files/" + response;
+                /* Открываем файл */
                 /* Удаляем файл через 5 секунд*/
                 setTimeout(function () {
                     $.ajax({
@@ -196,11 +206,15 @@ function DownloadReport(url, button, dopparams) {
     $.ajax({
         url: url,
         type: "post",
-        data: {buttonloadingid: button, dopparams: JSON.stringify(dopparams)}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+        data: {
+            buttonloadingid: button,
+            dopparams: JSON.stringify(dopparams)
+        }, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
         async: true,
         success: function (response) {
             /* response - Путь к новому файлу  */
-            window.location.href = "files/" + response; /* Открываем файл */
+            window.location.href = "files/" + response;
+            /* Открываем файл */
             /* Удаляем файл через 5 секунд*/
             setTimeout(function () {
                 $.ajax({
@@ -217,11 +231,43 @@ function DownloadReport(url, button, dopparams) {
     });
 }
 
+function SendReport(url, button, dopparams) {
+    bodymail = "<BR><b>Тема: </b>" + dopparams.emailtheme +
+        "<BR><b>Кому: </b>" + dopparams.emailto +
+        "<BR><b>От: </b>" + dopparams.emailfrom;
+    bootbox.confirm("Вы уверены, что хотите отправить акт на электронную почту." + bodymail, function (result) {
+        if (result) {
+            $.ajax({
+                url: url,
+                type: "post",
+                data: {
+                    buttonloadingid: button,
+                    dopparams: JSON.stringify(dopparams)
+                }, // buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса
+                async: true,
+                success: function (response) {
+                    setTimeout(function () {
+                        $.ajax({
+                            url: "?r=site%2Fdelete-tmp-file",
+                            type: "post",
+                            data: {filename: response},
+                            async: true
+                        });
+                    }, 5000);
+                },
+                error: function (data) {
+                    console.error('Ошибка');
+                }
+            });
+        }
+    });
+}
+
 /**
  * Показываем индикатор ожидания на кнопке
- * 
+ *
  * param.buttonelem - Кнопка, над которой проводятся манипуляции
- * 
+ *
  */
 function LoadingButtonShow(param) {
     if (typeof param !== "undefined" && ("buttonelem" in param)) {
@@ -233,7 +279,7 @@ function LoadingButtonShow(param) {
 
 /**
  * Скрываем индикатор ожидания на кнопке
- * 
+ *
  * param.buttonelem - Кнопка, над которой проводятся манипуляции
  * param.text - Текст кнопки, который был до показа индикатора
  */
@@ -310,7 +356,6 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                     gridpjax = $("div[data-pjax-container]").attr("id");
                 else if (typeof (gridpjax) !== "undefined")
                     gridpjax = gridpjax + "-pjax";
-
 
 
                 $.ajax({

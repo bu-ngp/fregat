@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Material;
 use app\func\Proc;
+use yii\db\Expression;
 
 /**
  * MaterialSearch represents the model behind the search form about `app\models\Fregat\Material`.
@@ -17,7 +18,12 @@ class MaterialSearch extends Material
     public function attributes()
     {
         // add related fields to searchable attributes
-        return array_merge(parent::attributes(), ['idMatv.matvid_name', 'idIzmer.izmer_name']);
+        return array_merge(parent::attributes(), [
+            'idMatv.matvid_name',
+            'idIzmer.izmer_name',
+            'mattraffics.mattraffic_lastchange',
+            'mattraffics.mattraffic_username',
+        ]);
     }
 
     /**
@@ -29,6 +35,10 @@ class MaterialSearch extends Material
             [['material_id', 'material_tip', 'material_writeoff', 'id_matvid', 'id_izmer', 'material_importdo'], 'integer'],
             [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_username', 'material_lastchange', 'idMatv.matvid_name', 'idIzmer.izmer_name'], 'safe'],
             [['material_number', 'material_price'], 'safe'],
+            [[
+                'mattraffics.mattraffic_lastchange',
+                'mattraffics.mattraffic_username',
+            ], 'safe'],
         ];
     }
 
@@ -57,7 +67,7 @@ class MaterialSearch extends Material
             'sort' => ['defaultOrder' => ['material_name' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['idMatv', 'idIzmer']);
+        $query->joinWith(['idMatv', 'idIzmer', 'mattraffics']);
 
         $this->load($params);
 
@@ -90,10 +100,42 @@ class MaterialSearch extends Material
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_username'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_lastchange', 'datetime'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffics.mattraffic_lastchange', 'datetime'));
+        $query->andFilterWhere(['LIKE', 'mattraffics.mattraffic_username', $this->getAttribute('mattraffics.mattraffic_username')]);
 
-        Proc::AssignRelatedAttributes($dataProvider, ['idMatv.matvid_name', 'idIzmer.izmer_name']);
+        $query->groupBy(['material.material_id']);
+        $query->having(new Expression('MAX(mattraffics.mattraffic_date)'));
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idMatv.matvid_name',
+            'idIzmer.izmer_name',
+            'mattraffics.mattraffic_lastchange',
+            'mattraffics.mattraffic_username',
+        ]);
+
+        $this->materialDopfilter($query);
 
         return $dataProvider;
+    }
+
+    private function materialDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'MaterialFilter');
+
+        if (!empty($filter)) {
+            $attr = 'mattraffic_username';
+            if (!empty($filter[$attr]))
+                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
+
+            $attr = 'mattraffic_lastchange';
+            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
+                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
+            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
+                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
+                $query->andFilterWhere([$znak, $attr, $value]);
+            }
+        }
     }
 
     public function searchforinstallakt_mat($params)

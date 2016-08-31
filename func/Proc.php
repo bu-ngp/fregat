@@ -2,12 +2,15 @@
 
 namespace app\func;
 
+use app\func\ReportsTemplate\RecoverysendaktmatReport;
+use app\func\ReportsTemplate\RecoverysendaktReport;
+use app\models\Fregat\Recoverysendakt;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\HttpException;
 use yii\web\Session;
 use yii\helpers\Url;
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 use yii\db\ActiveRecord;
@@ -368,6 +371,7 @@ class Proc
     // $params[field] - Поле по которому осуществляется поиск
     // $params[q] - Текстовая строка поиска
     // $params[showresultfields] - Массив полей, которые возвращаются, как результат поиска
+    // $params[order] - сортировка sql activequery OrderBy()
     public static function select2request($params)
     {
         if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && (is_string($params['field']) || isset($params['methodquery']))) {
@@ -389,6 +393,7 @@ class Proc
                     $out['results'] = $model::find()
                         ->select([$model::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $params['showresultfields'] . ') AS text'])
                         ->where(['like', $params['field'], $params['q']])
+                        ->orderBy(isset($params['order']) ? $params['order'] : [])
                         ->limit(20)
                         ->asArray()
                         ->all();
@@ -979,10 +984,19 @@ class Proc
         if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
             $session = new Session;
             $session->open();
-            if (isset($session['_filter'][$ModelGridName][$ModelFilter->formName()]))
-                return $ModelFilter->load($session['_filter'][$ModelGridName]);
-            else
+            if (isset($session['_filter'][$ModelGridName][$ModelFilter->formName()])) {
+                $Filed = $ModelFilter->load($session['_filter'][$ModelGridName]);
+                foreach ($ModelFilter->attributes as $attr => $val) {
+                    if (strrpos($attr, '_not') === strlen($attr) - 4 && $val == '1') {
+                        $attr2 = substr($attr, 0, strlen($attr) - 4);
+                        if ($ModelFilter->hasProperty($attr2) && empty($ModelFilter->$attr2))
+                            $ModelFilter->$attr = null;
+                    }
+                }
+                return $Filed;
+            } else
                 return false;
+
             $session->close();
         } else
             throw new HttpException(500, 'Ошибка при передачи параметров в function PopulateFilterForm');
@@ -1016,7 +1030,7 @@ class Proc
                 foreach ($filtform as $filtformname => $fields) {
                     if ($filtformname === $AR->formName()) {
                         foreach ($fields as $attr => $value)
-                            if ((!empty($value) || strpos($attr, '_beg') === strlen($attr) - 4) && strpos($attr, '_znak') !== strlen($attr) - 5 && strpos($attr, '_end') !== strlen($attr) - 4)
+                            if ((!empty($value) || strpos($attr, '_beg') === strlen($attr) - 4) && strpos($attr, '_znak') !== strlen($attr) - 5 && strpos($attr, '_end') !== strlen($attr) - 4 && strpos($attr, '_not') !== strlen($attr) - 4)
                                 if (strpos($attr, '_mark') === strlen($attr) - 5) {
                                     if ($value === '1')
                                         $filter .= ' ' . $AR->attributeLabels()[$attr] . ';';
@@ -1083,8 +1097,10 @@ class Proc
                                             $value[$key] = isset($var[$item]) ? $var[$item] : $item;
                                         }
 
+                                    $not = !empty($fields[$attr . '_not']) ? 'НЕ ' : '';
+
                                     $value = implode(', ', $value);
-                                    $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $value . '";';
+                                    $filter .= ' ' . $AR->attributeLabels()[$attr] . ' ' . $znak . ' "' . $not . $value . '";';
                                 }
                     }
                 }
@@ -1148,6 +1164,13 @@ class Proc
         echo '</div></div></div>';
     }
 
+    public static function SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName)
+    {
+        $field = $Form->field($ActiveRecord, $FieldName . '_not')->checkbox()->label('НЕ', ['class' => 'labelbold']);
+        $field->template = "<div class=\"checkbox\">{beginLabel}{input}{labelTitle}{endLabel}{hint}</div>";
+        return $field;
+    }
+
     public static function FilterFieldSelectSingle($Form, $ActiveRecord, $FieldName, $PlaceHolder)
     {
         if (method_exists($ActiveRecord, 'VariablesValues'))
@@ -1159,6 +1182,14 @@ class Proc
                 ],
                 'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control'],
                 'theme' => Select2::THEME_BOOTSTRAP,
+                'addon' => [
+                    'prepend' => [
+                        'content' => self::SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName),
+                    ],
+                    'groupOptions' => [
+                        'class' => 'notforselect2',
+                    ],
+                ],
             ]);
     }
 
@@ -1173,6 +1204,14 @@ class Proc
                 ],
                 'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control', 'multiple' => true],
                 'theme' => Select2::THEME_BOOTSTRAP,
+                'addon' => [
+                    'prepend' => [
+                        'content' => self::SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName),
+                    ],
+                    'groupOptions' => [
+                        'class' => 'notforselect2',
+                    ],
+                ],
             ]);
     }
 
@@ -1280,5 +1319,32 @@ class Proc
             return $fail ? $ActiverecordNew : $ActiverecordRelat;
         } else
             throw new \Exception('Ошибка в Proc::RelatModelValue()');
+    }
+
+    public static function SendReportAkt($Typereport)
+    {
+        $Report = ($Typereport === 1) ? new RecoverysendaktReport() : new RecoverysendaktmatReport();
+        $Report->setDirectoryFiles('tmpfiles');
+        $filename = $Report->Execute();
+        $fnutf8 = $filename;
+        $dopparams = json_decode(Yii::$app->request->post()['dopparams']);
+
+        $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+
+        $emailfrom = 'it@mugp-nv.ru';
+        $emailto = Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email;
+        $emailtheme = 'БУ "Нижневартовская городская поликлиника"';
+
+        Yii::$app->mailer->compose('//Fregat/recoverysendakt/_send', [
+            'filename' => $filename,
+        ])
+            ->setFrom('it@mugp-nv.ru')
+            ->setTo([
+                'karpovvv@mugp-nv.ru',
+            ])
+            ->setSubject('БУ "Нижневартовская городская поликлиника"')
+            ->attach($fl, ['fileName' => $fnutf8])
+            ->send();
+        echo $fnutf8;
     }
 }

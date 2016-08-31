@@ -29,6 +29,11 @@ class AuthuserController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['FregatUserPermission'],
+                    ],
+                    [
                         'actions' => ['index', 'create', 'update', 'delete', 'changepassword'],
                         'allow' => true,
                         'roles' => ['UserEdit'],

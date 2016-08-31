@@ -33,7 +33,7 @@ class RecoverysendaktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report', 'toexcel'],
+                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report', 'toexcel', 'recoverysendakt-reportsend', 'recoverysendaktmat-reportsend'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -120,6 +120,16 @@ class RecoverysendaktController extends Controller
     {
         $Report = new RecoverysendaktmatReport();
         $Report->Execute();
+    }
+
+    public function actionRecoverysendaktReportsend()
+    {
+        Proc::SendReportAkt(1);
+    }
+
+    public function actionRecoverysendaktmatReportsend()
+    {
+        Proc::SendReportAkt(2);
     }
 
     public function actionToexcel()

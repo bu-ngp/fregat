@@ -59,6 +59,7 @@ class DolzhController extends Controller {
                     'model' => new Dolzh,
                     'field' => $field,
                     'q' => $q,
+                    'order' => 'dolzh_name',
         ]);
     }
 

@@ -253,7 +253,7 @@ use yii\helpers\Url;
                         'filterModel' => $searchModel_mattraffic,
                         'panel' => [
                             'heading' => '<i class="glyphicon glyphicon-random"></i> Движение материальной ценности',
-                            'before' => Yii::$app->user->can('MaterialEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
+                            'before' => Yii::$app->user->can('MolEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
                                 'id' => $model->primaryKey,
                             ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                         ],

@@ -40,6 +40,11 @@ class BaseReportPortal
     private $_Dopparams;
 
     /**
+     * @var string $_DirectoryFiles Директория сохранения файлов отчетов
+     */
+    private $_DirectoryFiles;
+
+    /**
      * @var array $TITLE Стиль PHPExcel для заголовка
      */
     protected static $TITLE = [
@@ -232,16 +237,33 @@ class BaseReportPortal
 
             $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
             //this->SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
-            $fileroot = $this->SaveFileIfExists('files/' . $FileName . '.xlsx');
+            $fileroot = $this->SaveFileIfExists($this->getDirectoryFiles() . '/' . $FileName . '.xlsx');
             // Сохраняем файл в папку "files"
-            $objWriter->save('files/' . $fileroot);
+            $objWriter->save($this->getDirectoryFiles() . '/' . $fileroot);
             // Возвращаем имя файла Excel
             if (DIRECTORY_SEPARATOR === '/')
-                echo $fileroot;
+                return $fileroot;
             else
-                echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+                return mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
         } else
             throw new \Exception('Ошибка в BaseReportPortal->DownloadExcelPHP()');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirectoryFiles()
+    {
+        return $this->_DirectoryFiles;
+    }
+
+    /**
+     * @param string $DirectoryFiles
+     */
+    public function setDirectoryFiles($DirectoryFiles)
+    {
+        if (is_string($DirectoryFiles))
+            $this->_DirectoryFiles = $DirectoryFiles;
     }
 
     /**
@@ -286,7 +308,7 @@ class BaseReportPortal
      *
      * @param string $ReportName Имя отчета
      */
-    protected function setReportName($ReportName)
+    public function setReportName($ReportName)
     {
         $this->_ReportName = $ReportName;
     }
@@ -336,7 +358,7 @@ class BaseReportPortal
      *
      * @return string Имя отчета
      */
-    protected function getReportName()
+    public function getReportName()
     {
         return $this->_ReportName;
     }
@@ -370,6 +392,11 @@ class BaseReportPortal
 
     }
 
+    public function __construct()
+    {
+        $this->setDirectoryFiles('files');
+    }
+
     /**
      * Запуск формирования отчета
      *
@@ -382,11 +409,11 @@ class BaseReportPortal
 
         $this->SetupTemplateFileName();
 
-        $this->CreateExcelPHP($this->getTemplateFileName()); // Создаем объект PHPExcel
+        $this->CreateExcelPHP(); // Создаем объект PHPExcel
 
         $this->Body();
 
-        $this->DownloadExcelPHP($this->getReportName(), $ProtectReport); // Скачиваем сформированный отчет
+        return $this->DownloadExcelPHP($this->getReportName(), $ProtectReport); // Скачиваем сформированный отчет
     }
 
 }

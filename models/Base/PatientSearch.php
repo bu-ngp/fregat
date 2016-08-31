@@ -212,7 +212,10 @@ class PatientSearch extends Patient
 
             $attr = 'patient_pol';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere([$attr => $filter[$attr]]);
+                if (empty($filter[$attr . '_not']))
+                    $query->andFilterWhere([$attr => $filter[$attr]]);
+                else
+                    $query->andFilterWhere(['not', [$attr => $filter[$attr]]]);
 
             $attr = 'fias_city';
             if (!empty($filter[$attr]))
@@ -249,7 +252,7 @@ class PatientSearch extends Patient
 
             $attr = 'glaukuchet_detect';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
 
             $attr = 'is_glaukuchet_mark';
             if ($filter[$attr] === '1')
@@ -257,7 +260,7 @@ class PatientSearch extends Patient
 
             $attr = 'glaukuchet_deregreason';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
 
             $attr = 'glaukuchet_deregdate';
             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
@@ -270,7 +273,7 @@ class PatientSearch extends Patient
 
             $attr = 'glaukuchet_stage';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
 
             $attr = 'glaukuchet_operdate';
             if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
@@ -287,7 +290,7 @@ class PatientSearch extends Patient
 
             $attr = 'glaukuchet_invalid';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', $attr, $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
 
             $attr = 'glaukuchet_not_invalid_mark';
             if ($filter[$attr] === '1')
@@ -317,27 +320,30 @@ class PatientSearch extends Patient
 
             $attr = 'glaukuchet_id_employee';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['glaukuchets.id_employee' => $filter[$attr]]);
+                if (empty($filter[$attr . '_not']))
+                    $query->andFilterWhere(['glaukuchets.id_employee' => $filter[$attr]]);
+                else
+                    $query->andFilterWhere(['not', ['glaukuchets.id_employee' => $filter[$attr]]]);
 
             $attr = 'employee_id_dolzh';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', 'idEmployee.id_dolzh', $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_dolzh', $filter[$attr]]);
 
             $attr = 'employee_id_podraz';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', 'idEmployee.id_podraz', $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_podraz', $filter[$attr]]);
 
             $attr = 'employee_id_build';
             if (!empty($filter[$attr]))
-                $query->andFilterWhere(['IN', 'idEmployee.id_build', $filter[$attr]]);
+                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_build', $filter[$attr]]);
 
             $attr = 'glprep_id_preparat';
             if (!empty($filter[$attr]))
-                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.id_preparat in (' . implode(',', $filter[$attr]) . '))');
+                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.id_preparat ' . (empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', $filter[$attr]) . '))');
 
             $attr = 'glprep_rlocat';
             if (!empty($filter[$attr]))
-                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.glprep_rlocat in (' . implode(',', $filter[$attr]) . '))');
+                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.glprep_rlocat ' . (empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', $filter[$attr]) . '))');
 
             $attr = 'glprep_not_preparat_mark';
             if ($filter[$attr] === '1')

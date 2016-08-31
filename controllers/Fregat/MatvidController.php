@@ -61,6 +61,7 @@ class MatvidController extends Controller {
                     'model' => new Matvid,
                     'field' => $field,
                     'q' => $q,
+                    'order' => 'matvid_name',
         ]);
     }
 

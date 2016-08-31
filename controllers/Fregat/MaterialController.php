@@ -17,6 +17,7 @@ use app\models\Fregat\RecoverysendaktSearch;
 use app\models\Fregat\TrMatOsmotrSearch;
 use app\models\Fregat\RecoveryrecieveaktSearch;
 use app\models\Fregat\RecoveryrecieveaktmatSearch;
+use app\models\Fregat\MaterialFilter;
 
 /**
  * MaterialController implements the CRUD actions for Material model.
@@ -31,7 +32,7 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material', 'materialfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -48,11 +49,13 @@ class MaterialController extends Controller
     public function actionIndex()
     {
         $searchModel = new MaterialSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new MaterialFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -163,6 +166,19 @@ class MaterialController extends Controller
     {
         Proc::AssignToModelFromGrid();
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    }
+
+    public function actionMaterialfilter()
+    {
+        $model = new MaterialFilter();
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('MaterialSearch', $model);
+
+            return $this->renderAjax('_materialfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

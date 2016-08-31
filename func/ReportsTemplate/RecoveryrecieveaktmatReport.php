@@ -66,7 +66,7 @@ class RecoveryrecieveaktmatReport extends BaseReportPortal
         $crows = count($Recoveryrecieveaktmat_ok);
         $num = 15;
         foreach ($Recoveryrecieveaktmat_fail as $ar) {
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, $num + $crows - 16);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num + $crows, $num + $crows - 15);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name);
             $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);

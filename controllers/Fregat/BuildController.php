@@ -64,6 +64,7 @@ class BuildController extends Controller {
                     'model' => new Build,
                     'field' => $field,
                     'q' => $q,
+                    'order' => 'build_name'
         ]);
     }
 

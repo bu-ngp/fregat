@@ -68,6 +68,7 @@ class AuthuserSearch extends Authuser {
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['auth_user_fullname' => SORT_ASC]],
         ]);
 
         $query->joinWith('employees', true, 'INNER JOIN');

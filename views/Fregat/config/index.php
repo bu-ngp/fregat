@@ -28,6 +28,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                     <?= Html::a('<i class="glyphicon glyphicon-list-alt"></i> Справочники', ['sprav'], ['class' => 'btn btn-default']) ?>
                 </li>
             <?php endif; ?>
+            <?php if (/*Yii::$app->user->can('FregatConfig')*/true): ?>
+                <li>
+                    <?= Html::a('<i class="glyphicon glyphicon-tasks"></i> Настройки системы', ['settings'], ['class' => 'btn btn-default']) ?>
+                </li>
+            <?php endif; ?>
         </ul>
     </div>
 </div>

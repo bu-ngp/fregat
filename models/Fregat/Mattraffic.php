@@ -280,11 +280,18 @@ class Mattraffic extends \yii\db\ActiveRecord
 
     public static function GetPreviousMattrafficByInstallaktMaterial($installakt_id, $material_id)
     {
+     /*   $mattr_prev_max = self::find()
+            ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
+            ->andWhere(['id_material' => $material_id])
+            ->max('mattraffic_id');*/
         $mattr_prev_max = self::find()
             ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
             ->andWhere(['id_material' => $material_id])
-            ->max('mattraffic_id');
-        return self::findOne($mattr_prev_max);
+            ->orderBy(['mattraffic_tip' => SORT_DESC, 'mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC])
+            ->limit(1)
+            ->one();
+
+        return $mattr_prev_max;
     }
 
     public static function CanIsDelete($Mattraffic_id)

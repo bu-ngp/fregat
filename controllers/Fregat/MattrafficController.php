@@ -34,7 +34,7 @@ class MattrafficController extends Controller
                     [
                         'actions' => ['create'],
                         'allow' => true,
-                        'roles' => ['MaterialEdit'],
+                        'roles' => ['MolEdit'],
                     ],
                     [
                         'actions' => ['delete'],
@@ -69,7 +69,7 @@ class MattrafficController extends Controller
         $model = new Mattraffic();
 
         $Mattrafficlast = Mattraffic::find()
-            ->leftJoin('mattraffic mt', 'mattraffic.id_material = mt.id_material and  mattraffic.mattraffic_date < mt.mattraffic_date')
+            ->leftJoin('mattraffic mt', 'mattraffic.id_material = mt.id_material and  mattraffic.mattraffic_date < mt.mattraffic_date and mt.mattraffic_tip in (1,2)')
             ->andWhere([
                 'mt.mattraffic_date' => NULL,
                 'mattraffic.id_material' => $id,

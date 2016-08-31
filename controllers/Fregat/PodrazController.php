@@ -59,6 +59,7 @@ class PodrazController extends Controller {
                     'model' => new Podraz,
                     'field' => $field,
                     'q' => $q,
+                    'order' => 'podraz_name',
         ]);
     }
 

@@ -2,6 +2,8 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Config\Authuser;
+use app\models\Fregat\Employee;
 use app\models\Fregat\Reason;
 use Yii;
 use app\models\Fregat\Build;
@@ -27,7 +29,7 @@ class FregatController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['sprav'],
+                        'actions' => ['sprav', 'config'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -37,9 +39,14 @@ class FregatController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['config', 'import'],
+                        'actions' => ['import'],
                         'allow' => true,
                         'roles' => ['FregatImport'],
+                    ],
+                    [
+                        'actions' => ['settings'],
+                        'allow' => true,
+                      //  'roles' => ['FregatConfig'],
                     ],
                     [
                         'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-remont'],
@@ -66,6 +73,11 @@ class FregatController extends Controller
     public function actionConfig()
     {
         return $this->render('//Fregat/config/index');
+    }
+
+    public function actionSettings()
+    {
+        return $this->render('//Fregat/config/settings');
     }
 
     public function actionImport()
@@ -233,6 +245,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             $Organ->save();
             $Organ = new \app\models\Fregat\Organ;
             $Organ->organ_name = 'ООО «Копи-Мастер»';
+            $Organ->organ_email = '310209@mail.ru';
+            $Organ->organ_phones = '8(3466)31-02-09';
             $Organ->save();
 
             $Reason = new Reason;
@@ -265,6 +279,77 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             $Reason = new Reason;
             $Reason->reason_text = 'Требуется заправка';
             $Reason->save();
+
+            $Authuser = Authuser::findOne(1); //admin
+            $Authuser->scenario = 'Changepassword';
+            $Authuser->auth_user_password = '265463';
+            $Authuser->auth_user_password2 = '265463';
+            $Authuser->save();
+
+            $Authuser = Authuser::find()
+                ->andWhere(['in', 'auth_user_id', [989, 986, 987, 984, 988, 985, 1020]])// karpovvv, NicenkoDN, StalmahovichMN, VelikanovAE, ChepenkoAV, GorbatovskiyDV, ZamaletdinovDK
+                ->all();
+
+            foreach ($Authuser as $ar) {
+                $ar2 = Authuser::findOne($ar->primaryKey);
+                $ar2->scenario = 'Changepassword';
+                $ar2->auth_user_password = '265463';
+                $ar2->auth_user_password2 = '265463';
+                $ar2->save();
+                $auth = Yii::$app->authManager;
+                $Role = $auth->getRole('Administrator');
+                $auth->assign($Role, $ar->primaryKey);
+            }
+
+            $Glauk = Authuser::find()
+                ->andWhere(['in', 'auth_user_id', [64, 403, 410, 419, 875, 877, 882, 885, 887, 891, 1133, 1196]])
+                ->all();
+
+            foreach ($Glauk as $ar) {
+                $ar2 = Authuser::findOne($ar->primaryKey);
+                $ar2->scenario = 'Changepassword';
+                $ar2->auth_user_password = '55555555';
+                $ar2->auth_user_password2 = '55555555';
+                $ar2->save();
+                $auth = Yii::$app->authManager;
+                $Role = $auth->getRole('GlaukOperatorRole');
+                $auth->assign($Role, $ar->primaryKey);
+            }
+
+            //murin
+            $ar2 = Authuser::findOne(883);
+            $ar2->scenario = 'Changepassword';
+            $ar2->auth_user_password = '55555555';
+            $ar2->auth_user_password2 = '55555555';
+            $ar2->save();
+            $auth = Yii::$app->authManager;
+            $Role = $auth->getRole('GlaukAdmin');
+            $auth->assign($Role, 883);
+            $Role = $auth->getRole('EmployeeBuildEditRole');
+            $auth->assign($Role, 883);
+
+            $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184]]);
+            $pol3 = Employee::updateAll(['id_build' => 2], ['employee_id' => [874, 884]]);
+            $pol3 = Employee::updateAll(['id_build' => 3], ['employee_id' => [876, 881]]);
+
+            $Hos = Authuser::find()
+                ->andWhere(['in', 'auth_user_id', [384, 489, 590, 614, 744, 466, 755, 614]])
+                ->all();
+
+            foreach ($Hos as $ar) {
+                $ar2 = Authuser::findOne($ar->primaryKey);
+                $ar2->scenario = 'Changepassword';
+                $ar2->auth_user_password = '44444444';
+                $ar2->auth_user_password2 = '44444444';
+                $ar2->save();
+                $auth = Yii::$app->authManager;
+                $Role = $auth->getRole('FregatHozSister');
+                $auth->assign($Role, $ar->primaryKey);
+            }
+
+            $Build = new Build();
+            $Build->build_name = 'Административный корпус';
+            $Build->save();
 
             // Prepare end
 

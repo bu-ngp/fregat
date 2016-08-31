@@ -128,7 +128,7 @@ use app\func\Proc;
                     <div class="panel-body">
 
                         <?=
-                        $form->field($model, 'glaukuchet_id_employee')->widget(Select2::classname(), Proc::DGselect2([
+                        $form->field($model, 'glaukuchet_id_employee')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                             'model' => $model,
                             'resultmodel' => new \app\models\Fregat\Employee,
                             'fields' => [
@@ -138,11 +138,21 @@ use app\func\Proc;
                             'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
                             'thisroute' => $this->context->module->requestedRoute,
                             'methodquery' => 'selectinput',
+
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'glaukuchet_id_employee'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
                         ]));
                         ?>
 
                         <?=
-                        $form->field($model, 'employee_id_dolzh')->widget(Select2::classname(), Proc::DGselect2([
+                        $form->field($model, 'employee_id_dolzh')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                             'model' => $model,
                             'resultmodel' => new \app\models\Fregat\Dolzh,
                             'placeholder' => 'Введите должность',
@@ -157,11 +167,20 @@ use app\func\Proc;
                             ],
                             'resultrequest' => 'Fregat/dolzh/selectinput',
                             'thisroute' => $this->context->module->requestedRoute,
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'employee_id_dolzh'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
                         ]));
                         ?>
 
                         <?=
-                        $form->field($model, 'employee_id_podraz')->widget(Select2::classname(), Proc::DGselect2([
+                        $form->field($model, 'employee_id_podraz')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                             'model' => $model,
                             'resultmodel' => new \app\models\Fregat\Podraz,
                             'placeholder' => 'Введите подразделение',
@@ -176,11 +195,20 @@ use app\func\Proc;
                             ],
                             'resultrequest' => 'Fregat/podraz/selectinput',
                             'thisroute' => $this->context->module->requestedRoute,
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'employee_id_podraz'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
                         ]));
                         ?>
 
                         <?=
-                        $form->field($model, 'employee_id_build')->widget(Select2::classname(), Proc::DGselect2([
+                        $form->field($model, 'employee_id_build')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                             'model' => $model,
                             'resultmodel' => new \app\models\Fregat\Build,
                             'placeholder' => 'Введите здание',
@@ -195,6 +223,15 @@ use app\func\Proc;
                             ],
                             'resultrequest' => 'Fregat/build/selectinput',
                             'thisroute' => $this->context->module->requestedRoute,
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'employee_id_build'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
                         ]));
                         ?>
 
@@ -206,7 +243,7 @@ use app\func\Proc;
                     <div class="panel-body">
 
                         <?=
-                        $form->field($model, 'glprep_id_preparat')->widget(Select2::classname(), Proc::DGselect2([
+                        $form->field($model, 'glprep_id_preparat')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                             'model' => $model,
                             'resultmodel' => new app\models\Base\Preparat,
                             'placeholder' => 'Введите название препарата',
@@ -221,6 +258,15 @@ use app\func\Proc;
                             ],
                             'resultrequest' => 'Base/preparat/selectinput',
                             'thisroute' => $this->context->module->requestedRoute,
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'glprep_id_preparat'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
                         ]));
                         ?>
 

@@ -108,6 +108,7 @@ class TrOsnov extends \yii\db\ActiveRecord
             ->andWhere(['in', 'idMattraffic.mattraffic_tip', [3]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
             ->andWhere(['lastinst.installakt_date' => NULL])// Последнее перемещение
+            ->orderBy(['idMattraffic.mattraffic_date' => SORT_DESC,'idMattraffic.mattraffic_id' => SORT_DESC])
             ->limit(20)
             ->asArray()
             ->$method();

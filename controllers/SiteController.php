@@ -30,7 +30,7 @@ class SiteController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['error', 'setsession', 'setwindowguid', 'delete-excel-file', 'gohome'],
+                        'actions' => ['error', 'setsession', 'setwindowguid', 'delete-excel-file', 'delete-tmp-file', 'gohome'],
                         'allow' => true,
                     ],
                 ],
@@ -165,6 +165,11 @@ class SiteController extends Controller {
 
     public function actionDeleteExcelFile() {
         $FileName = DIRECTORY_SEPARATOR === '/' ? 'files/' . (string) filter_input(INPUT_POST, 'filename') : mb_convert_encoding('files/' . (string) filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+        unlink($FileName);
+    }
+
+    public function actionDeleteTmpFile() {
+        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . (string) filter_input(INPUT_POST, 'filename') : mb_convert_encoding('tmpfiles/' . (string) filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
         unlink($FileName);
     }
 
