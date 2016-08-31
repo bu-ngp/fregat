@@ -84,15 +84,11 @@ class MattrafficController extends Controller
         $model->id_material = $Material->primaryKey;
         $model->id_mol = $model->primaryKey;
         $model->mattraffic_date = date('Y-m-d');
+        $a='';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
-            if (!empty($model->getErrors('mattraffic_date'))) { // Костыль, не работает message у валидатора unique в Mattraffic
-                $model->clearErrors('mattraffic_date');
-                $model->addError('mattraffic_date', 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом');
-            }
-
             return $this->render('create', [
                 'model' => $model,
                 'Material' => $Material,

@@ -51,9 +51,10 @@ class Mattraffic extends \yii\db\ActiveRecord
             [['mattraffic_date', 'id_material', 'id_mol', 'mattraffic_username', 'mattraffic_tip', 'mattraffic_lastchange', 'mattraffic_number'], 'required'],
             ['mattraffic_number', 'double', 'min' => 0, 'max' => 10000000000],
             [['id_material', 'id_mol'], 'integer'],
-            [['mattraffic_date'], 'unique', 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'when' => function ($model) {
-                return in_array($model->mattraffic_tip, [1, 2]);
-            }],
+            /*   [['mattraffic_date'], 'unique', 'message' => 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом', 'targetAttribute' => ['mattraffic_date', 'id_material', 'id_mol'], 'when' => function ($model) {
+                   return in_array($model->mattraffic_tip, [1, 2]);
+               }],*/
+            [['mattraffic_date'], 'UniqueChangeMol'],
             [['mattraffic_username'], 'string', 'max' => 128],
             ['mattraffic_lastchange', 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 4], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами, 4 - Движение, как состовная часть мат ценности
@@ -90,6 +91,20 @@ class Mattraffic extends \yii\db\ActiveRecord
             if (!empty($query) && $this->mattraffic_number > $max_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $max_number);
         }
+    }
+
+    // Проверка на уникальность, при смене МОЛ материальной ценности
+    public function UniqueChangeMol($attribute)
+    {
+        $result = self::find()
+            ->andWhere([
+                'id_material' => $this->id_material,
+                'id_mol' => $this->id_mol,
+                'mattraffic_date' => $this->mattraffic_date,
+            ])
+            ->count();
+        if ($result > 0)
+            $this->addError($attribute, 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом');
     }
 
     /**
@@ -280,10 +295,10 @@ class Mattraffic extends \yii\db\ActiveRecord
 
     public static function GetPreviousMattrafficByInstallaktMaterial($installakt_id, $material_id)
     {
-     /*   $mattr_prev_max = self::find()
-            ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
-            ->andWhere(['id_material' => $material_id])
-            ->max('mattraffic_id');*/
+        /*   $mattr_prev_max = self::find()
+               ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
+               ->andWhere(['id_material' => $material_id])
+               ->max('mattraffic_id');*/
         $mattr_prev_max = self::find()
             ->innerJoin('(select mattraffic.mattraffic_id as idd from mattraffic left join tr_osnov on tr_osnov.id_mattraffic = mattraffic.mattraffic_id where id_material = ' . $material_id . ' and id_installakt = ' . $installakt_id . ' and mattraffic_tip in (1,2,3) ) aa', 'mattraffic_id < aa.idd')
             ->andWhere(['id_material' => $material_id])
