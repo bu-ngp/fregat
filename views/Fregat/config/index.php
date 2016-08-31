@@ -6,17 +6,17 @@ use yii\helpers\Url;
 
 $this->title = 'Настройки';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'addfirst' => [
-                'label' => 'Фрегат',
-                'url' => Url::toRoute('Fregat/fregat/mainmenu'),
-            ],
-            'clearbefore' => true,
-        ]);
+    'addfirst' => [
+        'label' => 'Фрегат',
+        'url' => Url::toRoute('Fregat/fregat/mainmenu'),
+    ],
+    'clearbefore' => true,
+]);
 ?>
 
 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
     <div class="panel-heading">Настройки системы "Фрегат"</div>
-    <div class="panel-body">     
+    <div class="panel-body">
         <ul class="nav nav-pills nav-stacked">
             <?php if (Yii::$app->user->can('FregatImport')): ?>
                 <li>
@@ -28,9 +28,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                     <?= Html::a('<i class="glyphicon glyphicon-list-alt"></i> Справочники', ['sprav'], ['class' => 'btn btn-default']) ?>
                 </li>
             <?php endif; ?>
-            <?php if (/*Yii::$app->user->can('FregatConfig')*/true): ?>
+            <?php if (/*Yii::$app->user->can('FregatConfig')*/
+            true
+            ): ?>
                 <li>
-                    <?= Html::a('<i class="glyphicon glyphicon-tasks"></i> Настройки системы', ['settings'], ['class' => 'btn btn-default']) ?>
+                    <?= Html::a('<i class="glyphicon glyphicon-tasks"></i> Настройки системы', ['settings', 'id' => 1], ['class' => 'btn btn-default']) ?>
                 </li>
             <?php endif; ?>
         </ul>

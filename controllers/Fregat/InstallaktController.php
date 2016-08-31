@@ -105,7 +105,7 @@ class InstallaktController extends Controller
     public function actionInstallaktReport()
     {
         $Report = new InstallaktReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     public function actionDelete($id)

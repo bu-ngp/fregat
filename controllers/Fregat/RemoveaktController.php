@@ -93,7 +93,7 @@ class RemoveaktController extends Controller {
     // Печать акта снятия комплектующих с материальных ценностей
     public function actionRemoveaktReport() {
         $Report = new RemoveaktReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     public function actionDelete($id) {

@@ -4,6 +4,8 @@ namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportTemplates;
+use app\models\Config\Generalsettings;
+use app\models\Fregat\Fregatsettings;
 use Yii;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RecoverysendaktSearch;
@@ -92,12 +94,16 @@ class RecoverysendaktController extends Controller
             $searchModelmat = new RecoveryrecieveaktmatSearch();
             $dataProvidermat = $searchModelmat->search(Yii::$app->request->queryParams);
 
+            $generalsettings = Fregatsettings::findOne(1);
+
             return $this->render('update', [
                 'model' => $model,
                 'searchModel' => $searchModel,
                 'dataProvider' => $dataProvider,
                 'searchModelmat' => $searchModelmat,
                 'dataProvidermat' => $dataProvidermat,
+                'emailfrom' => $generalsettings->fregatsettings_recoverysend_emailfrom,
+                'emailtheme' => $generalsettings->fregatsettings_recoverysend_emailtheme,
             ]);
         }
     }
@@ -112,14 +118,14 @@ class RecoverysendaktController extends Controller
     public function actionRecoverysendaktReport()
     {
         $Report = new RecoverysendaktReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     // Печать акта отправки материалов сторонней организации
     public function actionRecoverysendaktmatReport()
     {
         $Report = new RecoverysendaktmatReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     public function actionRecoverysendaktReportsend()

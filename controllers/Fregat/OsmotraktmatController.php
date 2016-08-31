@@ -103,7 +103,7 @@ class OsmotraktmatController extends Controller
     public function actionOsmotraktmatReport()
     {
         $Report = new OsmotraktmatReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     protected function findModel($id)

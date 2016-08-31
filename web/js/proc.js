@@ -235,7 +235,7 @@ function SendReport(url, button, dopparams) {
     bodymail = "<BR><b>Тема: </b>" + dopparams.emailtheme +
         "<BR><b>Кому: </b>" + dopparams.emailto +
         "<BR><b>От: </b>" + dopparams.emailfrom;
-    bootbox.confirm("Вы уверены, что хотите отправить акт на электронную почту." + bodymail, function (result) {
+    bootbox.confirm("Вы уверены, что хотите отправить акт на электронную почту организации." + bodymail, function (result) {
         if (result) {
             $.ajax({
                 url: url,

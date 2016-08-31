@@ -4,10 +4,10 @@ use yii\helpers\Html;
 use app\func\Proc;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Fregat\Config\FregatSettings */
+/* @var $model app\models\Fregat\Config\Fregatsettings */
 
 $this->title = 'Общие настройки системы Фрегат';
-$this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
+$this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     'model' => $model,
 ]);
 ?>
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this,[
         <div class="panel-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
-            $this->render('_form', [
+            $this->render('_formsettings', [
                 'model' => $model,
             ])
             ?>

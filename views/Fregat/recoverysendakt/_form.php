@@ -225,8 +225,8 @@ use yii\bootstrap\ButtonDropdown;
                         'dropdown' => [
                             'encodeLabels' => false,
                             'items' => [
-                                ['label' => '<i class="glyphicon glyphicon-export"></i> Акт передачи материальных ценностей сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'SendReport("' . Url::to(['Fregat/recoverysendakt/recoverysendakt-reportsend']) . '", "SendReport", {id: ' . $model->recoverysendakt_id . ',emailfrom:"'.'it@mugp-nv.ru'.'",emailto:"'.$model->idOrgan->organ_email.'",emailtheme:"'.'БУ \"Нижневартовская городская поликлиника\"'.'"} ); return false;']],
-                                ['label' => '<i class="glyphicon glyphicon-chevron-up"></i> Акт передачи материалов сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'SendReport("' . Url::to(['Fregat/recoverysendakt/recoverysendaktmat-reportsend']) . '", "SendReport", {id: ' . $model->recoverysendakt_id . '} ); return false;']],
+                                ['label' => '<i class="glyphicon glyphicon-export"></i> Акт передачи материальных ценностей сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'SendReport("' . Url::to(['Fregat/recoverysendakt/recoverysendakt-reportsend']) . '", "SendReport", {id: ' . $model->recoverysendakt_id . ',emailfrom:"' . $emailfrom . '",emailto:"' . $model->idOrgan->organ_email . '",emailtheme:"' . addslashes($emailtheme) . '"} ); return false;']],
+                                ['label' => '<i class="glyphicon glyphicon-chevron-up"></i> Акт передачи материалов сторонней организации', 'url' => '#', 'linkOptions' => ['onclick' => 'SendReport("' . Url::to(['Fregat/recoverysendakt/recoverysendaktmat-reportsend']) . '", "SendReport", {id: ' . $model->recoverysendakt_id . ',emailfrom:"' . $emailfrom . '",emailto:"' . $model->idOrgan->organ_email . '",emailtheme:"' . addslashes($emailtheme) . '"} ); return false;']],
                             ],
                         ],
                         'options' => ['class' => 'btn btn-success'],

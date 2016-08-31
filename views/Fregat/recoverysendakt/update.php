@@ -24,6 +24,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 'dataProvider' => $dataProvider,
                 'searchModelmat' => $searchModelmat,
                 'dataProvidermat' => $dataProvidermat,
+                'emailfrom' => $emailfrom,
+                'emailtheme' => $emailtheme,
             ])
             ?>
         </div>

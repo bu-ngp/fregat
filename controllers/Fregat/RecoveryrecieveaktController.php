@@ -81,7 +81,7 @@ class RecoveryrecieveaktController extends Controller
     public function actionRecoveryrecieveaktReport()
     {
         $Report = new RecoveryrecieveaktReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     public function actionDelete($id)

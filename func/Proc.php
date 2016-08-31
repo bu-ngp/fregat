@@ -4,6 +4,7 @@ namespace app\func;
 
 use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportsTemplate\RecoverysendaktReport;
+use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Recoverysendakt;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -1327,22 +1328,18 @@ class Proc
         $Report->setDirectoryFiles('tmpfiles');
         $filename = $Report->Execute();
         $fnutf8 = $filename;
-        $dopparams = json_decode(Yii::$app->request->post()['dopparams']);
+        $fregatsettings = Fregatsettings::findOne(1);
 
         $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
-
-        $emailfrom = 'it@mugp-nv.ru';
-        $emailto = Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email;
-        $emailtheme = 'БУ "Нижневартовская городская поликлиника"';
 
         Yii::$app->mailer->compose('//Fregat/recoverysendakt/_send', [
             'filename' => $filename,
         ])
-            ->setFrom('it@mugp-nv.ru')
+            ->setFrom($fregatsettings->fregatsettings_recoverysend_emailfrom)
             ->setTo([
-                'karpovvv@mugp-nv.ru',
+                'karpovvv@mugp-nv.ru', // Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email,
             ])
-            ->setSubject('БУ "Нижневартовская городская поликлиника"')
+            ->setSubject($fregatsettings->fregatsettings_recoverysend_emailtheme)
             ->attach($fl, ['fileName' => $fnutf8])
             ->send();
         echo $fnutf8;

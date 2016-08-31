@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\models\Config\Authuser;
 use app\models\Fregat\Employee;
+use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Reason;
 use Yii;
 use app\models\Fregat\Build;
@@ -46,7 +47,7 @@ class FregatController extends Controller
                     [
                         'actions' => ['settings'],
                         'allow' => true,
-                      //  'roles' => ['FregatConfig'],
+                        //  'roles' => ['FregatConfig'],
                     ],
                     [
                         'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-remont'],
@@ -75,9 +76,17 @@ class FregatController extends Controller
         return $this->render('//Fregat/config/index');
     }
 
-    public function actionSettings()
+    public function actionSettings($id)
     {
-        return $this->render('//Fregat/config/settings');
+        $model = Fregatsettings::findOne(1);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            return $this->render('//Fregat/config/settingsupdate', [
+                'model' => $model,
+            ]);
+        }
     }
 
     public function actionImport()

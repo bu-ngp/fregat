@@ -60,7 +60,7 @@ class RecoveryrecieveaktmatController extends Controller {
     // Печать акта получения материалов у сторонней организации
     public function actionRecoveryrecieveaktmatReport() {
         $Report = new RecoveryrecieveaktmatReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     /**

@@ -137,6 +137,9 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat
         }
 
         $this->baseFilter($query);
+        $query->andFilterWhere([
+            'id_recoverysendakt' => $params['id'],
+        ]);
         $this->baseSort($dataProvider);
 
         return $dataProvider;

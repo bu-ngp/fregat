@@ -218,7 +218,7 @@ class OsmotraktController extends Controller
     public function actionOsmotraktReport()
     {
         $Report = new OsmotraktReport();
-        $Report->Execute();
+        echo $Report->Execute();
     }
 
     public function actionDelete($id)
