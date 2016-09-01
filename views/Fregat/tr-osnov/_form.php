@@ -21,6 +21,7 @@ use app\models\Fregat\Build;
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
         <div class="panel-body">
+
             <?=
             $form->field($model, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                                 'model' => $model,

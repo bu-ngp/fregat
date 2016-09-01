@@ -31,18 +31,21 @@ use PDO;
  */
 
 // Класс для чтения Excel файла по частям для экономии памяти
-class chunkReadFilter implements \PHPExcel_Reader_IReadFilter {
+class chunkReadFilter implements \PHPExcel_Reader_IReadFilter
+{
 
     private $_startRow = 0;
     private $_endRow = 0;
 
     /**  Set the list of rows that we want to read  */
-    public function setRows($startRow, $chunkSize) {
+    public function setRows($startRow, $chunkSize)
+    {
         $this->_startRow = $startRow;
         $this->_endRow = $startRow + $chunkSize;
     }
 
-    public function readCell($column, $row, $worksheetName = '') {
+    public function readCell($column, $row, $worksheetName = '')
+    {
         //  Only read the heading row, and the rows that are configured in $this->_startRow and $this->_endRow 
         if (($row == 1) || ($row >= $this->_startRow && $row < $this->_endRow)) {
             return true;
@@ -52,7 +55,8 @@ class chunkReadFilter implements \PHPExcel_Reader_IReadFilter {
 
 }
 
-class FregatImport {
+class FregatImport
+{
 
     private static $filename = ''; // Имя файла 'imp/os.xls' - (Основные средства); 'imp/mat.xls' = (Материалы);
     private static $filelastdate = null; // Дата изменения файла self::$filename
@@ -75,7 +79,8 @@ class FregatImport {
     private static $Mishanya; // Ограничение на кол-во писем с новыми сотрудницами для Мишани
     private static $Debug; // Отключает функционал при отладке
 
-    private static function Setxls() {
+    private static function Setxls()
+    {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
 
         self::$xls = [
@@ -98,14 +103,16 @@ class FregatImport {
 
     // Массив с координатами колонок в Excel
 
-    private static function xls($field) {
+    private static function xls($field)
+    {
         if (array_key_exists($field, self::$xls))
             return self::$xls[$field];
         else
             throw new Exception('Не существует FregatImport::xls("' . $field . '")');
     }
 
-    private static function GetRowsPDO($sql, $params = null, $all = false) {
+    private static function GetRowsPDO($sql, $params = null, $all = false)
+    {
         try {
             if (empty($params))
                 $params = [];
@@ -129,7 +136,8 @@ class FregatImport {
     // Разбиваем наименование на слова
     // Ищем в базе словосочетаний с первого слова, прибавляя по одному слову
     // Если не нашли, то ставится ИД = 1, т. е. "Не определен"
-    private static function AssignMatvid($material_name1c) {
+    private static function AssignMatvid($material_name1c)
+    {
         // Определяем Вид материальной ценности
         Proc::mb_preg_match_all('/[а-яА-Яa-zA-Z\d]+/u', $material_name1c, $match_arr, PREG_OFFSET_CAPTURE, 0, 'UTF-8');
 
@@ -157,7 +165,8 @@ class FregatImport {
 
     // Определяем Единицу измерения
     // Если единица измерения не найдена в справочнике, она добавляется.
-    private static function AssignIzmer($value) {
+    private static function AssignIzmer($value)
+    {
         $izmer_id = self::GetRowsPDO('select izmer_id, izmer_name from izmer where izmer_name like :izmer_name', ['izmer_name' => $value]);
 
         if (empty($izmer_id)) {
@@ -172,7 +181,8 @@ class FregatImport {
     }
 
     // Конвертирует наименования должностей
-    private static function DolzhConvert($value) {
+    private static function DolzhConvert($value)
+    {
         switch ($value) {
             case 'мед.сестра':
                 $value = 'Медицинская сестра';
@@ -208,7 +218,8 @@ class FregatImport {
 
     // Определяем должность сотрудника
     // Если должность не найдена в справочнике, она добавляется
-    private static function AssignDolzh($value) {
+    private static function AssignDolzh($value)
+    {
         if (trim($value) !== '') {
             $value = self::DolzhConvert($value);
 
@@ -232,10 +243,11 @@ class FregatImport {
     // 2) Если найдено:
     // - Если в таблице "importemployee" стоит значение "id_employee", то подразделение и здание берется в соответствии с ИД сотрудника (id_employee)
     // - Если в таблице "importemployee" стоят значения "id_podraz", "id_build", то подразделение и здание берется в соответствии с ИД Подразделения (id_podraz) и ИД Здания (id_build)
-    private static function AssignLocation($podraz_name, $employee_fio) {
-        $result = (object) [
-                    'id_podraz' => NULL,
-                    'id_build' => NULL
+    private static function AssignLocation($podraz_name, $employee_fio)
+    {
+        $result = (object)[
+            'id_podraz' => NULL,
+            'id_build' => NULL
         ];
 
         $importemployee = self::GetRowsPDO('select importemployee_id, id_podraz, id_build  from importemployee where importemployee_combination like :importemployee_combination', ['importemployee_combination' => $podraz_name]);
@@ -252,8 +264,8 @@ class FregatImport {
                 $result->id_podraz = $currentpodraz['podraz_id'];
         } else {
             $Impemployee = self::GetRowsPDO('select employee.id_podraz, employee.id_build from impemployee left join importemployee on impemployee.id_importemployee = importemployee.importemployee_id left join employee on impemployee.id_employee = employee.employee_id left join auth_user on employee.id_person = auth_user.auth_user_id where id_importemployee = :id_importemployee and auth_user_fullname like :employee_fio', [
-                        'employee_fio' => $employee_fio,
-                        'id_importemployee' => $importemployee['importemployee_id']
+                'employee_fio' => $employee_fio,
+                'id_importemployee' => $importemployee['importemployee_id']
             ]);
 
             if (empty($Impemployee)) {
@@ -269,11 +281,12 @@ class FregatImport {
     }
 
     // Определяем ИД Подразделения и Здания по их именам, и добавляем новые, если их нет
-    private static function AssignLocationForEmployeeImport($podraz_name, $build_name) {
+    private static function AssignLocationForEmployeeImport($podraz_name, $build_name)
+    {
 
-        $result = (object) [
-                    'id_podraz' => NULL,
-                    'id_build' => NULL
+        $result = (object)[
+            'id_podraz' => NULL,
+            'id_build' => NULL
         ];
 
         if (trim($podraz_name) !== '') {
@@ -305,7 +318,8 @@ class FregatImport {
 
     // Читаем дату в Excel и переводим в формат PHP
     // Допустимые значения в Excel - Строка содержащая подстроку формата "ДД.ММ.ГГГГ" или число формата даты Excel (Количество дней с 01.01.1900 года)
-    private static function GetDateFromExcel($value) {
+    private static function GetDateFromExcel($value)
+    {
         $preg = '/(\d{2})\.(\d{2})\.(\d{4})(.*)/i';
         if (preg_match($preg, $value))
             return preg_replace($preg, '$3-$2-$1', $value);
@@ -316,15 +330,16 @@ class FregatImport {
     }
 
     // Читаем значения колонок соответствующие Материальной ценности в файле Excel
-    private static function xls_attributes_material($row) {
+    private static function xls_attributes_material($row)
+    {
         // Определяем количество материальной ценности
         if (self::$os)
             $material_price = trim($row[self::xls('material_price')]);
         else  // Если материалы, то цену извлекаем из суммы (сумма / количество)  
-        if (trim($row[self::xls('material_number')]) != '0')
-            $material_price = (is_numeric(trim($row[self::xls('material_price')])) && is_numeric(trim($row[self::xls('material_number')]))) ? round(trim($row[self::xls('material_price')]) / trim($row[self::xls('material_number')]), 2) : 'Ошибка при делении числа "' . trim($row[self::xls('material_price')]) . '" на число "' . trim($row[self::xls('material_number')]) . '"';
-        else
-            $material_price = 0;
+            if (trim($row[self::xls('material_number')]) != '0')
+                $material_price = (is_numeric(trim($row[self::xls('material_price')])) && is_numeric(trim($row[self::xls('material_number')]))) ? round(trim($row[self::xls('material_price')]) / trim($row[self::xls('material_number')]), 2) : 'Ошибка при делении числа "' . trim($row[self::xls('material_price')]) . '" на число "' . trim($row[self::xls('material_number')]) . '"';
+            else
+                $material_price = 0;
 
         // Присваиваем значения в массив атрибутов
         return [
@@ -343,7 +358,8 @@ class FregatImport {
     }
 
     // Читаем значения колонок соответствующие Сотруднику в файле Excel
-    private static function xls_attributes_employee($row) {
+    private static function xls_attributes_employee($row)
+    {
         $employee_fio = trim($row[self::xls('employee_fio')]);
 
         $location = self::AssignLocation(trim($row[self::xls('podraz_name')]), $employee_fio);
@@ -359,15 +375,18 @@ class FregatImport {
     }
 
     // Читаем значения колонок соответствующие Операции над материальной ценностью в файле Excel
-    private static function xls_attributes_mattraffic($row) {
+    private static function xls_attributes_mattraffic($row)
+    {
         return [//--------------------????????????????????------------------------------------------------------------------------
-            'mattraffic_date' => /* !self::$mattraffic_exist && */ self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
+            'mattraffic_date' => /* !self::$mattraffic_exist && */
+                self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
             'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
         ];
     }
 
     // Добавляем в лог не измененные значения ActiveRecord
-    private static function JustAddToLog($ar_Model, &$ar_LogModel) {
+    private static function JustAddToLog($ar_Model, &$ar_LogModel)
+    {
         $prop = mb_strtolower(substr($ar_LogModel->className(), strrpos($ar_LogModel->className(), '\\') + 1), 'UTF-8') . '_';
         $ar_LogModel->id_logreport = self::$logreport_id;
         $ar_LogModel[$prop . 'type'] = 5;
@@ -380,7 +399,8 @@ class FregatImport {
     }
 
     // Валидируем значения модели и пишем в лог
-    private static function ImportValidate($ar_Model, &$ar_LogModel) {
+    private static function ImportValidate($ar_Model, &$ar_LogModel)
+    {
         $result = false;
         $prop = mb_strtolower(substr($ar_LogModel->className(), strrpos($ar_LogModel->className(), '\\') + 1), 'UTF-8') . '_';
         $ar_LogModel->id_logreport = self::$logreport_id;
@@ -412,9 +432,10 @@ class FregatImport {
     }
 
     // Выводит актуальное количество материала у сотрудника
-    private static function GetCountMaterialByID($MaterialID) {
+    private static function GetCountMaterialByID($MaterialID)
+    {
         $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
-                    'materialID' => $MaterialID
+            'materialID' => $MaterialID
         ]);
         /*  $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
           $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne(); */
@@ -425,7 +446,8 @@ class FregatImport {
     }
 
     // Выводи последнюю дату изменения загруженных файлов
-    private static function GetMaxFileLastDate($Importconfig) {
+    private static function GetMaxFileLastDate($Importconfig)
+    {
         if (mb_strpos(self::$filename, $Importconfig['emp_filename'], 0, 'UTF-8') > 0)
             $fieldname = 'logreport_employeelastdate';
         elseif (mb_strpos(self::$filename, $Importconfig['os_filename'], 0, 'UTF-8') > 0)
@@ -441,15 +463,17 @@ class FregatImport {
             return $dataReader[$fieldname];
     }
 
-    private static function GetNameByID($Table, $Field, $ID) {
+    private static function GetNameByID($Table, $Field, $ID)
+    {
         $row = self::GetRowsPDO('select ' . $Field . ' from `' . $Table . '` where ' . $Table . '_id = :var', [
-                    'var' => $ID
+            'var' => $ID
         ]);
 
         return empty($row) ? null : $row[$Field];
     }
 
-    private static function ngp_array_diff_assoc($source, $arr) {
+    private static function ngp_array_diff_assoc($source, $arr)
+    {
         $result = [];
         foreach ($source as $key => $value)
             if (!(array_key_exists($key, $arr) && $value == $arr[$key]))
@@ -459,7 +483,8 @@ class FregatImport {
 
     // Применяем изменения в атрибутах материальной ценности или создаем новую
     // Пишем в лог
-    private static function MaterialDo(&$Material, &$Matlog, $row) {
+    private static function MaterialDo(&$Material, &$Matlog, $row)
+    {
         $result = false;
         // Присваиваем значения свойств материальной ценности из Excel в массив атрибутов
         $xls_attributes_material = self::xls_attributes_material($row);
@@ -470,8 +495,8 @@ class FregatImport {
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
             $search = self::GetRowsPDO('select material_id from material where material_1c = :material_1c and material_tip = :material_tip ', [
-                        'material_1c' => $xls_attributes_material['material_1c'],
-                        'material_tip' => self::$os ? 1 : 2
+                'material_1c' => $xls_attributes_material['material_1c'],
+                'material_tip' => self::$os ? 1 : 2
             ]);
 
             if (!empty($search))
@@ -512,7 +537,7 @@ class FregatImport {
 
             //   var_dump($diff_attr);
             // Если новая запись или произошли изменения в текущей
-            if ($Material->isNewRecord || (count((array) $diff_attr) > 0 && $Material->material_importdo === 1)) {
+            if ($Material->isNewRecord || (count((array)$diff_attr) > 0 && $Material->material_importdo === 1)) {
                 $Material->attributes = $xls_attributes_material;
 
                 // material_name1с - Наименование из Excel файла. material_name - Изменяемое наименование пользователем в БД
@@ -561,7 +586,8 @@ class FregatImport {
 
     // Применяем изменения в атрибутах сотрудника или создаем нового
     // Пишем в лог
-    private static function EmployeeDo(&$Employee, &$Employeelog, $row) {
+    private static function EmployeeDo(&$Employee, &$Employeelog, $row)
+    {
         $result = false;
         $xls_attributes_employee = self::xls_attributes_employee($row);
 
@@ -574,13 +600,13 @@ class FregatImport {
          */
         //  if (!empty($search))
         $search = Employee::find()
-                ->joinWith('idperson')
-                ->where(array_merge([
-                    'id_dolzh' => $xls_attributes_employee['id_dolzh'],
-                    'id_podraz' => $xls_attributes_employee['id_podraz'],
-                                ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']]))
-                ->andFilterWhere(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
-                ->one();
+            ->joinWith('idperson')
+            ->where(array_merge([
+                'id_dolzh' => $xls_attributes_employee['id_dolzh'],
+                'id_podraz' => $xls_attributes_employee['id_podraz'],
+            ], empty($xls_attributes_employee['id_build']) ? [] : ['id_build' => $xls_attributes_employee['id_build']]))
+            ->andFilterWhere(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
+            ->one();
 
         if (!empty($search))
             $Employee = $search;
@@ -589,16 +615,16 @@ class FregatImport {
             $Employee->attributes = $xls_attributes_employee;
 
             $AuthuserCount = Authuser::find()
-                    ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
-                    ->count();
+                ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
+                ->count();
 
             /*    $search2 = Authuser::find()
               ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio']])
               ->one(); */
 
             $Authuser = $AuthuserCount == 1 ? Authuser::find()
-                            ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
-                            ->one() : false;
+                ->where(['like', 'auth_user_fullname', $xls_attributes_employee['employee_fio'], false])
+                ->one() : false;
 
 
             if (empty($Authuser) || $AuthuserCount > 1) {
@@ -637,9 +663,6 @@ class FregatImport {
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build)
 
 
-
-
-                
 // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Employee, $Employeelog);
         } else { // Если изменения не внесены пишем в лог
@@ -665,9 +688,6 @@ class FregatImport {
                 $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name; //self::GetNameByID('build', 'build_name', $Employee->id_build);
 
 
-
-
-                
 // Добавляем в лог не измененные значения ActiveRecord
             $result = self::JustAddToLog($Employee, $Employeelog);
         }
@@ -676,7 +696,8 @@ class FregatImport {
     }
 
     // Определяем количество материальной ценности с учетом изменения
-    private static function MatNumberChanging(&$Material, &$Traflog, $Number, $Diff) {
+    private static function MatNumberChanging(&$Material, &$Traflog, $Number, $Diff)
+    {
         if (!self::$os && $Number != 0) {
             if ($Diff && ($Material->material_number - $Number) < 0) {
                 $Material->material_writeoff = 0;
@@ -692,7 +713,8 @@ class FregatImport {
 
     // Применяем изменения в атрибутах "Операции над материальной ценностью" или создаем нового
     // Пишем в лог
-    private static function MattrafficDo(&$Mattraffic, &$Traflog, $row, $Material, $employee_id) {
+    private static function MattrafficDo(&$Mattraffic, &$Traflog, $row, $Material, $employee_id)
+    {
         $result = false;
 
         $material_id = empty($Material->material_id) ? -1 : $Material->material_id;
@@ -706,23 +728,23 @@ class FregatImport {
 
         // Ищем Материальную ценность закрепленную за сотрудником
         $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
-                    'id_material' => $xls_attributes_mattraffic['id_material'],
-                    'id_mol' => $xls_attributes_mattraffic['id_mol'],
-                                ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
+            'id_material' => $xls_attributes_mattraffic['id_material'],
+            'id_mol' => $xls_attributes_mattraffic['id_mol'],
+        ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
 
         // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
         // diff_number - Определяет текущее актуальное количество материальной ценности
         if (!empty($search))
             $Mattraffic = Mattraffic::find()->select('*, case when DATE(mattraffic_date) < :date_xls then true else false end as recordapply, (mattraffic_number - :mattraffic_number) AS diff_number')
-                    ->where([
-                        'mattraffic_id' => $search['mattraffic_id'],
-                    ])
-                    ->params([
-                        ':date_xls' => $xls_attributes_mattraffic['mattraffic_date'],
-                        ':mattraffic_number' => $xls_attributes_mattraffic['mattraffic_number']
-                    ])
-                    ->orderBy('mattraffic_date desc')
-                    ->one();
+                ->where([
+                    'mattraffic_id' => $search['mattraffic_id'],
+                ])
+                ->params([
+                    ':date_xls' => $xls_attributes_mattraffic['mattraffic_date'],
+                    ':mattraffic_number' => $xls_attributes_mattraffic['mattraffic_number']
+                ])
+                ->orderBy('mattraffic_date desc')
+                ->one();
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
@@ -789,11 +811,13 @@ class FregatImport {
 
     // Применяем, изменился ли статус материальной ценности на списанную, вносим изменения в БД и создаем новый акт списания
     // Пишем в лог
-    private static function WriteOffDo($Material, $Matlog, $Mattraffic, $Traflog, $row) {
+    private static function WriteOffDo($Material, $Matlog, $Mattraffic, $Traflog, $row)
+    {
         // Если Материал списан (Сумма = 0)
         if ((!self::$os && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
-                // Или Основное средство списано (Статус = "Списан")
-                || (self::$os && $Material->material_writeoff == 0 && trim($row[self::xls('material_status')]) === 'Списан')) {
+            // Или Основное средство списано (Статус = "Списан")
+            || (self::$os && $Material->material_writeoff == 0 && in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']))
+        ) {
 
             $Material->material_writeoff = 1;
             if (!self::$os)
@@ -813,24 +837,25 @@ class FregatImport {
             $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
             $writeoffakt->save(false);
 
-            $Traflog->traflog_message.=' Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
+            $Traflog->traflog_message .= ' Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
             $Traflog->save(false);
         }
     }
 
     // Делает специальности сотрудников неактивными, если они не найдены в файле сотрудников для импорта
-    static private function InactiveEmployee() {
+    static private function InactiveEmployee()
+    {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             //  Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], 'employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null and id_person in (select e.id_person from employee e group by e.id_person having count(id_person) = 1)');
 
             Yii::$app->db->createCommand('UPDATE employee inner join (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1) e2 on employee.id_person = e2.id_person SET employee_dateinactive=NOW() WHERE employee_forinactive is null and employee_importdo = 1 and employee_dateinactive is null')
-                    ->execute();
+                ->execute();
 
             $Forlog = Employee::find()
-                    ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
-                    ->where('employee_forinactive is null and employee_importdo = 1 and DATE(employee_dateinactive) = CURDATE() and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
-                    ->all();
+                ->joinWith(['idperson', 'idpodraz', 'iddolzh', 'idbuild'])
+                ->where('employee_forinactive is null and employee_importdo = 1 and DATE(employee_dateinactive) = CURDATE() and id_person in (select e.id_person from employee e group by e.id_person having count(e.id_person) = 1)')
+                ->all();
 
             if (!empty($Forlog))
                 foreach ($Forlog as $i => $ar) {
@@ -859,31 +884,32 @@ class FregatImport {
     }
 
     // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
-    static private function SpisatMaterial($MaterialID, $MOLID) {
+    static private function SpisatMaterial($MaterialID, $MOLID)
+    {
         $return = false;
 
         $result = Mattraffic::find()
+            ->from(['m1' => 'mattraffic'])
+            ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+            ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+            ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
+            ->andWhere('m1.mattraffic_tip <> 2')
+            ->andWhere(['m2.mattraffic_date' => NULL])
+            ->andWhere(['m1.id_material' => $MaterialID])
+            ->count();
+
+        if (!empty($result)) {
+            $Material = Material::findOne($MaterialID);
+
+            $matmol = Mattraffic::find()
                 ->from(['m1' => 'mattraffic'])
                 ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
                 ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
                 ->andWhere('m1.mattraffic_tip <> 2')
                 ->andWhere(['m2.mattraffic_date' => NULL])
-                ->andWhere(['m1.id_material' => $MaterialID])
-                ->count();
-
-        if (!empty($result)) {
-            $Material = Material::findOne($MaterialID);
-
-            $matmol = Mattraffic::find()
-                    ->from(['m1' => 'mattraffic'])
-                    ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
-                    ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
-                    ->andWhere('m1.mattraffic_tip <> 2')
-                    ->andWhere(['m2.mattraffic_date' => NULL])
-                    ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
-                    ->one();
+                ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
+                ->one();
 
             // Если материл не найден у мола в файле импорта, то вычитаем общее количество материала
             if (!empty($matmol))
@@ -901,18 +927,19 @@ class FregatImport {
     }
 
     // Списание материала
-    static private function MaterialSpisanie() {
+    static private function MaterialSpisanie()
+    {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $SP = Mattraffic::find()
-                    //     ->joinWith('idMaterial')
-                    ->from(['m1' => 'mattraffic'])
-                    ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
-                    ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                    ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
-                    ->andWhere('m1.mattraffic_tip <> 2')
-                    ->andWhere(['m2.mattraffic_date' => NULL])
-                    ->all();
+                //     ->joinWith('idMaterial')
+                ->from(['m1' => 'mattraffic'])
+                ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
+                ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
+                ->andWhere('m1.mattraffic_tip <> 2')
+                ->andWhere(['m2.mattraffic_date' => NULL])
+                ->all();
 
 
             if (!empty($SP))
@@ -949,9 +976,9 @@ class FregatImport {
                     $Matlog->save(false);
 
                     $Employee = Employee::find()
-                            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
-                            ->where(['employee_id' => $ar->id_mol])
-                            ->one();
+                        ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
+                        ->where(['employee_id' => $ar->id_mol])
+                        ->one();
 
                     $Employeelog = new Employeelog;
                     $Employeelog->attributes = $Employee->attributes;
@@ -993,7 +1020,8 @@ class FregatImport {
     }
 
     // Ищем жену Михаилу
-    static function Mishanya($Authuser, $Employee, $matches) {
+    static function Mishanya($Authuser, $Employee, $matches)
+    {
         if (self::$Mishanya < 3) {
             $dr = Yii::$app->formatter->asDate($matches[16]);
             $pol = $matches[15];
@@ -1036,32 +1064,33 @@ class FregatImport {
             if ($pol == 'Ж' && $diff->y <= 35) {
                 self::$Mishanya++;
                 Yii::$app->mailer->compose('/site/misha', [
-                            'fio' => $Authuser->auth_user_fullname,
-                            'dr' => $dr,
-                            'vozrast' => $diff->y,
-                            'dolzh' => Dolzh::findOne($Employee->id_dolzh)->dolzh_name,
-                            'podraz' => Podraz::findOne($Employee->id_podraz)->podraz_name,
-                            'build' => (!empty($Employee->id_build)) ? Build::findOne($Employee->id_build)->build_name : '',
-                            'address' => $matches[10],
-                        ])
-                        ->setFrom('portal@mugp-nv.ru')
-                        ->setTo([
-                            'karpovvv@mugp-nv.ru',
-                            'mns@mugp-nv.ru',
-                                /*   'dnn@mugp-nv.ru',
-                                  'mns@mugp-nv.ru',
-                                  'dvg@mugp-nv.ru',
-                                  'chepenkoav@mugp-nv.ru',
-                                  'valikanovae@mugp-nv.ru', */
-                        ])
-                        ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
-                        ->send();
+                    'fio' => $Authuser->auth_user_fullname,
+                    'dr' => $dr,
+                    'vozrast' => $diff->y,
+                    'dolzh' => Dolzh::findOne($Employee->id_dolzh)->dolzh_name,
+                    'podraz' => Podraz::findOne($Employee->id_podraz)->podraz_name,
+                    'build' => (!empty($Employee->id_build)) ? Build::findOne($Employee->id_build)->build_name : '',
+                    'address' => $matches[10],
+                ])
+                    ->setFrom('portal@mugp-nv.ru')
+                    ->setTo([
+                        'karpovvv@mugp-nv.ru',
+                        'mns@mugp-nv.ru',
+                        /*   'dnn@mugp-nv.ru',
+                          'mns@mugp-nv.ru',
+                          'dvg@mugp-nv.ru',
+                          'chepenkoav@mugp-nv.ru',
+                          'valikanovae@mugp-nv.ru', */
+                    ])
+                    ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
+                    ->send();
             }
         }
     }
 
     // Производим импорт материальных ценностей                                             // Не забыть про InactiveEmployee
-    static function ImportDo() {
+    static function ImportDo()
+    {
         // Делаем запись в таблицу отчетов импорта
         $logreport = new Logreport;
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
@@ -1144,13 +1173,13 @@ class FregatImport {
                                         //            $sqlstr = empty($location->id_build) ? ' and id_build is null' : ' and id_build = :id_build';
 
                                         $Employee = Employee::find()
-                                                ->joinWith('idperson')
-                                                ->where(array_merge([
-                                                    'id_dolzh' => $id_dolzh,
-                                                    'id_podraz' => $location->id_podraz,
-                                                                ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]))
-                                                ->andFilterWhere(['like', 'auth_user_fullname', $employee_fio, false])
-                                                ->one();
+                                            ->joinWith('idperson')
+                                            ->where(array_merge([
+                                                'id_dolzh' => $id_dolzh,
+                                                'id_podraz' => $location->id_podraz,
+                                            ], empty($location->id_build) ? [] : ['id_build' => $location->id_build]))
+                                            ->andFilterWhere(['like', 'auth_user_fullname', $employee_fio, false])
+                                            ->one();
 
 
                                         /*  $Employee = self::GetRowsPDO('select employee_id, auth_user_fullname, id_dolzh, id_podraz, id_build from employee inner join auth_user on employee.id_person = auth_user.auth_user_id  where auth_user_fullname like :employee_fio and id_dolzh = :id_dolzh and id_podraz = :id_podraz' . $sqlstr, array_merge([
@@ -1167,12 +1196,12 @@ class FregatImport {
                                               var_dump($id_dolzh); */
 
                                             $AuthuserCount = Authuser::find()
-                                                    ->where(['like', 'auth_user_fullname', $employee_fio, false])
-                                                    ->count();
+                                                ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                                                ->count();
 
                                             $Authuser = $AuthuserCount == 1 ? Authuser::find()
-                                                            ->where(['like', 'auth_user_fullname', $employee_fio, false])
-                                                            ->one() : false;
+                                                ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                                                ->one() : false;
 
                                             $newEmployee = false;
                                             if (empty($Authuser) || $AuthuserCount > 1) {
@@ -1190,7 +1219,7 @@ class FregatImport {
                                                 'id_podraz' => $location->id_podraz,
                                                 'id_build' => $location->id_build,
                                                 'employee_forinactive' => 1,
-                                                    // 'employee_username' => 'IMPORT'
+                                                // 'employee_username' => 'IMPORT'
                                             ];
 
                                             $Employeelog = new Employeelog;
@@ -1214,8 +1243,8 @@ class FregatImport {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                     $Employee->save(false);
 
-                                                 //   if ($newEmployee && !self::$Debug)
-                                                 //       self::Mishanya($Authuser, $Employee, $matches);
+                                                    //   if ($newEmployee && !self::$Debug)
+                                                    //       self::Mishanya($Authuser, $Employee, $matches);
                                                 } else {
                                                     $Employeelog->employeelog_type = 3;
                                                     $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
@@ -1244,19 +1273,19 @@ class FregatImport {
                                                     $Employee->scenario = 'import1c';
 
                                                 $inactivePerson = Employee::find()
-                                                        ->andWhere([
-                                                            'id_person' => $Employee->id_person,
-                                                            'employee_dateinactive' => NULL,
-                                                        ])
-                                                        ->count();
+                                                    ->andWhere([
+                                                        'id_person' => $Employee->id_person,
+                                                        'employee_dateinactive' => NULL,
+                                                    ])
+                                                    ->count();
 
                                                 if (empty($inactivePerson)) {
                                                     $Employee = Employee::find(['id_person' => $Employee->id_person])
-                                                            ->andWhere([
-                                                                'id_person' => $Employee->id_person,
-                                                            ])
-                                                            ->orderBy(['employee_id' => SORT_DESC])
-                                                            ->one();
+                                                        ->andWhere([
+                                                            'id_person' => $Employee->id_person,
+                                                        ])
+                                                        ->orderBy(['employee_id' => SORT_DESC])
+                                                        ->one();
 
                                                     $Employeelog = new Employeelog;
                                                     $Employeelog->id_logreport = self::$logreport_id;
@@ -1481,7 +1510,8 @@ class FregatImport {
         echo 'Использовано памяти: ' . Yii::$app->formatter->asShortSize(memory_get_usage(true)) . '; Время выполнения: ' . gmdate('H:i:s', $endtime - $starttime);
     }
 
-    private static function ExcelApplyValues($sheet, $rows, $params = []) {
+    private static function ExcelApplyValues($sheet, $rows, $params = [])
+    {
 
         /* Границы таблицы */
         $ramka = array(
@@ -1504,7 +1534,7 @@ class FregatImport {
         $Traflog = new Traflog;
 
         $attributeslabels = array_merge(
-                $Matlog->attributeLabels(), $Employeelog->attributeLabels(), $Traflog->attributeLabels()
+            $Matlog->attributeLabels(), $Employeelog->attributeLabels(), $Traflog->attributeLabels()
         );
 
         if (count($rows) > 0) {
@@ -1562,7 +1592,8 @@ class FregatImport {
         }
     }
 
-    private static function MakeReport() {
+    private static function MakeReport()
+    {
         $Importconfig = Importconfig::findOne(1);
 
         /*   ini_set('max_execution_time', $Importconfig->max_execution_time);  // 1000 seconds
@@ -1588,9 +1619,9 @@ class FregatImport {
         );
 
         $logreport = Logreport::find()
-                ->orderBy('logreport_id desc')
-                ->asArray()
-                ->one();
+            ->orderBy('logreport_id desc')
+            ->asArray()
+            ->one();
 
         $itog = $objPHPExcel->getActiveSheet();
         $itog->setTitle('Итоги');
@@ -1645,10 +1676,10 @@ class FregatImport {
 
         //      ----------------  Материальные ценности ------------------------------------------
         $rows = Matlog::find()
-                ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'matvid_name'])
-                ->where(['id_logreport' => $logreport['logreport_id']])
-                ->asArray()
-                ->all();
+            ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'matvid_name'])
+            ->where(['id_logreport' => $logreport['logreport_id']])
+            ->asArray()
+            ->all();
 
         if (count($rows) > 0) {
             $matsheet = $objPHPExcel->createSheet(1);
@@ -1659,19 +1690,19 @@ class FregatImport {
                 'datetime' => ['matlog_filelastdate'],
                 'string' => ['material_1c', 'material_inv', 'material_serial'],
                 'case' => ['material_tip' => [
-                        1 => 'Основное средство',
-                        2 => 'Материал'
-                    ]]
+                    1 => 'Основное средство',
+                    2 => 'Материал'
+                ]]
             ]);
         }
 
         // ----------------------- Сотрудники -------------------------------
 
         $rows = Employeelog::find()
-                ->select(['employeelog_filename', 'employeelog_filelastdate', 'employeelog_rownum', 'employeelog_message', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
-                ->where(['id_logreport' => $logreport['logreport_id']])
-                ->asArray()
-                ->all();
+            ->select(['employeelog_filename', 'employeelog_filelastdate', 'employeelog_rownum', 'employeelog_message', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
+            ->where(['id_logreport' => $logreport['logreport_id']])
+            ->asArray()
+            ->all();
 
         if (count($rows) > 0) {
             $empsheet = $objPHPExcel->createSheet(2);
@@ -1683,17 +1714,17 @@ class FregatImport {
 
         // ---------------------- Операции над материальными ценностями -------------------------------------------
         $rows = Traflog::find()
-                ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
-                ->joinWith(['idmatlog', 'idemployeelog'])
-                ->where(['traflog.id_logreport' => $logreport['logreport_id']])
-                ->createCommand()
-                ->queryAll();
+            ->select(['traflog_filename', 'traflog_rownum', 'traflog_message', 'mattraffic_number', 'material_name1c', 'material_1c', 'material_inv', 'material_number', 'employee_fio', 'dolzh_name', 'podraz_name', 'build_name'])
+            ->joinWith(['idmatlog', 'idemployeelog'])
+            ->where(['traflog.id_logreport' => $logreport['logreport_id']])
+            ->createCommand()
+            ->queryAll();
 
         if (count($rows) > 0) {
             $trafsheet = $objPHPExcel->createSheet(3);
             $trafsheet->setTitle('Операции над мат. ценностями');
             self::ExcelApplyValues($trafsheet, $rows, [
-                'string' => ['material_1c', 'material_inv']]
+                    'string' => ['material_1c', 'material_inv']]
             );
         }
 
@@ -1718,18 +1749,19 @@ class FregatImport {
     }
 
     // Функция удаляет последние отчеты
-    static private function DeleteOldReports() {
+    static private function DeleteOldReports()
+    {
         $countreports = Importconfig::findOne(1);
         if (!empty($countreports)) {
             $files = glob('importreports/*.xlsx');
 
             if (count($files) > $countreports->logreport_reportcount)
                 $ToDelete = Logreport::find()
-                        ->select(['logreport_id'])
-                        ->orderBy(['logreport_id' => SORT_ASC])
-                        ->limit(count($files) - $countreports->logreport_reportcount)
-                        ->asArray()
-                        ->all();
+                    ->select(['logreport_id'])
+                    ->orderBy(['logreport_id' => SORT_ASC])
+                    ->limit(count($files) - $countreports->logreport_reportcount)
+                    ->asArray()
+                    ->all();
 
             if (!empty($ToDelete)) {
                 foreach ($ToDelete as $row) {
