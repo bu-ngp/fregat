@@ -131,6 +131,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMaterial',
             'idMattraffic.idMol.idperson',
             'idMattraffic.idMol.iddolzh',
+            'idMattraffic.idMol.idbuild',
         ]);
 
         $this->load($params);
@@ -154,6 +155,7 @@ class TrOsnovSearch extends TrOsnov
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMattraffic.idMol.idbuild.build_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
@@ -161,6 +163,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
+            'idMattraffic.idMol.idbuild.build_name',
         ]);
 
         return $dataProvider;

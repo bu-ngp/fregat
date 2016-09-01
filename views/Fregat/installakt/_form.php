@@ -61,6 +61,10 @@ use yii\helpers\Url;
                             'idMattraffic.idMaterial.material_name',
                             'idMattraffic.idMaterial.material_inv',
                             'idMattraffic.mattraffic_number',
+                            [
+                                'attribute' => 'idMattraffic.idMol.idbuild.build_name',
+                                'label' => 'Здание',
+                            ],
                             'tr_osnov_kab',
                             [
                                 'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
