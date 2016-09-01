@@ -173,7 +173,8 @@ class MaterialSearch extends Material
             ->andFilterWhere(['like', 'material_serial', $this->material_serial]);
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_release', 'date'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
+        //    $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
+        $query->andWhere(['material_number' => 1]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_price'));
         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMatv.matvid_name')]);
         $query->andFilterWhere(['LIKE', 'idIzmer.izmer_name', $this->getAttribute('idIzmer.izmer_name')]);
