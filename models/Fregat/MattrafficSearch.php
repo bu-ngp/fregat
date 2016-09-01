@@ -201,7 +201,9 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+     // ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )');
+
 
         $this->baseRelations($query);
 
