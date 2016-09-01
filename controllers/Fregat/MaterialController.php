@@ -74,7 +74,7 @@ class MaterialController extends Controller
             if ($model->save()) {
                 $Mattraffic->id_material = empty($Mattraffic->id_material) ? $model->material_id : $Mattraffic->id_material;
                 $Mattraffic->mattraffic_number = empty($Mattraffic->mattraffic_number) ? $model->material_number : $Mattraffic->mattraffic_number;
-                $Mattraffic->mattraffic_tip = empty($Mattraffic->mattraffic_tip) ? 1 : $Mattraffic->mattraffic_tip;
+                $Mattraffic->mattraffic_tip = empty($Mattraffic->mattraffic_tip) ? (empty($model->material_writeoff) ? 1 : 2) : $Mattraffic->mattraffic_tip;
 
                 if ($Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save()) {
                     Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
@@ -109,10 +109,8 @@ class MaterialController extends Controller
     {
         $model = $this->findModel($id);
         $Mattraffic = Mattraffic::find()
-            ->andWhere([
-                'id_material' => $model->material_id,
-                'mattraffic_tip' => 1,
-            ])
+            ->andWhere(['id_material' => $model->material_id,])
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->orderBy('mattraffic_date desc, mattraffic_id desc')
             ->one();
 
@@ -131,9 +129,11 @@ class MaterialController extends Controller
         $searchModel_recoverysendmat = new RecoveryrecieveaktmatSearch();
         $dataProvider_recoverysendmat = $searchModel_recoverysendmat->searchformaterialkarta(Yii::$app->request->queryParams);
 
-        if (Yii::$app->user->can('MaterialEdit') && $model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
+        if (Yii::$app->user->can('MaterialEdit') && $model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save()) {
+            $Mattraffic->mattraffic_tip = empty($model->material_writeoff) ? 1 : 2;
+            $Mattraffic->save();
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-        else
+        } else
             return $this->render('update', [
                 'model' => $model,
                 'Mattraffic' => $Mattraffic,

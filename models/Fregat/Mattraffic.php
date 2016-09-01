@@ -96,13 +96,15 @@ class Mattraffic extends \yii\db\ActiveRecord
     // Проверка на уникальность, при смене МОЛ материальной ценности
     public function UniqueChangeMol($attribute)
     {
-        $result = self::find()
-            ->andWhere([
-                'id_material' => $this->id_material,
-                'id_mol' => $this->id_mol,
-                'mattraffic_date' => $this->mattraffic_date,
-            ])
-            ->count();
+        $result = 0;
+        if ($this->isNewRecord)
+            $result = self::find()
+                ->andWhere([
+                    'id_material' => $this->id_material,
+                    'id_mol' => $this->id_mol,
+                    'mattraffic_date' => $this->mattraffic_date,
+                ])
+                ->count();
         if ($result > 0)
             $this->addError($attribute, 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом');
     }

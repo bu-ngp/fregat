@@ -125,8 +125,22 @@ use yii\helpers\Url;
             ?>
 
             <?=
+            $form->field($model, 'material_writeoff')->widget(Select2::classname(), [
+                'hideSearch' => true,
+                'data' => $model::VariablesValues('material_writeoff'),
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+                'options' => ['placeholder' => 'Выберете списан ли материал', 'class' => 'form-control setsession'],
+                'theme' => Select2::THEME_BOOTSTRAP,
+                'disabled' => $disabled,
+            ]);
+            ?>
+
+            <?=
             $form->field($model, 'material_importdo')->checkbox(['disabled' => $disabled]);
             ?>
+
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
