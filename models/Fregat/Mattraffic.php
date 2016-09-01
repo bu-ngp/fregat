@@ -105,7 +105,7 @@ class Mattraffic extends \yii\db\ActiveRecord
                     'mattraffic_date' => $this->mattraffic_date,
                     'mattraffic_tip' => $this->mattraffic_tip,
                 ])
-                ->andWhere('in', 'mattraffic_tip', [1, 2])
+                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
                 ->count();
         if ($result > 0)
             $this->addError($attribute, 'На эту дату уже есть запись с этой матер. цен-ю и ответств. лицом');
