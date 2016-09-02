@@ -42,7 +42,7 @@ use yii\helpers\Url;
                 ],
                 'options' => ['placeholder' => 'Выберете тип материальной ценности', 'class' => 'form-control setsession'],
                 'theme' => Select2::THEME_BOOTSTRAP,
-                'disabled' => $disabled,
+                'disabled' => ($model->isNewRecord) ? $disabled : true,
             ]);
             ?>
 
@@ -77,7 +77,7 @@ use yii\helpers\Url;
                     'decimals' => 3,
                     'forcestepdivisibility' => 'none',
                 ],
-                'disabled' => $disabled,
+                'disabled' => ($model->isNewRecord) ? $disabled : true,
             ]);
             ?>
 
@@ -178,6 +178,8 @@ use yii\helpers\Url;
         </div>
     </div>
 
+    <?php ActiveForm::end(); ?>
+
     <?php if (!$model->isNewRecord): ?>
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
             <div class="panel-heading"><?= Html::encode('Движение материальной ценности') ?></div>
@@ -185,7 +187,7 @@ use yii\helpers\Url;
                 <?php
                 $mattraffic_tip = Mattraffic::VariablesValues('mattraffic_tip');
                 echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'mattraffic_mgrid'],
+                    'options' => ['id' => 'mattraffic_karta_grid'],
                     'columns' => Proc::DGcols([
                         'columns' => [
                             [
@@ -228,10 +230,10 @@ use yii\helpers\Url;
                                 },
                             ],
                             [
-                                'attribute' => 'trMats.idParent.material_inv',
+                                'attribute' => 'trMats.idParent.idMaterial.material_inv',
                                 'label' => 'Инвент-ый номер мат-ой цен-ти, в которую включен в состав',
                                 'value' => function ($model) {
-                                    return $model->trMats[0]->idParent->material_inv;
+                                    return $model->trMats[0]->idParent->idMaterial->material_inv;
                                 },
                             ],
                         ],
@@ -258,7 +260,7 @@ use yii\helpers\Url;
                                     'type' => 'button',
                                     'title' => 'Удалить',
                                     'class' => 'btn btn-xs btn-danger',
-                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_mgrid")'
+                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_mgrid2")'
                                 ]) : '';
                             },
                         ] : []),
@@ -471,7 +473,5 @@ use yii\helpers\Url;
             </div>
         </div>
     </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>

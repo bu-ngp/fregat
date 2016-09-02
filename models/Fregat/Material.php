@@ -114,13 +114,6 @@ class Material extends \yii\db\ActiveRecord {
         return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id'])->from(['mattraffics' => Mattraffic::tableName()]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTrMats() {
-        return $this->hasMany(TrMat::className(), ['id_parent' => 'material_id'])->from(['trMats' => TrMat::tableName()]);
-    }
-
     public function selectinputfortrmat_parent($params) {
 
         $method = isset($params['init']) ? 'one' : 'all';

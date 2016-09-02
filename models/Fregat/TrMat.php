@@ -36,9 +36,9 @@ class TrMat extends \yii\db\ActiveRecord
             [['id_installakt', 'id_mattraffic', 'id_parent'], 'required'],
             [['id_installakt', 'id_mattraffic', 'id_parent'], 'integer'],
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
-            [['id_parent'], 'exist', 'skipOnError' => true, 'targetClass' => Material::className(), 'targetAttribute' => ['id_parent' => 'material_id']],
+            [['id_parent'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_parent' => 'mattraffic_id']],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
-            [['id_parent'], 'IsMaterialInstalled'],
+         //   [['id_parent'], 'IsMaterialInstalled'],
         ];
     }
 
@@ -80,7 +80,7 @@ class TrMat extends \yii\db\ActiveRecord
      */
     public function getIdParent()
     {
-        return $this->hasOne(Material::className(), ['material_id' => 'id_parent'])->from(['idParent' => Material::tableName()])->inverseOf('trMats');
+        return $this->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_parent'])->from(['idParent' => Mattraffic::tableName()])->inverseOf('trMats');
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\OsmotraktReport;
+use app\models\Fregat\InstallTrOsnov;
+use Exception;
 use Yii;
 use app\models\Fregat\Osmotrakt;
 use app\models\Fregat\OsmotraktSearch;
@@ -76,6 +78,47 @@ class OsmotraktController extends Controller
 
     public function actionCreate()
     {
+        $model = new Osmotrakt;
+     //   $model->scenario = 'forosmotrakt';
+       // $Trosnov = new TrOsnov;
+        $InstallTrOsnov = new InstallTrOsnov;
+        $model->osmotrakt_date = date('Y-m-d');
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $transaction->commit();
+                return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+            } else {
+                if ($InstallTrOsnov->load(Yii::$app->request->post()) && $InstallTrOsnov->save()) {
+                    $model->id_tr_osnov = $InstallTrOsnov->mattraffic_trosnov_id;
+                    if ($model->save()) {
+                        $transaction->commit();
+                        return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+                    } else {
+                        $transaction->rollback();
+                        return $this->render('create', [
+                            'model' => $model,
+                            'InstallTrOsnov' => $InstallTrOsnov,
+                        ]);
+                    }
+                } else {
+                    $transaction->rollback();
+                    return $this->render('create', [
+                        'model' => $model,
+                        'InstallTrOsnov' => $InstallTrOsnov,
+                    ]);
+                }
+            }
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function actionCreate2()
+    {
         $model = new Osmotrakt();
         $model->scenario = 'forosmotrakt';
         $Trosnov = new TrOsnov;
@@ -87,7 +130,10 @@ class OsmotraktController extends Controller
         try {
 
             $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : NULL;
+
             $id_tr_osnov = isset(Yii::$app->request->post('Osmotrakt')['id_tr_osnov']) ? Yii::$app->request->post('Osmotrakt')['id_tr_osnov'] : NULL;
+
+            $mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
 
             $instakterror = false;
             if (empty($id_tr_osnov) && !empty($id_mattraffic)) {
@@ -97,14 +143,15 @@ class OsmotraktController extends Controller
                 $Mattraffic->attributes = $Mattrafficcurrent->attributes;
 
                 $Mattraffic->mattraffic_date = date('Y-m-d');
-                $Mattraffic->mattraffic_number = 1;
+                $Mattraffic->mattraffic_number = $mattraffic_number;
                 $Mattraffic->mattraffic_tip = 3;
 
+                $instakterror = true;
                 if ($Mattraffic->validate()) {
                     $Mattraffic->save(false);
 
                     $Trosnov->scenario = 'default';
-                    $instakterror = true;
+
                     $Installakt = new Installakt;
                     $Installakt->installakt_date = date('Y-m-d');
                     $Installakt->id_installer = isset(Yii::$app->request->post('Osmotrakt')['id_master']) ? Yii::$app->request->post('Osmotrakt')['id_master'] : NULL;

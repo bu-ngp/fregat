@@ -235,32 +235,36 @@ function SendReport(url, button, dopparams) {
     bodymail = "<BR><b>Тема: </b>" + dopparams.emailtheme +
         "<BR><b>Кому: </b>" + dopparams.emailto +
         "<BR><b>От: </b>" + dopparams.emailfrom;
-    bootbox.confirm("Вы уверены, что хотите отправить акт на электронную почту организации." + bodymail, function (result) {
-        if (result) {
-            $.ajax({
-                url: url,
-                type: "post",
-                data: {
-                    buttonloadingid: button,
-                    dopparams: JSON.stringify(dopparams)
-                }, // buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса
-                async: true,
-                success: function (response) {
-                    setTimeout(function () {
-                        $.ajax({
-                            url: "?r=site%2Fdelete-tmp-file",
-                            type: "post",
-                            data: {filename: response},
-                            async: true
-                        });
-                    }, 5000);
-                },
-                error: function (data) {
-                    console.error('Ошибка');
-                }
-            });
-        }
-    });
+
+    if (dopparams.emailto != '')
+        bootbox.confirm("Вы уверены, что хотите отправить акт на электронную почту организации." + bodymail, function (result) {
+            if (result) {
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: {
+                        buttonloadingid: button,
+                        dopparams: JSON.stringify(dopparams)
+                    }, // buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса
+                    async: true,
+                    success: function (response) {
+                        setTimeout(function () {
+                            $.ajax({
+                                url: "?r=site%2Fdelete-tmp-file",
+                                type: "post",
+                                data: {filename: response},
+                                async: true
+                            });
+                        }, 5000);
+                    },
+                    error: function (data) {
+                        console.error('Ошибка');
+                    }
+                });
+            }
+        });
+    else
+        bootbox.alert("Сначала укажите e-mail этой организации в справочнике организаций.");
 }
 
 /**

@@ -85,16 +85,16 @@ class RemoveaktReport extends BaseReportPortal
                 $material_tip = Material::VariablesValues('material_tip');
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 1);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $Matparent->idMattraffic->idMaterial->idMatv->matvid_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $Matparent->idMattraffic->idMaterial->material_name);
-                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $Matparent->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $Matparent->idMattraffic->idMaterial->material_serial);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($Matparent->idMattraffic->idMaterial->material_release, 'YYYY'));
-                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $Matparent->idMattraffic->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $Matparent->idMattraffic->idMol->idbuild->build_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $Matparent->tr_osnov_kab);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $Matparent->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $Matparent->idMattraffic->idMol->iddolzh->dolzh_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$Matparent->idMattraffic->idMaterial->material_tip]);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $arm->idParent->idMaterial->idMatv->matvid_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $arm->idParent->idMaterial->material_name);
+                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $arm->idParent->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $arm->idParent->idMaterial->material_serial);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($arm->idParent->idMaterial->material_release, 'YYYY'));
+                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $arm->idParent->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $arm->idParent->idMol->idbuild->build_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $arm->idParent->trOsnovs[0]->tr_osnov_kab);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $arm->idParent->idMol->idperson->auth_user_fullname . ', ' . $arm->idParent->idMol->iddolzh->dolzh_name);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$arm->idParent->idMaterial->material_tip]);
 
                 $this->setStyle(self::$DATA, 'A' . $num . ':K' . $num);
                 $this->CellsWrapAndTop('A' . $num . ':K' . $num);
@@ -131,7 +131,7 @@ class RemoveaktReport extends BaseReportPortal
                 $MatbyParent = TrMat::find()
                     ->joinWith(['trRmMats'])
                     ->andWhere([
-                        'id_parent' => $Matparent->idMattraffic->id_material,
+                        'id_parent' => $arm->idParent->primaryKey,
                         'trRmMats.id_removeakt' => $Removeakt->removeakt_id,
                     ])
                     ->all();

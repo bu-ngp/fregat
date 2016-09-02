@@ -18,14 +18,16 @@ class TrRmMatSearch extends TrRmMat
     {
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
-            'idTrMat.idParent.material_name',
-            'idTrMat.idParent.material_inv',
-            'idTrMat.idParent.material_serial',
+            'idTrMat.idParent.idMaterial.material_name',
+            'idTrMat.idParent.idMaterial.material_inv',
+            'idTrMat.idParent.idMaterial.material_serial',
+            'idTrMat.idParent.idMol.idbuild.build_name',
             'idTrMat.idMattraffic.idMaterial.material_name',
             'idTrMat.idMattraffic.idMaterial.material_inv',
             'idTrMat.idMattraffic.mattraffic_number',
             'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+            'idTrMat.idParent.trOsnovs.tr_osnov_kab',
         ]);
     }
 
@@ -36,14 +38,16 @@ class TrRmMatSearch extends TrRmMat
     {
         return [
             [['tr_rm_mat_id', 'id_removeakt', 'id_tr_mat'], 'integer'],
-            [['idTrMat.idParent.material_name',
-                'idTrMat.idParent.material_inv',
-                'idTrMat.idParent.material_serial',
+            [['idTrMat.idParent.idMaterial.material_name',
+                'idTrMat.idParent.idMaterial.material_inv',
+                'idTrMat.idParent.idMaterial.material_serial',
+                'idTrMat.idParent.idMol.idbuild.build_name',
                 'idTrMat.idMattraffic.idMaterial.material_name',
                 'idTrMat.idMattraffic.idMaterial.material_inv',
                 'idTrMat.idMattraffic.mattraffic_number',
                 'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
                 'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+                'idTrMat.idParent.trOsnovs.tr_osnov_kab',
             ], 'safe'],
         ];
     }
@@ -79,6 +83,10 @@ class TrRmMatSearch extends TrRmMat
             'idTrMat.idMattraffic.idMaterial',
             'idTrMat.idMattraffic.idMol.idperson',
             'idTrMat.idMattraffic.idMol.iddolzh',
+            'idTrMat.idParent.idMaterial matparent',
+            'idTrMat.idParent.idMol molparent',
+            'idTrMat.idParent.idMol.idbuild',
+            'idTrMat.idParent.trOsnovs',
         ]);
 
         $this->load($params);
@@ -96,24 +104,28 @@ class TrRmMatSearch extends TrRmMat
             'id_tr_mat' => $this->id_tr_mat,
         ]);
 
-        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idTrMat.idParent.material_name')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idTrMat.idParent.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_serial', $this->getAttribute('idTrMat.idParent.material_serial')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idTrMat.idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idTrMat.idParent.idMaterial.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_serial', $this->getAttribute('idTrMat.idParent.idMaterial.material_serial')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idTrMat.idParent.idMol.idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMat.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrMat.idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMat.idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idTrMat.idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idTrMat.idMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idTrMat.idParent.trOsnovs.tr_osnov_kab')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
-            'idTrMat.idParent.material_name',
-            'idTrMat.idParent.material_inv',
-            'idTrMat.idParent.material_serial',
+            'idTrMat.idParent.idMaterial.material_name' => 'matparent',
+            'idTrMat.idParent.idMaterial.material_inv' => 'matparent',
+            'idTrMat.idParent.idMaterial.material_serial' => 'matparent',
+            'idTrMat.idParent.idMol.idbuild.build_name',
             'idTrMat.idMattraffic.idMaterial.material_name',
             'idTrMat.idMattraffic.idMaterial.material_inv',
             'idTrMat.idMattraffic.mattraffic_number',
             'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+            'idTrMat.idParent.trOsnovs.tr_osnov_kab',
         ]);
 
         return $dataProvider;

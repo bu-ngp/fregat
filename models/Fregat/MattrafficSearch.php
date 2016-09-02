@@ -41,7 +41,7 @@ class MattrafficSearch extends Mattraffic
             'idMol.employee_lastchange',
             'idMol.employee_importdo',
             'trOsnovs.tr_osnov_kab',
-            'trMats.idParent.material_inv',
+            'trMats.idParent.idMaterial.material_inv',
         ]);
     }
 
@@ -72,7 +72,7 @@ class MattrafficSearch extends Mattraffic
                 'mattraffic_username',
                 'mattraffic_lastchange',
                 'trOsnovs.tr_osnov_kab',
-                'trMats.idParent.material_inv',
+                'trMats.idParent.idMaterial.material_inv',
             ], 'safe'],
             [['mattraffic_number', 'idMaterial.material_number', 'idMaterial.material_price'], 'number'],
         ];
@@ -201,8 +201,8 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-     // ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-        ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )');
+            // ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )');
 
 
         $this->baseRelations($query);
@@ -236,15 +236,16 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+    //        ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
 
         $this->baseRelations($query);
 
         $query->andWhere('mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['tr_osnov.id_mattraffic' => NULL])
-            ->andWhere(['idMaterial.material_tip' => 1]);
+            ->andWhere(['tr_osnov.id_mattraffic' => NULL]);
+         //   ->andWhere(['idMaterial.material_tip' => 1]);
 
         $this->load($params);
 
@@ -256,6 +257,40 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseFilter($query);
         $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
+    public function searchforinstallakt_matparent($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $this->baseRelations($query);
+        $query->joinWith(['trOsnovs']);
+
+        $query->andWhere('mattraffic_number > 0')
+            ->andWhere(['in', 'mattraffic_tip', [3]]);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'trOsnovs.tr_osnov_kab',
+        ]);
 
         return $dataProvider;
     }
@@ -305,9 +340,9 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $this->baseRelations($query);
-        $query->joinWith(['trOsnovs', 'trMats.idParent']);
+        $query->joinWith(['trOsnovs', 'trMats.idParent.idMaterial matparent']);
 
-        $query->andWhere(['id_material' => $params['id']]);
+        $query->andWhere(['mattraffic.id_material' => $params['id']]);
 
         $this->load($params);
 
@@ -319,12 +354,12 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseFilter($query);
         $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('trMats.idParent.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('trMats.idParent.idMaterial.material_inv')]);
 
         $this->baseSort($dataProvider);
         Proc::AssignRelatedAttributes($dataProvider, [
             'trOsnovs.tr_osnov_kab',
-            'trMats.idParent.material_inv',
+            'trMats.idParent.idMaterial.material_inv' => 'matparent',
         ]);
 
         return $dataProvider;

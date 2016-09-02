@@ -37,11 +37,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             'label' => 'Здание материально-ответственного лица',
                         ],
                         [
-                            'attribute' => 'idTrMat.idParent.material_name',
+                            'attribute' => 'idTrMat.idParent.idMaterial.material_name',
                             'label' => 'Укомплектовано в матер-ую цен-ть',
                         ],
                         [
-                            'attribute' => 'idTrMat.idParent.material_inv',
+                            'attribute' => 'idTrMat.idParent.idMaterial.material_inv',
                             'label' => 'Инвентаный номер мат-ой цен-ти в которую укомплектован материал',
                         ],
                         'idOsmotraktmat.osmotraktmat_id',

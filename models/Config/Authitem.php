@@ -78,7 +78,7 @@ class Authitem extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getRuleName() {
-        return $this->hasOne(AuthRule::className(), ['name' => 'rule_name'])->from(['ruleName' => AuthRule::tableName()]);
+        return $this->hasOne(Authrule::className(), ['name' => 'rule_name'])->from(['ruleName' => Authrule::tableName()]);
     }
 
     /**
@@ -92,7 +92,7 @@ class Authitem extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getAuthitemchildrenchild() {
-        return $this->hasMany(AuthItemChild::className(), ['child' => 'name'])->from(['authitemchildrenchild' => Authitemchild::tableName()]);
+        return $this->hasMany(AuthItemchild::className(), ['child' => 'name'])->from(['authitemchildrenchild' => Authitemchild::tableName()]);
     }
 
     public function save($runValidation = true, $attributeNames = null) {

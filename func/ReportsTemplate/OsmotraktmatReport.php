@@ -40,7 +40,7 @@ class OsmotraktmatReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idTrMat->idMattraffic->idMaterial->idMatv->matvid_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idTrMat->idMattraffic->idMaterial->material_name);
             $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idTrMat->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, !empty($ar->idTrMat->idParent) ? ('Инв. номер: ' . $ar->idTrMat->idParent->material_inv . ', ' . $ar->idTrMat->idParent->material_name) : '');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, !empty($ar->idTrMat->idParent) ? ('Инв. номер: ' . $ar->idTrMat->idParent->idMaterial->material_inv . ', ' . $ar->idTrMat->idParent->idMaterial->material_name) : '');
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->tr_mat_osmotr_number);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idReason->reason_text . (empty($ar->idReason->reason_text) ? '' : '. ') . $ar->tr_mat_osmotr_comment);

@@ -70,11 +70,11 @@ use \yii\helpers\Url;
                         'label' => 'Должность материально-ответственного лица',
                     ],
                     [
-                        'attribute' => 'idTrMat.idParent.material_name',
+                        'attribute' => 'idTrMat.idParent.idMaterial.material_name',
                         'label' => 'В составе материальной ценности',
                     ],
                     [
-                        'attribute' => 'idTrMat.idParent.material_inv',
+                        'attribute' => 'idTrMat.idParent.idMaterial.material_inv',
                         'label' => 'Инвентарный номер материальной ценности в которую укомплектовано',
                     ],
                     'idReason.reason_text',

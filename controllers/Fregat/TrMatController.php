@@ -151,7 +151,7 @@ class TrMatController extends Controller
     {
         if (Yii::$app->request->isAjax)
             return Proc::select2request([
-                'model' => new Material,
+                'model' => new Mattraffic,
                 'field' => $field,
                 'q' => $q,
                 'methodquery' => 'selectinputfortrmat_parent',

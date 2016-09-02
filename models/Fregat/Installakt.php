@@ -15,7 +15,8 @@ use Yii;
  * @property TrMat[] $trMats
  * @property TrOsnov[] $trOsnovs
  */
-class Installakt extends \yii\db\ActiveRecord {
+class Installakt extends \yii\db\ActiveRecord
+{
 
     public $auth_user_fullname_tmp; // Для формирования акта установки в Excel
     public $dolzh_name_tmp; // Для формирования акта установки в Excel
@@ -24,14 +25,16 @@ class Installakt extends \yii\db\ActiveRecord {
      * @inheritdoc
      */
 
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'installakt';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['installakt_date', 'id_installer'], 'required'],
             [['id_installer'], 'integer'],
@@ -44,7 +47,8 @@ class Installakt extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'installakt_id' => '№ акта установки',
             'installakt_date' => 'Дата установки',
@@ -55,36 +59,39 @@ class Installakt extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdInstaller() {
+    public function getIdInstaller()
+    {
         return $this->hasOne(Employee::className(), ['employee_id' => 'id_installer'])->from(['idInstaller' => Employee::tableName()])->inverseOf('installakts');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrMats() {
+    public function getTrMats()
+    {
         return $this->hasMany(TrMat::className(), ['id_installakt' => 'installakt_id'])->from(['trMats' => TrMat::tableName()])->inverseOf('idInstallakt');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTrOsnovs() {
+    public function getTrOsnovs()
+    {
         return $this->hasMany(TrOsnov::className(), ['id_installakt' => 'installakt_id'])->from(['trOsnovs' => TrOsnov::tableName()])->inverseOf('idInstallakt');
     }
 
-    public static function getMolsByInstallakt($installakt_id) {
+    public static function getMolsByInstallakt($installakt_id)
+    {
         return self::find()
-                        ->select(['idperson.auth_user_fullname auth_user_fullname_tmp', 'iddolzh.dolzh_name dolzh_name_tmp'])
-                        ->leftJoin('tr_osnov trOsnovs', 'installakt.installakt_id = trOsnovs.id_installakt')
-                        ->leftJoin('tr_mat trMats', 'installakt.installakt_id = trMats.id_installakt')
-                        ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnovs.id_mattraffic or idMattraffic.mattraffic_id = trMats.id_mattraffic')
-                        ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
-                        ->leftJoin('auth_user idperson', 'idMol.id_person = idperson.auth_user_id')
-                        ->leftJoin('dolzh iddolzh', 'iddolzh.dolzh_id = idMol.id_dolzh')
-                        ->andWhere(['installakt_id' => $installakt_id])
-                        ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
-                        ->all();
+            ->select(['idperson.auth_user_fullname auth_user_fullname_tmp', 'iddolzh.dolzh_name dolzh_name_tmp'])
+            ->joinWith(['trOsnovs', 'trMats'])
+            ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnovs.id_mattraffic or idMattraffic.mattraffic_id = trMats.id_mattraffic')
+            ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+            ->leftJoin('auth_user idperson', 'idMol.id_person = idperson.auth_user_id')
+            ->leftJoin('dolzh iddolzh', 'iddolzh.dolzh_id = idMol.id_dolzh')
+            ->andWhere(['installakt_id' => $installakt_id])
+            ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+            ->all();
     }
 
 }

@@ -10,8 +10,8 @@ use app\models\Fregat\TrOsnov;
 
 $this->title = 'Составить акт осмотра основной материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Trosnov],
-        ]);
+    'model' => [$model],
+]);
 ?>
 <div class="osmotrakt-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -20,10 +20,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?=
             $this->render('_form', [
                 'model' => $model,
-                'Trosnov' => $Trosnov,
-                'Mattraffic' => $Mattraffic,
+                'InstallTrOsnov' => $InstallTrOsnov,
             ])
             ?>
         </div>
-    </div> 
+    </div>
 </div>

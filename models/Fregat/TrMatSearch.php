@@ -23,8 +23,10 @@ class TrMatSearch extends TrMat
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
-            'idParent.material_name',
-            'idParent.material_inv',
+            'idParent.idMaterial.material_name',
+            'idParent.idMaterial.material_inv',
+            'idParent.idMol.idbuild.build_name',
+            'idParent.trOsnovs.tr_osnov_kab',
         ]);
     }
 
@@ -40,8 +42,11 @@ class TrMatSearch extends TrMat
                 'idMattraffic.mattraffic_number',
                 'idMattraffic.idMol.idperson.auth_user_fullname',
                 'idMattraffic.idMol.iddolzh.dolzh_name',
-                'idParent.material_name',
-                'idParent.material_inv'], 'safe'],
+                'idParent.idMaterial.material_name',
+                'idParent.idMaterial.material_inv',
+                'idParent.idMol.idbuild.build_name',
+                'idParent.trOsnovs.tr_osnov_kab',
+            ], 'safe'],
         ];
     }
 
@@ -77,7 +82,10 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMaterial',
             'idMattraffic.idMol.idperson',
             'idMattraffic.idMol.iddolzh',
-            'idParent',
+            'idParent.idMaterial matparent',
+            'idParent.idMol molparent',
+            'idParent.idMol.idbuild',
+            'idParent.trOsnovs',
         ]);
 
         $this->load($params);
@@ -94,25 +102,29 @@ class TrMatSearch extends TrMat
             'id_installakt' => $this->id_installakt,
             'id_mattraffic' => $this->id_mattraffic,
             'id_parent' => $this->id_parent,
-            'id_installakt' => (string)filter_input(INPUT_GET, 'id'),
+            'tr_mat.id_installakt' => (string)filter_input(INPUT_GET, 'id'),
         ]);
 
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.material_name')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
             'idMattraffic.idMaterial.material_inv',
-            'idParent.material_name',
-            'idParent.material_inv',
+            'idParent.idMaterial.material_name' => 'matparent',
+            'idParent.idMaterial.material_inv' => 'matparent',
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
+            'idParent.idMol.idbuild.build_name',
+            'idParent.trOsnovs.tr_osnov_kab',
         ]);
 
         return $dataProvider;
@@ -134,8 +146,11 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMaterial',
             'idMattraffic.idMol.idperson',
             'idMattraffic.idMol.iddolzh',
-            'idParent',
+            'idParent.idMaterial matparent',
             'trRmMats',
+            'idParent.idMol molparent',
+            'idParent.idMol.idbuild',
+            'idParent.trOsnovs',
         ]);
 
         $this->load($params);
@@ -160,20 +175,24 @@ class TrMatSearch extends TrMat
 
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.material_name')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
             'idMattraffic.idMaterial.material_inv',
-            'idParent.material_name',
-            'idParent.material_inv',
+            'idParent.idMaterial.material_name' => 'matparent',
+            'idParent.idMaterial.material_inv' => 'matparent',
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
+            'idParent.idMol.idbuild.build_name',
+            'idParent.trOsnovs.tr_osnov_kab',
         ]);
 
         return $dataProvider;
@@ -195,7 +214,11 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMaterial',
             'idMattraffic.idMol.idperson',
             'idMattraffic.idMol.iddolzh',
-            'idParent',
+            'idParent.idMaterial matparent',
+            'idParent.idMol molparent',
+            'idParent.idMol.idbuild',
+            'idParent.trOsnovs',
+            'trRmMats',
         ]);
 
         $this->load($params);
@@ -215,23 +238,28 @@ class TrMatSearch extends TrMat
             'id_parent' => $this->id_parent,
         ]);
 
+        $query->andWhere(['trRmMats.id_tr_mat' => NULL]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.material_name')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
             'idMattraffic.idMaterial.material_inv',
-            'idParent.material_name',
-            'idParent.material_inv',
+            'idParent.idMaterial.material_name' => 'matparent',
+            'idParent.idMaterial.material_inv' => 'matparent',
             'idMattraffic.mattraffic_number',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
             'idMattraffic.idMaterial.material_name',
+            'idParent.idMol.idbuild.build_name',
+            'idParent.trOsnovs.tr_osnov_kab',
         ]);
 
         return $dataProvider;

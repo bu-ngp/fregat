@@ -109,10 +109,10 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
                 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson',
                 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh',
             ])
-            ->leftJoin('mattraffic mt', 'idMattraffic.id_material = mt.id_material and  idMattraffic.mattraffic_date < mt.mattraffic_date')
+         //   ->leftJoin('mattraffic mt', 'idMattraffic.id_material = mt.id_material and  idMattraffic.mattraffic_date < mt.mattraffic_date')
             ->andWhere(['id_recoverysendakt' => $Recoverysendakt_id])
-            ->andWhere(['idmattraffic.mattraffic_tip' => 4])
-            ->andWhere('`mt`.`mattraffic_date` IS NULL')
+            ->andWhere(['idMattraffic.mattraffic_tip' => 4])
+          //  ->andWhere('`mt`.`mattraffic_date` IS NULL')
             ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
             ->asArray()
             ->all();

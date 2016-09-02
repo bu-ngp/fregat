@@ -25,7 +25,7 @@ use \yii\helpers\Url;
 
     <?php
     $form = ActiveForm::begin([
-                'id' => 'Osmotraktform',
+        'id' => 'Osmotraktform',
     ]);
     ?>
 
@@ -35,7 +35,7 @@ use \yii\helpers\Url;
     $form->field($model, 'osmotrakt_date')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
         'options' => [
-            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
         ],
     ])
     ?>
@@ -47,17 +47,17 @@ use \yii\helpers\Url;
 
     <?=
     $form->field($model, 'id_tr_osnov')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                        'model' => $model,
-                        'resultmodel' => new TrOsnov,
-                        'fields' => [
-                            'keyfield' => 'id_tr_osnov',
-                        ],
-                        'placeholder' => 'Введите инвентарный номер материальной ценности',
-                        'fromgridroute' => 'Fregat/tr-osnov/forosmotrakt',
-                        'resultrequest' => 'Fregat/tr-osnov/selectinputforosmotrakt',
-                        'thisroute' => $this->context->module->requestedRoute,
-                        'methodquery' => 'selectinputforosmotrakt',
-                    ]), [
+        'model' => $model,
+        'resultmodel' => new TrOsnov,
+        'fields' => [
+            'keyfield' => 'id_tr_osnov',
+        ],
+        'placeholder' => 'Введите инвентарный номер материальной ценности',
+        'fromgridroute' => 'Fregat/tr-osnov/forosmotrakt',
+        'resultrequest' => 'Fregat/tr-osnov/selectinputforosmotrakt',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinputforosmotrakt',
+    ]), [
         'pluginEvents' => [
             "select2:select" => "function() { FillInstaledMat(); }",
             "select2:unselect" => "function() { ClearInstaledMat(); }"
@@ -84,42 +84,61 @@ use \yii\helpers\Url;
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
             <div class="panel-heading"><?= Html::encode('Акт установки материальной ценности') ?></div>
             <div class="panel-body">
-                <div class="alert alert-warning" role="alert"><a data-toggle="collapse" href="#Newinstallakt">Этот блок заполняется только, если материальная ценность не была установлена в кабинет, что позволит автоматически создать акт установки материальной ценности.</a></div>
+                <div class="alert alert-warning" role="alert"><a data-toggle="collapse" href="#Newinstallakt">Этот блок
+                        заполняется только, если материальная ценность не была установлена в кабинет, что позволит
+                        автоматически создать акт установки материальной ценности.</a></div>
                 <div id="Newinstallakt" class="panel-collapse collapse
                 <?php
                 if ($Trosnov instanceof yii\db\ActiveRecord && !empty($Trosnov->id_mattraffic))
                     echo ' in';
                 ?>">
-                         <?=
-                         $form->field($Trosnov, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                             'model' => $Trosnov,
-                                             'resultmodel' => new Mattraffic,
-                                             'fields' => [
-                                                 'keyfield' => 'id_mattraffic',
-                                             ],
-                                             'placeholder' => 'Введите инвентарный номер материальной ценности',
-                                             'fromgridroute' => 'Fregat/mattraffic/forosmotrakt',
-                                             'resultrequest' => 'Fregat/osmotrakt/selectinputforosmotrakt',
-                                             'thisroute' => $this->context->module->requestedRoute,
-                                             'methodquery' => 'selectinputforosmotrakt',
-                                             'dopparams' => ['foreigndo' => 1],
-                                         ]), [
-                             'pluginEvents' => [
-                                 "select2:select" => "function() { FillNewinstallakt(); }",
-                                 "select2:unselect" => "function() { ClearNewinstallakt(); }"
-                             ],
-                         ]));
-                         ?>
+                    <?=
+                    $form->field($InstallTrOsnov, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                        'model' => $InstallTrOsnov,
+                        'resultmodel' => new Mattraffic,
+                        'fields' => [
+                            'keyfield' => 'id_mattraffic',
+                        ],
+                        'placeholder' => 'Введите инвентарный номер материальной ценности',
+                        'fromgridroute' => 'Fregat/mattraffic/forosmotrakt',
+                        'resultrequest' => 'Fregat/osmotrakt/selectinputforosmotrakt',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'methodquery' => 'selectinputforosmotrakt',
+                        'dopparams' => ['foreigndo' => 1],
+                    ]), [
+                   /*     'pluginEvents' => [
+                            "select2:select" => "function() { FillNewinstallakt(); }",
+                            "select2:unselect" => "function() { ClearNewinstallakt(); }"
+                        ],*/
+                    ]));
+                    ?>
 
-                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field(Proc::RelatModelValue($Trosnov, 'idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field($Trosnov, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?> 
+                    <?php //echo $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic', new Mattraffic), 'mattraffic_number', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+
+                    <?php
+                    echo $form->field($InstallTrOsnov, 'mattraffic_number')->widget(kartik\touchspin\TouchSpin::classname(), [
+                        'options' => ['class' => 'form-control setsession'],
+                        'pluginOptions' => [
+                            'verticalbuttons' => true,
+                            'min' => 1,
+                            'max' => 10000000000,
+                            'step' => 1,
+                            
+                            'decimals' => 3,
+                            'forcestepdivisibility' => 'none',
+                        ],
+                    ])->label('Количество для перемещения');
+                    ?>
+                    
+                    <?= $form->field($InstallTrOsnov, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
 
                 </div>
             </div>
@@ -129,48 +148,48 @@ use \yii\helpers\Url;
 
     <?=
     $form->field($model, 'id_user')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Employee,
-                'fields' => [
-                    'keyfield' => 'id_user',
-                    'resultfield' => 'idperson.auth_user_fullname',
-                ],
-                'placeholder' => 'Выберете пользователя',
-                'fromgridroute' => 'Fregat/employee/index',
-                'resultrequest' => 'Fregat/employee/selectinputemloyee',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinput',
+        'model' => $model,
+        'resultmodel' => new Employee,
+        'fields' => [
+            'keyfield' => 'id_user',
+            'resultfield' => 'idperson.auth_user_fullname',
+        ],
+        'placeholder' => 'Выберете пользователя',
+        'fromgridroute' => 'Fregat/employee/index',
+        'resultrequest' => 'Fregat/employee/selectinputemloyee',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinput',
     ]));
     ?>
 
     <?=
     $form->field($model, 'id_master')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Employee,
-                'fields' => [
-                    'keyfield' => 'id_master',
-                    'resultfield' => 'idperson.auth_user_fullname',
-                ],
-                'placeholder' => 'Выберете пользователя',
-                'fromgridroute' => 'Fregat/employee/index',
-                'resultrequest' => 'Fregat/employee/selectinputemloyee',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinput',
+        'model' => $model,
+        'resultmodel' => new Employee,
+        'fields' => [
+            'keyfield' => 'id_master',
+            'resultfield' => 'idperson.auth_user_fullname',
+        ],
+        'placeholder' => 'Выберете пользователя',
+        'fromgridroute' => 'Fregat/employee/index',
+        'resultrequest' => 'Fregat/employee/selectinputemloyee',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinput',
     ]));
     ?>
 
     <?=
     $form->field($model, 'id_reason')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Reason,
-                'fields' => [
-                    'keyfield' => 'id_reason',
-                    'resultfield' => 'reason_text',
-                ],
-                'placeholder' => 'Выберете причину неисправности',
-                'fromgridroute' => 'Fregat/reason/index',
-                'resultrequest' => 'Fregat/reason/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
+        'model' => $model,
+        'resultmodel' => new Reason,
+        'fields' => [
+            'keyfield' => 'id_reason',
+            'resultfield' => 'reason_text',
+        ],
+        'placeholder' => 'Выберете причину неисправности',
+        'fromgridroute' => 'Fregat/reason/index',
+        'resultrequest' => 'Fregat/reason/selectinput',
+        'thisroute' => $this->context->module->requestedRoute,
     ]));
     ?>
 
@@ -196,7 +215,7 @@ use \yii\helpers\Url;
                     echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotrakt/osmotrakt-report']) . '", $(this)[0].id, {id: ' . $model->osmotrakt_id . '} )']);
                 ?>
             </div>
-        </div> 
+        </div>
     </div>
 
 </div>

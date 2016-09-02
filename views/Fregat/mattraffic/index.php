@@ -33,7 +33,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'columns' => Proc::DGcols([
                     'buttonsfirst' => true,
                     'buttons' => empty($foreign) ? [] : [
-                        'chooseajax' => ['Fregat/mattraffic/assign-to-material']
+                        'chooseajax' => ['Fregat/mattraffic/assign-to-matparent']
                             ],
                     'buttonsfirst' => true,
                     'columns' => [

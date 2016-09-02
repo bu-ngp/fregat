@@ -24,7 +24,7 @@ use app\models\Fregat\TrMatOsmotr;
 
     <?php
     $form = ActiveForm::begin([
-                'id' => 'Recoveryrecieveaktmatform',
+        'id' => 'Recoveryrecieveaktmatform',
     ]);
     ?>
 
@@ -35,10 +35,10 @@ use app\models\Fregat\TrMatOsmotr;
             <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
             <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
             <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr', new TrMatOsmotr), 'tr_mat_osmotr_number', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
+            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('ФИО материально-ответственонго лица') ?>
+            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Должность материально-ответственного лица') ?>
+            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Материальная ценность, в которую укомплектовано') ?>
+            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent.idMaterial', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Инвентарный номер материальной ценности, в которую укомплектовано') ?>
             <?=
             $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr', new TrMatOsmotr), 'tr_mat_osmotr_comment', ['enableClientValidation' => false])->textarea([
                 'class' => 'form-control',
@@ -79,7 +79,7 @@ use app\models\Fregat\TrMatOsmotr;
     $form->field($model, 'recoveryrecieveaktmat_date')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
         'options' => [
-            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
         ],
     ])
     ?>
@@ -92,6 +92,6 @@ use app\models\Fregat\TrMatOsmotr;
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Recoveryrecieveaktmatform']) ?>
             </div>
-        </div> 
+        </div>
     </div>
 </div>

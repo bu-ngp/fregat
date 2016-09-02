@@ -123,10 +123,10 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name',
             'idTrosnov.tr_osnov_kab',
             'idReason.reason_text',
-            'iduserperson' => 'idUser.idperson.auth_user_fullname',
-            'iduserdolzh' => 'idUser.iddolzh.dolzh_name',
-            'idmasterperson' => 'idMaster.idperson.auth_user_fullname',
-            'idmasterdolzh' => 'idMaster.iddolzh.dolzh_name',
+            'idUser.idperson.auth_user_fullname' => 'iduserperson',
+            'idUser.iddolzh.dolzh_name' => 'iduserdolzh',
+            'idMaster.idperson.auth_user_fullname' => 'idmasterperson',
+            'idMaster.iddolzh.dolzh_name' => 'idmasterdolzh',
         ]);
     }
 
@@ -249,11 +249,11 @@ class OsmotraktSearch extends Osmotrakt
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idReason.reason_text',
-            'idpersonuser' => 'idUser.idperson.auth_user_fullname',
-            'iddolzhuser' => 'idUser.iddolzh.dolzh_name',
-            'idbuilduser' => 'idUser.idbuild.build_name',
-            'idpersonmaster' => 'idMaster.idperson.auth_user_fullname',
-            'iddolzhmaster' => 'idMaster.iddolzh.dolzh_name',
+            'idUser.idperson.auth_user_fullname' => 'idpersonuser',
+            'idUser.iddolzh.dolzh_name' => 'iddolzhuser',
+            'idUser.idbuild.build_name' => 'idbuilduser',
+            'idMaster.idperson.auth_user_fullname' => 'idpersonmaster',
+            'idMaster.iddolzh.dolzh_name' => 'iddolzhmaster',
         ]);
 
         return $dataProvider;

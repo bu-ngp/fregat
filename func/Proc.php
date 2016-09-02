@@ -327,13 +327,16 @@ class Proc
                     foreach ($initrecord as $key => $rows) {
                         if (!empty($multiple))
                             array_shift($rows);
-                        $initrecord_tmp[$initrecord[$key][$multiple['idvalue']]] = implode(', ', $rows);
+                        if (empty($multiple))
+                            $initrecord_tmp[] = implode(', ', $rows);
+                        else
+                            $initrecord_tmp[$initrecord[$key][$multiple['idvalue']]] = implode(', ', $rows);
                     }
-                    $initrecord = $initrecord_tmp;
+                    $initrecord = ['text' => $initrecord_tmp[0]];
                 }
 
                 return array_merge([
-                    'initValueText' => !empty($multiple) ? '' : implode(', ', $initrecord),
+                    'initValueText' => !empty($multiple) ? '' : implode(', ', ['text' => $initrecord['text']]),
                     'options' => empty($options) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control' . ($setsession ? ' setsession' : ''), 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form], empty($multiple) ? [] : ['multiple' => true]) : $options,
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'showToggleAll' => $showToggleAll,
@@ -1247,16 +1250,16 @@ class Proc
     public static function AssignRelatedAttributes(&$DataProvider, $AttributesNames)
     {
         if ($DataProvider instanceof ActiveDataProvider && is_array($AttributesNames))
-            foreach ($AttributesNames as $alias => $attr) {
-                if (is_string($alias)) {
-                    preg_match('/(\.?\w+)$/', $attr, $matches);
-                    $attrsql = $alias . $matches[1];
+            foreach ($AttributesNames as $key => $val) {
+                if (is_string($key)) {
+                    preg_match('/(\.?\w+)$/', $key, $matches);
+                    $attrsql = $val . $matches[1];
                 } else {
-                    preg_match('/(\w+\.?\w+)$/', $attr, $matches);
+                    preg_match('/(\w+\.?\w+)$/', $val, $matches);
                     $attrsql = $matches[1];
                 }
 
-                $DataProvider->sort->attributes[$attr] = [
+                $DataProvider->sort->attributes[is_string($key) ? $key : $val] = [
                     'asc' => [$attrsql => SORT_ASC],
                     'desc' => [$attrsql => SORT_DESC],
                 ];
@@ -1306,7 +1309,7 @@ class Proc
     // Используется для полей формы со связью, чтобы укоротить код (isset($model->idTrosnov->idMattraffic->idMaterial) ? $model->idTrosnov->idMattraffic->idMaterial : new Material)
     public static function RelatModelValue($ActiverecordRelat, $Relationstring, $ActiverecordNew)
     {
-        if ($ActiverecordRelat instanceof ActiveRecord && is_string($Relationstring) && !empty($Relationstring) && $ActiverecordNew instanceof ActiveRecord) {
+        if (($ActiverecordRelat instanceof ActiveRecord || $ActiverecordRelat instanceof Model) && is_string($Relationstring) && !empty($Relationstring) && ($ActiverecordNew instanceof ActiveRecord || $ActiverecordNew instanceof Model)) {
             $RelatArr = explode('.', $Relationstring);
             $fail = false;
             foreach ($RelatArr as $relat)

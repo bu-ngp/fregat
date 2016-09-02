@@ -113,13 +113,10 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
         return self::find()
             ->select(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
             ->joinWith([
-                'idTrMat.idParent.mattraffics.idMol.idperson',
-                'idTrMat.idParent.mattraffics.idMol.iddolzh',])
-            ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
+                'idTrMat.idMattraffic.idMol.idperson',
+                'idTrMat.idMattraffic.idMol.iddolzh',])
             ->andWhere(['id_osmotraktmat' => $Osmotraktmat_id])
-            ->andWhere(['mattraffics.mattraffic_tip' => 3])
-            ->andWhere('`mt`.`mattraffic_date` IS NULL')
-            ->groupBy(['idperson.auth_user_fullname', 'iddolzh.dolzh_name'])
+            ->andWhere(['idMattraffic.mattraffic_tip' => 4])
             ->asArray()
             ->all();
     }
@@ -130,13 +127,13 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
             $query = self::find()
                 ->select(['idbuild.build_name', 'trOsnovs.tr_osnov_kab'])
                 ->joinWith([
-                    'idTrMat.idParent.mattraffics.idMol.idbuild',
-                    'idTrMat.idParent.mattraffics.trOsnovs',
+                    'idTrMat.idParent.idMol.idbuild',
+                    'idTrMat.idParent.trOsnovs',
                 ])
-                ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
+                //   ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
                 ->andWhere(['tr_mat_osmotr_id' => $Tr_mat_osmotr_id])
-                ->andWhere(['mattraffics.mattraffic_tip' => 3])
-                ->andWhere('`mt`.`mattraffic_date` IS NULL')
+                ->andWhere(['idParent.mattraffic_tip' => 3])
+                //   ->andWhere('`mt`.`mattraffic_date` IS NULL')
                 ->asArray()
                 ->one();
 

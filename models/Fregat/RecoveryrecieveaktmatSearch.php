@@ -151,7 +151,8 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['recoveryrecieveaktmat_id' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['idRecoverysendakt.recoverysendakt_date' => SORT_DESC, 'recoveryrecieveaktmat_date' => SORT_DESC]],
+
         ]);
 
         $query->joinWith([

@@ -15,8 +15,8 @@ use kartik\touchspin\TouchSpin;
 
     <?php $form = ActiveForm::begin(); ?>
     
-    <?=
-    $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
+    <?php
+   /* $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
                 'model' => $model,
                 'resultmodel' => new app\models\Fregat\Material,
                 'fields' => [
@@ -31,6 +31,25 @@ use kartik\touchspin\TouchSpin;
                 'dopparams' => [
                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
                 ],
+    ]));*/
+    ?>
+
+    <?=
+    $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
+        'model' => $model,
+        'resultmodel' => new app\models\Fregat\Mattraffic,
+        'fields' => [
+            'keyfield' => 'id_parent',
+        ],
+        'placeholder' => 'Введите инвентарный номер материальной ценности',
+        'fromgridroute' => 'Fregat/mattraffic/forinstallakt_matparent',
+        'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatparent',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinputfortrmat_parent',
+        'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
+        'dopparams' => [
+            'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
+        ],
     ]));
     ?>
 

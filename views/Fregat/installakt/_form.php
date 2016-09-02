@@ -18,7 +18,7 @@ use yii\helpers\Url;
 
     <?php
     $form = ActiveForm::begin([
-                'id' => 'Installaktform',
+        'id' => 'Installaktform',
     ]);
     ?>
 
@@ -26,17 +26,17 @@ use yii\helpers\Url;
 
     <?=
     $form->field($model, 'id_installer')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Employee,
-                'fields' => [
-                    'keyfield' => 'id_installer',
-                    'resultfield' => 'idperson.auth_user_fullname',
-                ],
-                'placeholder' => 'Выберете установщика',
-                'fromgridroute' => 'Fregat/employee/index',
-                'resultrequest' => 'Fregat/employee/selectinputemloyee',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinput',
+        'model' => $model,
+        'resultmodel' => new Employee,
+        'fields' => [
+            'keyfield' => 'id_installer',
+            'resultfield' => 'idperson.auth_user_fullname',
+        ],
+        'placeholder' => 'Выберете установщика',
+        'fromgridroute' => 'Fregat/employee/index',
+        'resultrequest' => 'Fregat/employee/selectinputemloyee',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinput',
     ]));
     ?>
 
@@ -44,7 +44,7 @@ use yii\helpers\Url;
     $form->field($model, 'installakt_date')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
         'options' => [
-            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
         ],
     ])
     ?>
@@ -54,82 +54,89 @@ use yii\helpers\Url;
     <?php
     if (!$model->isNewRecord) {
         echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'trOsnovgrid'],
-                    'columns' => Proc::DGcols([
-                        'buttonsfirst' => true,
-                        'columns' => [
-                            'idMattraffic.idMaterial.material_name',
-                            'idMattraffic.idMaterial.material_inv',
-                            'idMattraffic.mattraffic_number',
-                            [
-                                'attribute' => 'idMattraffic.idMol.idbuild.build_name',
-                                'label' => 'Здание',
-                            ],
-                            'tr_osnov_kab',
-                            [
-                                'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
-                                'label' => 'ФИО материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
-                                'label' => 'Должность материально-ответственного лица',
-                            ],
-                        ],
-                        'buttons' => [
-                            'deleteajax' => ['Fregat/tr-osnov/delete', 'tr_osnov_id', 'trOsnovgrid'],
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProviderOsn,
-                        'filterModel' => $searchModelOsn,
-                        'panel' => [
-                            'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Перемещенные материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-osnov/create',
-                                'idinstallakt' => $model->primaryKey,
-                                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
-                        ],
-                    ]
+            'options' => ['id' => 'trOsnovgrid'],
+            'columns' => Proc::DGcols([
+                'buttonsfirst' => true,
+                'columns' => [
+                    'idMattraffic.idMaterial.material_name',
+                    'idMattraffic.idMaterial.material_inv',
+                    'idMattraffic.mattraffic_number',
+                    [
+                        'attribute' => 'idMattraffic.idMol.idbuild.build_name',
+                        'label' => 'Здание',
+                    ],
+                    'tr_osnov_kab',
+                    [
+                        'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
+                        'label' => 'ФИО материально-ответственного лица',
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
+                        'label' => 'Должность материально-ответственного лица',
+                    ],
+                ],
+                'buttons' => [
+                    'deleteajax' => ['Fregat/tr-osnov/delete', 'tr_osnov_id', 'trOsnovgrid'],
+                ],
+            ]),
+            'gridOptions' => [
+                'dataProvider' => $dataProviderOsn,
+                'filterModel' => $searchModelOsn,
+                'panel' => [
+                    'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Перемещенные материальные ценности</h3>',
+                    'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-osnov/create',
+                        'idinstallakt' => $model->primaryKey,
+                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
+                ],
+            ]
         ]));
 
         echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'trMatgrid'],
-                    'columns' => Proc::DGcols([
-                        'buttonsfirst' => true,
-                        'columns' => [
-                            [
-                                'attribute' => 'idParent.material_name',
-                                'label' => 'В составе материальной ценности',
-                            ],
-                            [
-                                'attribute' => 'idParent.material_inv',
-                                'label' => 'Инвентарный номер материальной ценности, в составе которой материал',
-                            ],
-                            'idMattraffic.idMaterial.material_name',
-                            'idMattraffic.idMaterial.material_inv',
-                            'idMattraffic.mattraffic_number',
-                            [
-                                'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
-                                'label' => 'ФИО материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
-                                'label' => 'Должность материально-ответственного лица',
-                            ],
-                        ],
-                        'buttons' => [
-                            'deleteajax' => ['Fregat/tr-mat/delete', 'tr_mat_id', 'trMatgrid'],
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProviderMat,
-                        'filterModel' => $searchModelMat,
-                        'panel' => [
-                            'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Укомплектованные материальные ценности</h3>',
-                            'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-mat/create',
-                                'idinstallakt' => $model->primaryKey,
-                                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
-                        ],
-                    ]
+            'options' => ['id' => 'trMatgrid'],
+            'columns' => Proc::DGcols([
+                'buttonsfirst' => true,
+                'columns' => [
+                    [
+                        'attribute' => 'idParent.idMaterial.material_name',
+                        'label' => 'В составе материальной ценности',
+                    ],
+                    [
+                        'attribute' => 'idParent.idMaterial.material_inv',
+                        'label' => 'Инвентарный номер материальной ценности, в составе которой материал',
+                    ],
+                    'idParent.idMol.idbuild.build_name',
+                    [
+                        'attribute' => 'idParent.trOsnovs.tr_osnov_kab',
+                        'value' => function ($model) {
+                            return $model->idParent->trOsnovs[0]->tr_osnov_kab;
+                        },
+                    ],
+                    'idMattraffic.idMaterial.material_name',
+                    'idMattraffic.idMaterial.material_inv',
+                    'idMattraffic.mattraffic_number',
+                    [
+                        'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
+                        'label' => 'ФИО материально-ответственного лица',
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
+                        'label' => 'Должность материально-ответственного лица',
+                    ],
+                ],
+                'buttons' => [
+                    'deleteajax' => ['Fregat/tr-mat/delete', 'tr_mat_id', 'trMatgrid'],
+                ],
+            ]),
+            'gridOptions' => [
+                'dataProvider' => $dataProviderMat,
+                'filterModel' => $searchModelMat,
+                'panel' => [
+                    'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-paperclip"></i> Укомплектованные материальные ценности</h3>',
+                    'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/tr-mat/create',
+                        'idinstallakt' => $model->primaryKey,
+                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
+                ],
+            ]
         ]));
     }
     ?>
@@ -145,6 +152,6 @@ use yii\helpers\Url;
                     echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акт', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", $(this)[0].id, {id: ' . $model->installakt_id . '} )']);
                 ?>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
