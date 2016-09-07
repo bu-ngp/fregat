@@ -381,6 +381,7 @@ class FregatImport
             'mattraffic_date' => /* !self::$mattraffic_exist && */
                 self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
             'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
+       //   'mattraffic_tip' => !self::$os ? 1 : (in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']) ? 2 : 1),
         ];
     }
 
@@ -816,7 +817,7 @@ class FregatImport
         // Если Материал списан (Сумма = 0)
         if ((!self::$os && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
             // Или Основное средство списано (Статус = "Списан")
-            || (self::$os && /*$Material->material_writeoff == 0 &&*/
+            || (self::$os && $Material->material_writeoff == 0 &&
                 in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']))
         ) {
 
@@ -829,16 +830,25 @@ class FregatImport
             $Matlog->material_writeoff = 'Да';
             $Matlog->save(false);
 
-            if (isset($Mattraffic->scenarios()['import1c']))
+/*          if (isset($Mattraffic->scenarios()['import1c']))
                 $Mattraffic->scenario = 'import1c';
             $Mattraffic->mattraffic_tip = 2; // Списание
             $Mattraffic->save(false);
+*/
+            $mtcoff = new Mattraffic;
+            $mtcoff->mattraffic_date = date('Y-m-d');
+            $mtcoff->mattraffic_number = $Mattraffic->mattraffic_number;
+            $mtcoff->id_material = $Mattraffic->id_material;
+            $mtcoff->id_mol = $Mattraffic->id_mol;
+            $mtcoff->mattraffic_tip = 2;
+            $mtcoff->save();
 
             $writeoffakt = new Writeoffakt();
-            $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
+           // $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
+            $writeoffakt->id_mattraffic = $mtcoff->mattraffic_id;
             $writeoffakt->save(false);
 
-            $Traflog->traflog_message .= ' Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($Mattraffic->mattraffic_date)) . '".';
+            $Traflog->traflog_message .= ' Добавлен акт списания с номером "' . $writeoffakt->writeoffakt_id . '" на дату "' . date('d.m.Y', strtotime($mtcoff->mattraffic_date)) . '".';
             $Traflog->save(false);
         }
     }
