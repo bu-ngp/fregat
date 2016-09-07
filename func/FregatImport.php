@@ -816,7 +816,8 @@ class FregatImport
         // Если Материал списан (Сумма = 0)
         if ((!self::$os && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
             // Или Основное средство списано (Статус = "Списан")
-            || (self::$os && $Material->material_writeoff == 0 && in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']))
+            || (self::$os && /*$Material->material_writeoff == 0 &&*/
+                in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']))
         ) {
 
             $Material->material_writeoff = 1;
