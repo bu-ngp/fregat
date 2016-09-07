@@ -381,7 +381,7 @@ class FregatImport
             'mattraffic_date' => /* !self::$mattraffic_exist && */
                 self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
             'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
-       //   'mattraffic_tip' => !self::$os ? 1 : (in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']) ? 2 : 1),
+            //   'mattraffic_tip' => !self::$os ? 1 : (in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']) ? 2 : 1),
         ];
     }
 
@@ -830,12 +830,14 @@ class FregatImport
             $Matlog->material_writeoff = 'Да';
             $Matlog->save(false);
 
-/*          if (isset($Mattraffic->scenarios()['import1c']))
-                $Mattraffic->scenario = 'import1c';
-            $Mattraffic->mattraffic_tip = 2; // Списание
-            $Mattraffic->save(false);
-*/
+            /*          if (isset($Mattraffic->scenarios()['import1c']))
+                            $Mattraffic->scenario = 'import1c';
+                        $Mattraffic->mattraffic_tip = 2; // Списание
+                        $Mattraffic->save(false);
+            */
             $mtcoff = new Mattraffic;
+            if (isset($mtcoff->scenarios()['import1c']))
+                $mtcoff->scenario = 'import1c';
             $mtcoff->mattraffic_date = date('Y-m-d');
             $mtcoff->mattraffic_number = $Mattraffic->mattraffic_number;
             $mtcoff->id_material = $Mattraffic->id_material;
@@ -844,7 +846,7 @@ class FregatImport
             $mtcoff->save();
 
             $writeoffakt = new Writeoffakt();
-           // $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
+            // $writeoffakt->id_mattraffic = $Mattraffic->mattraffic_id;
             $writeoffakt->id_mattraffic = $mtcoff->mattraffic_id;
             $writeoffakt->save(false);
 
