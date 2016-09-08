@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\OsmotraktReport;
 use app\models\Fregat\InstallTrOsnov;
+use app\models\Fregat\Material;
 use Exception;
 use Yii;
 use app\models\Fregat\Osmotrakt;
@@ -79,19 +80,16 @@ class OsmotraktController extends Controller
     public function actionCreate()
     {
         $model = new Osmotrakt;
-     //   $model->scenario = 'forosmotrakt';
-       // $Trosnov = new TrOsnov;
         $InstallTrOsnov = new InstallTrOsnov;
         $model->osmotrakt_date = date('Y-m-d');
-
+        $InstallTrOsnov->mattraffic_number = 1;
         $transaction = Yii::$app->db->beginTransaction();
         try {
-
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 $transaction->commit();
                 return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
             } else {
-                if ($InstallTrOsnov->load(Yii::$app->request->post()) && $InstallTrOsnov->save()) {
+                if ($InstallTrOsnov->load(Yii::$app->request->post()) && $InstallTrOsnov->save($model->id_master)) {
                     $model->id_tr_osnov = $InstallTrOsnov->mattraffic_trosnov_id;
                     if ($model->save()) {
                         $transaction->commit();
@@ -104,93 +102,17 @@ class OsmotraktController extends Controller
                         ]);
                     }
                 } else {
+                    if (empty($InstallTrOsnov->id_mattraffic))
+                        $InstallTrOsnov->clearErrors();
+                    elseif (empty($model->id_tr_osnov) && !empty($InstallTrOsnov->id_mattraffic))
+                        $model->clearErrors('id_tr_osnov');
+
                     $transaction->rollback();
                     return $this->render('create', [
                         'model' => $model,
                         'InstallTrOsnov' => $InstallTrOsnov,
                     ]);
                 }
-            }
-        } catch (Exception $e) {
-            $transaction->rollback();
-            throw new Exception($e->getMessage());
-        }
-    }
-
-    public function actionCreate2()
-    {
-        $model = new Osmotrakt();
-        $model->scenario = 'forosmotrakt';
-        $Trosnov = new TrOsnov;
-        $Trosnov->scenario = 'forosmotrakt';
-        $Mattraffic = new Mattraffic;
-        $model->osmotrakt_date = date('Y-m-d');
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-
-            $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : NULL;
-
-            $id_tr_osnov = isset(Yii::$app->request->post('Osmotrakt')['id_tr_osnov']) ? Yii::$app->request->post('Osmotrakt')['id_tr_osnov'] : NULL;
-
-            $mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
-
-            $instakterror = false;
-            if (empty($id_tr_osnov) && !empty($id_mattraffic)) {
-
-                $Mattrafficcurrent = Mattraffic::findOne($id_mattraffic);
-
-                $Mattraffic->attributes = $Mattrafficcurrent->attributes;
-
-                $Mattraffic->mattraffic_date = date('Y-m-d');
-                $Mattraffic->mattraffic_number = $mattraffic_number;
-                $Mattraffic->mattraffic_tip = 3;
-
-                $instakterror = true;
-                if ($Mattraffic->validate()) {
-                    $Mattraffic->save(false);
-
-                    $Trosnov->scenario = 'default';
-
-                    $Installakt = new Installakt;
-                    $Installakt->installakt_date = date('Y-m-d');
-                    $Installakt->id_installer = isset(Yii::$app->request->post('Osmotrakt')['id_master']) ? Yii::$app->request->post('Osmotrakt')['id_master'] : NULL;
-                    if ($Installakt->validate()) {
-                        $Installakt->save(false);
-                        $Trosnov->load(Yii::$app->request->post());
-                        $Trosnov->id_mattraffic = $Mattraffic->mattraffic_id;
-                        $Trosnov->id_installakt = $Installakt->primaryKey;
-                        if ($Trosnov->validate()) {
-                            $Trosnov->save(false);
-                            $instakterror = false;
-                        }
-                    }
-                }
-            } elseif (!empty($id_tr_osnov))
-                $model->scenario = 'default';
-
-            if ($model->load(Yii::$app->request->post())) {
-                if (empty($id_tr_osnov) && !$instakterror)
-                    $model->id_tr_osnov = $Trosnov->primaryKey;
-
-                if ($model->save()) {
-                    $transaction->commit();
-                    return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-                } else {
-                    $transaction->rollback();
-                    return $this->render('create', [
-                        'model' => $model,
-                        'Trosnov' => $Trosnov,
-                        'Mattraffic' => $Mattraffic,
-                    ]);
-                }
-            } else {
-                $transaction->rollback();
-                return $this->render('create', [
-                    'model' => $model,
-                    'Trosnov' => $Trosnov,
-                    'Mattraffic' => $Mattraffic,
-                ]);
             }
         } catch (Exception $e) {
             $transaction->rollback();
@@ -205,10 +127,8 @@ class OsmotraktController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
-            $Trosnov = empty($model->id_tr_osnov) ? new TrOsnov : TrOsnov::findOne($model->id_tr_osnov);
             return $this->render('update', [
                 'model' => $model,
-                'Trosnov' => $Trosnov,
             ]);
         }
     }
@@ -233,11 +153,14 @@ class OsmotraktController extends Controller
             if (!empty($id_mattraffic)) {
                 $query = Mattraffic::findOne($id_mattraffic);
                 if (!empty($query)) {
+                    $material_writeoff = Material::VariablesValues('material_writeoff');
                     echo json_encode([
                         'material_name' => $query->idMaterial->material_name,
+                        'material_writeoff' => $material_writeoff[$query->idMaterial->material_writeoff],
                         'auth_user_fullname' => $query->idMol->idperson->auth_user_fullname,
                         'dolzh_name' => $query->idMol->iddolzh->dolzh_name,
                         'build_name' => $query->idMol->idbuild->build_name,
+                        'mattraffic_number' => $query->mattraffic_number,
                     ]);
                 }
             }

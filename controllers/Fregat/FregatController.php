@@ -205,7 +205,7 @@ class FregatController extends Controller
     {
         header('Content-Type: text/html');
         $Glauk = Authuser::find()
-            ->andWhere(['in', 'auth_user_id', [64, 403, 410, 419, 875, 877, 882, 885, 887, 891, 1133, 1196, 1211]])
+            ->andWhere(['in', 'auth_user_id', [64, 403, 410, 419, 875, 877, 882, 885, 887, 891, 1133, 1196, 1211, 1196]])
             ->all();
 
         foreach ($Glauk as $ar) {
@@ -231,7 +231,7 @@ class FregatController extends Controller
         $Role = $auth->getRole('EmployeeBuildEditRole');
         $auth->assign($Role, 883);
 
-        $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184, 1214]]);
+        $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184, 1214, 1181]]);
         $pol3 = Employee::updateAll(['id_build' => 2], ['employee_id' => [874, 884]]);
         $pol3 = Employee::updateAll(['id_build' => 3], ['employee_id' => [876, 881]]);
 

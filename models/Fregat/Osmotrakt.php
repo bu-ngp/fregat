@@ -47,6 +47,9 @@ class Osmotrakt extends \yii\db\ActiveRecord
             [['id_reason'], 'exist', 'skipOnError' => true, 'targetClass' => Reason::className(), 'targetAttribute' => ['id_reason' => 'reason_id']],
             [['osmotrakt_date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['osmotrakt_date'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение {attribute} должно быть меньше или равно значения «' . Yii::$app->formatter->asDate(date('Y-m-d')) . '».'],
+            [['id_reason', 'osmotrakt_comment'], 'required', 'when' => function ($model) {
+                return empty($model->id_reason) && empty($model->osmotrakt_comment);
+            }, 'message' => 'Необходимо заполнить одно из полей.', 'enableClientValidation' => false],
         ];
     }
 

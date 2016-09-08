@@ -36,13 +36,15 @@ function FillNewinstallakt() {
         $.ajax({
             url: "?r=Fregat%2Fosmotrakt%2Ffillnewinstallakt",
             type: "post",
-            data: {id_mattraffic: $("#trosnov-id_mattraffic").val()},
+            data: {id_mattraffic: $("#installtrosnov-id_mattraffic").val()},
             success: function (data) {
                 var obj = JSON.parse(data);
                 $("#material-material_name.newinstallakt").val(obj.material_name);
+                $("#material-material_writeoff.newinstallakt").val(obj.material_writeoff);
                 $("#authuser-auth_user_fullname.newinstallakt").val(obj.auth_user_fullname);
                 $("#dolzh-dolzh_name.newinstallakt").val(obj.dolzh_name);
                 $("#build-build_name.newinstallakt").val(obj.build_name);
+                $("#mattraffic-mattraffic_number.newinstallakt").val(obj.mattraffic_number);
             },
             error: function (data) {
                 console.error("Ошибка FillNewinstallakt()");
@@ -53,7 +55,13 @@ function FillNewinstallakt() {
 
 function ClearNewinstallakt() {
     $("#material-material_name.newinstallakt").val('');
+    $("#material-material_writeoff.newinstallakt").val('');
     $("#authuser-auth_user_fullname.newinstallakt").val('');
     $("#dolzh-dolzh_name.newinstallakt").val('');
     $("#build-build_name.newinstallakt").val('');
+    $("#mattraffic-mattraffic_number.newinstallakt").val('');
 }
+
+$(document).ready(function () {
+    FillNewinstallakt();
+});

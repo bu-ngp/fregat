@@ -10,7 +10,7 @@ use app\models\Fregat\TrOsnov;
 
 $this->title = 'Составить акт осмотра основной материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-    'model' => [$model],
+    'model' => [$InstallTrOsnov, $model],
 ]);
 ?>
 <div class="osmotrakt-create">

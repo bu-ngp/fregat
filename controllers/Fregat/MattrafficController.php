@@ -27,7 +27,7 @@ class MattrafficController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt','forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-matparent', 'forosmotrakt'],
+                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-matparent', 'forosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -84,7 +84,7 @@ class MattrafficController extends Controller
         $model->id_material = $Material->primaryKey;
         $model->id_mol = $model->primaryKey;
         $model->mattraffic_date = date('Y-m-d');
-        $a='';
+        $a = '';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());

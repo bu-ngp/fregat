@@ -13,34 +13,38 @@ use Yii;
  * @property Employee[] $employees
  * @property Importemployee[] $importemployees
  */
-class Build extends \yii\db\ActiveRecord {
+class Build extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'build';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['build_name'], 'required'],
             [['build_name'], 'string', 'max' => 100],
             [['build_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['build_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
-            [['build_name'], 'filter', 'filter' => function($value) {
-            return mb_strtoupper($value, 'UTF-8');
-        }],
+            [['build_name'], 'filter', 'filter' => function ($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'build_id' => 'Build ID',
             'build_name' => 'Здание',
@@ -50,18 +54,21 @@ class Build extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmployees() {
+    public function getEmployees()
+    {
         return $this->hasMany(Employee::className(), ['id_build' => 'build_id'])->from(['employees' => Employee::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getImportemployees() {
+    public function getImportemployees()
+    {
         return $this->hasMany(Importemployee::className(), ['id_build' => 'build_id'])->from(['importemployees' => Importemployee::tableName()]);
     }
 
-    public static function getBuildByID($ID) {
+    public static function getBuildByID($ID)
+    {
         return $query = self::findOne($ID)->build_name;
     }
 

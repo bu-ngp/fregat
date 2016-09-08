@@ -42,11 +42,11 @@ use \yii\helpers\Url;
 
     <?php
     /* var_dump($model->errors);
-      var_dump($Trosnov->errors); */
+      var_dump($InstallTrOsnov->errors);*/
     ?>
 
     <?=
-    $form->field($model, 'id_tr_osnov')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+    $form->field($model, 'id_tr_osnov', ['enableClientValidation' => false])->widget(Select2::classname(), array_merge(Proc::DGselect2([
         'model' => $model,
         'resultmodel' => new TrOsnov,
         'fields' => [
@@ -89,11 +89,11 @@ use \yii\helpers\Url;
                         автоматически создать акт установки материальной ценности.</a></div>
                 <div id="Newinstallakt" class="panel-collapse collapse
                 <?php
-                if ($Trosnov instanceof yii\db\ActiveRecord && !empty($Trosnov->id_mattraffic))
+                if (!empty($InstallTrOsnov->id_mattraffic))
                     echo ' in';
                 ?>">
                     <?=
-                    $form->field($InstallTrOsnov, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                    $form->field($InstallTrOsnov, 'id_mattraffic', ['enableClientValidation' => false])->widget(Select2::classname(), array_merge(Proc::DGselect2([
                         'model' => $InstallTrOsnov,
                         'resultmodel' => new Mattraffic,
                         'fields' => [
@@ -106,39 +106,41 @@ use \yii\helpers\Url;
                         'methodquery' => 'selectinputforosmotrakt',
                         'dopparams' => ['foreigndo' => 1],
                     ]), [
-                   /*     'pluginEvents' => [
+                        'pluginEvents' => [
                             "select2:select" => "function() { FillNewinstallakt(); }",
-                            "select2:unselect" => "function() { ClearNewinstallakt(); }"
-                        ],*/
+                            "select2:unselect" => "function() { ClearNewinstallakt(); }",
+                        ],
                     ]));
                     ?>
 
-                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(new Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(new Material, 'material_writeoff', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
-                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(new Authuser, 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true])->label('ФИО материально-ответственного лица') ?>
 
-                    <?= $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(new Dolzh, 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true])->label('Должность материально-ответственного лица') ?>
 
-                    <?php //echo $form->field(Proc::RelatModelValue($InstallTrOsnov, 'idMattraffic', new Mattraffic), 'mattraffic_number', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
+                    <?= $form->field(new Build, 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true])->label('Здание материально-ответственного лица') ?>
+
+                    <?= $form->field(new Mattraffic, 'mattraffic_number', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true])->label('Количество у материально-ответственного лица') ?>
 
                     <?php
-                    echo $form->field($InstallTrOsnov, 'mattraffic_number')->widget(kartik\touchspin\TouchSpin::classname(), [
+                    echo $form->field($InstallTrOsnov, 'mattraffic_number', ['enableClientValidation' => false])->widget(kartik\touchspin\TouchSpin::classname(), [
                         'options' => ['class' => 'form-control setsession'],
                         'pluginOptions' => [
                             'verticalbuttons' => true,
                             'min' => 1,
                             'max' => 10000000000,
                             'step' => 1,
-                            
+
                             'decimals' => 3,
                             'forcestepdivisibility' => 'none',
                         ],
                     ])->label('Количество для перемещения');
                     ?>
-                    
-                    <?= $form->field($InstallTrOsnov, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
+
+                    <?= $form->field($InstallTrOsnov, 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
 
                 </div>
             </div>
@@ -147,7 +149,7 @@ use \yii\helpers\Url;
     <?php endif; ?>
 
     <?=
-    $form->field($model, 'id_user')->widget(Select2::classname(), Proc::DGselect2([
+    $form->field($model, 'id_user', ['enableClientValidation' => false])->widget(Select2::classname(), Proc::DGselect2([
         'model' => $model,
         'resultmodel' => new Employee,
         'fields' => [
@@ -163,7 +165,7 @@ use \yii\helpers\Url;
     ?>
 
     <?=
-    $form->field($model, 'id_master')->widget(Select2::classname(), Proc::DGselect2([
+    $form->field($model, 'id_master', ['enableClientValidation' => false])->widget(Select2::classname(), Proc::DGselect2([
         'model' => $model,
         'resultmodel' => new Employee,
         'fields' => [

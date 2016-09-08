@@ -27,9 +27,11 @@ class InstallTrOsnov extends Model
     public function rules()
     {
         return [
-            [['id_installer', 'id_mattraffic', 'tr_osnov_kab'], 'required'],
-            [['id_mattraffic', 'mattraffic_number', 'id_installer', 'mattraffic_trosnov_id'], 'integer'],
+            [['id_mattraffic', 'tr_osnov_kab', 'mattraffic_number'], 'required'],
+            [['id_mattraffic', 'id_installer', 'mattraffic_trosnov_id'], 'integer'],
+            [['mattraffic_number'], 'double', 'min' => 0, 'max' => 10000000000],
             [['tr_osnov_kab'], 'string', 'max' => 255],
+            [['mattraffic_number'], 'MaxNumberMove'],
         ];
     }
 
@@ -43,20 +45,32 @@ class InstallTrOsnov extends Model
         ];
     }
 
+    public function MaxNumberMove($attribute)
+    {
+        if (!empty($this->id_mattraffic)) {
+            $query = Mattraffic::find()
+                ->andWhere(['mattraffic_id' => $this->id_mattraffic])
+                ->one();
+
+            if (!empty($query) && $this->mattraffic_number > $query->mattraffic_number)
+                $this->addError($attribute, 'Количество не может превышать ' . $query->mattraffic_number);
+        }
+    }
+
     public function getIdMattraffic()
     {
         $a = new TrOsnov;
         return $a->hasOne(Mattraffic::className(), ['mattraffic_id' => 'id_mattraffic'])->from(['idMattraffic' => Mattraffic::tableName()]);
     }
 
-    public function save()
+    public function save($IDinstaller)
     {
         if ($this->validate()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $Installakt = new Installakt;
                 $Installakt->installakt_date = date('Y-m-d');
-                $Installakt->id_installer = $this->id_installer;
+                $Installakt->id_installer = $IDinstaller;
                 if ($Installakt->save()) {
                     $Mattraffic = new Mattraffic;
                     $Mattraffic_choose = Mattraffic::findOne($this->id_mattraffic);
@@ -70,7 +84,7 @@ class InstallTrOsnov extends Model
                         $trOsnov->id_mattraffic = $Mattraffic->primaryKey;
                         $trOsnov->tr_osnov_kab = $this->tr_osnov_kab;
                         if ($trOsnov->save()) {
-                            $this->mattraffic_trosnov_id = $Mattraffic->primaryKey;
+                            $this->mattraffic_trosnov_id = $trOsnov->primaryKey;
                             $this->primaryKey = $trOsnov->primaryKey;
                             $transaction->commit();
                             return true;
@@ -92,5 +106,10 @@ class InstallTrOsnov extends Model
             }
         } else
             return false;
+    }
+
+    public function formName()
+    {
+        return 'InstallTrOsnov';
     }
 }

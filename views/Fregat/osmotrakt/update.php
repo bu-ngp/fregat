@@ -9,7 +9,7 @@ use app\func\Proc;
 
 $this->title = 'Обновить акт осмотра основной материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Trosnov],
+            'model' => [$model],
         ]);
 ?>
 <div class="osmotrakt-update">
@@ -19,7 +19,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?=
             $this->render('_form', [
                 'model' => $model,
-                'Trosnov' => $Trosnov,
             ])
             ?>
         </div>
