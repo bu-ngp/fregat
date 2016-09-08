@@ -47,10 +47,10 @@ class FregatController extends Controller
                     [
                         'actions' => ['settings'],
                         'allow' => true,
-                        //  'roles' => ['FregatConfig'],
+                        'roles' => ['FregatConfig'],
                     ],
                     [
-                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-remont'],
+                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont'],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
                     ],
@@ -201,6 +201,43 @@ class FregatController extends Controller
         echo 'Removed ' . $del . ' from ' . $count . '. Errors = ' . $nodel;
     }
 
+    public function actionImportGlauk()
+    {
+        header('Content-Type: text/html');
+        $Glauk = Authuser::find()
+            ->andWhere(['in', 'auth_user_id', [64, 403, 410, 419, 875, 877, 882, 885, 887, 891, 1133, 1196, 1211]])
+            ->all();
+
+        foreach ($Glauk as $ar) {
+            $ar2 = Authuser::findOne($ar->primaryKey);
+            $ar2->scenario = 'Changepassword';
+            $ar2->auth_user_password = '55555555';
+            $ar2->auth_user_password2 = '55555555';
+            $ar2->save();
+            $auth = Yii::$app->authManager;
+            $Role = $auth->getRole('GlaukOperatorRole');
+            $auth->assign($Role, $ar->primaryKey);
+        }
+
+        //murin
+        $ar2 = Authuser::findOne(883);
+        $ar2->scenario = 'Changepassword';
+        $ar2->auth_user_password = '55555555';
+        $ar2->auth_user_password2 = '55555555';
+        $ar2->save();
+        $auth = Yii::$app->authManager;
+        $Role = $auth->getRole('GlaukAdmin');
+        $auth->assign($Role, 883);
+        $Role = $auth->getRole('EmployeeBuildEditRole');
+        $auth->assign($Role, 883);
+
+        $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184, 1214]]);
+        $pol3 = Employee::updateAll(['id_build' => 2], ['employee_id' => [874, 884]]);
+        $pol3 = Employee::updateAll(['id_build' => 3], ['employee_id' => [876, 881]]);
+
+        echo 'ok';
+    }
+
     public function actionImportRemont()
     {
         header('Content-Type: text/html');
@@ -309,37 +346,6 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $Role = $auth->getRole('Administrator');
                 $auth->assign($Role, $ar->primaryKey);
             }
-
-            $Glauk = Authuser::find()
-                ->andWhere(['in', 'auth_user_id', [64, 403, 410, 419, 875, 877, 882, 885, 887, 891, 1133, 1196]])
-                ->all();
-
-            foreach ($Glauk as $ar) {
-                $ar2 = Authuser::findOne($ar->primaryKey);
-                $ar2->scenario = 'Changepassword';
-                $ar2->auth_user_password = '55555555';
-                $ar2->auth_user_password2 = '55555555';
-                $ar2->save();
-                $auth = Yii::$app->authManager;
-                $Role = $auth->getRole('GlaukOperatorRole');
-                $auth->assign($Role, $ar->primaryKey);
-            }
-
-            //murin
-            $ar2 = Authuser::findOne(883);
-            $ar2->scenario = 'Changepassword';
-            $ar2->auth_user_password = '55555555';
-            $ar2->auth_user_password2 = '55555555';
-            $ar2->save();
-            $auth = Yii::$app->authManager;
-            $Role = $auth->getRole('GlaukAdmin');
-            $auth->assign($Role, 883);
-            $Role = $auth->getRole('EmployeeBuildEditRole');
-            $auth->assign($Role, 883);
-
-            $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184]]);
-            $pol3 = Employee::updateAll(['id_build' => 2], ['employee_id' => [874, 884]]);
-            $pol3 = Employee::updateAll(['id_build' => 3], ['employee_id' => [876, 881]]);
 
             $Hos = Authuser::find()
                 ->andWhere(['in', 'auth_user_id', [384, 489, 590, 614, 744, 466, 755, 614]])
