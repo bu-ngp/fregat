@@ -15,15 +15,17 @@ use app\models\Fregat\Impemployee;
 /**
  * EmployeeController implements the CRUD actions for Employee model.
  */
-class EmployeeController extends Controller {
+class EmployeeController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'assign-to-material','foractiveemployee'],
+                        'actions' => ['index', 'assign-to-material', 'foractiveemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -40,7 +42,12 @@ class EmployeeController extends Controller {
                     [
                         'actions' => ['update'],
                         'allow' => true,
-                        'roles' => ['EmployeeBuildEdit'],
+                        'roles' => ['EmployeeBuildEdit', 'EmployeeSpecEdit'],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['EmployeeSpecEdit'],
                     ],
                 ],
             ],
@@ -53,46 +60,51 @@ class EmployeeController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionForimportemployee() {
+    public function actionForimportemployee()
+    {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->searchforimportemployee(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionForactiveemployee() {
+    public function actionForactiveemployee()
+    {
         $searchModel = new EmployeeSearch();
         $dataProvider = $searchModel->searchforactiveemployee(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionSelectinputemloyee($field, $q = null) {
+    public function actionSelectinputemloyee($field, $q = null)
+    {
         return Proc::select2request([
-                    'model' => new Employee,
-                    'field' => $field,
-                    'q' => $q,
-                    'methodquery' => 'selectinput',
+            'model' => new Employee,
+            'field' => $field,
+            'q' => $q,
+            'methodquery' => 'selectinput',
         ]);
     }
 
-    public function actionCreate($iduser) {
+    public function actionCreate($iduser)
+    {
         $model = new Employee();
         $model->id_person = $iduser;
         $model->employee_importdo = 1;
@@ -101,16 +113,17 @@ class EmployeeController extends Controller {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
             return $this->render('create', [
-                        'model' => $model,
-                        'iduser' => $iduser,
+                'model' => $model,
+                'iduser' => $iduser,
             ]);
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
-        $OnlyBuildEdit = Yii::$app->user->can('EmployeeBuildEdit') && !Yii::$app->user->can('EmployeeEdit');
+        $OnlyBuildEdit = Yii::$app->user->can('EmployeeBuildEdit') && !(Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeSpecEdit'));
 
-        if (Yii::$app->user->can('EmployeeEdit'))
+        if (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeSpecEdit'))
             $Values = Yii::$app->request->post();
         elseif (Yii::$app->user->can('EmployeeBuildEdit'))
             $Values = isset($_POST['Employee']['id_build']) ? [
@@ -122,17 +135,19 @@ class EmployeeController extends Controller {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
             return $this->render('update', [
-                        'model' => $model,
-                        'OnlyBuildEdit' => $OnlyBuildEdit,
+                'model' => $model,
+                'OnlyBuildEdit' => $OnlyBuildEdit,
             ]);
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToMaterial() {
+    public function actionAssignToMaterial()
+    {
         Proc::AssignToModelFromGrid(new Impemployee, 'id_importemployee');
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
@@ -144,7 +159,8 @@ class EmployeeController extends Controller {
      * @return Employee the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Employee::findOne($id)) !== null) {
             return $model;
         } else {

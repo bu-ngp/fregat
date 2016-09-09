@@ -16,7 +16,7 @@ use Yii;
  * Class BaseReportPortal
  * @package app\func
  */
-class BaseReportPortal
+abstract class BaseReportPortal
 {
     /**
      * Пароль на отчеты в Excel
@@ -212,6 +212,7 @@ class BaseReportPortal
      *
      * @param string $FileName Имя файла для сохранения отчета
      * @param bool $Protect Если true, то установить защиту книги и листа Excel
+     * @return string
      * @throws \Exception
      * @throws \PHPExcel_Reader_Exception
      */
@@ -387,20 +388,19 @@ class BaseReportPortal
     /**
      *  Тело отчета, метод переопределяется
      */
-    protected function Body()
-    {
-
-    }
+    abstract protected function Body();
 
     public function __construct()
     {
         $this->setDirectoryFiles('files');
     }
 
+
     /**
      * Запуск формирования отчета
      *
      * @param bool $ProtectReport Если true, то защитить лист и книгу Excel
+     * @return string
      * @throws \Exception
      */
     public function Execute($ProtectReport = true)

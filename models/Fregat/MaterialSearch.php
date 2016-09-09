@@ -123,18 +123,8 @@ class MaterialSearch extends Material
         $filter = Proc::GetFilter($this->formName(), 'MaterialFilter');
 
         if (!empty($filter)) {
-            $attr = 'mattraffic_username';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'mattraffic_lastchange';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'mattraffic_username');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'mattraffic_lastchange');
         }
     }
 

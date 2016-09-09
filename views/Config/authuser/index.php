@@ -29,7 +29,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                                     $customurl = Url::to(['Config/authuser/changepassword', 'id' => $model['auth_user_id']]);
                                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-lock"></i>', $customurl, ['title' => 'Изменить пароль', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                                 },
-                                            ] : [], Yii::$app->user->can('UserEdit') || Yii::$app->user->can('EmployeeEdit') ? [
+                                            ] : [], Yii::$app->user->can('UserEdit') || Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeSpecEdit') ? [
                                         'update' => function ($url, $model) use ($emp) {
                                             $customurl = Yii::$app->getUrlManager()->createUrl(['Config/authuser/update', 'id' => $model['auth_user_id'], 'emp' => $emp]);
                                             return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);

@@ -9,9 +9,6 @@ $(function () {
             cellH: 100,
             gutterY: 10,
             gutterX: 20,
-            onResize: function () {
-                wall.fitWidth();
-            }
         })
         wall.fitWidth();
     });

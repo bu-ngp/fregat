@@ -70,3 +70,30 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         <?php endif; ?>
     </div>
 <?php endif; ?>
+<div class="menublock">
+    <style>
+      /*  div.wrap {
+            background-color: #434343;
+            background-image:linear-gradient(rgba(225, 220, 56, 1), rgba(221, 87, 85, 1));
+        }
+
+        div.container {
+            color: white;
+            background: repeating-linear-gradient(
+                45deg,
+                rgb(255, 217, 100),
+                rgb(255, 217, 100) 10px,
+                rgb(255, 186, 65) 10px,
+                rgb(255, 186, 65) 20px
+            );
+        }
+
+        .mb_test {
+            background: radial-gradient(at top, rgba(255, 255, 255, 0.65),rgba(255, 255, 255, 0.14));
+            border: solid 10px rgba(255, 255, 255, 0.35);;
+        }*/
+    </style>
+  <!--  <div class="menubutton mb_test" id="mb_test" data-height="400">
+        <div class="menubutton_cn">Тестовая плитка</div>
+    </div>-->
+</div>

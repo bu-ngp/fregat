@@ -32,7 +32,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
                                 'chooseajax' => ['Fregat/employee/assign-to-material']
-                                    ], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') ? [
+                                    ], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') || Yii::$app->user->can('EmployeeSpecEdit') ? [
                                 'update' => ['Fregat/employee/update', 'employee_id']] : []), (Yii::$app->user->can('EmployeeEdit') ? [
                                 'deleteajax' => ['Fregat/employee/delete', 'employee_id']] : [])
                     ),
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'filterModel' => $searchModel,
                     'panel' => [
                         'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
-                        'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                     //   'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
                     ],
                 ]
     ]));

@@ -188,204 +188,45 @@ class PatientSearch extends Patient
         $filter = Proc::GetFilter($this->formName(), 'PatientFilter');
 
         if (!empty($filter)) {
-
-            $attr = 'patient_fam';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_im';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_ot';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_dr';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_vozrast';
-            $znak = 'patient_vozrast_znak';
-            if (!empty($filter[$znak]) && !empty($filter[$attr]))
-                $query->andWhere('TIMESTAMPDIFF(YEAR, patient_dr, CURDATE()) ' . $filter[$znak] . ' ' . $filter[$attr]);
-
-            $attr = 'patient_pol';
-            if (!empty($filter[$attr]))
-                if (empty($filter[$attr . '_not']))
-                    $query->andFilterWhere([$attr => $filter[$attr]]);
-                else
-                    $query->andFilterWhere(['not', [$attr => $filter[$attr]]]);
-
-            $attr = 'fias_city';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['or', ['and', ['LIKE', 'idFias.AOGUID', $filter[$attr]], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.AOGUID', $filter[$attr]], 'idFias.AOLEVEL >= 7']]);
-
-            $attr = 'fias_street';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['and', ['LIKE', 'idFias.AOGUID', $filter[$attr]], 'idFias.AOLEVEL >= 7']);
-
-            $attr = 'patient_dom';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_korp';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_kvartira';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'is_glauk_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere(['not', ['glaukuchets.glaukuchet_id' => null]]);
-
-            $attr = 'glaukuchet_uchetbegin';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_detect';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
-
-            $attr = 'is_glaukuchet_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere(['glaukuchets.glaukuchet_deregreason' => null, 'glaukuchets.glaukuchet_deregdate' => null]);
-
-            $attr = 'glaukuchet_deregreason';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
-
-            $attr = 'glaukuchet_deregdate';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_stage';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
-
-            $attr = 'glaukuchet_operdate';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_not_oper_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere(['glaukuchets.glaukuchet_operdate' => null]);
-
-            $attr = 'glaukuchet_invalid';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', $attr, $filter[$attr]]);
-
-            $attr = 'glaukuchet_not_invalid_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere(['glaukuchets.glaukuchet_invalid' => null]);
-
-            $attr = 'glaukuchet_lastvisit';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_lastmetabol';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_not_lastmetabol_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere(['glaukuchets.glaukuchet_lastmetabol' => null]);
-
-            $attr = 'glaukuchet_id_employee';
-            if (!empty($filter[$attr]))
-                if (empty($filter[$attr . '_not']))
-                    $query->andFilterWhere(['glaukuchets.id_employee' => $filter[$attr]]);
-                else
-                    $query->andFilterWhere(['not', ['glaukuchets.id_employee' => $filter[$attr]]]);
-
-            $attr = 'employee_id_dolzh';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_dolzh', $filter[$attr]]);
-
-            $attr = 'employee_id_podraz';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_podraz', $filter[$attr]]);
-
-            $attr = 'employee_id_build';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere([empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN', 'idEmployee.id_build', $filter[$attr]]);
-
-            $attr = 'glprep_id_preparat';
-            if (!empty($filter[$attr]))
-                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.id_preparat ' . (empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', $filter[$attr]) . '))');
-
-            $attr = 'glprep_rlocat';
-            if (!empty($filter[$attr]))
-                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.glprep_rlocat ' . (empty($filter[$attr . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', $filter[$attr]) . '))');
-
-            $attr = 'glprep_not_preparat_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere('glaukuchets.glaukuchet_id not in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
-
-            $attr = 'glprep_preparat_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere('glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)');
-
-            $attr = 'glaukuchet_comment_mark';
-            if ($filter[$attr] === '1')
-                $query->andWhere("glaukuchets.glaukuchet_comment <> ''");
-
-            $attr = 'glaukuchet_comment';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_username';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'patient_lastchange';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
-
-            $attr = 'glaukuchet_username';
-            if (!empty($filter[$attr]))
-                $query->andFilterWhere(['LIKE', $attr, $filter[$attr]]);
-
-            $attr = 'glaukuchet_lastchange';
-            if (!empty($filter[$attr . '_beg']) && !empty($filter[$attr . '_end']))
-                $query->andFilterWhere(['between', new Expression('CAST(' . $attr . ' AS DATE)'), $filter[$attr . '_beg'], $filter[$attr . '_end']]);
-            elseif (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $znak = !empty($filter[$attr . '_beg']) ? '>=' : '<=';
-                $value = !empty($filter[$attr . '_beg']) ? $filter[$attr . '_beg'] : $filter[$attr . '_end'];
-                $query->andFilterWhere([$znak, $attr, $value]);
-            }
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_fam');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_im');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_ot');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_dr');
+            Proc::Filter_Compare(Proc::Number, $query, $filter, 'patient_vozrast', ['SQLCompare' => 'TIMESTAMPDIFF(YEAR, patient_dr, CURDATE())']);
+            Proc::Filter_Compare(Proc::Strikt, $query, $filter, 'patient_pol');
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, 'fias_city', ['WhereStatement' => ['or', ['and', ['LIKE', 'idFias.AOGUID', $filter['fias_city']], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.AOGUID', $filter['fias_city']], 'idFias.AOLEVEL >= 7']]]);
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, 'fias_street', ['WhereStatement' => ['and', ['LIKE', 'idFias.AOGUID', $filter['fias_street']], 'idFias.AOLEVEL >= 7']]);
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_dom');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_korp');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_kvartira');
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'is_glauk_mark', ['WhereStatement' => ['not', ['glaukuchets.glaukuchet_id' => null]]]);
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_uchetbegin');
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'glaukuchet_detect');
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'is_glaukuchet_mark', ['WhereStatement' => ['glaukuchets.glaukuchet_deregreason' => null, 'glaukuchets.glaukuchet_deregdate' => null]]);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'glaukuchet_deregreason');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_deregdate');
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'glaukuchet_stage');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_operdate');
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glaukuchet_not_oper_mark', ['WhereStatement' => ['glaukuchets.glaukuchet_operdate' => null]]);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'glaukuchet_invalid');
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glaukuchet_not_invalid_mark', ['WhereStatement' => ['glaukuchets.glaukuchet_invalid' => null]]);
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_lastvisit');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_lastmetabol');
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glaukuchet_not_lastmetabol_mark', ['WhereStatement' => ['glaukuchets.glaukuchet_lastmetabol' => null]]);
+            Proc::Filter_Compare(Proc::Strikt, $query, $filter, 'glaukuchet_id_employee', ['SQLAttribute' => 'glaukuchets.id_employee']);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'employee_id_dolzh', ['SQLAttribute' => 'idEmployee.id_dolzh']);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'employee_id_podraz', ['SQLAttribute' => 'idEmployee.id_podraz']);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, 'employee_id_build', ['SQLAttribute' => 'idEmployee.id_build']);
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, 'glprep_id_preparat', ['WhereStatement' => 'glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.id_preparat ' . (empty($filter['glprep_id_preparat' . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', !is_array($filter['glprep_id_preparat']) ? [] : $filter['glprep_id_preparat']) . '))']);
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, 'glprep_rlocat', ['WhereStatement' => 'glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 where gl1.glprep_rlocat ' . (empty($filter['glprep_rlocat' . '_not']) ? 'IN' : 'NOT IN') . ' (' . implode(',', !is_array($filter['glprep_rlocat']) ? [] : $filter['glprep_rlocat']) . '))']);
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glprep_not_preparat_mark', ['WhereStatement' => 'glaukuchets.glaukuchet_id not in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)']);
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glprep_preparat_mark', ['WhereStatement' => 'glaukuchets.glaukuchet_id in (select gl1.id_glaukuchet from glprep gl1 group by gl1.id_glaukuchet)']);
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, 'glaukuchet_comment_mark', ['WhereStatement' => "glaukuchets.glaukuchet_comment <> ''"]);
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'glaukuchet_comment');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'patient_username');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'patient_lastchange');
+            Proc::Filter_Compare(Proc::Text, $query, $filter, 'glaukuchet_username');
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'glaukuchet_lastchange');
         }
     }
 

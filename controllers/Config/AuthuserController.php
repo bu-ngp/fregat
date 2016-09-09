@@ -39,6 +39,11 @@ class AuthuserController extends Controller
                         'roles' => ['UserEdit'],
                     ],
                     [
+                        'actions' => ['index', 'update'],
+                        'allow' => true,
+                        'roles' => ['EmployeeSpecEdit'],
+                    ],
+                    [
                         'actions' => ['change-self-password'],
                         'allow' => true,
                         'roles' => ['@'],
@@ -84,10 +89,11 @@ class AuthuserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $EmployeeSpecEdit = Yii::$app->user->can('EmployeeSpecEdit') && !(Yii::$app->user->can('EmployeeEdit'));
 
-        if ($model->load(Yii::$app->request->post()) && $model->save())
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-        else {
+        } else {
             $emp = (string)filter_input(INPUT_GET, 'emp');
 
             $searchModel = new AuthassignmentSearch();
@@ -103,6 +109,7 @@ class AuthuserController extends Controller
                 'dataProvider' => $dataProvider,
                 'searchModelEmp' => $searchModelEmp,
                 'dataProviderEmp' => $dataProviderEmp,
+                'EmployeeSpecEdit' => $EmployeeSpecEdit,
             ]);
         }
     }

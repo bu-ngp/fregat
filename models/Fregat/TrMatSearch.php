@@ -161,9 +161,7 @@ class TrMatSearch extends TrMat
             return $dataProvider;
         }
 
-        $query->where('(trRmMats.id_removeakt <> :id_removeakt or trRmMats.id_removeakt is null)', [
-            'id_removeakt' => $params['id'],
-        ]);
+        $query->where(['trRmMats.id_removeakt' => NULL]);
 
         // grid filtering conditions
         $query->andFilterWhere([

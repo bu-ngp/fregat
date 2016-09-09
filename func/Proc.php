@@ -8,6 +8,7 @@ use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Recoverysendakt;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\web\HttpException;
 use yii\web\Session;
 use yii\helpers\Url;
@@ -21,6 +22,14 @@ use kartik\touchspin\TouchSpin;
 
 class Proc
 {
+
+    const Text = 1;
+    const Number = 2;
+    const Strikt = 3;
+    const WhereStatement = 4;
+    const Mark = 5;
+    const DateRange = 6;
+    const MultiChoice = 7;
 
     public static function Breadcrumbs($view, $param = null)
     {
@@ -332,7 +341,7 @@ class Proc
                         else
                             $initrecord_tmp[$initrecord[$key][$multiple['idvalue']]] = implode(', ', $rows);
                     }
-                    $initrecord = ['text' => $initrecord_tmp[0]];
+                    $initrecord = empty($multiple) ? ['text' => $initrecord_tmp[0]] : $initrecord_tmp;
                 }
 
                 return array_merge([
@@ -986,6 +995,7 @@ class Proc
     public static function PopulateFilterForm($ModelGridName, &$ModelFilter)
     {
         if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
+            $result = false;
             $session = new Session;
             $session->open();
             if (isset($session['_filter'][$ModelGridName][$ModelFilter->formName()])) {
@@ -997,11 +1007,11 @@ class Proc
                             $ModelFilter->$attr = null;
                     }
                 }
-                return $Filed;
-            } else
-                return false;
+                $result = $Filed;
+            }
 
             $session->close();
+            return $result;
         } else
             throw new HttpException(500, 'Ошибка при передачи параметров в function PopulateFilterForm');
     }
@@ -1346,5 +1356,64 @@ class Proc
             ->attach($fl, ['fileName' => $fnutf8])
             ->send();
         echo $fnutf8;
+    }
+
+    /**
+     * @param $Type integer
+     * @param $ActiveQuery ActiveQuery Запрос к которму применяется фильтр
+     * @param $FilterValues array Массив атрибутов модели со значениями фильтров
+     * @param $Attribute string имя аттрибута
+     * @param $AdditionParams array
+     */
+    public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Attribute, $AdditionParams = [])
+    {
+        switch ($Type) {
+            case Proc::Text:
+                if (!empty($FilterValues[$Attribute]))
+                    $ActiveQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
+                break;
+            case Proc::Number:
+                $znak = $Attribute . '_znak';
+                $SQLCompare = isset($AdditionParams['SQLCompare']) ? $AdditionParams['SQLCompare'] : '';
+                if (!empty($FilterValues[$znak]) && !empty($FilterValues[$Attribute]) && !empty($SQLCompare))
+                    $ActiveQuery->andWhere($SQLCompare . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
+                break;
+            case Proc::Strikt:
+                if (!empty($FilterValues[$Attribute])) {
+                    $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                    $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+                    if (empty($FilterValues[$Attribute . '_not']))
+                        $ActiveQuery->andFilterWhere([$SQLAttribute => $FilterValues[$Attribute]]);
+                    else
+                        $ActiveQuery->andFilterWhere(['not', [$SQLAttribute => $FilterValues[$Attribute]]]);
+                }
+                break;
+            case Proc::WhereStatement:
+                $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
+                if (!empty($FilterValues[$Attribute]))
+                    $ActiveQuery->andWhere($WhereStatement);
+                break;
+            case Proc::Mark:
+                $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
+                if ($FilterValues[$Attribute] === '1')
+                    $ActiveQuery->andWhere($WhereStatement);
+                break;
+            case Proc::DateRange:
+                if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end']))
+                    $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $Attribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
+                elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
+                    $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
+                    $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
+                    $ActiveQuery->andFilterWhere([$znak, $Attribute, $value]);
+                }
+                break;
+            case Proc::MultiChoice:
+                if (!empty($FilterValues[$Attribute])) {
+                    $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                    $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+                    $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                }
+                break;
+        }
     }
 }

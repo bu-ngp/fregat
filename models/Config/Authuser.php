@@ -32,7 +32,7 @@ class Authuser extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['auth_user_fullname', 'auth_user_login'], 'required'],
+            [['auth_user_fullname', 'auth_user_login'], 'required'/*, 'except' => 'EmployeeSpecEdit'*/],
             [['auth_user_password', 'auth_user_password2'], 'required', 'on' => ['Newuser', 'Changepassword']],
             [['auth_user_fullname', 'auth_user_login'], 'string', 'max' => 128],
             ['auth_user_login', 'unique'],

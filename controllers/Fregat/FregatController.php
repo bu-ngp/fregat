@@ -228,7 +228,7 @@ class FregatController extends Controller
         $auth = Yii::$app->authManager;
         $Role = $auth->getRole('GlaukAdmin');
         $auth->assign($Role, 883);
-        $Role = $auth->getRole('EmployeeBuildEditRole');
+        $Role = $auth->getRole('EmployeeSpecEditRole');
         $auth->assign($Role, 883);
 
         $pol1 = Employee::updateAll(['id_build' => 1], ['employee_id' => [63, 882, 886, 890, 1132, 1184, 1214, 1181]]);

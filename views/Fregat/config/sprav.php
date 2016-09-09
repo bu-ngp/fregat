@@ -9,7 +9,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
     <div class="panel-heading">Справочники</div>
-    <div class="panel-body">     
+    <div class="panel-body">
         <ul class="nav nav-pills nav-stacked">
             <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
                 <li>
@@ -38,6 +38,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 </li>
             <?php endif; ?>
             <?php if (Yii::$app->user->can('GlaukUserPermission')): ?>
+                <?php if (Yii::$app->user->can('EmployeeSpecEdit')): ?>
+                    <li>
+                        <?= Html::a('<i class="glyphicon glyphicon-user"></i> Сотрудники', ['//Config/authuser/index', 'emp' => true], ['class' => 'btn btn-default']) ?>
+                    </li>
+                <?php endif; ?>
                 <li>
                     <?= Html::a('<i class="glyphicon glyphicon-tint"></i> Препараты', ['//Base/preparat/index'], ['class' => 'btn btn-default']) ?>
                 </li>
