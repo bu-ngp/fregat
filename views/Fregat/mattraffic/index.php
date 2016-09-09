@@ -37,6 +37,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                             ],
                     'buttonsfirst' => true,
                     'columns' => [
+                        'mattraffic_id',
                         [
                             'attribute' => 'mattraffic_date',
                             'format' => 'date',

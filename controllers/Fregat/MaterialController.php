@@ -64,12 +64,17 @@ class MaterialController extends Controller
         $model = new Material();
         if (isset($model->scenarios()['prihod']))
             $model->scenario = 'prihod';
+        $model->material_importdo = 1;
+        
         $Mattraffic = new Mattraffic;
 
         if ($model->load(Yii::$app->request->post())) {
 
             if (empty($model->material_name1c))
                 $model->material_name1c = $model->material_name;
+
+            if ($model->material_tip == 1)
+                $model->material_number = 1;
 
             if ($model->save()) {
                 $Mattraffic->id_material = empty($Mattraffic->id_material) ? $model->material_id : $Mattraffic->id_material;
@@ -95,7 +100,6 @@ class MaterialController extends Controller
             $model->material_tip = empty($model->material_tip) ? 1 : $model->material_tip;
             $model->id_matvid = empty($model->id_matvid) ? 1 : $model->id_matvid;
             $model->id_izmer = empty($model->id_izmer) ? 1 : $model->id_izmer;
-            $model->material_importdo = empty($model->material_importdo) ? 1 : $model->material_importdo;
             $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
 
             return $this->render('create', [

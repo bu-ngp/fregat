@@ -26,26 +26,30 @@ use Yii;
  * @property Mattraffic[] $mattraffics
  * @property TrMat[] $trMats
  */
-class Material extends \yii\db\ActiveRecord {
+class Material extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'material';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-            [['material_username'], 'filter', 'filter' => function($value) {
-            return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
-        }],
-            [['material_username'], 'filter', 'filter' => function($value) {
-            return 'IMPORT';
-        }, 'on' => 'import1c'],
+            [['material_username'], 'filter', 'filter' => function ($value) {
+                return Yii::$app->user->isGuest ? NULL : Yii::$app->user->identity->auth_user_login;
+            }],
+            [['material_username'], 'filter', 'filter' => function ($value) {
+                return 'IMPORT';
+            }, 'on' => 'import1c'],
+            [['material_number'], 'default', 'value' => 1],
             [['material_name', 'material_number', 'material_price', 'material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
             [['material_inv'], 'required', 'except' => 'import1c'],
             [['material_release'], 'safe'],
@@ -72,7 +76,8 @@ class Material extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'material_id' => 'Material ID',
             'material_name' => 'Наименование',
@@ -96,41 +101,46 @@ class Material extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdIzmer() {
+    public function getIdIzmer()
+    {
         return $this->hasOne(Izmer::className(), ['izmer_id' => 'id_izmer'])->from(['idIzmer' => Izmer::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdMatv() {
+    public function getIdMatv()
+    {
         return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid'])->from(['idMatv' => Matvid::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMattraffics() {
+    public function getMattraffics()
+    {
         return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id'])->from(['mattraffics' => Mattraffic::tableName()]);
     }
 
-    public function selectinputfortrmat_parent($params) {
+    public function selectinputfortrmat_parent($params)
+    {
 
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-                ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
-                ->where(['like', isset($params['init']) ? 'material_id' : 'material_inv', $params['q'], isset($params['init']) ? false : null])
-                ->andWhere(['material_number' => 1])
-                //  ->andWhere(['material_tip' => 2])
-                ->limit(20)
-                ->asArray()
-                ->$method();
+            ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
+            ->where(['like', isset($params['init']) ? 'material_id' : 'material_inv', $params['q'], isset($params['init']) ? false : null])
+            ->andWhere(['material_number' => 1])
+            //  ->andWhere(['material_tip' => 2])
+            ->limit(20)
+            ->asArray()
+            ->$method();
 
         return $query;
     }
 
-    public static function VariablesValues($attribute) {
+    public static function VariablesValues($attribute)
+    {
         $values = [
             'material_tip' => [1 => 'Основное средство', 2 => 'Материал'],
             'material_writeoff' => [0 => 'Нет', 1 => 'Да'],

@@ -43,6 +43,10 @@ use yii\helpers\Url;
                 'options' => ['placeholder' => 'Выберете тип материальной ценности', 'class' => 'form-control setsession'],
                 'theme' => Select2::THEME_BOOTSTRAP,
                 'disabled' => ($model->isNewRecord) ? $disabled : true,
+                'pluginEvents' => [
+                    "select2:select" => "function() { SetTipMaterial(); }",
+                    "select2:unselect" => "function() { UnsetTipMaterial(); }",
+                ],
             ]);
             ?>
 
