@@ -14,7 +14,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
 ?>
 <div class="tr-osnov-create">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-heading base-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
             $this->render('_form', [

@@ -51,7 +51,7 @@ AppAsset::register($this);
             NavBar::end();
             ?>
 
-            <div class="container">
+            <div class="container body-container">
                 <?php
                 /*   $controller = Yii::$app->controller;
                   $default_controller = Yii::$app->defaultRoute;

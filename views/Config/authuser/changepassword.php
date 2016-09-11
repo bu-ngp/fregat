@@ -10,7 +10,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
 ?>
 <div class="authuser-changepassword">
     <div class="panel panel-info">
-        <div class="panel-heading"><?= Html::encode($this->title) ?></div>
+        <div class="panel-heading base-heading"><?= Html::encode($this->title) ?></div>
         <div class="panel-body">
             <?=
             $this->render('_form', [
