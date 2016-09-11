@@ -54,6 +54,8 @@ class Proc
                 $result = [];
 
             if (count($addfirst) > 0) {
+                $addfirst['label'] = '<span class="bc_lighter"></span>' . $addfirst['label'];
+                $addfirst['encode'] = false;
                 $result = array_replace_recursive([
                     'addfirst' => $addfirst,
                 ], $result);
@@ -65,7 +67,8 @@ class Proc
             $params = Yii::$app->getRequest()->getQueryParams();
             unset($params['r']);
             $result[$id] = array_replace_recursive($result[$id], [
-                'label' => empty($view->title) ? '-' : $view->title,
+                'label' => '<span class="bc_lighter"></span>' . (empty($view->title) ? '-' : $view->title),
+                'encode' => false,
                 'url' => Url::toRoute(array_merge([$view->context->module->requestedRoute], $params)),
                 'dopparams' => isset($_GET['foreignmodel']) ? [
                     'foreign' => [
