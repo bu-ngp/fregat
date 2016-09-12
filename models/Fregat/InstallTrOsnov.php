@@ -52,6 +52,9 @@ class InstallTrOsnov extends Model
                 ->andWhere(['mattraffic_id' => $this->id_mattraffic])
                 ->one();
 
+            if ($query->mattraffic_number == 0 && $query->idMaterial->material_tip == 2)
+                $query->mattraffic_number++;
+
             if (!empty($query) && $this->mattraffic_number > $query->mattraffic_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $query->mattraffic_number);
         }
