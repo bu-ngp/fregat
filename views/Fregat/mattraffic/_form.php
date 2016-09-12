@@ -25,11 +25,9 @@ use yii\helpers\Url;
 ?>
 
 <div class="mattraffic-form">
+
     <?php
-    $form = ActiveForm::begin([
-        'id' => 'MattrafficMolform',
-        //'enableAjaxValidation' => true,
-    ]);
+    $form = ActiveForm::begin();
     ?>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
@@ -55,7 +53,6 @@ use yii\helpers\Url;
             ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['class' => 'form-control', 'disabled' => true]) ?>
-
 
             <?= $form->field($Material, 'material_inv', ['enableClientValidation' => false])->textInput(['class' => 'form-control', 'disabled' => true]) ?>
 
@@ -96,21 +93,64 @@ use yii\helpers\Url;
         </div>
     </div>
 
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Текущее материально-ответственное лицо') ?></div>
-        <div class="panel-body">
+    <?php ActiveForm::end(); ?>
 
-            <?= $form->field(Proc::RelatModelValue($Employee, 'idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
+    <?php
+    $mattraffic_tip = Mattraffic::VariablesValues('mattraffic_tip');
+    echo DynaGrid::widget(Proc::DGopts([
+        'options' => ['id' => 'mattraffic_mols_grid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                [
+                    'attribute' => 'mattraffic_date',
+                    'format' => 'date',
+                ],
+                [
+                    'attribute' => 'mattraffic_tip',
+                    'filter' => $mattraffic_tip,
+                    'value' => function ($model) use ($mattraffic_tip) {
+                        return isset($mattraffic_tip[$model->mattraffic_tip]) ? $mattraffic_tip[$model->mattraffic_tip] : '';
+                    },
+                ],
+                'mattraffic_number',
+                [
+                    'attribute' => 'idMol.idperson.auth_user_fullname',
+                    'label' => 'Материально-ответственное лицо',
+                ],
+                [
+                    'attribute' => 'idMol.iddolzh.dolzh_name',
+                    'label' => 'Должность материально-ответственного лица',
+                ],
+                [
+                    'attribute' => 'idMol.idbuild.build_name',
+                    'label' => 'Здание материально-ответственного лица',
+                ],
+                [
+                    'attribute' => 'mattraffic_username',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'mattraffic_lastchange',
+                    'format' => 'datetime',
+                    'visible' => false,
+                ],
+            ],
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProvider_mattrafficmols,
+            'filterModel' => $searchModel_mattrafficmols,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-random"></i> Материально-ответственные лица',
+            ],
+        ]
+    ]));
+    ?>
 
-            <?= $form->field(Proc::RelatModelValue($Employee, 'iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-
-            <?= $form->field(Proc::RelatModelValue($Employee, 'idpodraz', new Podraz), 'podraz_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-
-            <?= $form->field(Proc::RelatModelValue($Employee, 'idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-
-        </div>
-    </div>
-
+    <?php
+    $form = ActiveForm::begin([
+        'id' => 'MattrafficMolform',
+    ]);
+    ?>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Сменить материально-ответственное лицо на') ?></div>
         <div class="panel-body">
@@ -142,16 +182,15 @@ use yii\helpers\Url;
 
         </div>
     </div>
+    <?php ActiveForm::end(); ?>
 
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
-                <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Сменить', ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Сменить', ['class' => 'btn btn-success', 'form' => 'MattrafficMolform']) ?>
             </div>
         </div>
     </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>

@@ -113,6 +113,8 @@ use \yii\helpers\Url;
                     ]));
                     ?>
 
+                    <?= $form->field(new Material, 'material_id')->hiddenInput()->label(false) ?>
+
                     <?= $form->field(new Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
 
                     <?= $form->field(new Material, 'material_writeoff', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control newinstallakt', 'disabled' => true]) ?>
@@ -141,6 +143,10 @@ use \yii\helpers\Url;
                     ?>
 
                     <?= $form->field($InstallTrOsnov, 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
+
+                    <?php
+                    echo Yii::$app->user->can('MolEdit') ? Html::button('<i class="glyphicon glyphicon-list"></i> Сменить материально-ответственное лицо', ['onclick' => 'RedirectToChangeMol()', 'class' => 'btn btn-success']) : '';
+                    ?>
 
                 </div>
             </div>

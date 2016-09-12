@@ -155,6 +155,7 @@ class OsmotraktController extends Controller
                 if (!empty($query)) {
                     $material_writeoff = Material::VariablesValues('material_writeoff');
                     echo json_encode([
+                        'material_id' => $query->id_material,
                         'material_name' => $query->idMaterial->material_name,
                         'material_writeoff' => $material_writeoff[$query->idMaterial->material_writeoff],
                         'auth_user_fullname' => $query->idMol->idperson->auth_user_fullname,

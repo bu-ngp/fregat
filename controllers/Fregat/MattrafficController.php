@@ -78,13 +78,14 @@ class MattrafficController extends Controller
             ->one();
 
         $Material = Material::findOne($id);
-        $Employee = Employee::findOne($Mattrafficlast->id_mol);
+
+        $searchModel_mattrafficmols = new MattrafficSearch();
+        $dataProvider_mattrafficmols = $searchModel_mattrafficmols->searchformolsmattraffic(Yii::$app->request->queryParams);
 
         $model->attributes = $Mattrafficlast->attributes;
         $model->id_material = $Material->primaryKey;
         $model->id_mol = $model->primaryKey;
         $model->mattraffic_date = date('Y-m-d');
-        $a = '';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
@@ -92,7 +93,8 @@ class MattrafficController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'Material' => $Material,
-                'Employee' => $Employee,
+                'searchModel_mattrafficmols' => $searchModel_mattrafficmols,
+                'dataProvider_mattrafficmols' => $dataProvider_mattrafficmols,
             ]);
         }
     }

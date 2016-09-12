@@ -207,7 +207,7 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
-        $query->andWhere('mattraffic_number > 0')
+        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number = 0 and idMaterial.material_tip = 2))')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
             ->andWhere(['or', ['tmp1.id_material' => NULL], ['idMaterial.material_tip' => 2]]);
@@ -235,16 +235,16 @@ class MattrafficSearch extends Mattraffic
             'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
         ]);
 
-        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            //        ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-            // ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-            ->join('LEFT JOIN', '(select mt1.id_material, mt1.id_mol from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic) tmp1', 'tmp1.id_material = mattraffic.id_material and tmp1.id_mol = mattraffic.id_mol');
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
+        //        ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        // ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
+        //  ->join('LEFT JOIN', '(select mt1.id_material, mt1.id_mol from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic) tmp1', 'tmp1.id_material = mattraffic.id_material and tmp1.id_mol = mattraffic.id_mol');
         $this->baseRelations($query);
 
-        $query->andWhere('mattraffic_number > 0')
+        $query->andWhere('mattraffic_number >= 0')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-            ->andWhere(['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['tmp1.id_material' => NULL]);
+            ->andWhere(['m2.mattraffic_date_m2' => NULL]);
+        // ->andWhere(['tmp1.id_material' => NULL]);
         //   ->andWhere(['idMaterial.material_tip' => 1]);
 
         $this->load($params);
@@ -361,6 +361,35 @@ class MattrafficSearch extends Mattraffic
             'trOsnovs.tr_osnov_kab',
             'trMats.idParent.idMaterial.material_inv' => 'matparent',
         ]);
+
+        return $dataProvider;
+    }
+
+    public function searchformolsmattraffic($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $this->baseRelations($query);
+
+        $query->andWhere(['mattraffic.id_material' => $params['id']]);
+        $query->andWhere(['in', 'mattraffic.mattraffic_tip', [1, 2]]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
 
         return $dataProvider;
     }
