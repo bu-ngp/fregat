@@ -82,7 +82,7 @@ class InstallaktReport extends BaseReportPortal
 
                 if (!empty($mattraffic_previous)) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $mattraffic_previous->idMol->idperson->auth_user_fullname . ', ' . $mattraffic_previous->idMol->iddolzh->dolzh_name);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $mattraffic_previous->idMol->idbuild->build_name . (empty($mattraffic_previous->mattraffic_tip = 1 && $mattraffic_previous->trOsnovs[0]->tr_osnov_kab) ? ', Приход' : (', ' . $mattraffic_previous->trOsnovs[0]->tr_osnov_kab)));
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $mattraffic_previous->idMol->idbuild->build_name . ($mattraffic_previous->mattraffic_tip == 1 && empty($mattraffic_previous->trOsnovs[0]->tr_osnov_kab) ? ', Приход' : (', ' . $mattraffic_previous->trOsnovs[0]->tr_osnov_kab)));
                 }
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
