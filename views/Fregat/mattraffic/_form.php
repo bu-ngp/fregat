@@ -54,7 +54,6 @@ use yii\helpers\Url;
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['class' => 'form-control', 'disabled' => true]) ?>
 
-
             <?= $form->field($Material, 'material_inv', ['enableClientValidation' => false])->textInput(['class' => 'form-control', 'disabled' => true]) ?>
 
             <?= $form->field($Material, 'material_number', ['enableClientValidation' => false])->textInput(['class' => 'form-control', 'disabled' => true]) ?>

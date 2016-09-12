@@ -145,7 +145,7 @@ use \yii\helpers\Url;
                     <?= $form->field($InstallTrOsnov, 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
 
                     <?php
-                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Сменить материально-ответственное лицо', ['onclick' => 'RedirectToChangeMol()', 'class' => 'btn btn-success']);
+                    echo Yii::$app->user->can('MolEdit') ? Html::button('<i class="glyphicon glyphicon-list"></i> Сменить материально-ответственное лицо', ['onclick' => 'RedirectToChangeMol()', 'class' => 'btn btn-success']) : '';
                     ?>
 
                 </div>
