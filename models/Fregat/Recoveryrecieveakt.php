@@ -38,6 +38,7 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord
             [['id_osmotrakt', 'id_recoverysendakt', 'recoveryrecieveakt_repaired'], 'integer'],
             [['recoveryrecieveakt_date'], 'date', 'format' => 'yyyy-MM-dd'],
             [['recoveryrecieveakt_date'], 'compare', 'compareValue' => $this->idRecoverysendakt->recoverysendakt_date, 'operator' => '>=', 'message' => 'Значение {attribute} должно быть больше или равно даты акта отправки материальной ценности сторонней организации «' . Yii::$app->formatter->asDate($this->idRecoverysendakt->recoverysendakt_date) . '».'],
+            [['recoveryrecieveakt_date'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение {attribute} должно быть меньше или равно текущей даты «' . Yii::$app->formatter->asDate(date('Y-m-d')) . '».'],
             [['recoveryrecieveakt_result'], 'string', 'max' => 255],
             [['id_osmotrakt'], 'exist', 'skipOnError' => true, 'targetClass' => Osmotrakt::className(), 'targetAttribute' => ['id_osmotrakt' => 'osmotrakt_id']],
             [['id_recoverysendakt'], 'exist', 'skipOnError' => true, 'targetClass' => Recoverysendakt::className(), 'targetAttribute' => ['id_recoverysendakt' => 'recoverysendakt_id']],

@@ -207,7 +207,7 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
-        $query->andWhere('mattraffic_number > 0')
+        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number = 0 and idMaterial.material_tip = 2))')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
             ->andWhere(['or', ['tmp1.id_material' => NULL], ['idMaterial.material_tip' => 2]]);
