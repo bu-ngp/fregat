@@ -8,7 +8,7 @@ use app\func\Proc;
 
 $this->title = 'Сменить материально-ответственное лицо';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-    'model' => [$model, $Material, $Employee],
+    'model' => [$model, $Material],
 ]);
 ?>
 <div class="mattraffic-create">
@@ -19,7 +19,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             $this->render('_form', [
                 'model' => $model,
                 'Material' => $Material,
-                'Employee' => $Employee,
+                'searchModel_mattrafficmols' => $searchModel_mattrafficmols,
+                'dataProvider_mattrafficmols' => $dataProvider_mattrafficmols,
             ])
             ?>
         </div>

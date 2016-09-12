@@ -264,7 +264,7 @@ use yii\helpers\Url;
                                     'type' => 'button',
                                     'title' => 'Удалить',
                                     'class' => 'btn btn-xs btn-danger',
-                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_mgrid2")'
+                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_grid")'
                                 ]) : '';
                             },
                         ] : []),

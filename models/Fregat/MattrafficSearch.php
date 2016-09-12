@@ -365,5 +365,34 @@ class MattrafficSearch extends Mattraffic
         return $dataProvider;
     }
 
+    public function searchformolsmattraffic($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $this->baseRelations($query);
+
+        $query->andWhere(['mattraffic.id_material' => $params['id']]);
+        $query->andWhere(['in', 'mattraffic.mattraffic_tip', [1, 2]]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
 }
                                         
