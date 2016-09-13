@@ -1112,7 +1112,7 @@ class FregatImport
         self::$os_start = $Importconfig['os_startrow'];
         self::$mat_start = $Importconfig['mat_startrow'];
         self::$Mishanya = 0;
-        self::$Debug = false;
+        self::$Debug = defined('YII_DEBUG');
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
@@ -1351,7 +1351,6 @@ class FregatImport
                         $logreport->logreport_employeelastdate = self::$filelastdate;
                         self::$employee = false;
                     } else {
-
                         if (!self::$os)
                             Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
 
@@ -1391,7 +1390,7 @@ class FregatImport
                                 }
                                 /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
 
-                                $row = $objWorksheet->rangeToArray('A' . $i . ':K' . $i, null, true, true, true);
+                                $row = $objWorksheet->rangeToArray('A' . $i . ':L' . $i, null, true, true, true);
                                 $row = $row[key($row)];
 
                                 $material = new Material;
