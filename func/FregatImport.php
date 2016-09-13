@@ -508,6 +508,8 @@ class FregatImport
             self::$material_number_xls = $xls_attributes_material['material_number'];
             self::$material_price_xls = $xls_attributes_material['material_price'];
 
+            unset($xls_attributes_material['groupuchet']);
+
             // Если материальная ценность найдена
             if (!$Material->isNewRecord) {
                 $Material->material_price = floatval($Material->material_price); // т.к. $Material->material_price = "~.00"
