@@ -195,7 +195,7 @@ class Employee extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
             ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
             ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
-            ->andWhere(['employee_dateinactive' => NULL])
+            ->andWhere(isset($params['init']) ? [] : ['employee_dateinactive' => NULL])
             ->limit(20)
             ->asArray()
             ->$method();
