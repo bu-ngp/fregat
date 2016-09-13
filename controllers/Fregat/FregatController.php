@@ -366,7 +366,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 }
             }
 
-            if (empty(Build::find()->andWhere(['like', 'build_name', 'Административный корпус'])->one())) {
+            $querybuild = Build::find()->andWhere(['like', 'build_name', 'Административный корпус'])->one();
+            if (empty($querybuild)) {
                 $Build = new Build;
                 $Build->build_name = 'Административный корпус';
                 $Build->save();
