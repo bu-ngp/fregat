@@ -342,9 +342,11 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $ar2->auth_user_password = '265463';
                 $ar2->auth_user_password2 = '265463';
                 $ar2->save();
-                $auth = Yii::$app->authManager;
-                $Role = $auth->getRole('Administrator');
-                $auth->assign($Role, $ar->primaryKey);
+                if (!Yii::$app->user->can('Administrator')) {
+                    $auth = Yii::$app->authManager;
+                    $Role = $auth->getRole('Administrator');
+                    $auth->assign($Role, $ar->primaryKey);
+                }
             }
 
             $Hos = Authuser::find()
@@ -357,15 +359,18 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $ar2->auth_user_password = '44444444';
                 $ar2->auth_user_password2 = '44444444';
                 $ar2->save();
-                $auth = Yii::$app->authManager;
-                $Role = $auth->getRole('FregatHozSister');
-                $auth->assign($Role, $ar->primaryKey);
+                if (!Yii::$app->user->can('FregatHozSister')) {
+                    $auth = Yii::$app->authManager;
+                    $Role = $auth->getRole('FregatHozSister');
+                    $auth->assign($Role, $ar->primaryKey);
+                }
             }
 
-            $Build = new Build();
-            $Build->build_name = 'Административный корпус';
-            $Build->save();
-
+            if (empty(Build::find()->andWhere(['like', 'build_name', 'Административный корпус'])->one())) {
+                $Build = new Build;
+                $Build->build_name = 'Административный корпус';
+                $Build->save();
+            }
             // Prepare end
 
             foreach ($conn->query($sql, \PDO::FETCH_ASSOC) as $row) {
