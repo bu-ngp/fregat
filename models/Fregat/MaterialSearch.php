@@ -67,7 +67,7 @@ class MaterialSearch extends Material
             'sort' => ['defaultOrder' => ['material_name' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['idMatv', 'idIzmer', 'mattraffics']);
+        $query->joinWith(['idMatv', 'idIzmer']);
 
         $this->load($params);
 
@@ -100,17 +100,10 @@ class MaterialSearch extends Material
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_username'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_lastchange', 'datetime'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffics.mattraffic_lastchange', 'datetime'));
-        $query->andFilterWhere(['LIKE', 'mattraffics.mattraffic_username', $this->getAttribute('mattraffics.mattraffic_username')]);
-
-        $query->groupBy(['material.material_id']);
-        $query->having(new Expression('MAX(mattraffics.mattraffic_date)'));
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMatv.matvid_name',
             'idIzmer.izmer_name',
-            'mattraffics.mattraffic_lastchange',
-            'mattraffics.mattraffic_username',
         ]);
 
         $this->materialDopfilter($query);
@@ -123,8 +116,49 @@ class MaterialSearch extends Material
         $filter = Proc::GetFilter($this->formName(), 'MaterialFilter');
 
         if (!empty($filter)) {
-            Proc::Filter_Compare(Proc::Text, $query, $filter, 'mattraffic_username');
-            Proc::Filter_Compare(Proc::DateRange, $query, $filter, 'mattraffic_lastchange');
+
+            $attr = 'mol_id_build';
+            if (!empty($filter[$attr])) {
+                $query->joinWith([
+                    'mattraffics.idMol',
+                ]);
+                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3,4)');
+                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+                $query->andWhere(['in', 'mattraffic_tip', [3, 4]]);
+
+                Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, $attr, ['SQLAttribute' => 'idMol.id_build']);
+            }
+
+            $attr = 'tr_osnov_kab';
+            if (!empty($filter[$attr])) {
+                $query->joinWith([
+                    'mattraffics.trOsnovs',
+                ]);
+                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)');
+                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+                $query->andWhere(['in', 'mattraffic_tip', [3]]);
+
+                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, $attr, ['WhereStatement' => ['LIKE', 'trOsnovs.tr_osnov_kab', $filter[$attr], false]]);
+            }
+
+            $attr = 'mattraffic_username';
+            if (!empty($filter[$attr])) {
+                $query->joinWith(['mattraffics']);
+                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2');
+                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+
+                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, $attr, ['WhereStatement' => ['LIKE', 'mattraffics.mattraffic_username', $filter[$attr]]]);
+            }
+
+            $attr = 'mattraffic_lastchange';
+            if (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
+                $query->joinWith(['mattraffics']);
+                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2');
+                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+
+                Proc::Filter_Compare(Proc::DateRange, $query, $filter, $attr, ['SQLAttribute' => 'mattraffics.mattraffic_lastchange']);
+            }
+
         }
     }
 

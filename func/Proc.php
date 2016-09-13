@@ -9,6 +9,7 @@ use app\models\Fregat\Recoverysendakt;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use yii\db\Expression;
 use yii\web\HttpException;
 use yii\web\Session;
 use yii\helpers\Url;
@@ -1402,12 +1403,15 @@ class Proc
                     $ActiveQuery->andWhere($WhereStatement);
                 break;
             case Proc::DateRange:
+                $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+
                 if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end']))
-                    $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $Attribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
+                    $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
                 elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
                     $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
                     $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
-                    $ActiveQuery->andFilterWhere([$znak, $Attribute, $value]);
+                    $ActiveQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
                 }
                 break;
             case Proc::MultiChoice:

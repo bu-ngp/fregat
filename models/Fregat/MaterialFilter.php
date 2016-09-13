@@ -8,6 +8,10 @@ use yii\base\Model;
 class MaterialFilter extends Model
 {
 
+
+    public $mol_id_build;
+    public $mol_id_build_not;
+    public $tr_osnov_kab;
     public $mattraffic_username;
     public $mattraffic_lastchange_beg;
     public $mattraffic_lastchange_end;
@@ -15,21 +19,26 @@ class MaterialFilter extends Model
     public function rules()
     {
         return [
-            [['mattraffic_username',
+            [[
+                'mattraffic_username',
+                'tr_osnov_kab',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
                 'mattraffic_lastchange_end',
             ], 'date', 'format' => 'php:Y-m-d'],
-            /*  [[
-                  'patient_pol',
-              ], 'integer'],*/
+            [[
+                'mol_id_build',
+                'mol_id_build_not',
+            ], 'integer'],
         ];
     }
 
     public function attributeLabels()
     {
         return [
+            'mol_id_build' => 'Здание материально-ответственного лица',
+            'tr_osnov_kab' => 'Кабинет в котором находится материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
         ];
@@ -44,6 +53,8 @@ class MaterialFilter extends Model
     public static function VariablesValues($attribute, $value = NULL)
     {
         $values = [
+            'mol_id_build' => [$value => Build::getBuildByID($value)],
+
             /* 'patient_pol' => Patient::VariablesValues($attribute),
              'fias_city' => [$value => Fias::GetCityByAOGUID($value)],
              'fias_street' => [$value => Fias::GetStreetByAOGUID($value)],
@@ -54,7 +65,6 @@ class MaterialFilter extends Model
              'glaukuchet_id_employee' => [$value => Employee::getEmployeeByID($value)],
              'employee_id_dolzh' => [$value => Dolzh::getDolzhByID($value)],
              'employee_id_podraz' => [$value => Podraz::getPodrazByID($value)],
-             'employee_id_build' => [$value => Build::getBuildByID($value)],
              'glprep_id_preparat' => [$value => Preparat::getPreparatByID($value)],
              'glprep_rlocat' => Glprep::VariablesValues($attribute),*/
         ];

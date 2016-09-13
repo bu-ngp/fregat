@@ -57,7 +57,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'value' => function ($model) use ($material_writeoff) {
                         return isset($material_writeoff[$model->material_writeoff]) ? $material_writeoff[$model->material_writeoff] : '';
                     },
-                    'visible' => false,
                 ],
                 [
                     'attribute' => 'material_username',
