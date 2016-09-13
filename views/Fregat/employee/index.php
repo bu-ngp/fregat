@@ -42,7 +42,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             'filterModel' => $searchModel,
             'panel' => [
                 'heading' => '<i class="glyphicon glyphicon-user"></i> ' . $this->title,
-                'before' => Yii::$app->user->can('EmployeeEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['//Config/authuser/index', 'emp' => true], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                'before' => Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeSpecEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['//Config/authuser/index', 'emp' => true], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
             ],
         ]
     ]));
