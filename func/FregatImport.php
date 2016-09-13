@@ -98,6 +98,7 @@ class FregatImport
             'material_release' => self::$os ? $Importconfig['os_material_release'] : '',
             'material_status' => self::$os ? $Importconfig['os_material_status'] : '',
             'material_tip_nomenklaturi' => self::$os ? '' : $Importconfig['mat_material_tip_nomenklaturi'], // Колонка "ТипНоменклатуры" в файле Материалов
+            'groupuchet' => self::$os ? 'L' : '',
         ];
     }
 
@@ -354,6 +355,7 @@ class FregatImport
             'id_matvid' => self::AssignMatvid(trim($row[self::xls('material_name1c')])), // Определяем Вид материальной ценности согласно таблицы соответствий importmaterial, если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
             'id_izmer' => self::$os ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')])), // Определяем Единицу измерения
             'material_tip_nomenklaturi' => self::$os ? '' : trim($row[self::xls('material_tip_nomenklaturi')]), // Колонка "ТипНоменклатуры" в файле Материалов
+            'groupuchet' => self::$os ? $row[self::xls('groupuchet')] : '',
         ];
     }
 
@@ -491,7 +493,7 @@ class FregatImport
         $xls_attributes_material = self::xls_attributes_material($row);
 
         // Проверяем, что ТипНоменклатуры Материалов принадлежат к "Продукты питания" или "Прочие материальные запасы"
-        $material_assigned = (self::$os || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
+        $material_assigned = ((self::$os && in_array($xls_attributes_material['groupuchet'], ['Нет'])) || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
 
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
