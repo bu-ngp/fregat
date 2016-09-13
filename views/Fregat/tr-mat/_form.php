@@ -14,24 +14,24 @@ use kartik\touchspin\TouchSpin;
 <div class="tr-mat-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    
+
     <?php
-   /* $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new app\models\Fregat\Material,
-                'fields' => [
-                    'keyfield' => 'id_parent',
-                ],
-                'placeholder' => 'Введите инвентарный номер материальной ценности',
-                'fromgridroute' => 'Fregat/material/forinstallakt_mat',
-                'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatparent',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinputfortrmat_parent',
-                'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
-                'dopparams' => [
-                    'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
-                ],
-    ]));*/
+    /* $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
+                 'model' => $model,
+                 'resultmodel' => new app\models\Fregat\Material,
+                 'fields' => [
+                     'keyfield' => 'id_parent',
+                 ],
+                 'placeholder' => 'Введите инвентарный номер материальной ценности',
+                 'fromgridroute' => 'Fregat/material/forinstallakt_mat',
+                 'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatparent',
+                 'thisroute' => $this->context->module->requestedRoute,
+                 'methodquery' => 'selectinputfortrmat_parent',
+                 'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
+                 'dopparams' => [
+                     'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
+                 ],
+     ]));*/
     ?>
 
     <?=
@@ -46,31 +46,39 @@ use kartik\touchspin\TouchSpin;
         'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatparent',
         'thisroute' => $this->context->module->requestedRoute,
         'methodquery' => 'selectinputfortrmat_parent',
-        'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
+        'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
         'dopparams' => [
-            'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
+            'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
         ],
     ]));
     ?>
 
     <?=
-    $form->field($model, 'id_mattraffic')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new app\models\Fregat\Mattraffic,
-                'fields' => [
-                    'keyfield' => 'id_mattraffic',
+    $form->field($model, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+            'model' => $model,
+            'resultmodel' => new app\models\Fregat\Mattraffic,
+            'fields' => [
+                'keyfield' => 'id_mattraffic',
+            ],
+            'placeholder' => 'Введите инвентарный номер материальной ценности',
+            'fromgridroute' => 'Fregat/mattraffic/forinstallakt_mat',
+            'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatchild',
+            'thisroute' => $this->context->module->requestedRoute,
+            'methodquery' => 'selectinputfortrmat_child',
+            'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
+            'dopparams' => [
+                'foreigndo' => '1',
+                'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
+            ],
+        ]),
+            [
+                'pluginEvents' => [
+                    "select2:select" => "function() { SetMaxNumberByMaterial(); }",
+                    "select2:unselect" => "function() { UnSetMaxNumberByMaterial(); }"
                 ],
-                'placeholder' => 'Введите инвентарный номер материальной ценности',
-                'fromgridroute' => 'Fregat/mattraffic/forinstallakt_mat',
-                'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatchild',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinputfortrmat_child',
-                'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
-                'dopparams' => [
-                    'foreigndo' => '1',
-                    'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
-                ],
-    ]))->label('Перемещаемая материальная ценность');
+            ]
+        )
+    )->label('Перемещаемая материальная ценность');
     ?>
 
     <?=
@@ -87,7 +95,7 @@ use kartik\touchspin\TouchSpin;
             'forcestepdivisibility' => 'none',
         ]
     ]);
-    ?>  
+    ?>
 
     <div class="form-group">
         <div class="panel panel-default">

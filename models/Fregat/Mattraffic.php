@@ -60,6 +60,7 @@ class Mattraffic extends \yii\db\ActiveRecord
             [['mattraffic_tip'], 'integer', 'min' => 1, 'max' => 4], // 1 - Приход, 2 - Списание, 3 - Движение между кабинетами, 4 - Движение, как состовная часть мат ценности
             [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
             ['mattraffic_number', 'MaxNumberMove', 'on' => 'traffic'],
+            [['mattraffic_number'], 'MaxNumberMoveMat', 'on' => 'trafficmat'],
             //  [['mattraffic_id'], 'safe'],
         ];
     }
@@ -90,6 +91,24 @@ class Mattraffic extends \yii\db\ActiveRecord
 
             if (!empty($query) && $this->mattraffic_number > $max_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $max_number);
+        }
+    }
+
+    public function MaxNumberMoveMat($attribute)
+    {
+        if ($this->mattraffic_tip == 4 && !empty($this->id_material) && !empty($this->id_mol)) {
+            $query = Mattraffic::find()
+                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                ->andWhere([
+                    'id_material' => $this->id_material,
+                    'id_mol' => $this->id_mol,
+                ])
+                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                ->one();
+
+            if (!empty($query) && $this->mattraffic_number > $query->mattraffic_number)
+                $this->addError($attribute, 'Количество не может превышать ' . $query->mattraffic_number);
         }
     }
 

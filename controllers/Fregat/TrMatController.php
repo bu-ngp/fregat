@@ -30,7 +30,7 @@ class TrMatController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrmatchild', 'selectinputfortrmatparent', 'selectinputfortrmatosmotr'],
+                        'actions' => ['selectinputfortrmatchild', 'selectinputfortrmatparent', 'selectinputfortrmatosmotr', 'max-number-material-by-mol'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -80,8 +80,8 @@ class TrMatController extends Controller
                 $Mattraffic->mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
                 $Mattraffic->mattraffic_tip = 4;
 
-                /*    if (isset($Mattraffic->scenarios()['traffic']))
-                  $Mattraffic->scenario = 'traffic'; */
+                if (isset($Mattraffic->scenarios()['trafficmat']))
+                    $Mattraffic->scenario = 'trafficmat';
 
                 if ($Mattraffic->validate()) {
                     $Mattraffic->save(false);
@@ -203,6 +203,21 @@ class TrMatController extends Controller
                 'methodquery' => 'selectinputfortrmatosmotr',
                 'methodparams' => ['idosmotraktmat' => $idosmotraktmat],
             ]);
+    }
+
+    public function actionMaxNumberMaterialByMol()
+    {
+        if (Yii::$app->request->isAjax) {
+            $mattraffic_id = Yii::$app->request->post('mattraffic_id');
+            if (!empty($mattraffic_id)) {
+                $query = Mattraffic::findOne($mattraffic_id);
+                if (!empty($query)) {
+                    echo json_encode([
+                        'mattraffic_number' => $query->mattraffic_number,
+                    ]);
+                }
+            }
+        }
     }
 
     /**
