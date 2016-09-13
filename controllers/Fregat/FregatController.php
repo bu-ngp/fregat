@@ -342,8 +342,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $ar2->auth_user_password = '265463';
                 $ar2->auth_user_password2 = '265463';
                 $ar2->save();
-                if (!Yii::$app->user->can('Administrator')) {
-                    $auth = Yii::$app->authManager;
+                $auth = Yii::$app->authManager;
+                if (!$auth->checkAccess($ar->primaryKey, 'Administrator')) {
                     $Role = $auth->getRole('Administrator');
                     $auth->assign($Role, $ar->primaryKey);
                 }
@@ -359,8 +359,8 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                 $ar2->auth_user_password = '44444444';
                 $ar2->auth_user_password2 = '44444444';
                 $ar2->save();
-                if (!Yii::$app->user->can('FregatHozSister')) {
-                    $auth = Yii::$app->authManager;
+                $auth = Yii::$app->authManager;
+                if (!$auth->checkAccess($ar->primaryKey, 'FregatHozSister')) {
                     $Role = $auth->getRole('FregatHozSister');
                     $auth->assign($Role, $ar->primaryKey);
                 }
