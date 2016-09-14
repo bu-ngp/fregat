@@ -9,6 +9,16 @@ $(function () {
             cellH: 100,
             gutterY: 10,
             gutterX: 20,
+            onComplete: function () {
+                /*    setTimeout(function () {
+
+                 // $(".menubutton").children("span").addClass("completespan");
+                 $(".menubutton").children("span").css("animation-play-state", "running");
+                 $(".menubutton").children("span").css("animation-direction", "normal");
+                 }, 1500);*/
+                $(".menubutton").css("display", "block");
+                $(".menubutton").attr("data-state", "");
+            },
         })
         wall.fitWidth();
     });

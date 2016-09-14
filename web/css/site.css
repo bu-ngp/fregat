@@ -221,22 +221,6 @@ div#scrollupbutton > span {
     user-select: none;
 }
 
-.menubutton:hover {
-    background: #81c7ff;
-    border: solid 10px #81c7ff;
-}
-
-.menubutton:hover > div {
-    color: #fff;
-    text-shadow: none;
-}
-
-.menubutton:active {
-    background: #41c0ff;
-    border: solid 10px #41c0ff;
-    margin-top: 5px;
-}
-
 .menublock {
     width: 320px;
     margin-bottom: 20px;
@@ -247,39 +231,33 @@ div#scrollupbutton > span {
     cursor: default;
 }
 
-.mb_green {
-    background: #c6ffbf;
-    border: solid 10px #ddffd9;
+.menubutton.menubutton_activeanim:active {
+    animation: plitka_anim 0.3s;
+    animation-fill-mode: forwards;
 }
 
-.mb_red {
-    background: #ffd1d1;
-    border: solid 10px #ffebeb;
+@keyframes plitka_anim {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(0.9);
+    }
 }
 
-.mb_yellow {
-    background: #fff4bf;
-    border: solid 10px #fff9de;
+.menubutton:hover > span.hoverspan {
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 
-.mb_blue {
-    background: #d7deff;
-    border: solid 10px #e8ecff;
+.menubutton > span.hoverspan {
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
-.mb_gray {
-    background: #dedede;
-    border: solid 10px #eaeaea;
-}
-
-.menubutton_cn {
-    font-family: "Lucida Console", Monaco, monospace;
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
-    color: black;
-    font-size: 14px;
+.menubutton:active > span.hoverspan {
+    opacity: 0.5;
+    transition: opacity 0.5s;
 }
 
 @keyframes start {
@@ -314,6 +292,227 @@ div#scrollupbutton > span {
 .menublock .menubutton[data-state="move"] {
     transition: top 0.5s, left 0.5s, width 0.5s, height 0.5s;
     -webkit-transition: top 0.5s, left 0.5s, width 0.5s, height 0.5s;
+}
+
+.menubutton .menubutton_cn {
+    font-family: 'Russo One', sans-serif;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 24px;
+    -webkit-transform: translateZ(0px);
+}
+
+.menubutton:hover .menubutton_cn {
+    -webkit-transform: translateZ(0px);
+}
+
+.menubutton:active .menubutton_cn {
+    -webkit-transform: translateZ(0px);
+}
+
+.menubutton .hoverspan {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    opacity: 0;
+}
+
+.menubutton.mb_green {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#eafae2+0,c6f4b0+50,abf18b+51,dcf7cf+100 */
+    background: rgb(234, 250, 226); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(234, 250, 226) 0%, rgb(198, 244, 176) 50%, rgb(171, 241, 139) 51%, rgb(220, 247, 207) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(234, 250, 226) 0%, rgb(198, 244, 176) 50%, rgb(171, 241, 139) 51%, rgb(220, 247, 207) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(234, 250, 226) 0%, rgb(198, 244, 176) 50%, rgb(171, 241, 139) 51%, rgb(220, 247, 207) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eafae2', endColorstr='#dcf7cf', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    border: solid 10px rgb(234, 250, 226);
+}
+
+.menubutton.mb_green .menubutton_cn {
+    text-shadow: 2px 0 0 #EAFAE2, -2px 0 0 #EAFAE2, 0 2px 0 #EAFAE2, 0 -2px 0 #EAFAE2, 1px 1px #EAFAE2, -1px -1px 0 #EAFAE2, 1px -1px 0 #EAFAE2, -1px 1px 0 #EAFAE2;
+}
+
+.menubutton.mb_green .hoverspan {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#d4f5c3+0,8ce961+50,59dd1b+51,b8f09e+100 */
+    background: rgb(212, 245, 195); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(212, 245, 195) 0%, rgb(140, 233, 97) 50%, rgb(89, 221, 27) 51%, rgb(184, 240, 158) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(212, 245, 195) 0%, rgb(140, 233, 97) 50%, rgb(89, 221, 27) 51%, rgb(184, 240, 158) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(212, 245, 195) 0%, rgb(140, 233, 97) 50%, rgb(89, 221, 27) 51%, rgb(184, 240, 158) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d4f5c3', endColorstr='#b8f09e', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    box-shadow: inset 0 0 0px 10px #59DD1B;
+}
+
+.menubutton.mb_green:hover > div.menubutton_cn {
+    color: #59DD1B;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_green:active > div.menubutton_cn {
+    color: #14c100;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_green > div.menubutton_cn {
+    color: #bacfaf;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_red {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fee7de+0,febfa6+50,ffa27d+51,fdd8c9+100 */
+    background: rgb(254, 231, 222); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(254, 231, 222) 0%, rgb(254, 191, 166) 50%, rgb(255, 162, 125) 51%, rgb(253, 216, 201) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(254, 231, 222) 0%, rgb(254, 191, 166) 50%, rgb(255, 162, 125) 51%, rgb(253, 216, 201) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(254, 231, 222) 0%, rgb(254, 191, 166) 50%, rgb(255, 162, 125) 51%, rgb(253, 216, 201) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fee7de', endColorstr='#fdd8c9', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    border: solid 10px rgb(254, 231, 222);
+}
+
+.menubutton.mb_red .menubutton_cn {
+    text-shadow: 2px 0 0 #FEE7DE, -2px 0 0 #FEE7DE, 0 2px 0 #FEE7DE, 0 -2px 0 #FEE7DE, 1px 1px #FEE7DE, -1px -1px 0 #FEE7DE, 1px -1px 0 #FEE7DE, -1px 1px 0 #FEE7DE;
+}
+
+.menubutton.mb_red .hoverspan {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fccdbc+0,fc7f4e+50,f84600+51,fbb093+100 */
+    background: rgb(252, 205, 188); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(252, 205, 188) 0%, rgb(252, 127, 78) 50%, rgb(248, 70, 0) 51%, rgb(251, 176, 147) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(252, 205, 188) 0%, rgb(252, 127, 78) 50%, rgb(248, 70, 0) 51%, rgb(251, 176, 147) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(252, 205, 188) 0%, rgb(252, 127, 78) 50%, rgb(248, 70, 0) 51%, rgb(251, 176, 147) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fccdbc', endColorstr='#fbb093', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    box-shadow: inset 0 0 0px 10px #F84600;
+}
+
+.menubutton.mb_red:hover > div.menubutton_cn {
+    color: #f84600;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_red:active > div.menubutton_cn {
+    color: #f8000b;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_red > div.menubutton_cn {
+    color: #d3ad9f;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_yellow {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fef5de+0,fee6a6+50,ffdc7d+51,fdefc9+100 */
+    background: rgb(254, 245, 222); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(254, 245, 222) 0%, rgb(254, 230, 166) 50%, rgb(255, 220, 125) 51%, rgb(253, 239, 201) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(254, 245, 222) 0%, rgb(254, 230, 166) 50%, rgb(255, 220, 125) 51%, rgb(253, 239, 201) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(254, 245, 222) 0%, rgb(254, 230, 166) 50%, rgb(255, 220, 125) 51%, rgb(253, 239, 201) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fef5de', endColorstr='#fdefc9', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    border: solid 10px rgb(254, 245, 222);
+}
+
+.menubutton.mb_yellow .menubutton_cn {
+    text-shadow: 2px 0 0 #FEF5DE, -2px 0 0 #FEF5DE, 0 2px 0 #FEF5DE, 0 -2px 0 #FEF5DE, 1px 1px #FEF5DE, -1px -1px 0 #FEF5DE, 1px -1px 0 #FEF5DE, -1px 1px 0 #FEF5DE;
+}
+
+.menubutton.mb_yellow .hoverspan {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fceabc+0,fcce4e+50,f8b600+51,fbdf93+100 */
+    background: rgb(252, 234, 188); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(252, 234, 188) 0%, rgb(252, 206, 78) 50%, rgb(248, 182, 0) 51%, rgb(251, 223, 147) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(252, 234, 188) 0%, rgb(252, 206, 78) 50%, rgb(248, 182, 0) 51%, rgb(251, 223, 147) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(252, 234, 188) 0%, rgb(252, 206, 78) 50%, rgb(248, 182, 0) 51%, rgb(251, 223, 147) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fceabc', endColorstr='#fbdf93', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    box-shadow: inset 0 0 0px 10px #ffb700;
+}
+
+.menubutton.mb_yellow:hover > div.menubutton_cn {
+    color: #ffb700;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_yellow:active > div.menubutton_cn {
+    color: #ff670b;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_yellow > div.menubutton_cn {
+    color: #d1bd8a;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_blue {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dee7fe+0,a6befe+50,7da0ff+51,c9d7fd+100 */
+    background: rgb(222, 231, 254); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(222, 231, 254) 0%, rgb(166, 190, 254) 50%, rgb(125, 160, 255) 51%, rgb(201, 215, 253) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(222, 231, 254) 0%, rgb(166, 190, 254) 50%, rgb(125, 160, 255) 51%, rgb(201, 215, 253) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(222, 231, 254) 0%, rgb(166, 190, 254) 50%, rgb(125, 160, 255) 51%, rgb(201, 215, 253) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dee7fe', endColorstr='#c9d7fd', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    border: solid 10px rgb(222, 231, 254);
+}
+
+.menubutton.mb_blue .menubutton_cn {
+    text-shadow: 2px 0 0 #DEE7FE, -2px 0 0 #DEE7FE, 0 2px 0 #DEE7FE, 0 -2px 0 #DEE7FE, 1px 1px #DEE7FE, -1px -1px 0 #DEE7FE, 1px -1px 0 #DEE7FE, -1px 1px 0 #DEE7FE;
+}
+
+.menubutton.mb_blue .hoverspan {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bccefc+0,4e7cfc+50,0042f8+51,93affb+100 */
+    background: rgb(188, 206, 252); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(188, 206, 252) 0%, rgb(78, 124, 252) 50%, rgb(0, 66, 248) 51%, rgb(147, 175, 251) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(188, 206, 252) 0%, rgb(78, 124, 252) 50%, rgb(0, 66, 248) 51%, rgb(147, 175, 251) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(188, 206, 252) 0%, rgb(78, 124, 252) 50%, rgb(0, 66, 248) 51%, rgb(147, 175, 251) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#bccefc', endColorstr='#93affb', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    box-shadow: inset 0 0 0px 10px #0042F8;
+}
+
+.menubutton.mb_blue:hover > div.menubutton_cn {
+    color: #0042F8;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_blue:active > div.menubutton_cn {
+    color: #1100d3;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_blue > div.menubutton_cn {
+    color: #9da9c9;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_gray {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#eeeeee+0,d2d2d2+50,bebebe+51,e3e3e3+100 */
+    background: rgb(238, 238, 238); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(238, 238, 238) 0%, rgb(210, 210, 210) 50%, rgb(190, 190, 190) 51%, rgb(227, 227, 227) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(238, 238, 238) 0%, rgb(210, 210, 210) 50%, rgb(190, 190, 190) 51%, rgb(227, 227, 227) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(238, 238, 238) 0%, rgb(210, 210, 210) 50%, rgb(190, 190, 190) 51%, rgb(227, 227, 227) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#e3e3e3', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    border: solid 10px rgb(238, 238, 238);
+}
+
+.menubutton.mb_gray .menubutton_cn {
+    text-shadow: 2px 0 0 #EEEEEE, -2px 0 0 #EEEEEE, 0 2px 0 #EEEEEE, 0 -2px 0 #EEEEEE, 1px 1px #EEEEEE, -1px -1px 0 #EEEEEE, 1px -1px 0 #EEEEEE, -1px 1px 0 #EEEEEE;
+}
+
+.menubutton.mb_gray .hoverspan {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dcdcdc+0,a5a5a5+50,7c7c7c+51,c7c7c7+100 */
+    background: rgb(220, 220, 220); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgb(220, 220, 220) 0%, rgb(165, 165, 165) 50%, rgb(124, 124, 124) 51%, rgb(199, 199, 199) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgb(220, 220, 220) 0%, rgb(165, 165, 165) 50%, rgb(124, 124, 124) 51%, rgb(199, 199, 199) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgb(220, 220, 220) 0%, rgb(165, 165, 165) 50%, rgb(124, 124, 124) 51%, rgb(199, 199, 199) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dcdcdc', endColorstr='#c7c7c7', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    box-shadow: inset 0 0 0px 10px #7C7C7C;
+}
+
+.menubutton.mb_gray:hover > div.menubutton_cn {
+    color: #7C7C7C;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_gray:active > div.menubutton_cn {
+    color: #3b3a3a;
+    transition: color 0.5s;
+}
+
+.menubutton.mb_gray > div.menubutton_cn {
+    color: #aeaeae;
+    transition: color 0.5s;
 }
 
 /* Menu Fregat end*/
@@ -386,20 +585,6 @@ div.panel.panel-info {
     background-color: rgba(210, 217, 255, 0.1);
 }
 
-.panel-primary > .panel-heading {
-    color: #d5b8be;
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#542632+0,720011+51,b77783+100 */
-    background: rgb(84, 38, 50); /* Old browsers */
-    background: -moz-linear-gradient(-45deg, rgb(84, 38, 50) 0%, rgb(114, 0, 17) 51%, rgb(183, 119, 131) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(-45deg, rgb(84, 38, 50) 0%, rgb(114, 0, 17) 51%, rgb(183, 119, 131) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(135deg, rgb(84, 38, 50) 0%, rgb(114, 0, 17) 51%, rgb(183, 119, 131) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#542632', endColorstr='#b77783', GradientType=1); /* IE6-9 fallback on horizontal gradient */
-
-    /*   border: #420200 solid 1px;*/
-    font-family: 'Russo One', sans-serif;
-    box-shadow: 1px 0px 2px rgba(169, 75, 129, 0.15), -1px -1px 2px rgba(169, 75, 129, 0.15), inset 0 0 0px 4px #b57480;
-}
-
 .panel-info > .panel-heading.base-heading {
     color: #d08b94;
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b79cac+0,a73f7a+50,c14382+100 */
@@ -412,6 +597,20 @@ div.panel.panel-info {
     /*   border: #420200 solid 1px;*/
     font-family: 'Russo One', sans-serif;
     box-shadow: 1px 0px 2px rgba(169, 75, 129, 0.15), -1px -1px 2px rgba(169, 75, 129, 0.15);
+}
+
+.panel-info > .panel-heading, .panel-primary > .panel-heading {
+    color: rgb(183, 159, 157);
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b79f9d+0,562001+50,bf442b+100 */
+    background: rgb(183, 159, 157); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(183, 159, 157) 0%, rgb(86, 32, 1) 50%, rgb(191, 68, 43) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(183, 159, 157) 0%, rgb(86, 32, 1) 50%, rgb(191, 68, 43) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(183, 159, 157) 0%, rgb(86, 32, 1) 50%, rgb(191, 68, 43) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b79f9d', endColorstr='#bf442b', GradientType=0); /* IE6-9 */
+
+    /*   border: #420200 solid 1px;*/
+    font-family: 'Russo One', sans-serif;
+    box-shadow: 1px 0px 2px rgba(169, 103, 75, 0.15), -1px -1px 2px rgba(169, 89, 75, 0.15);
 }
 
 .panel-info > .panel-heading2 {
@@ -428,7 +627,7 @@ div.panel.panel-info {
     box-shadow: 1px 0px 2px rgba(169, 75, 129, 0.15), -1px -1px 2px rgba(169, 75, 129, 0.15);
 }
 
-.panel-info > .panel-heading {
+.panel-info > .panel-heading3 {
     color: #d5b8be;
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#542632+0,720011+51,b77783+100 */
     background: rgb(84, 38, 50); /* Old browsers */
@@ -595,7 +794,7 @@ li.select2-results__option--highlighted[aria-selected] {
 }
 
 a[data-sort] {
-    color:  #420200;
+    color: #773b2f;
 }
 
 /* Effect 21: borders slight translate */
