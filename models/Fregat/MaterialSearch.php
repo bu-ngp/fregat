@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use app\models\Fregat\Material;
 use app\func\Proc;
 use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * MaterialSearch represents the model behind the search form about `app\models\Fregat\Material`.
@@ -118,47 +119,59 @@ class MaterialSearch extends Material
         if (!empty($filter)) {
 
             $attr = 'mol_id_build';
-            if (!empty($filter[$attr])) {
-                $query->joinWith([
-                    'mattraffics.idMol',
-                ]);
-                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3,4)');
-                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
-                $query->andWhere(['in', 'mattraffic_tip', [3, 4]]);
+            Proc::Filter_Compare(Proc::Strikt, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_build',
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('employee idMol', 'idMol.employee_id = mattraffics.id_mol')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3,4)')
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [3, 4]])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
 
-                Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, $attr, ['SQLAttribute' => 'idMol.id_build']);
-            }
 
             $attr = 'tr_osnov_kab';
-            if (!empty($filter[$attr])) {
-                $query->joinWith([
-                    'mattraffics.trOsnovs',
-                ]);
-                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)');
-                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
-                $query->andWhere(['in', 'mattraffic_tip', [3]]);
+            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'trOsnovs.' . $attr,
+                'LikeManual' => true,
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)')
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
+                    ->andWhere('mattraffics.id_material = material.material_id')
 
-                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, $attr, ['WhereStatement' => ['LIKE', 'trOsnovs.tr_osnov_kab', $filter[$attr], false]]);
-            }
+            ]);
 
             $attr = 'mattraffic_username';
-            if (!empty($filter[$attr])) {
-                $query->joinWith(['mattraffics']);
-                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2');
-                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
-
-                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, $attr, ['WhereStatement' => ['LIKE', 'mattraffics.mattraffic_username', $filter[$attr]]]);
-            }
+            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'mattraffics.' . $attr,
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2')
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
 
             $attr = 'mattraffic_lastchange';
-            if (!empty($filter[$attr . '_beg']) || !empty($filter[$attr . '_end'])) {
-                $query->joinWith(['mattraffics']);
-                $query->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2');
-                $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
-
-                Proc::Filter_Compare(Proc::DateRange, $query, $filter, $attr, ['SQLAttribute' => 'mattraffics.mattraffic_lastchange']);
-            }
-
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'mattraffics.' . $attr,
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2')
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
         }
     }
 

@@ -1369,58 +1369,159 @@ class Proc
      * @param $Attribute string имя аттрибута
      * @param $AdditionParams array
      */
-    public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Attribute, $AdditionParams = [])
-    {
-        switch ($Type) {
-            case Proc::Text:
-                if (!empty($FilterValues[$Attribute]))
-                    $ActiveQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
-                break;
-            case Proc::Number:
-                $znak = $Attribute . '_znak';
-                $SQLCompare = isset($AdditionParams['SQLCompare']) ? $AdditionParams['SQLCompare'] : '';
-                if (!empty($FilterValues[$znak]) && !empty($FilterValues[$Attribute]) && !empty($SQLCompare))
-                    $ActiveQuery->andWhere($SQLCompare . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
-                break;
-            case Proc::Strikt:
-                if (!empty($FilterValues[$Attribute])) {
-                    $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                    $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
-                    if (empty($FilterValues[$Attribute . '_not']))
-                        $ActiveQuery->andFilterWhere([$SQLAttribute => $FilterValues[$Attribute]]);
-                    else
-                        $ActiveQuery->andFilterWhere(['not', [$SQLAttribute => $FilterValues[$Attribute]]]);
-                }
-                break;
-            case Proc::WhereStatement:
-                $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
-                if (!empty($FilterValues[$Attribute]))
-                    $ActiveQuery->andWhere($WhereStatement);
-                break;
-            case Proc::Mark:
-                $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
-                if ($FilterValues[$Attribute] === '1')
-                    $ActiveQuery->andWhere($WhereStatement);
-                break;
-            case Proc::DateRange:
-                $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+    /*  public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Attribute, $AdditionParams = [])
+      {
+          switch ($Type) {
+              case Proc::Text:
+                  if (!empty($FilterValues[$Attribute])) {
+                      $ExistsSubQuery = isset($AdditionParams['ExistsSubQuery']) ? $AdditionParams['ExistsSubQuery'] : NULL;
+                      if (empty($ExistsSubQuery))
+                          $ActiveQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
+                      else {
+                          $ExistsSubQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
+                          $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                      }
+                  }
+                  break;
+              case Proc::Number:
+                  $znak = $Attribute . '_znak';
+                  $SQLCompare = isset($AdditionParams['SQLCompare']) ? $AdditionParams['SQLCompare'] : '';
+                  if (!empty($FilterValues[$znak]) && !empty($FilterValues[$Attribute]) && !empty($SQLCompare))
+                      $ActiveQuery->andWhere($SQLCompare . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
+                  break;
+              case Proc::Strikt:
+                  if (!empty($FilterValues[$Attribute])) {
+                      $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                      $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+                      if (empty($FilterValues[$Attribute . '_not']))
+                          $ActiveQuery->andFilterWhere([$SQLAttribute => $FilterValues[$Attribute]]);
+                      else
+                          $ActiveQuery->andFilterWhere(['not', [$SQLAttribute => $FilterValues[$Attribute]]]);
+                  }
+                  break;
+              case Proc::WhereStatement:
+                  $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
+                  if (!empty($FilterValues[$Attribute]))
+                      $ActiveQuery->andWhere($WhereStatement);
+                  break;
+              case Proc::Mark:
+                  $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
+                  if ($FilterValues[$Attribute] === '1')
+                      $ActiveQuery->andWhere($WhereStatement);
+                  break;
+              case Proc::DateRange:
+                  $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                  $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
 
-                if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end']))
-                    $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
-                elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
-                    $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
-                    $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
-                    $ActiveQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
+                  if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end']))
+                      $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
+                  elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
+                      $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
+                      $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
+                      $ActiveQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
+                  }
+                  break;
+              case Proc::MultiChoice:
+                  if (!empty($FilterValues[$Attribute])) {
+                      $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
+                      $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
+                      $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                  }
+                  break;
+          }
+      }
+  */
+    public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Params = [])
+    {
+        if (is_integer($Type) && $ActiveQuery instanceof ActiveQuery && is_array($FilterValues) && is_array($Params) && isset($Params['Attribute']) && is_string($Params['Attribute'])) {
+            $Attribute = $Params['Attribute'];
+            $SQLAttribute = !empty($Params['SQLAttribute']) && is_string($Params['SQLAttribute']) ? $Params['SQLAttribute'] : $Attribute;
+            $Value = $FilterValues[$Attribute];
+            $ExistsSubQuery = isset($Params['ExistsSubQuery']) ? $Params['ExistsSubQuery'] : NULL;
+
+            if (!empty($Value) || $Type === Proc::DateRange)
+                switch ($Type) {
+                    case Proc::Text:
+                        $LikeManual = isset($Params['LikeManual']) ? $Params['LikeManual'] : true;
+                        if (empty($ExistsSubQuery))
+                            $ActiveQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute], !$LikeManual]);
+                        else {
+                            $ExistsSubQuery->andFilterWhere(['LIKE', $SQLAttribute, $FilterValues[$Attribute]], !$LikeManual);
+                            $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                        }
+                        break;
+                    case Proc::Number:
+                        $znak = $Attribute . '_znak';
+
+                        if (!empty($FilterValues[$znak]))
+                            if (empty($ExistsSubQuery))
+                                $ActiveQuery->andWhere($SQLAttribute . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
+                            else {
+                                $ExistsSubQuery->andWhere($SQLAttribute . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
+                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            }
+                        break;
+                    case Proc::Strikt:
+                        $FilterWhere = empty($FilterValues[$Attribute . '_not']) ? [$SQLAttribute => $FilterValues[$Attribute]] : ['not', [$SQLAttribute => $FilterValues[$Attribute]]];
+
+                        if (empty($ExistsSubQuery))
+                            $ActiveQuery->andFilterWhere($FilterWhere);
+                        else {
+                            $ExistsSubQuery->andFilterWhere($FilterWhere);
+                            $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                        }
+                        break;
+                    case Proc::WhereStatement:
+                        $WhereStatement = isset($Params['WhereStatement']) ? $Params['WhereStatement'] : NULL;
+                        if (!empty($WhereStatement))
+                            if (empty($ExistsSubQuery))
+                                $ActiveQuery->andWhere($WhereStatement);
+                            else {
+                                $ExistsSubQuery->andWhere($WhereStatement);
+                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            }
+                        break;
+                    case Proc::Mark:
+                        $WhereStatement = isset($Params['WhereStatement']) ? $Params['WhereStatement'] : NULL;
+                        if (!empty($WhereStatement) && $FilterValues[$Attribute] === '1')
+                            if (empty($ExistsSubQuery))
+                                $ActiveQuery->andWhere($WhereStatement);
+                            else {
+                                $ExistsSubQuery->andWhere($WhereStatement);
+                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            }
+                        break;
+                    case Proc::DateRange:
+
+                        if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end'])) {
+                            if (empty($ExistsSubQuery))
+                                $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
+                            else {
+                                $ExistsSubQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
+                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            }
+                        } elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
+                            $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
+                            $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
+
+                            if (empty($ExistsSubQuery))
+                                $ActiveQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
+                            else {
+                                $ExistsSubQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
+                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            }
+                        }
+                        break;
+                    case Proc::MultiChoice:
+                        if (empty($ExistsSubQuery))
+                            $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                        else {
+                            $ExistsSubQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                            $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                        }
+                        break;
                 }
-                break;
-            case Proc::MultiChoice:
-                if (!empty($FilterValues[$Attribute])) {
-                    $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                    $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
-                    $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
-                }
-                break;
         }
+
     }
 }
