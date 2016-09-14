@@ -112,6 +112,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['materialfilter'], [
                         'title' => 'Дополнительный фильтр',
                         'class' => 'btn btn-default filter_button'
+                    ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-floppy-disk"></i>', [
+                        'id' => 'Materialexcel',
+                        'type' => 'button',
+                        'title' => 'Экспорт в Excel',
+                        'class' => 'btn btn-default button_export',
+                        'onclick' => 'ExportExcel("MaterialSearch","' . \yii\helpers\Url::toRoute('Fregat/material/toexcel') . '", $(this)[0].id);'
                     ]) . '{export}{dynagrid}',
                 ],
             ],

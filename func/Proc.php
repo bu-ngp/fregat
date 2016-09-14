@@ -10,6 +10,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
+use yii\validators\StringValidator;
 use yii\web\HttpException;
 use yii\web\Session;
 use yii\helpers\Url;
@@ -876,9 +877,17 @@ class Proc
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 foreach (array_keys($data) as $attr) {
                     $i++;
+                    $ValidatorsAttr = $ar->getActiveValidators($attr);
+                    array_walk($ValidatorsAttr, function (&$val) {
+                        $val = (new \ReflectionClass($val::className()))->getShortName();
+                    });
+
                     if (isset($selectvalues[$modelName . '[' . $attr . ']']))
                         $data[$attr] = $selectvalues[$modelName . '[' . $attr . ']'][$data[$attr]];
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
+                    if (in_array('StringValidator', $ValidatorsAttr))
+                        $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '', \PHPExcel_Cell_DataType::TYPE_STRING);
+                    else
+                        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
                     $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 }
             }
@@ -1366,71 +1375,8 @@ class Proc
      * @param $Type integer
      * @param $ActiveQuery ActiveQuery Запрос к которму применяется фильтр
      * @param $FilterValues array Массив атрибутов модели со значениями фильтров
-     * @param $Attribute string имя аттрибута
-     * @param $AdditionParams array
+     * @param $Params array
      */
-    /*  public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Attribute, $AdditionParams = [])
-      {
-          switch ($Type) {
-              case Proc::Text:
-                  if (!empty($FilterValues[$Attribute])) {
-                      $ExistsSubQuery = isset($AdditionParams['ExistsSubQuery']) ? $AdditionParams['ExistsSubQuery'] : NULL;
-                      if (empty($ExistsSubQuery))
-                          $ActiveQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
-                      else {
-                          $ExistsSubQuery->andFilterWhere(['LIKE', $Attribute, $FilterValues[$Attribute]]);
-                          $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
-                      }
-                  }
-                  break;
-              case Proc::Number:
-                  $znak = $Attribute . '_znak';
-                  $SQLCompare = isset($AdditionParams['SQLCompare']) ? $AdditionParams['SQLCompare'] : '';
-                  if (!empty($FilterValues[$znak]) && !empty($FilterValues[$Attribute]) && !empty($SQLCompare))
-                      $ActiveQuery->andWhere($SQLCompare . ' ' . $FilterValues[$znak] . ' ' . $FilterValues[$Attribute]);
-                  break;
-              case Proc::Strikt:
-                  if (!empty($FilterValues[$Attribute])) {
-                      $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                      $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
-                      if (empty($FilterValues[$Attribute . '_not']))
-                          $ActiveQuery->andFilterWhere([$SQLAttribute => $FilterValues[$Attribute]]);
-                      else
-                          $ActiveQuery->andFilterWhere(['not', [$SQLAttribute => $FilterValues[$Attribute]]]);
-                  }
-                  break;
-              case Proc::WhereStatement:
-                  $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
-                  if (!empty($FilterValues[$Attribute]))
-                      $ActiveQuery->andWhere($WhereStatement);
-                  break;
-              case Proc::Mark:
-                  $WhereStatement = isset($AdditionParams['WhereStatement']) ? $AdditionParams['WhereStatement'] : NULL;
-                  if ($FilterValues[$Attribute] === '1')
-                      $ActiveQuery->andWhere($WhereStatement);
-                  break;
-              case Proc::DateRange:
-                  $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                  $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
-
-                  if (!empty($FilterValues[$Attribute . '_beg']) && !empty($FilterValues[$Attribute . '_end']))
-                      $ActiveQuery->andFilterWhere(['between', new Expression('CAST(' . $SQLAttribute . ' AS DATE)'), $FilterValues[$Attribute . '_beg'], $FilterValues[$Attribute . '_end']]);
-                  elseif (!empty($FilterValues[$Attribute . '_beg']) || !empty($FilterValues[$Attribute . '_end'])) {
-                      $znak = !empty($FilterValues[$Attribute . '_beg']) ? '>=' : '<=';
-                      $value = !empty($FilterValues[$Attribute . '_beg']) ? $FilterValues[$Attribute . '_beg'] : $FilterValues[$Attribute . '_end'];
-                      $ActiveQuery->andFilterWhere([$znak, $SQLAttribute, $value]);
-                  }
-                  break;
-              case Proc::MultiChoice:
-                  if (!empty($FilterValues[$Attribute])) {
-                      $SQLAttribute = isset($AdditionParams['SQLAttribute']) ? $AdditionParams['SQLAttribute'] : NULL;
-                      $SQLAttribute = empty($SQLAttribute) ? $Attribute : $SQLAttribute;
-                      $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
-                  }
-                  break;
-          }
-      }
-  */
     public static function Filter_Compare($Type, &$ActiveQuery, $FilterValues, $Params = [])
     {
         if (is_integer($Type) && $ActiveQuery instanceof ActiveQuery && is_array($FilterValues) && is_array($Params) && isset($Params['Attribute']) && is_string($Params['Attribute'])) {

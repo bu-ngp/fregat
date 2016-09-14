@@ -32,7 +32,7 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material', 'materialfilter'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material', 'materialfilter', 'toexcel'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -65,7 +65,7 @@ class MaterialController extends Controller
         if (isset($model->scenarios()['prihod']))
             $model->scenario = 'prihod';
         $model->material_importdo = 1;
-        
+
         $Mattraffic = new Mattraffic;
 
         if ($model->load(Yii::$app->request->post())) {
@@ -181,6 +181,19 @@ class MaterialController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionToexcel()
+    {
+        $searchModel = new MaterialSearch();
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $modelname = $searchModel->formName();
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+        $selectvalues = json_decode($params['selectvalues']);
+        $labelvalues = isset($params['labelvalues']) ? json_decode($params['labelvalues']) : NULL;
+
+        Proc::Grid2Excel($dataProvider, $modelname, 'Список материальных ценностей', $selectvalues, new MaterialFilter, $labelvalues);
     }
 
     /**
