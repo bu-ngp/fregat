@@ -29,7 +29,7 @@ class AuthuserController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'selectinput'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -163,6 +163,16 @@ class AuthuserController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionSelectinput($field, $q = null)
+    {
+        return Proc::select2request([
+            'model' => new Authuser,
+            'field' => $field,
+            'q' => $q,
+            'order' => 'auth_user_fullname',
         ]);
     }
 

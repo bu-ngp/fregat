@@ -2,13 +2,16 @@
 
 namespace app\models\Fregat;
 
+use app\models\Config\Authuser;
 use Yii;
 use yii\base\Model;
 
 class MaterialFilter extends Model
 {
 
-
+    public $mol_fullname_material;
+    public $mol_fullname_material_not;
+    public $material_writeoff;
     public $mol_id_build;
     public $mol_id_build_not;
     public $tr_osnov_kab;
@@ -20,6 +23,8 @@ class MaterialFilter extends Model
     {
         return [
             [[
+                'mol_fullname_material',
+                'mol_fullname_material_not',
                 'mattraffic_username',
                 'tr_osnov_kab',
             ], 'safe'],
@@ -30,6 +35,7 @@ class MaterialFilter extends Model
             [[
                 'mol_id_build',
                 'mol_id_build_not',
+                'material_writeoff',
             ], 'integer'],
         ];
     }
@@ -37,8 +43,10 @@ class MaterialFilter extends Model
     public function attributeLabels()
     {
         return [
-            'mol_id_build' => 'Здание материально-ответственного лица',
-            'tr_osnov_kab' => 'Кабинет в котором находится материальная ценность',
+            'mol_fullname_material' => 'Текущее материально-ответственное лицо',
+            'mol_id_build' => 'Здание в котором установлена материальная ценность',
+            'material_writeoff' => 'Списан',
+            'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
         ];
@@ -54,7 +62,8 @@ class MaterialFilter extends Model
     {
         $values = [
             'mol_id_build' => [$value => Build::getBuildByID($value)],
-
+            'mol_fullname_material' => [$value => Authuser::getAuthuserByID($value)],
+            'material_writeoff' => Material::VariablesValues($attribute),
             /* 'patient_pol' => Patient::VariablesValues($attribute),
              'fias_city' => [$value => Fias::GetCityByAOGUID($value)],
              'fias_street' => [$value => Fias::GetStreetByAOGUID($value)],

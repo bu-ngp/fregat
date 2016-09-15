@@ -2,6 +2,8 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\TrMat;
+use app\models\Fregat\TrMatSearch;
 use Yii;
 use app\models\Fregat\Material;
 use app\models\Fregat\MaterialSearch;
@@ -133,6 +135,9 @@ class MaterialController extends Controller
         $searchModel_recoverysendmat = new RecoveryrecieveaktmatSearch();
         $dataProvider_recoverysendmat = $searchModel_recoverysendmat->searchformaterialkarta(Yii::$app->request->queryParams);
 
+        $searchModel_mattraffic_contain = new TrMatSearch();
+        $dataProvider_mattraffic_contain = $searchModel_mattraffic_contain->searchformaterialcontain(Yii::$app->request->queryParams);
+
         if (Yii::$app->user->can('MaterialEdit') && $model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
@@ -149,6 +154,8 @@ class MaterialController extends Controller
                 'dataProvider_recoverysend' => $dataProvider_recoverysend,
                 'searchModel_recoverysendmat' => $searchModel_recoverysendmat,
                 'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
+                'searchModel_mattraffic_contain' => $searchModel_mattraffic_contain,
+                'dataProvider_mattraffic_contain' => $dataProvider_mattraffic_contain,
             ]);
     }
 

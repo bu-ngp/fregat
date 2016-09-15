@@ -24,6 +24,43 @@ use app\func\Proc;
     <div class="insideforms">
 
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
+            <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
+            <div class="panel-body">
+
+                <?=
+                $form->field($model, 'mol_fullname_material')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new \app\models\Config\Authuser,
+                    'placeholder' => 'Введите ФИО Материально-ответственного лица',
+                    'setsession' => false,
+                    'multiple' => [
+                        'multipleshowall' => false,
+                        'idvalue' => 'auth_user_id',
+                    ],
+                    'fields' => [
+                        'keyfield' => 'mol_fullname_material',
+                        'resultfield' => 'auth_user_fullname',
+                    ],
+                    'resultrequest' => 'Config/authuser/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                ]), [
+                    'addon' => [
+                        'prepend' => [
+                            'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'mol_fullname_material'),
+                        ],
+                        'groupOptions' => [
+                            'class' => 'notforselect2',
+                        ],
+                    ],
+                ]));
+                ?>
+
+                <?= Proc::FilterFieldSelectSingle($form, $model, 'material_writeoff', 'Выберете пол пациента') ?>
+
+            </div>
+        </div>
+
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Перемещение материальных ценностей') ?></div>
             <div class="panel-body">
 

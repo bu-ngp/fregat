@@ -5,12 +5,11 @@ namespace app\func;
 use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportsTemplate\RecoverysendaktReport;
 use app\models\Fregat\Fregatsettings;
-use app\models\Fregat\Recoverysendakt;
 use Yii;
+use yii\base\View;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
-use yii\validators\StringValidator;
 use yii\web\HttpException;
 use yii\web\Session;
 use yii\helpers\Url;
@@ -22,27 +21,67 @@ use yii\base\Model;
 use kartik\datecontrol\DateControl;
 use kartik\touchspin\TouchSpin;
 
+/**
+ * Class Proc Класс функций системы
+ * @package app\func
+ */
 class Proc
 {
 
+    /**
+     *  Константа для текстового сравнения в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const Text = 1;
+    /**
+     * Константа для числового сравнения в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const Number = 2;
-    const Strikt = 3;
+    /**
+     * Константа для строгого сравнения в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
+    const Strict = 3;
+    /**
+     * Константа для сравнения с использованием массива устолвия Where ActiveQuery в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const WhereStatement = 4;
+    /**
+     * Константа для сравнения с использованием CheckBox в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const Mark = 5;
+    /**
+     * Константа для сравнения дат в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const DateRange = 6;
+    /**
+     * Константа для сравнения с мультивыбором из списка в доп фильтре ModelSearch, используется в Filter_Compare().
+     */
     const MultiChoice = 7;
 
-    public static function Breadcrumbs($view, $param = null)
+    /**
+     * Функция создает массив ссылок для хлебных крошек используя сессию.
+     * @param View $View Текущее представление.
+     * @param array $Param Массив параметров.
+     * <br>     $Param = [
+     * <br>         'ClearBefore' => False (boolean) Очистить историю переходов в хлебных крошках.
+     * <br>          'AddFirst' => [] (array) Массив параметров первой ссылки в хлебных крошках.
+     * <br>             'Label' => (string) Имя хлебной крошки.
+     * <br>             'Url' => (string) Ссылка хлебной крошки.
+     * <br>         'PostFix' => '' (string) Суффикс к ID хлебной крошки.
+     * <br>         'Model' => (ActiveRecord|array[ActiveRecord]) Модель ActiveRecord или массив моделей, для создания списка атрибутов в сессии, для хранения значений введеных пользователем.
+     * <br>     ]
+     * @return array Массив ссылок хлебных крошек.
+     * @throws HttpException
+     */
+    public static function Breadcrumbs($View, $Param = null)
     {
-        if (isset($view)) {
-            $param = $param === null ? [] : $param;
+        if (isset($View)) {
+            $Param = $Param === null ? [] : self::array_change_key_case_recursive($Param);
 
-            $clearbefore = isset($param['clearbefore']) && is_bool($param['clearbefore']) ? $param['clearbefore'] : false;
-            $addfirst = isset($param['addfirst']) && is_array($param['addfirst']) ? $param['addfirst'] : [];
+            $clearbefore = isset($Param['clearbefore']) && is_bool($Param['clearbefore']) ? $Param['clearbefore'] : false;
+            $addfirst = isset($Param['addfirst']) && is_array($Param['addfirst']) ? $Param['addfirst'] : [];
 
-            $postfix = isset($param['postfix']) ? $param['postfix'] : '';
-            $id = $view->context->module->controller->id . '/' . $view->context->module->requestedRoute . '/' . $postfix;
+            $postfix = isset($Param['postfix']) ? $Param['postfix'] : '';
+            $id = $View->context->module->controller->id . '/' . $View->context->module->requestedRoute . '/' . $postfix;
 
             $session = new Session;
             $session->open();
@@ -69,9 +108,9 @@ class Proc
             $params = Yii::$app->getRequest()->getQueryParams();
             unset($params['r']);
             $result[$id] = array_replace_recursive($result[$id], [
-                'label' => '<span class="bc_lighter"></span>' . (empty($view->title) ? '-' : $view->title),
+                'label' => '<span class="bc_lighter"></span>' . (empty($View->title) ? '-' : $View->title),
                 'encode' => false,
-                'url' => Url::toRoute(array_merge([$view->context->module->requestedRoute], $params)),
+                'url' => Url::toRoute(array_merge([$View->context->module->requestedRoute], $params)),
                 'dopparams' => isset($_GET['foreignmodel']) ? [
                     'foreign' => [
                         'url' => (string)filter_input(INPUT_GET, 'url'),
@@ -82,11 +121,11 @@ class Proc
                 ] : []
             ]);
 
-            if (isset($param['model']) && !is_array($param['model']))
-                $param['model'] = [$param['model']];
+            if (isset($Param['model']) && !is_array($Param['model']))
+                $Param['model'] = [$Param['model']];
 
-            if (isset($param['model']) && is_array($param['model'])) {
-                foreach ($param['model'] as $model) {
+            if (isset($Param['model']) && is_array($Param['model'])) {
+                foreach ($Param['model'] as $model) {
                     if (!isset($result[$id]['dopparams'][$model->formName()])) {
                         $result[$id] = array_replace_recursive($result[$id], [
                             'dopparams' => [$model->formName() => $model->attributes],
@@ -94,18 +133,12 @@ class Proc
                     } else {
                         end($result);
 
-                        $value = '';
-
-                        $field = $result[key($result)]['dopparams']['foreign']['field'];
-
                         if (count($result) > 0 && $id !== key($result))
                             prev($result);
 
                         // Массовое присваивание не походит, нужно пройти по всем атрибутам
                         foreach ($model->attributes as $attr => $value)
                             $model->$attr = $result[key($result)]['dopparams'][$model->formName()][$attr];
-
-                        //  $model->load($result[key($result)]['dopparams'], $model->formName());
                     }
                 }
 
@@ -141,7 +174,11 @@ class Proc
             throw new HttpException(500, 'Ошибка при передачи параметров в function Breadcrumbs');
     }
 
-    // Настройки по умолчанию для DynaGrid
+    /**
+     * Настройки по умолчанию для DynaGrid.
+     * @param array $Options массив настроек DynaGrid.
+     * @return array массив настроек DynaGrid.
+     */
     public static function DGopts($Options)
     {
         if (isset($Options) && is_array($Options))
@@ -149,7 +186,7 @@ class Proc
                 'options' => ['id' => 'dynagrid-1'],
                 'showPersonalize' => true,
                 'storage' => 'cookie',
-                //'allowPageSetting' => false, 
+                //'allowPageSetting' => false,
                 'allowThemeSetting' => false,
                 'allowFilterSetting' => false,
                 'allowSortSetting' => false,
@@ -163,32 +200,65 @@ class Proc
             ], $Options);
     }
 
-    // Возвращает массив колонок для DynaGrid
-    // $params['columns'] - массив полей базы данных для грида
-    // $params['buttons'] - Кнопки для ActionColumn
-    // $params['buttons']['update' => [0 => URL для обновления записи, 1 => ID обновляемой записи]]
-    // $params['buttons']['delete' => [0 => URL для удаления записи, 1 => ID удаляемой записи]]
-    // $params['buttonsfirst'] - Расположить кнопки в первой колонке
-    public static function DGcols($params)
+    /**
+     * Меняет регистр ключей массива в нижний, рекурсивно.
+     * @param array $arr
+     * @return array
+     */
+    public static function array_change_key_case_recursive($arr)
     {
-        if (isset($params) && is_array($params)) {
+        return array_map(function ($item) {
+            if (is_array($item))
+                $item = self::array_change_key_case_recursive($item);
+            return $item;
+        }, array_change_key_case($arr));
+    }
+
+    /**
+     * Возвращает массив колонок для DynaGrid.
+     * @param array $Params Массив параметров.
+     * <br>     $Params = [
+     * <br>         'ButtonsFirst' => True (boolean) Разместить кнопки действий в первой колонке.
+     * <br>         'Columns' => [] (array) Настроек колонок DynaGrid.
+     * <br>         'Buttons' => [] (array) Массив кнопок действий.
+     * <br>             'Update' => NULL (array) Массив кнопки обновления записи.
+     * <br>                 0 => (string) Url действия обновления записи.
+     * <br>                 1 => Значение первичного ключа Модели (integer) Значение параметра $_GET['id'] для действия.
+     * <br>             'Delete' => NULL (array) Массив кнопки удаления записи.
+     * <br>                 0 => (string) Url действия удаления записи.
+     * <br>                 1 => Значение первичного ключа Модели (integer) Значение параметра $_GET['id'] для действия.
+     * <br>             'DeleteAjax' => NULL (array) Массив кнопки удаления записи, посредством Ajax запроса.
+     * <br>                 0 => (string) Url действия удаления записи, посредством Ajax запроса.
+     * <br>                 1 => Значение первичного ключа Модели (integer) Значение параметра $_GET['id'] для действия.
+     * <br>             'ChooseAjax' => NULL (array) Массив кнопки выбора записи из справочника, посредством Ajax запроса.
+     * <br>                 0 => (string) Url действия выбора записи из справочника, посредством Ajax запроса.
+     * <br>             'ВownloadКeport' => NULL (array) Массив кнопки для скачивания отчета по ИД записи, посредством Ajax запроса.
+     * <br>                 0 => (string) Url действия для скачивания отчета по ИД записи, посредством Ajax запроса.
+     * <br>     ]
+     * @return array Массив колонок DynaGrid.
+     */
+    public static function DGcols($Params)
+    {
+        if (isset($Params) && is_array($Params)) {
+            $Params = self::array_change_key_case_recursive($Params);
+
             // Делаем строку 'template' на основе массива кнопок
-            $tmpl = isset($params['buttons']) && is_array($params['buttons']) ? '{' . implode("} {", array_keys($params['buttons'])) . '}' : '';
+            $tmpl = isset($Params['buttons']) && is_array($Params['buttons']) ? '{' . implode("} {", array_keys($Params['buttons'])) . '}' : '';
 
             // Если есть кнопка обновления записи
-            if (isset($params['buttons']['update']) && is_array($params['buttons']['update'])) {
-                $params['buttons']['update'] = function ($url, $model) use ($params) {
-                    $id = isset($params['buttons']['update'][1]) ? $model[$params['buttons']['update'][1]] : $model->primaryKey;
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['update'][0], 'id' => $id]);
+            if (isset($Params['buttons']['update']) && is_array($Params['buttons']['update'])) {
+                $Params['buttons']['update'] = function ($url, $model) use ($Params) {
+                    $id = isset($Params['buttons']['update'][1]) ? $model[$Params['buttons']['update'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$Params['buttons']['update'][0], 'id' => $id]);
                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                 };
             }
 
             // Если есть кнопка удаления записи
-            if (isset($params['buttons']['delete']) && is_array($params['buttons']['delete'])) {
-                $params['buttons']['delete'] = function ($url, $model) use ($params) {
-                    $id = isset($params['buttons']['delete'][1]) ? $model[$params['buttons']['delete'][1]] : $model->primaryKey;
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['delete'][0], 'id' => $id]);
+            if (isset($Params['buttons']['delete']) && is_array($Params['buttons']['delete'])) {
+                $Params['buttons']['delete'] = function ($url, $model) use ($Params) {
+                    $id = isset($Params['buttons']['delete'][1]) ? $model[$Params['buttons']['delete'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$Params['buttons']['delete'][0], 'id' => $id]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
                         'type' => 'button',
                         'title' => 'Удалить',
@@ -199,53 +269,53 @@ class Proc
             }
 
             // Если есть кнопка удаления записи посредством ajax
-            if (isset($params['buttons']['deleteajax']) && is_array($params['buttons']['deleteajax'])) {
-                $params['buttons']['deleteajax'] = function ($url, $model) use ($params) {
-                    $id = isset($params['buttons']['deleteajax'][1]) ? $model[$params['buttons']['deleteajax'][1]] : $model->primaryKey;
-                    $customurl = Yii::$app->getUrlManager()->createUrl([$params['buttons']['deleteajax'][0], 'id' => $id]);
+            if (isset($Params['buttons']['deleteajax']) && is_array($Params['buttons']['deleteajax'])) {
+                $Params['buttons']['deleteajax'] = function ($url, $model) use ($Params) {
+                    $id = isset($Params['buttons']['deleteajax'][1]) ? $model[$Params['buttons']['deleteajax'][1]] : $model->primaryKey;
+                    $customurl = Yii::$app->getUrlManager()->createUrl([$Params['buttons']['deleteajax'][0], 'id' => $id]);
                     return Html::button('<i class="glyphicon glyphicon-trash"></i>', [
                         'type' => 'button',
                         'title' => 'Удалить',
                         'class' => 'btn btn-xs btn-danger',
-                        'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '"' . (isset($params['buttons']['deleteajax'][2]) ? ', "' . $params['buttons']['deleteajax'][2] . '"' : '') . ')'
+                        'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '"' . (isset($Params['buttons']['deleteajax'][2]) ? ', "' . $Params['buttons']['deleteajax'][2] . '"' : '') . ')'
                     ]);
                 };
             }
 
             // Если есть кнопка выбора записи посредством ajax
-            if (isset($params['buttons']['chooseajax']) && is_array($params['buttons']['chooseajax'])) {
-                $params['buttons']['chooseajax'] = function ($url, $model) use ($params) {
+            if (isset($Params['buttons']['chooseajax']) && is_array($Params['buttons']['chooseajax'])) {
+                $Params['buttons']['chooseajax'] = function ($url, $model) use ($Params) {
                     return Html::button('<i class="glyphicon glyphicon-ok-sign"></i>', [
                         'type' => 'button',
                         'title' => 'Выбрать',
                         'class' => 'btn btn-xs btn-success',
-                        'onclick' => 'AssignValueFromGrid("' . Url::to([$params['buttons']['chooseajax'][0]]) . '","' . $model->primarykey . '")'
+                        'onclick' => 'AssignValueFromGrid("' . Url::to([$Params['buttons']['chooseajax'][0]]) . '","' . $model->primarykey . '")'
                     ]);
                 };
             }
 
             // Если есть кнопка скачивания отчета по ИД
-            if (isset($params['buttons']['downloadreport']) && is_array($params['buttons']['downloadreport'])) {
-                $params['buttons']['downloadreport'] = function ($url, $model) use ($params) {
+            if (isset($Params['buttons']['downloadreport']) && is_array($Params['buttons']['downloadreport'])) {
+                $Params['buttons']['downloadreport'] = function ($url, $model) use ($Params) {
                     return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                         'type' => 'button',
                         'title' => 'Скачать отчет',
                         'class' => 'btn btn-xs btn-info',
-                        'onclick' => 'DownloadReport("' . Url::to([$params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '} )'
+                        'onclick' => 'DownloadReport("' . Url::to([$Params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '} )'
                     ]);
                 };
             }
 
-            $mascolumns = isset($params['columns']) && is_array($params['columns']) ? $params['columns'] : [];
-            $masbuttons = isset($params['buttons']) && is_array($params['buttons']) && count($params['buttons']) > 0 ? [
+            $mascolumns = isset($Params['columns']) && is_array($Params['columns']) ? $Params['columns'] : [];
+            $masbuttons = isset($Params['buttons']) && is_array($Params['buttons']) && count($Params['buttons']) > 0 ? [
                 ['class' => 'kartik\grid\ActionColumn',
                     'header' => Html::encode('Действия'),
                     'contentOptions' => ['style' => 'white-space: nowrap;'],
                     'template' => $tmpl,
-                    'buttons' => is_array($params['buttons']) ? $params['buttons'] : [],]
+                    'buttons' => is_array($Params['buttons']) ? $Params['buttons'] : [],]
             ] : [];
 
-            $masitog = (!isset($params['buttonsfirst']) || $params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
+            $masitog = (!isset($Params['buttonsfirst']) || $Params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
 
             return array_merge([
                 ['class' => 'kartik\grid\SerialColumn',
@@ -255,50 +325,62 @@ class Proc
         }
     }
 
-    // Возвращает параметры для элемента Select2
-    // $params[model] - Модель из которой берутся данные
-    // $params[resultmodel] - 
-    // $params[resultrequest] -
-    // $params[placeholder] -
-    // $params[fromgridroute] - 
-    // $params[thisroute] - 
-    // $params[fields] - 
-    // $params[dopparams] - 
-    // $params[methodquery] - 
-    // $params[methodparams] - 
-    // $params[ajaxparams] - 
-    // $params[minimumInputLength] - 
-    // $params[form] - Имя формы, которому пренадлежит select2, по умолчанию не задано
-    // $params[options] - Заменяет параметр "options", по умолчанию не задано
-    // $params[setsession] - Добавляет класс html "setsession" для сохранения знаечния в сессии, по умолчанию true
-    // $params[multiple][idvalue] - поле для определения ИД значений "data" при выборе multiple => true, обязательно при выборе мультивыбора
-    // $params[multiple][multipleshowall] - Показывает кнопку "Выбрать все" (при ajax загрузке значений не актуально), по умолчанию true
-    public static function DGselect2($params)
+    /**
+     * Возвращает параметры для элемента Select2 (Выбор из списка с кнопкой выбора из справочника).
+     * @param array $Params Набор параметров.
+     * <br>     $Params = [
+     * <br>         'Model' => (ActiveRecord|Model) Модель поля Select2.
+     * <br>         'ResultModel' => (ActiveRecord|Model) Модель, которая возвращает значения для списка Select2.
+     * <br>         'ResultRequest' => NULL (string) Url действия, который возвращает JSON строку с результатом выборки списка Select2, посредством Ajax запроса.
+     * <br>         'PlaceHolder' => 'Введите значение' (string) Подсказка PlaceHolder элемента Select2.
+     * <br>         'FromGridRoute' => NULL (string) Url действия с выбором из таблицы справочника. Если пусто, то кнопка "Выбор из справочника" не доступна.
+     * <br>         'ThisRoute' => (string) Маршрут действия в формате Controller/Action.
+     * <br>         'Fields' => (array) Параметры столбцов для запроса результатов Select2.
+     * <br>             'KeyField' => (string) Ключевое поле Модели $Params['Model'] по которому ищем значения из справочника.
+     * <br>             'ResultField' => NULL, если указан $Params['MethodQuery'] (string) Имя Поля-наименования по которому ищем значение.
+     * <br>             'ShowResultFields' => $Params['Fields']['ResultField'] (array) Массив имен полей, которые отображаются как результат поиска Select2 через запятую.
+     * <br>         'DopParams' => [] (array) Дополнительные параметры Url выбора из справочника $Params['FromGridRoute'].
+     * <br>         'MethodQuery' => (string) Метод модели $Params['ResultModel'] формирующий результат ActiveQuery для значений списка Select2.
+     * <br>         'MethodParams' => [] (array) Массив параметров для Ajax запроса для вывода результата поиска Select2 в JSON формате.
+     * <br>         'MinimumInputLength' => 3 (integer) Минимальное количество символов введеных пользователем в Select2, чтобы вызвать Ajax запрос поиска.
+     * <br>         'Form' => '' (string) Опция имени формы Select2.
+     * <br>         'Options' => [] (array) Массив опций Select2.
+     * <br>         'SetSession' => True (boolean) Устанавливает класс setsession для элемента html со значением ключа select2. Позволяет сохранять значение элемента в сессии.
+     * <br>         'Multiple' => [] (array) Массив параметров для мультивыбора значений из списка Select2.
+     * <br>             'MultipleShowAll' => True (boolean) Показывает кнопку "Выбрать все" (При Ajax загрузке значений не актуально).
+     * <br>             'IdValue' => (string) Имя поля модели $Params['ResultModel'] с ключами для мультивыбора.
+     * <br>     ]
+     * @return array Массив параметров для элемента Select2.
+     * @throws \Exception
+     */
+    public static function DGselect2($Params)
     {
-        if (isset($params) && is_array($params)) {
-            $model = $params['model'];
-            $resultmodel = $params['resultmodel'];
-            $resultrequest = $params['resultrequest'];
-            $placeholder = $params['placeholder'];
-            $fromgridroute = $params['fromgridroute'];
-            $thisroute = $params['thisroute'];
-            $fields = $params['fields'];
-            $dopparams = isset($params['dopparams']) ? $params['dopparams'] : '';
-            $methodquery = isset($params['methodquery']) ? $params['methodquery'] : '';
-            $methodparams = isset($params['methodparams']) ? $params['methodparams'] : [];
-            $minimumInputLength = isset($params['minimuminputlength']) ? $params['minimuminputlength'] : 3;
-            $form = isset($params['form']) ? $params['form'] : '';
-            $options = isset($params['options']) ? $params['options'] : '';
+        if (isset($Params) && is_array($Params)) {
+            $Params = self::array_change_key_case_recursive($Params);
 
-            $setsession = isset($params['setsession']) ? $params['setsession'] : true;
-            $multiple = isset($params['multiple']) && is_array($params['multiple']) ? $params['multiple'] : [];
-            $showToggleAll = isset($params['multiple']['multipleshowall']) ? $params['multiple']['multipleshowall'] : true;
+            $model = $Params['model'];
+            $resultmodel = $Params['resultmodel'];
+            $resultrequest = $Params['resultrequest'];
+            $placeholder = isset($Params['placeholder']) ? $Params['placeholder'] : 'Введите значение';
+            $fromgridroute = $Params['fromgridroute'];
+            $thisroute = $Params['thisroute'];
+            $fields = $Params['fields'];
+            $dopparams = isset($Params['dopparams']) ? $Params['dopparams'] : '';
+            $methodquery = isset($Params['methodquery']) ? $Params['methodquery'] : '';
+            $methodparams = isset($Params['methodparams']) ? $Params['methodparams'] : [];
+            $minimumInputLength = isset($Params['minimuminputlength']) ? $Params['minimuminputlength'] : 3;
+            $form = isset($Params['form']) ? $Params['form'] : '';
+            $optionsselect2 = isset($Params['options']) ? $Params['options'] : [];
+
+            $setsession = isset($Params['setsession']) ? $Params['setsession'] : true;
+            $multiple = isset($Params['multiple']) && is_array($Params['multiple']) ? $Params['multiple'] : [];
+            $showToggleAll = isset($Params['multiple']['multipleshowall']) ? $Params['multiple']['multipleshowall'] : true;
 
             $ajaxparamsString = '';
             foreach ($methodparams as $key => $value)
                 $ajaxparamsString .= ',' . $key . ': ' . $value;
 
-            if (!isset($fields['showresultfields']) && !isset($fields['methodquery']))
+            if (empty($fields['showresultfields']) && empty($methodquery))
                 $fields['showresultfields'] = [$fields['resultfield']];
 
             $errorstring = '';
@@ -310,8 +392,8 @@ class Proc
                 $errorstring .= 'empty($fields[\'keyfield\']); ';
             if (empty($fields['resultfield']))
                 $errorstring .= 'empty($fields[\'resultfield\']); ';
-            if (empty($params['methodquery']))
-                $errorstring .= 'empty($params[\'methodquery\']); ';
+            if (empty($methodquery))
+                $errorstring .= 'empty($Params[\'methodquery\']); ';
             if (empty($thisroute))
                 $errorstring .= 'empty($thisroute); ';
             if (empty($multiple))
@@ -319,7 +401,7 @@ class Proc
             if (isset($multiple['idvalue']))
                 $errorstring .= 'isset($multiple[\'idvalue\']); ';
 
-            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($params['methodquery'])) && !empty($thisroute) && (!empty($multiple) && isset($multiple['idvalue']) || empty($multiple))) {
+            if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($methodquery)) && !empty($thisroute) && (!empty($multiple) && isset($multiple['idvalue']) || empty($multiple))) {
 
                 $valuemodel = is_array($model->$fields['keyfield']) ? $model->$fields['keyfield'] : [$model->$fields['keyfield']];
 
@@ -351,7 +433,7 @@ class Proc
 
                 return array_merge([
                     'initValueText' => !empty($multiple) ? '' : implode(', ', ['text' => $initrecord['text']]),
-                    'options' => empty($options) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control' . ($setsession ? ' setsession' : ''), 'disabled' => isset($params['disabled']) && $params['disabled'] === true], empty($form) ? [] : ['form' => $form], empty($multiple) ? [] : ['multiple' => true]) : $options,
+                    'options' => empty($optionsselect2) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control' . ($setsession ? ' setsession' : ''), 'disabled' => isset($Params['disabled']) && $Params['disabled'] === true], empty($form) ? [] : ['form' => $form], empty($multiple) ? [] : ['multiple' => true]) : $optionsselect2,
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'showToggleAll' => $showToggleAll,
                     'pluginOptions' => [
@@ -360,11 +442,11 @@ class Proc
                         'ajax' => [
                             'url' => Url::to([$resultrequest]),
                             'dataType' => 'json',
-                            'data' => empty($fields['methodquery']) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . '' . $ajaxparamsString . ' } }') : new JsExpression('function(params) { return {q:params.term' . $ajaxparamsString . '} }'),
+                            'data' => empty($methodquery) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . '' . $ajaxparamsString . ' } }') : new JsExpression('function(params) { return {q:params.term' . $ajaxparamsString . '} }'),
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                     ]
-                ], !empty($fromgridroute) && (empty($params['disabled']) || $params['disabled'] === false) ? [
+                ], !empty($fromgridroute) && (empty($Params['disabled']) || $Params['disabled'] === false) ? [
                     'addon' => [
                         'append' => [
                             'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
@@ -390,6 +472,11 @@ class Proc
     // $params[q] - Текстовая строка поиска
     // $params[showresultfields] - Массив полей, которые возвращаются, как результат поиска
     // $params[order] - сортировка sql activequery OrderBy()
+    /**
+     * @param $params
+     * @return array
+     * @throws \Exception
+     */
     public static function select2request($params)
     {
         if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && (is_string($params['field']) || isset($params['methodquery']))) {
@@ -422,7 +509,9 @@ class Proc
             throw new \Exception('Ошибка в Proc::select2request()');
     }
 
-    // Удаляет последний элемент массива хлебных крошек из сессии
+    /**
+     * Удаляет последний элемент массива хлебных крошек из сессии.
+     */
     public static function RemoveLastBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -434,7 +523,10 @@ class Proc
         $session->close();
     }
 
-    // Возвращает массив хлебных крошек из сессии
+    /**
+     * Возвращает массив хлебных крошек из сессии.
+     * @return array
+     */
     public static function GetBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -444,7 +536,10 @@ class Proc
         return $bc;
     }
 
-    // Возвращает предпоследний элемент хлебных крошек из сессии
+    /**
+     * Возвращает предпоследний элемент хлебных крошек из сессии.
+     * @return array
+     */
     public static function GetPreviusBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -456,7 +551,10 @@ class Proc
         return $bc[key($bc)];
     }
 
-    // Возвращает последний элемент хлебных крошек из сессии
+    /**
+     * Возвращает последний элемент хлебных крошек из сессии.
+     * @return array
+     */
     public static function GetLastBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -467,7 +565,10 @@ class Proc
         return $bc[key($bc)];
     }
 
-    // Возвращает предпоследний URL из хлебных крошек из сессии
+    /**
+     * Возвращает предпоследний URL из хлебных крошек из сессии.
+     * @return string
+     */
     public static function GetPreviousURLBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -482,7 +583,10 @@ class Proc
             return Yii::$app->homeUrl;
     }
 
-    // Возвращает последний URL из хлебных крошек из сессии
+    /**
+     * Возвращает последний URL из хлебных крошек из сессии.
+     * @return string
+     */
     public static function GetLastURLBreadcrumbsFromSession()
     {
         $session = new Session;
@@ -493,17 +597,22 @@ class Proc
         return isset($bc[key($bc)]['url']) ? $bc[key($bc)]['url'] : '';
     }
 
-    // Сохранить модель в сессии
-    public static function SetSessionValuesFromAR($model, $PreviusBC = false)
+    /**
+     * Сохранить значения атрибутов модели в сессии в хлебной крошке.
+     * @param ActiveRecord|Model $Model Модель, атрибуты которой будут сохранены в сессии в последней хлебной крошки.
+     * @param bool $PreviusBC Если True, то сохранить в сессии предыдущей хлебной крошки.
+     * @throws \Exception
+     */
+    public static function SetSessionValuesFromAR($Model, $PreviusBC = false)
     {
-        if ($model instanceof ActiveRecord) {
+        if ($Model instanceof ActiveRecord) {
             $BC = self::GetBreadcrumbsFromSession();
             end($BC);
             if ($PreviusBC)
                 prev($BC);
 
-            foreach ($model as $attr => $value)
-                $BC[key($BC)]['dopparams'][$model->formName()][$attr] = $value;
+            foreach ($Model as $attr => $value)
+                $BC[key($BC)]['dopparams'][$Model->formName()][$attr] = $value;
             $session = new Session;
             $session->open();
             $session['breadcrumbs'] = $BC;
@@ -512,7 +621,11 @@ class Proc
             throw new \Exception('Ошибка в Proc::SetSessionValuesFromAR()');
     }
 
-    public static function GetMenuButtons($view)
+    /**
+     * @param View $View
+     * @return array
+     */
+    public static function GetMenuButtons($View)
     {
         $controller = Yii::$app->controller;
         $default_controller = Yii::$app->defaultRoute;
@@ -530,7 +643,7 @@ class Proc
         $session->open();
 
         foreach ($urls as $url) // Записываем в сессию url меню
-            if ($url === $view->context->module->requestedRoute) {
+            if ($url === $View->context->module->requestedRoute) {
                 $session['currentmenuurl'] = $url;
                 break;
             }
@@ -574,6 +687,9 @@ class Proc
         return $result;
     }
 
+    /**
+     * @param $ButtonsGroup
+     */
     public static function SetMenuButtons($ButtonsGroup)
     {
         $session = new Session;
@@ -582,6 +698,15 @@ class Proc
         $session->close();
     }
 
+    /**
+     * @param $ps_pattern
+     * @param $ps_subject
+     * @param $pa_matches
+     * @param $pn_flags
+     * @param int $pn_offset
+     * @param null $ps_encoding
+     * @return int
+     */
     static function mb_preg_match_all($ps_pattern, $ps_subject, &$pa_matches, $pn_flags = PREG_PATTERN_ORDER, $pn_offset = 0, $ps_encoding = NULL)
     {
         // WARNING! - All this function does is to correct offsets, nothing else:
@@ -604,19 +729,18 @@ class Proc
 
     /**
      * Функция проверяет имя файла, если оно существует, в название добавляется порядковый номер, например Список.xls переходит в Список(1).xls
-     *
-     * $fileroot - путь к файлу
-     * возвращает новое имя файла
+     * @param string $FileRoot Путь к файлу
+     * @return string Новое имя файла.
      */
-    static function SaveFileIfExists($fileroot)
+    static function SaveFileIfExists($FileRoot)
     {
         $counter = 1;
-        $filename = substr($fileroot, strpos($fileroot, '/') + 1);
+        $filename = substr($FileRoot, strpos($FileRoot, '/') + 1);
 
-        while (file_exists($fileroot)) {
-            preg_match('/(.+\/)(.+?)((\(.+)?\.)(.+)/i', $fileroot, $file_arr);
+        while (file_exists($FileRoot)) {
+            preg_match('/(.+\/)(.+?)((\(.+)?\.)(.+)/i', $FileRoot, $file_arr);
             // $file_arr[1] - Директория, $file_arr[2] - Имя файла, end($file_arr) - Расширение файла
-            $fileroot = $file_arr[1] . $file_arr[2] . '(' . $counter . ')' . '.' . end($file_arr);
+            $FileRoot = $file_arr[1] . $file_arr[2] . '(' . $counter . ')' . '.' . end($file_arr);
             $filename = $file_arr[2] . '(' . $counter . ')' . '.' . end($file_arr);
             $counter++;
         }
@@ -624,6 +748,12 @@ class Proc
         return $filename;
     }
 
+    /**
+     * @param $modelsearch
+     * @param $field
+     * @param string $type
+     * @return array
+     */
     static function WhereConstruct($modelsearch, $field, $type = '')
     {
         $getattr = $modelsearch->getAttribute($field);
@@ -643,6 +773,10 @@ class Proc
         return [empty($operator) ? '=' : $operator, $field, $value];
     }
 
+    /**
+     * @param $string
+     * @return string
+     */
     static function Translit($string)
     {
         $replace = array(
@@ -687,6 +821,10 @@ class Proc
         return $str = iconv("UTF-8", "UTF-8//IGNORE", strtr($string, $replace));
     }
 
+    /**
+     * @param $Fullname
+     * @return string
+     */
     public static function CreateLogin($Fullname)
     {
         preg_match('/(\w+)\s?(\w+)?\s?(\w+)?/ui', $Fullname, $matches);
@@ -706,6 +844,10 @@ class Proc
         return $count > 0 ? $result . $count : $result;
     }
 
+    /**
+     * @param $file
+     * @return bool
+     */
     public static function file_exists_ci($file)
     {
         if (file_exists($file))
@@ -717,6 +859,12 @@ class Proc
         return FALSE;
     }
 
+    /**
+     * @param $DataProvider
+     * @param null $fields
+     * @param null $LabelValues
+     * @return array
+     */
     public static function GetAllLabelsFromAR($DataProvider, $fields = NULL, $LabelValues = NULL)
     {
         $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
@@ -725,12 +873,17 @@ class Proc
                 $fields = $cls_ar->attributes;
             $labels = [];
             array_walk($fields, function ($value, $key) use (&$labels, $cls_ar, $LabelValues) {
-                $labels[$key] = property_exists($LabelValues, $key) ? $LabelValues->$key : $cls_ar->getAttributeLabel($key);
+                $labels[$key] = !empty($LabelValues) && property_exists($LabelValues, $key) ? $LabelValues->$key : $cls_ar->getAttributeLabel($key);
             });
         }
         return $labels;
     }
 
+    /**
+     * @param $Activerecord
+     * @param null $fields
+     * @return array
+     */
     public static function GetAllDataFromAR($Activerecord, $fields = null)
     {
         if (!is_array($fields))
@@ -790,17 +943,43 @@ class Proc
         return $data;
     }
 
+    /**
+     * @param $num
+     * @return string
+     */
+    public static function getNameFromNumber($num)
+    {
+        $numeric = $num % 26;
+        $letter = chr(65 + $numeric);
+        $num2 = intval($num / 26);
+        if ($num2 > 0) {
+            return getNameFromNumber($num2 - 1) . $letter;
+        } else {
+            return $letter;
+        }
+    }
+
+    /**
+     * @param $dataProvider
+     * @param $modelName
+     * @param $reportName
+     * @param null $selectvalues
+     * @param null $ModelFilter
+     * @param null $LabelValues
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Reader_Exception
+     */
     public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL, $ModelFilter = NULL, $LabelValues = NULL)
     {
         $objPHPExcel = new \PHPExcel;
 
         /* Границы таблицы */
         $ramka = array(
-            'borders' => array(
-                'bottom' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-                'top' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-                'left' => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-                'right' => array('style' => \PHPExcel_Style_Border::BORDER_THIN))
+            'borders' => [
+                'allborders' => [
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                ],
+            ],
         );
 
         /* Жирный шрифт для шапки таблицы */
@@ -832,6 +1011,7 @@ class Proc
         $inputdata = json_decode($params['inputdata']);
         $fields = Proc::GetArrayValuesByKeyName($modelName, $inputdata);
         $selectvalues = (array)$selectvalues;
+        $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName], $LabelValues);
 
         $dataProvider->pagination = false;
         $filter = 'Фильтр:';
@@ -859,14 +1039,11 @@ class Proc
                 $r++;
                 // Названия полей
                 if ($row === 0) {
-                    $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName], $LabelValues);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
                     $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
                     foreach ($labels as $label) {
                         $i++;
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
-                        $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
                         $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
                     }
                 }
@@ -874,7 +1051,6 @@ class Proc
                 $data = self::GetAllDataFromAR($ar, $fields[$modelName]);
                 $i = 0;
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $r - 5);
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 foreach (array_keys($data) as $attr) {
                     $i++;
                     $ValidatorsAttr = $ar->getActiveValidators($attr);
@@ -888,21 +1064,20 @@ class Proc
                         $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '', \PHPExcel_Cell_DataType::TYPE_STRING);
                     else
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, isset($data[$attr]) ? $data[$attr] : '');
-                    $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r)->applyFromArray($ramka);
                 }
+                $objPHPExcel->getActiveSheet()->getStyle('A5:' . self::getNameFromNumber($i) . $r)->applyFromArray($ramka);
             }
         } else {
             $r++;
             $labels = self::GetAllLabelsFromAR($dataProvider, $fields[$modelName], $LabelValues);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $r - 1, '№');
-            $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($ramka);
             $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0, $r - 1)->applyFromArray($font);
             foreach ($labels as $label) {
                 $i++;
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r - 1, $label);
-                $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($ramka);
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($i, $r - 1)->applyFromArray($font);
             }
+            $objPHPExcel->getActiveSheet()->getStyle('A5:' . self::getNameFromNumber($i) . ($r - 1))->applyFromArray($ramka);
         }
 
         $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, 1, $i, 1);
@@ -955,6 +1130,11 @@ class Proc
       'name' => string ''
      */
 
+    /**
+     * @param $KeyName
+     * @param $Obj
+     * @return array
+     */
     public static function GetArrayValuesByKeyName($KeyName, $Obj)
     {
         $result = [];
@@ -971,6 +1151,12 @@ class Proc
 
     // ФИЛЬТР в DYNAGRID-----------------------------------------------------------------------------------------------------------------
     // Устанавливаем фильтр из переденных параметров запроса и сохраняем в сессию, выводим строку фильтра для отображения в гриде
+    /**
+     * @param $ModelGridName
+     * @param $ModelFilter
+     * @return string
+     * @throws HttpException
+     */
     public static function SetFilter($ModelGridName, $ModelFilter)
     {
         if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
@@ -1005,6 +1191,12 @@ class Proc
     }
 
     // Заполняем форму Фильтра из сессии
+    /**
+     * @param $ModelGridName
+     * @param $ModelFilter
+     * @return bool
+     * @throws HttpException
+     */
     public static function PopulateFilterForm($ModelGridName, &$ModelFilter)
     {
         if (is_string($ModelGridName) && $ModelFilter instanceof Model) {
@@ -1030,6 +1222,12 @@ class Proc
     }
 
     // Получаем значения полей фильтра
+    /**
+     * @param $ModelGridName
+     * @param $ModelFilterName
+     * @return array
+     * @throws HttpException
+     */
     public static function GetFilter($ModelGridName, $ModelFilterName)
     {
         if (is_string($ModelGridName) && is_string($ModelFilterName)) {
@@ -1046,6 +1244,10 @@ class Proc
     }
 
     // Функция выводит строку фильтра для отображения в гриде
+    /**
+     * @param $AR
+     * @return string
+     */
     private static function ConstructFilterOutput($AR)
     {
         $session = new Session;
@@ -1140,6 +1342,12 @@ class Proc
 
     // Берет значение сначала из справочника (посредством перехода на страницу выбора), если нет, то вытаскивает из сессии (для простого обновления страницы)
     // выводит $kl - для последующей передачи в функцию Proc::SetSessionValuesFromAR, т.е. установить в последнюю сессию или предыдущую
+    /**
+     * @param $attrvar
+     * @param $modelname
+     * @param $attrname
+     * @return bool
+     */
     public static function GetValueForFillARs(&$attrvar, $modelname, $attrname)
     {
         $kl = false;
@@ -1155,6 +1363,12 @@ class Proc
         return $kl;
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     * @return mixed
+     */
     public static function FilterFieldDate($Form, $ActiveRecord, $FieldName)
     {
         return $Form->field($ActiveRecord, $FieldName)->widget(DateControl::classname(), [
@@ -1166,6 +1380,12 @@ class Proc
         ]);
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     * @param null $Options
+     */
     public static function FilterFieldIntCondition($Form, $ActiveRecord, $FieldName, $Options = NULL)
     {
         if (!is_array($Options))
@@ -1191,6 +1411,12 @@ class Proc
         echo '</div></div></div>';
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     * @return mixed
+     */
     public static function SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName)
     {
         $field = $Form->field($ActiveRecord, $FieldName . '_not')->checkbox()->label('НЕ', ['class' => 'labelbold']);
@@ -1198,10 +1424,17 @@ class Proc
         return $field;
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     * @param $PlaceHolder
+     * @return mixed
+     */
     public static function FilterFieldSelectSingle($Form, $ActiveRecord, $FieldName, $PlaceHolder)
     {
         if (method_exists($ActiveRecord, 'VariablesValues'))
-            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), [
+            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), array_merge([
                 'hideSearch' => true,
                 'data' => $ActiveRecord::VariablesValues($FieldName),
                 'pluginOptions' => [
@@ -1209,6 +1442,7 @@ class Proc
                 ],
                 'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control'],
                 'theme' => Select2::THEME_BOOTSTRAP,
+            ], $ActiveRecord->hasProperty($FieldName . '_not') ? [
                 'addon' => [
                     'prepend' => [
                         'content' => self::SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName),
@@ -1217,13 +1451,20 @@ class Proc
                         'class' => 'notforselect2',
                     ],
                 ],
-            ]);
+            ] : []));
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     * @param $PlaceHolder
+     * @return mixed
+     */
     public static function FilterFieldSelectMultiple($Form, $ActiveRecord, $FieldName, $PlaceHolder)
     {
         if (method_exists($ActiveRecord, 'VariablesValues'))
-            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), [
+            return $Form->field($ActiveRecord, $FieldName)->widget(Select2::classname(), array_merge([
                 'hideSearch' => true,
                 'data' => $ActiveRecord::VariablesValues($FieldName),
                 'pluginOptions' => [
@@ -1231,6 +1472,7 @@ class Proc
                 ],
                 'options' => ['placeholder' => $PlaceHolder, 'class' => 'form-control', 'multiple' => true],
                 'theme' => Select2::THEME_BOOTSTRAP,
+            ], $ActiveRecord->hasProperty($FieldName . '_not') ? [
                 'addon' => [
                     'prepend' => [
                         'content' => self::SetTemplateForActiveFieldWithNOT($Form, $ActiveRecord, $FieldName),
@@ -1239,9 +1481,14 @@ class Proc
                         'class' => 'notforselect2',
                     ],
                 ],
-            ]);
+            ] : []));
     }
 
+    /**
+     * @param $Form
+     * @param $ActiveRecord
+     * @param $FieldName
+     */
     public static function FilterFieldDateRange($Form, $ActiveRecord, $FieldName)
     {
         echo '<div class="form-group"><label class="control-label" for="' . strtolower($ActiveRecord->formName()) . '-' . $FieldName . '_beg">';
@@ -1270,6 +1517,10 @@ class Proc
     }
 
     // Присваеиват сортировку реляционным атрибутам по массиву списку атрибутов
+    /**
+     * @param $DataProvider
+     * @param $AttributesNames
+     */
     public static function AssignRelatedAttributes(&$DataProvider, $AttributesNames)
     {
         if ($DataProvider instanceof ActiveDataProvider && is_array($AttributesNames))
@@ -1290,6 +1541,11 @@ class Proc
     }
 
     // Присваивает выбранное значение из справочника модели, в сессии
+    /**
+     * @param null $ActiveRecord
+     * @param null $AttributeForeignID
+     * @return string
+     */
     public static function AssignToModelFromGrid($ActiveRecord = NULL, $AttributeForeignID = NULL)
     {
         if (Yii::$app->request->isAjax) {
@@ -1322,6 +1578,11 @@ class Proc
     }
 
     // Меняет раскладку клавиатуры
+    /**
+     * @param $text
+     * @param int $arrow
+     * @return string
+     */
     public static function switcher($text, $arrow = 0)
     {
         $str[0] = array('й' => 'q', 'ц' => 'w', 'у' => 'e', 'к' => 'r', 'е' => 't', 'н' => 'y', 'г' => 'u', 'ш' => 'i', 'щ' => 'o', 'з' => 'p', 'х' => '[', 'ъ' => ']', 'ф' => 'a', 'ы' => 's', 'в' => 'd', 'а' => 'f', 'п' => 'g', 'р' => 'h', 'о' => 'j', 'л' => 'k', 'д' => 'l', 'ж' => ';', 'э' => '\'', 'я' => 'z', 'ч' => 'x', 'с' => 'c', 'м' => 'v', 'и' => 'b', 'т' => 'n', 'ь' => 'm', 'б' => ',', 'ю' => '.', 'Й' => 'Q', 'Ц' => 'W', 'У' => 'E', 'К' => 'R', 'Е' => 'T', 'Н' => 'Y', 'Г' => 'U', 'Ш' => 'I', 'Щ' => 'O', 'З' => 'P', 'Х' => '[', 'Ъ' => ']', 'Ф' => 'A', 'Ы' => 'S', 'В' => 'D', 'А' => 'F', 'П' => 'G', 'Р' => 'H', 'О' => 'J', 'Л' => 'K', 'Д' => 'L', 'Ж' => ';', 'Э' => '\'', '?' => 'Z', 'ч' => 'X', 'С' => 'C', 'М' => 'V', 'И' => 'B', 'Т' => 'N', 'Ь' => 'M', 'Б' => ',', 'Ю' => '.',);
@@ -1330,6 +1591,13 @@ class Proc
     }
 
     // Используется для полей формы со связью, чтобы укоротить код (isset($model->idTrosnov->idMattraffic->idMaterial) ? $model->idTrosnov->idMattraffic->idMaterial : new Material)
+    /**
+     * @param $ActiverecordRelat
+     * @param $Relationstring
+     * @param $ActiverecordNew
+     * @return mixed|Model|ActiveRecord
+     * @throws \Exception
+     */
     public static function RelatModelValue($ActiverecordRelat, $Relationstring, $ActiverecordNew)
     {
         if (($ActiverecordRelat instanceof ActiveRecord || $ActiverecordRelat instanceof Model) && is_string($Relationstring) && !empty($Relationstring) && ($ActiverecordNew instanceof ActiveRecord || $ActiverecordNew instanceof Model)) {
@@ -1348,6 +1616,9 @@ class Proc
             throw new \Exception('Ошибка в Proc::RelatModelValue()');
     }
 
+    /**
+     * @param $Typereport
+     */
     public static function SendReportAkt($Typereport)
     {
         $Report = ($Typereport === 1) ? new RecoverysendaktReport() : new RecoverysendaktmatReport();
@@ -1407,7 +1678,7 @@ class Proc
                                 $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
                             }
                         break;
-                    case Proc::Strikt:
+                    case Proc::Strict:
                         $FilterWhere = empty($FilterValues[$Attribute . '_not']) ? [$SQLAttribute => $FilterValues[$Attribute]] : ['not', [$SQLAttribute => $FilterValues[$Attribute]]];
 
                         if (empty($ExistsSubQuery))

@@ -196,7 +196,7 @@ class PatientSearch extends Patient
                 'Attribute' => 'patient_vozrast',
                 'SQLAttribute' => 'TIMESTAMPDIFF(YEAR, patient_dr, CURDATE())',
             ]);
-            Proc::Filter_Compare(Proc::Strikt, $query, $filter, ['Attribute' => 'patient_pol']);
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, ['Attribute' => 'patient_pol']);
             Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
                 'Attribute' => 'fias_city',
                 'WhereStatement' => ['or', ['and', ['LIKE', 'idFias.AOGUID', $filter['fias_city']], 'idFias.AOLEVEL < 7'], ['and', ['LIKE', 'idFias2.AOGUID', $filter['fias_city']], 'idFias.AOLEVEL >= 7']],
@@ -237,7 +237,7 @@ class PatientSearch extends Patient
                 'Attribute' => 'glaukuchet_not_lastmetabol_mark',
                 'WhereStatement' => ['glaukuchets.glaukuchet_lastmetabol' => null],
             ]);
-            Proc::Filter_Compare(Proc::Strikt, $query, $filter, [
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => 'glaukuchet_id_employee',
                 'SQLAttribute' => 'glaukuchets.id_employee',
             ]);

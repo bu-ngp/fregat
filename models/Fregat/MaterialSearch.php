@@ -118,20 +118,35 @@ class MaterialSearch extends Material
 
         if (!empty($filter)) {
 
+            $attr = 'mol_fullname_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('employee idMol', 'idMol.employee_id = mattraffics.id_mol')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [1, 2]])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
+
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, ['Attribute' => 'material_writeoff']);
+
             $attr = 'mol_id_build';
-            Proc::Filter_Compare(Proc::Strikt, $query, $filter, [
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
                 'SQLAttribute' => 'idMol.id_build',
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
                     ->leftJoin('employee idMol', 'idMol.employee_id = mattraffics.id_mol')
-                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3,4)')
+                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)')
                     ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [3, 4]])
+                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
-
 
             $attr = 'tr_osnov_kab';
             Proc::Filter_Compare(Proc::Text, $query, $filter, [
