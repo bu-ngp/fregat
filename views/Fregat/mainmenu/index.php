@@ -27,7 +27,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             </div>
         <?php endif; ?>
         <?php if (Yii::$app->user->can('InstallEdit')): ?>
-            <div class="menubutton menubutton_activeanim mb_yellow" id="mb_install_j" data-height="200">
+            <div class="menubutton menubutton_activeanim mb_yellow" id="mb_install_j">
                 <span class="hoverspan"></span>
                 <div class="menubutton_cn">Журнал перемещений материальных ценностей</div>
             </div>
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
 ): ?>
     <div class="menublock">
         <?php if (Yii::$app->user->can('OsmotraktEdit')): ?>
-            <div class="menubutton menubutton_activeanim mb_red" id="mb_osmotr_j" data-height="200">
+            <div class="menubutton menubutton_activeanim mb_red" id="mb_osmotr_j">
                 <span class="hoverspan"></span>
                 <div class="menubutton_cn">Журнал осмотров материальных ценностей</div>
             </div>
@@ -59,7 +59,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             </div>
         <?php endif; ?>
         <?php if (Yii::$app->user->can('RecoveryEdit')): ?>
-            <div class="menubutton menubutton_activeanim mb_blue" id="mb_recovery_j" data-height="200">
+            <div class="menubutton menubutton_activeanim mb_blue" id="mb_recovery_j">
                 <span class="hoverspan"></span>
                 <div class="menubutton_cn">Журнал восстановления материальных ценностей</div>
             </div>

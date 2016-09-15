@@ -76,7 +76,7 @@ class FregatController extends Controller
         return $this->render('//Fregat/config/index');
     }
 
-    public function actionSettings($id)
+    public function actionSettings()
     {
         $model = Fregatsettings::findOne(1);
 
