@@ -134,12 +134,11 @@ class TrMatController extends Controller
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrmatchild($field, $q = null, $idinstallakt = null)
+    public function actionSelectinputfortrmatchild($q = null, $idinstallakt = null)
     {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                 'model' => new Mattraffic,
-                'field' => $field,
                 'q' => $q,
                 'methodquery' => 'selectinputfortrmat_child',
                 'methodparams' => ['idinstallakt' => $idinstallakt],
@@ -147,12 +146,11 @@ class TrMatController extends Controller
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrmatparent($field, $q = null, $idinstallakt = null)
+    public function actionSelectinputfortrmatparent($q = null, $idinstallakt = null)
     {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                 'model' => new Mattraffic,
-                'field' => $field,
                 'q' => $q,
                 'methodquery' => 'selectinputfortrmat_parent',
                 'methodparams' => ['idinstallakt' => $idinstallakt],
@@ -193,12 +191,11 @@ class TrMatController extends Controller
         $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
-    public function actionSelectinputfortrmatosmotr($field, $q = null, $idosmotraktmat = null)
+    public function actionSelectinputfortrmatosmotr($q = null, $idosmotraktmat = null)
     {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                 'model' => new TrMat,
-                'field' => $field,
                 'q' => $q,
                 'methodquery' => 'selectinputfortrmatosmotr',
                 'methodparams' => ['idosmotraktmat' => $idosmotraktmat],

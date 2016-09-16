@@ -151,7 +151,7 @@ $("#mb_fregatimport").click(function () {
 });
 
 $("#mb_fregatsprav").click(function () {
-    window.location.href = "?r=Base%2Ffregat%2Fsprav";
+    window.location.href = "?r=Fregat%2Ffregat%2Fsprav";
 });
 
 $("#mb_fregatconfig").click(function () {

@@ -139,11 +139,10 @@ class TrOsnovController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrosnov($field, $q = null, $idinstallakt = null) {
+    public function actionSelectinputfortrosnov($q = null, $idinstallakt = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new Mattraffic,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputfortrosnov',
                         'methodparams' => ['idinstallakt' => $idinstallakt],
@@ -173,11 +172,10 @@ class TrOsnovController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforosmotrakt($field, $q = null) {
+    public function actionSelectinputforosmotrakt($q = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new TrOsnov,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputforosmotrakt',
             ]);

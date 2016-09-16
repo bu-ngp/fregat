@@ -33,22 +33,20 @@ class FiasController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforcity($field, $q = null) {
+    public function actionSelectinputforcity($q = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new Fias,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputforcity',
             ]);
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforstreet($field, $q = null, $fias_city = null) {
+    public function actionSelectinputforstreet($q = null, $fias_city = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new Fias,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputforstreet',
                         'methodparams' => ['fias_city' => $fias_city],

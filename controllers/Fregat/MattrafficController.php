@@ -151,11 +151,10 @@ class MattrafficController extends Controller
     }
 
     public
-    function actionSelectinputformaterial($field, $q = null)
+    function actionSelectinputformaterial($q = null)
     {
-        return Proc::select2request([
+        return Proc::ResultSelect2([
             'model' => new Mattraffic,
-            'field' => $field,
             'q' => $q,
             'methodquery' => 'selectinput',
         ]);

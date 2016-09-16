@@ -47,11 +47,10 @@ class GlaukuchetController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforvrach($field, $q = null) {
+    public function actionSelectinputforvrach($q = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new Employee,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinputactive',
             ]);

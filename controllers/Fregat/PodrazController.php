@@ -55,7 +55,7 @@ class PodrazController extends Controller {
     }
 
     public function actionSelectinput($field, $q = null) {
-        return Proc::select2request([
+        return Proc::ResultSelect2([
                     'model' => new Podraz,
                     'field' => $field,
                     'q' => $q,

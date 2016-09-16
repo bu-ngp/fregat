@@ -134,12 +134,11 @@ class OsmotraktController extends Controller
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforosmotrakt($field, $q = null)
+    public function actionSelectinputforosmotrakt($q = null)
     {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                 'model' => new Mattraffic,
-                'field' => $field,
                 'q' => $q,
                 'methodquery' => 'selectinputforosmotrakt',
             ]);
@@ -178,7 +177,7 @@ class OsmotraktController extends Controller
     public function actionSelectinputforrecoverysendakt($q = null)
     {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                 'model' => new Osmotrakt,
                 'q' => $q,
                 'methodquery' => 'selectinputforrecoverysendakt',

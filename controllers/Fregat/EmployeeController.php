@@ -93,11 +93,10 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function actionSelectinputemloyee($field, $q = null)
+    public function actionSelectinputemloyee($q = null)
     {
-        return Proc::select2request([
+        return Proc::ResultSelect2([
             'model' => new Employee,
-            'field' => $field,
             'q' => $q,
             'methodquery' => 'selectinput',
         ]);

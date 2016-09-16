@@ -155,6 +155,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                     'attribute' => 'glaukuchets.glpreps.glaukuchet_preparats',
                     'filter' => false,
                     'value' => function ($model) {
+                        $a = '';
                         return isset($model->glaukuchets->glpreps[0]->glaukuchet_preparats) ? $model->glaukuchets->glpreps[0]->glaukuchet_preparats : '';
                     },
                     'headerOptions' => ['attr_fullname' => 'glaukuchets.glpreps.glaukuchet_preparats'],

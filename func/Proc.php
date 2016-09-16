@@ -240,7 +240,7 @@ class Proc
     public static function DGcols($Params)
     {
         if (isset($Params) && is_array($Params)) {
-            $Params = self::array_change_key_case_recursive($Params);
+            $Params = array_change_key_case($Params);
 
             // Делаем строку 'template' на основе массива кнопок
             $tmpl = isset($Params['buttons']) && is_array($Params['buttons']) ? '{' . implode("} {", array_keys($Params['buttons'])) . '}' : '';
@@ -466,47 +466,53 @@ class Proc
         }
     }
 
-    // Выводит массив данных для Select2 элемента
-    // $params[model] - Модель из которой берутся данные
-    // $params[field] - Поле по которому осуществляется поиск
-    // $params[q] - Текстовая строка поиска
-    // $params[showresultfields] - Массив полей, которые возвращаются, как результат поиска
-    // $params[order] - сортировка sql activequery OrderBy()
     /**
-     * @param $params
-     * @return array
+     * Выводит массив наденных данных для Select2 элемента
+     * @param array $Params Массив параметров
+     * <br>     $Params => [
+     * <br>         'Model' => (ActiveRecord) Модель, в которой ищем данные.
+     * <br>         'Field' => NULL (string) Имя атрибута, по которому осуществляем поиск. Не обязательно, если указан параметр $Params['MethodQuery'].
+     * <br>         'q' => NULL (string) Строка поиска, отправленная пользователем.
+     * <br>         'ShowResultFields' => $Params['Field'] (array) Набор полей, для вывода в результирующий набор Select2 через запятую. Актуально, если указан параметр $Params['Field'].
+     * <br>         'Order' => NULL (string|array) Строка или массив сортировки ActiveQuery->Order(). Актуально, если указан параметр $Params['Field'].
+     * <br>         'MethodQuery' => NULL (string) Метод модели $Params['Model'], выводящий массив найденных значений. Не обязательно, если указан параметр $Params['Field'].
+     * <br>         'MethodParams' => ['q' => $Params['q']] (array) Массив параметров метода модели $Params['Model']->$Params['MethodQuery']($Params['MethodParams']). Актуально, если указан параметр $Params['MethodQuery'].
+     * <br>     ]
+     * @return array ['results' => ['id' => ID найденного значения, 'text' => Текст найденного значения]] Вывод массива найденных значений.
      * @throws \Exception
      */
-    public static function select2request($params)
+    public static function ResultSelect2($Params)
     {
-        if (isset($params) && is_array($params) && $params['model'] instanceof ActiveRecord && (is_string($params['field']) || isset($params['methodquery']))) {
+        if (isset($Params) && is_array($Params) && $Params['model'] instanceof ActiveRecord && (is_string($Params['field']) || isset($Params['methodquery']))) {
+            $Params = self::array_change_key_case_recursive($Params);
+
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            $out = ['results' => ['id' => '', 'text' => '']];
-            $model = $params['model'];
-            if (!isset($params['showresultfields']))
-                $params['showresultfields'] = [$params['field']];
+            $Out = ['results' => ['id' => '', 'text' => '']];
+            $Model = $Params['model'];
+            if (!isset($Params['showresultfields']))
+                $Params['showresultfields'] = [$Params['field']];
 
-            $params['showresultfields'] = implode(', ', $params['showresultfields']);
-            if (isset($params['q'])) {
-                if (isset($params['methodquery']) && (!isset($params['methodparams']) || is_array($params['methodparams'])) && is_string($params['methodquery'])) {
-                    $params['methodparams']['q'] = $params['q'];
+            $Params['showresultfields'] = implode(', ', $Params['showresultfields']);
+            if (isset($Params['q'])) {
+                if (is_string($Params['methodquery']) && (!isset($Params['methodparams']) || is_array($Params['methodparams']))) {
+                    $Params['methodparams']['q'] = $Params['q'];
 
-                    $out['results'] = $model->$params['methodquery']($params['methodparams']);
-                    if (!is_array($out['results']))
+                    $Out['results'] = $Model->$Params['methodquery']($Params['methodparams']);
+                    if (!is_array($Out['results']))
                         exit;
                 } else {
-                    $out['results'] = $model::find()
-                        ->select([$model::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $params['showresultfields'] . ') AS text'])
-                        ->where(['like', $params['field'], $params['q']])
-                        ->orderBy(isset($params['order']) ? $params['order'] : [])
+                    $Out['results'] = $Model::find()
+                        ->select([$Model::primaryKey()[0] . ' AS id', 'CONCAT_WS(", ", ' . $Params['showresultfields'] . ') AS text'])
+                        ->where(['like', $Params['field'], $Params['q']])
+                        ->orderBy(is_string($Params['order']) || is_array($Params['order']) ? $Params['order'] : [])
                         ->limit(20)
                         ->asArray()
                         ->all();
                 }
             }
-            return $out;
+            return $Out;
         } else
-            throw new \Exception('Ошибка в Proc::select2request()');
+            throw new \Exception('Ошибка в Proc::ResultSelect2()');
     }
 
     /**

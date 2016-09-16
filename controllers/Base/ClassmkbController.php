@@ -54,11 +54,10 @@ class ClassmkbController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfordiag($field, $q = null) {
+    public function actionSelectinputfordiag($q = null) {
         if (Yii::$app->request->isAjax)
-            return Proc::select2request([
+            return Proc::ResultSelect2([
                         'model' => new Classmkb,
-                        'field' => $field,
                         'q' => $q,
                         'methodquery' => 'selectinput',
             ]);
