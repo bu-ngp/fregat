@@ -502,6 +502,11 @@ $(document).on("click", "#scrollupbutton", function () {
 });
 
 $(document).ready(function () {
+    if ($("#backbutton").attr("href") === "#")
+        $("#backbutton").hide();
+    else
+        $("#backbutton").show();
+
     $("input[type='text'].form-control.krajee-datepicker").mask('99.99.9999');
     $("input.form-control.setsession, select.form-control.setsession, textarea.form-control.setsession").change(function () {
         SetSession(this);

@@ -157,11 +157,11 @@ class Proc
 
             $session['breadcrumbs'] = $result;
 
-            /*  echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-             $s1 = $_SESSION;
-             unset($s1['__flash']);
-             print_r($s1);
-             echo '</pre>'; */
+       /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+            $s1 = $_SESSION;
+            unset($s1['__flash']);
+            print_r($s1);
+            echo '</pre>';*/
 
             $session->close();
 
@@ -580,6 +580,7 @@ class Proc
         $session = new Session;
         $session->open();
         $bc = $session['breadcrumbs'];
+        unset($bc['addfirst']);
         if (count($bc) > 1) {
             end($bc);
             prev($bc);

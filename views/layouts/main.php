@@ -95,9 +95,13 @@ AppAsset::register($this);
         ?>
         <?= $content ?>
     </div>
-    <div id="scrollupbutton" style="display: none;">
+    <div class="buttonside" id="scrollupbutton" style="display: none;">
         <span>ВВЕРХ</span>
     </div>
+
+    <a class="buttonside" id="backbutton" href="<?= Proc::GetPreviousURLBreadcrumbsFromSession() === Yii::$app->homeUrl ? '#' : Proc::GetPreviousURLBreadcrumbsFromSession() ?>" style="display: none;">
+        <span>НАЗАД</span>
+    </a>
 </div>
 
 <footer class="footer">

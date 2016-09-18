@@ -171,16 +171,15 @@ label.applyfiltercolor {
     font-weight: bold;
 }
 
-div#scrollupbutton {
-    color: #cfcfcf;
+.buttonside {
+    color: white;
     font-size: 20px;
     position: fixed;
-    background-color: white;
-    border: #bfbfbf solid 1px;
-    height: 80px;
+    background-color: #fee0cb;
+    border: white solid 5px;
+    height: 90px;
     bottom: 50px;
-    right: 50px;
-    width: 80px;
+    width: 90px;
     text-align: center;
     cursor: pointer;
     transition: background-color 0.5s ease;
@@ -193,16 +192,29 @@ div#scrollupbutton {
     user-select: none;
 }
 
-div#scrollupbutton:hover {
-    background-color: #f2f2f2;
+div#scrollupbutton {
+    right: 50px;
 }
 
-div#scrollupbutton:active {
-    color: #6ec2ff;
-    border: #6ec2ff solid 1px;
+a#backbutton {
+    left: 50px;
+}
+a#backbutton:focus {
+    outline: none;
+    color: white;
 }
 
-div#scrollupbutton > span {
+a#backbutton:hover:focus {
+    outline: none;
+    color: #fee0cb;
+}
+
+.buttonside:hover, .buttonside:hover {
+    background-color: white;
+    color: #fee0cb;
+}
+
+.buttonside > span {
     position: absolute;
     top: 25px;
     left: 6px;
@@ -448,7 +460,7 @@ label.labelbold {
 }*/
 div.wrap {
     /* background-color: #fed9be;*/
-    background-color: rgb(255, 233, 217);
+/*    background-color: rgb(255, 233, 217);
     background-size: 58px 58px;
     background-position: 0px 2px, 4px 35px, 29px 31px, 33px 6px,
     0px 36px, 4px 2px, 29px 6px, 33px 30px;
@@ -460,6 +472,19 @@ div.wrap {
     linear-gradient(155deg, #fed9be 10px, transparent 10px),
     linear-gradient(335deg, #fed9be 10px, transparent 10px),
     linear-gradient(155deg, #fed9be 10px, transparent 10px);
+
+*/
+    background: -webkit-linear-gradient(45deg, rgba(255,255,255,0.2) 25%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, rgba(0,0,0,0) 75%, rgba(0,0,0,0) 0), #FED9BE;
+    background: -moz-linear-gradient(45deg, rgba(255,255,255,0.2) 25%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, rgba(0,0,0,0) 75%, rgba(0,0,0,0) 0), #FED9BE;
+    background: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, rgba(0,0,0,0) 75%, rgba(0,0,0,0) 0), #FED9BE;
+    background-position: auto auto;
+    -webkit-background-origin: padding-box;
+    background-origin: padding-box;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-background-size: 50px 50px;
+    background-size: 50px 50px;
+
 }
 
 div.container.body-container {
@@ -483,10 +508,10 @@ div.container.body-container {
 }*/
 
 div.panel-body {
-    background-color: rgba(249, 249, 249, 0.65);
-    background-image: linear-gradient(#5a77a0, transparent 1px);
-    background-size: 1.5em 1.5em;
-    box-shadow: 1px 1px 2px rgba(169, 75, 129, 0.15), -1px 0px 2px rgba(169, 75, 129, 0.15);
+    background-color: rgba(255, 255, 255, 0.5);;
+    /*   background-image: linear-gradient(#5a77a0, transparent 1px);
+       background-size: 1.5em 1.5em;
+       box-shadow: 1px 1px 2px rgba(169, 75, 129, 0.15), -1px 0px 2px rgba(169, 75, 129, 0.15);*/
 }
 
 div.panel.panel-info {
@@ -691,7 +716,8 @@ li.select2-results__option--highlighted[aria-selected] {
     color: #420200;
 }
 
-.form-control:focus {
+.form-control:focus,
+.btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn.active.focus {
     border-color: #420200;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 5px rgba(66, 2, 0, .6);
