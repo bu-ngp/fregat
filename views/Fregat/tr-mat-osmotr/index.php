@@ -76,8 +76,4 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     ?>
 
 </div>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
-    </div>
-</div>
+

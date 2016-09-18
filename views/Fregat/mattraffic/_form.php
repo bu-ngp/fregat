@@ -187,7 +187,7 @@ use yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+                
                 <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Сменить', ['class' => 'btn btn-success', 'form' => 'MattrafficMolform']) ?>
             </div>
         </div>

@@ -99,7 +99,7 @@ use app\func\Proc;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Назад', Proc::GetPreviousURLBreadcrumbsFromSession(), ['class' => 'btn btn-info']) ?>
+                
                 <?= Html::submitButton('<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => 'btn btn-primary']) ?>
             </div>
         </div> 
