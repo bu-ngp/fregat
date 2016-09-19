@@ -43,6 +43,34 @@ use app\func\Proc;
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode('Групповой учет основных средств') ?></div>
+        <div class="panel-body">
+            <?= $form->field($model, 'gu_filename')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_startrow')->textInput() ?>
+
+            <?= $form->field($model, 'gu_material_1c')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_inv')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_name1c')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_number')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_price')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_employee_fio')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_dolzh_name')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_podraz_name')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_serial')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_release')->textInput(['maxlength' => true]) ?>
+        </div>
+    </div>
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Материалы') ?></div>
         <div class="panel-body">
             <?= $form->field($model, 'mat_filename')->textInput(['maxlength' => true]) ?>
@@ -99,10 +127,10 @@ use app\func\Proc;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton('<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => 'btn btn-primary']) ?>
             </div>
-        </div> 
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

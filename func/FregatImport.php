@@ -57,10 +57,14 @@ class chunkReadFilter implements \PHPExcel_Reader_IReadFilter
 
 class FregatImport
 {
+    const os = 1; // Основные средства
+    const mat = 2; // Материалы
+    const gu = 3; // Групповой учет основных средств
 
     private static $filename = ''; // Имя файла 'imp/os.xls' - (Основные средства); 'imp/mat.xls' = (Материалы);
     private static $filelastdate = null; // Дата изменения файла self::$filename
     private static $os = false; // true -  'imp/os.xls' (Основные средства); false - 'imp/mat.xls' (Материалы);
+    private static $filetype = 1; // FregatImport::os - Основные средства, FregatImport::mat - Материалы, FregatImport::gu - Групповой учет основных средств;
     private static $employee = false; // true - 'imp/employee.txt' (Сотрудники);
     private static $logreport_id = 0; // ID отчета
     private static $logreport_errors = 0; // Не загружено записей из-за ошибок
@@ -70,6 +74,7 @@ class FregatImport
     private static $logreport_amount = 0; // Всего записей
     private static $os_start = 6; // Ряд с которого необходимо начать прохождение файла Excel Основных средств
     private static $mat_start = 9; // Ряд с которого необходимо начать прохождение файла Excel Материалов
+    private static $gu_start = 2; // Ряд с которого необходимо начать прохождение файла Excel Группового учета основных средств
     private static $material_number_xls; // Пишется количество материальной ценности из файла Excel
     private static $material_price_xls; // Пишется цена материальной ценности из файла Excel
     private static $rownum_xls; // Номер строки в файле Excel
@@ -79,26 +84,36 @@ class FregatImport
     private static $Mishanya; // Ограничение на кол-во писем с новыми сотрудницами для Мишани
     private static $Debug; // Отключает функционал при отладке
 
+    private static function SetFileType($FileType)
+    {
+        if (is_integer($FileType))
+            self::$filetype = $FileType;
+    }
+
+    private static function IsFileType($FileType)
+    {
+        return $FileType === self::$filetype;
+    }
+
     private static function Setxls()
     {
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
 
         self::$xls = [
-            'mattraffic_date' => self::$os ? $Importconfig['os_mattraffic_date'] : '',
-            'material_1c' => self::$os ? $Importconfig['os_material_1c'] : $Importconfig['mat_material_1c'],
-            'material_inv' => self::$os ? $Importconfig['os_material_inv'] : $Importconfig['mat_material_inv'],
-            'material_name1c' => self::$os ? $Importconfig['os_material_name1c'] : $Importconfig['mat_material_name1c'],
-            'material_number' => self::$os ? '' : $Importconfig['mat_material_number'],
-            'material_price' => self::$os ? $Importconfig['os_material_price'] : $Importconfig['mat_material_price'],
-            'izmer_name' => self::$os ? '' : $Importconfig['mat_izmer_name'],
-            'employee_fio' => self::$os ? $Importconfig['os_employee_fio'] : $Importconfig['mat_employee_fio'],
-            'dolzh_name' => self::$os ? $Importconfig['os_dolzh_name'] : $Importconfig['mat_dolzh_name'],
-            'podraz_name' => self::$os ? $Importconfig['os_podraz_name'] : $Importconfig['mat_podraz_name'],
-            'material_serial' => self::$os ? $Importconfig['os_material_serial'] : '',
-            'material_release' => self::$os ? $Importconfig['os_material_release'] : '',
-            'material_status' => self::$os ? $Importconfig['os_material_status'] : '',
-            'material_tip_nomenklaturi' => self::$os ? '' : $Importconfig['mat_material_tip_nomenklaturi'], // Колонка "ТипНоменклатуры" в файле Материалов
-            'groupuchet' => self::$os ? 'L' : '',
+            'mattraffic_date' => self::IsFileType(self::os) ? $Importconfig['os_mattraffic_date'] : '',
+            'material_1c' => self::IsFileType(self::os) ? $Importconfig['os_material_1c'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_1c'] : $Importconfig['mat_material_1c']),
+            'material_inv' => self::IsFileType(self::os) ? $Importconfig['os_material_inv'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_inv'] : $Importconfig['mat_material_inv']),
+            'material_name1c' => self::IsFileType(self::os) ? $Importconfig['os_material_name1c'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_name1c'] : $Importconfig['mat_material_name1c']),
+            'material_number' => self::IsFileType(self::mat) ? $Importconfig['mat_material_number'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_number'] : ''),
+            'material_price' => self::IsFileType(self::os) ? $Importconfig['os_material_price'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_price'] : $Importconfig['mat_material_price']),
+            'izmer_name' => self::IsFileType(self::mat) ? $Importconfig['mat_izmer_name'] : '',
+            'employee_fio' => self::IsFileType(self::os) ? $Importconfig['os_employee_fio'] : (self::IsFileType(self::gu) ? $Importconfig['gu_employee_fio'] : $Importconfig['mat_employee_fio']),
+            'dolzh_name' => self::IsFileType(self::os) ? $Importconfig['os_dolzh_name'] : (self::IsFileType(self::gu) ? $Importconfig['gu_dolzh_name'] : $Importconfig['mat_dolzh_name']),
+            'podraz_name' => self::IsFileType(self::os) ? $Importconfig['os_podraz_name'] : (self::IsFileType(self::gu) ? $Importconfig['gu_podraz_name'] : $Importconfig['mat_podraz_name']),
+            'material_serial' => self::IsFileType(self::os) ? $Importconfig['os_material_serial'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_serial'] : ''),
+            'material_release' => self::IsFileType(self::os) ? $Importconfig['os_material_release'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_release'] : ''),
+            'material_status' => self::IsFileType(self::os) ? $Importconfig['os_material_status'] : '',
+            'material_tip_nomenklaturi' => self::IsFileType(self::mat) ? $Importconfig['mat_material_tip_nomenklaturi'] : '', // Колонка "ТипНоменклатуры" в файле Материалов
         ];
     }
 
@@ -333,12 +348,14 @@ class FregatImport
     // Читаем значения колонок соответствующие Материальной ценности в файле Excel
     private static function xls_attributes_material($row)
     {
+        $matprice = preg_replace('/\s+/ui', '', $row[self::xls('material_price')]);
+        $matprice = preg_replace('/,/ui', '.', $matprice);
         // Определяем количество материальной ценности
-        if (self::$os)
-            $material_price = trim($row[self::xls('material_price')]);
-        else  // Если материалы, то цену извлекаем из суммы (сумма / количество)  
+        if (self::IsFileType(self::os))
+            $material_price = $matprice;
+        else  // Если материалы или групповой учет основных средств, то цену извлекаем из суммы (сумма / количество)
             if (trim($row[self::xls('material_number')]) != '0')
-                $material_price = (is_numeric(trim($row[self::xls('material_price')])) && is_numeric(trim($row[self::xls('material_number')]))) ? round(trim($row[self::xls('material_price')]) / trim($row[self::xls('material_number')]), 2) : 'Ошибка при делении числа "' . trim($row[self::xls('material_price')]) . '" на число "' . trim($row[self::xls('material_number')]) . '"';
+                $material_price = (is_numeric($matprice) && is_numeric(trim($row[self::xls('material_number')]))) ? round($matprice / trim($row[self::xls('material_number')]), 2) : 'Ошибка при делении числа "' . $matprice . '" на число "' . trim($row[self::xls('material_number')]) . '"';
             else
                 $material_price = 0;
 
@@ -347,15 +364,14 @@ class FregatImport
             'material_name1c' => trim($row[self::xls('material_name1c')]),
             'material_1c' => trim($row[self::xls('material_1c')]),
             'material_inv' => mb_strtolower(trim($row[self::xls('material_inv')]), 'UTF-8') === 'null' ? trim($row[self::xls('material_1c')]) : trim($row[self::xls('material_inv')]),
-            'material_serial' => (self::$os && !in_array(mb_strtolower(trim($row[self::xls('material_serial')]), 'UTF-8'), ['null', 'б/н', 'б\н', 'б/н.', 'б\н.', '-'])) ? trim($row[self::xls('material_serial')]) : '',
-            'material_release' => self::$os ? self::GetDateFromExcel(trim($row[self::xls('material_release')])) : NULL, // Определяем дату выпуска материальной ценности и переводим в формат PHP из формата Excel
-            'material_number' => self::$os ? '1' : trim($row[self::xls('material_number')]), // Определяем количество материальной ценности
+            'material_serial' => ((self::IsFileType(self::os) || self::IsFileType(self::gu)) && !in_array(mb_strtolower(trim($row[self::xls('material_serial')]), 'UTF-8'), ['null', 'б/н', 'б\н', 'б/н.', 'б\н.', '-'])) ? trim($row[self::xls('material_serial')]) : '',
+            'material_release' => self::IsFileType(self::os) || self::IsFileType(self::gu) ? self::GetDateFromExcel(trim($row[self::xls('material_release')])) : NULL, // Определяем дату выпуска материальной ценности и переводим в формат PHP из формата Excel
+            'material_number' => self::IsFileType(self::os) ? '1' : trim($row[self::xls('material_number')]), // Определяем количество материальной ценности
             'material_price' => $material_price,
-            'material_tip' => self::$os ? 1 : 2, // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал)
+            'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3), // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал, 3 - Групповой учет основных средств)
             'id_matvid' => self::AssignMatvid(trim($row[self::xls('material_name1c')])), // Определяем Вид материальной ценности согласно таблицы соответствий importmaterial, если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
-            'id_izmer' => self::$os ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')])), // Определяем Единицу измерения
-            'material_tip_nomenklaturi' => self::$os ? '' : trim($row[self::xls('material_tip_nomenklaturi')]), // Колонка "ТипНоменклатуры" в файле Материалов
-            'groupuchet' => self::$os ? $row[self::xls('groupuchet')] : '',
+            'id_izmer' => (self::IsFileType(self::os) || self::IsFileType(self::gu)) ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')])), // Определяем Единицу измерения
+            'material_tip_nomenklaturi' => self::IsFileType(self::mat) ? trim($row[self::xls('material_tip_nomenklaturi')]) : '', // Колонка "ТипНоменклатуры" в файле Материалов
         ];
     }
 
@@ -381,9 +397,9 @@ class FregatImport
     {
         return [//--------------------????????????????????------------------------------------------------------------------------
             'mattraffic_date' => /* !self::$mattraffic_exist && */
-                self::$os ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
-            'mattraffic_number' => self::$os ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
-            //   'mattraffic_tip' => !self::$os ? 1 : (in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']) ? 2 : 1),
+                self::IsFileType(self::os) ? self::GetDateFromExcel(trim($row[self::xls('mattraffic_date')])) : date('Y-m-d'), // Определяем дату операции c материальной ценностью и переводим в формат PHP из формата Excel
+            'mattraffic_number' => self::IsFileType(self::os) ? 1 : trim($row[self::xls('material_number')]), // Количество материала, задействованное в операции
+            //   'mattraffic_tip' => self::IsFileType(self::mat) ? 1 : (in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']) ? 2 : 1),
         ];
     }
 
@@ -493,13 +509,13 @@ class FregatImport
         $xls_attributes_material = self::xls_attributes_material($row);
 
         // Проверяем, что ТипНоменклатуры Материалов принадлежат к "Продукты питания" или "Прочие материальные запасы"
-        $material_assigned = ((self::$os && (in_array($xls_attributes_material['groupuchet'], ['Нет']) || empty($xls_attributes_material['groupuchet']))) || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
+        $material_assigned = (self::IsFileType(self::os) || self::IsFileType(self::gu) || (self::IsFileType(self::mat) && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
 
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
             $search = self::GetRowsPDO('select material_id from material where material_1c = :material_1c and material_tip = :material_tip ', [
                 'material_1c' => $xls_attributes_material['material_1c'],
-                'material_tip' => self::$os ? 1 : 2
+                'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3),
             ]);
 
             if (!empty($search))
@@ -508,8 +524,6 @@ class FregatImport
             self::$material_number_xls = $xls_attributes_material['material_number'];
             self::$material_price_xls = $xls_attributes_material['material_price'];
 
-            unset($xls_attributes_material['groupuchet']);
-
             // Если материальная ценность найдена
             if (!$Material->isNewRecord) {
                 $Material->material_price = floatval($Material->material_price); // т.к. $Material->material_price = "~.00"
@@ -517,7 +531,7 @@ class FregatImport
                 // Убераем атрибуты, чтобы он не попали в $diff_attr
                 unset($xls_attributes_material['material_tip_nomenklaturi']);
                 unset($xls_attributes_material['material_number']);
-                if (!self::$os) {
+                if (self::IsFileType(self::mat) || self::IsFileType(self::gu)) {
                     unset($xls_attributes_material['material_price']);
                     $Material->material_writeoff = 0;
                 }
@@ -703,7 +717,7 @@ class FregatImport
     // Определяем количество материальной ценности с учетом изменения
     private static function MatNumberChanging(&$Material, &$Traflog, $Number, $Diff)
     {
-        if (!self::$os && $Number != 0) {
+        if ((self::IsFileType(self::mat) || self::IsFileType(self::gu)) && $Number != 0) {
             if ($Diff && ($Material->material_number - $Number) < 0) {
                 $Material->material_writeoff = 0;
                 $Number = abs($Number);
@@ -732,10 +746,10 @@ class FregatImport
         ]);
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::$os ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::IsFileType(self::os) ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
             'id_material' => $xls_attributes_mattraffic['id_material'],
             'id_mol' => $xls_attributes_mattraffic['id_mol'],
-        ], self::$os ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
+        ], self::IsFileType(self::os) ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
 
         // recordapply - Проверка актуальности даты операции над материальной ценностью с датой из Excel (1 - Дата актуальна, 0 - Дата не актуальна)
         // diff_number - Определяет текущее актуальное количество материальной ценности
@@ -753,16 +767,16 @@ class FregatImport
 
         $Traflog->attributes = $xls_attributes_mattraffic;
 
-        if (!self::$os)
+        if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
             $Mattraffic->mattraffic_forimport = 1;
 
-        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && (!self::$os && $Mattraffic->diff_number != '0' || self::$os)) { // Если у материальной ценности найден сотрудник и запись актуальна       
+        if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && ((self::IsFileType(self::mat) || self::IsFileType(self::gu)) && $Mattraffic->diff_number != '0' || self::IsFileType(self::os))) { // Если у материальной ценности найден сотрудник и запись актуальна
             // Разница в количестве (Количество из Excel - количество из БД)
             $diff_number = $Mattraffic->diff_number;
             self::$mattraffic_exist = true;
 
             // Если материал уже списан, но изменилась дата, просто меняем дату на актуальную
-            if (self::$os && $Material->material_writeoff === '1') {
+            if (self::IsFileType(self::os) && $Material->material_writeoff === '1') {
                 $Mattraffic->mattraffic_date = $xls_attributes_mattraffic['mattraffic_date'];
                 $Traflog->traflog_message .= 'Запись изменена: Дата изменена на "' . $Mattraffic->mattraffic_date . '"';
             } else {
@@ -770,7 +784,7 @@ class FregatImport
                 $Mattraffic->attributes = $xls_attributes_mattraffic;
                 $Mattraffic->mattraffic_date = $xls_attributes_mattraffic['mattraffic_date'];
                 $Mattraffic->mattraffic_number = self::$material_number_xls;
-                if (!self::$os)
+                if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
                     $Mattraffic->mattraffic_forimport = 1;
             }
 
@@ -796,7 +810,7 @@ class FregatImport
 
             // Валидируем значения модели и пишем в лог
             $result = self::ImportValidate($Mattraffic, $Traflog);
-        } elseif (!self::$os) {
+        } elseif (self::IsFileType(self::mat) || self::IsFileType(self::gu)) {
             if (isset($Mattraffic->scenarios()['import1c']))
                 $Mattraffic->scenario = 'import1c';
             if ($Mattraffic->validate())
@@ -806,7 +820,7 @@ class FregatImport
 
         //var_dump($Mattraffic->errors);
 
-        /*  if (!self::$os) {
+        /*  if (self::IsFileType(self::mat) || self::IsFileType(self::gu)) {
           var_dump($Material->material_name);
           var_dump($Mattraffic->attributes);
           } */
@@ -819,14 +833,14 @@ class FregatImport
     private static function WriteOffDo($Material, $Matlog, $Mattraffic, $Traflog, $row)
     {
         // Если Материал списан (Сумма = 0)
-        if ((!self::$os && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
+        if (((self::IsFileType(self::mat) || self::IsFileType(self::gu)) && $Material->material_writeoff == 0 && self::$material_price_xls == 0 && (!self::$mattraffic_exist || self::$mattraffic_exist && $Material->material_price != 0))
             // Или Основное средство списано (Статус = "Списан")
-            || (self::$os && $Material->material_writeoff == 0 &&
+            || (self::IsFileType(self::os) && $Material->material_writeoff == 0 &&
                 in_array(trim($row[self::xls('material_status')]), ['Списан', 'Снято с учета']))
         ) {
 
             $Material->material_writeoff = 1;
-            if (!self::$os)
+            if (self::IsFileType(self::mat))
                 $Material->material_price = 0;
 
             $Material->save(false);
@@ -894,7 +908,7 @@ class FregatImport
             Employee::updateAll(['employee_forinactive' => NULL], ['employee_forinactive' => 1]);
             $transaction->commit();
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             Employee::updateAll(['employee_forinactive' => NULL], ['employee_forinactive' => 1]);
             throw new Exception($e->getMessage() . ' InactiveEmployee(), $filename = ' . self::$filename);
         }
@@ -905,11 +919,13 @@ class FregatImport
     {
         $return = false;
 
+        $Typemat = self::IsFileType(self::mat) ? 2 : 3;
         $result = Mattraffic::find()
             ->from(['m1' => 'mattraffic'])
             ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
             ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-            ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
+            ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
+            ->andWhere(['in', 'material_tip', [$Typemat]])
             ->andWhere('m1.mattraffic_tip <> 2')
             ->andWhere(['m2.mattraffic_date' => NULL])
             ->andWhere(['m1.id_material' => $MaterialID])
@@ -922,7 +938,8 @@ class FregatImport
                 ->from(['m1' => 'mattraffic'])
                 ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
+                ->andWhere(['in', 'material_tip', [$Typemat]])
                 ->andWhere('m1.mattraffic_tip <> 2')
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
@@ -948,12 +965,14 @@ class FregatImport
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
+            $Typemat = self::IsFileType(self::mat) ? 2 : 3;
             $SP = Mattraffic::find()
                 //     ->joinWith('idMaterial')
                 ->from(['m1' => 'mattraffic'])
                 ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
-                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_tip' => 2, 'material_writeoff' => 0])
+                ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
+                ->andWhere(['in', 'material_tip', [$Typemat]])
                 ->andWhere('m1.mattraffic_tip <> 2')
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->all();
@@ -1030,7 +1049,7 @@ class FregatImport
             Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
             $transaction->commit();
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
             throw new Exception($e->getMessage() . ' MaterialSpisanie(), $filename = ' . self::$filename);
         }
@@ -1113,6 +1132,7 @@ class FregatImport
         $Importconfig = self::GetRowsPDO('select * from importconfig where importconfig_id = 1');
         self::$os_start = $Importconfig['os_startrow'];
         self::$mat_start = $Importconfig['mat_startrow'];
+        self::$gu_start = $Importconfig['gu_startrow'];
         self::$Mishanya = 0;
         self::$Debug = defined('YII_DEBUG');
         $starttime = microtime(true);
@@ -1123,9 +1143,10 @@ class FregatImport
         self::DeleteOldReports();
 
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
-        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx'] as $filename) {
+        foreach ([$Importconfig['emp_filename'] . '.txt', $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx', $Importconfig['gu_filename'] . '.xlsx'] as $filename) {
             self::$filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
-            self::$os = self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx';
+            $FileType = (self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx') ? self::os : ((self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['mat_filename'] . '.xlsx') ? self::mat : self::gu);
+            self::SetFileType($FileType);
             self::Setxls();
 
             if (file_exists(self::$filename)) {
@@ -1340,7 +1361,7 @@ class FregatImport
                                     }
                                     $transaction->commit();
                                 } catch (Exception $e) {
-                                    $transaction->rollback();
+                                    $transaction->rollBack();
                                     throw new Exception($e->getMessage() . ' $i = ' . $i . '; $filename = ' . self::$filename);
                                 }
                             }
@@ -1353,10 +1374,10 @@ class FregatImport
                         $logreport->logreport_employeelastdate = self::$filelastdate;
                         self::$employee = false;
                     } else {
-                        if (!self::$os)
+                        if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
                             Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
 
-                        $startRow = self::$os ? self::$os_start : self::$mat_start;   //начинаем читать с определенной строки
+                        $startRow = self::IsFileType(self::os) ? self::$os_start : (self::IsFileType(self::mat) ? self::$mat_start : self::$gu_start);   //начинаем читать с определенной строки
                         $exit = false;   //флаг выхода
                         $empty_value = 0;  //счетчик пустых знаений
                         // Загружаем данные из файла Excel   
@@ -1392,7 +1413,7 @@ class FregatImport
                                 }
                                 /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
 
-                                $row = $objWorksheet->rangeToArray('A' . $i . ':L' . $i, null, true, true, true);
+                                $row = $objWorksheet->rangeToArray('A' . $i . ':K' . $i, null, true, true, true);
                                 $row = $row[key($row)];
 
                                 $material = new Material;
@@ -1468,7 +1489,7 @@ class FregatImport
                                     //    if ($transaction->isActive)
                                     $transaction->commit();
                                 } catch (Exception $e) {
-                                    $transaction->rollback();
+                                    $transaction->rollBack();
                                     throw new Exception($e->getMessage() . ' $rownum_xls = ' . self::$rownum_xls . '; $filename = ' . self::$filename);
                                 }
                             }
@@ -1486,13 +1507,16 @@ class FregatImport
                             echo '<BR>Память использована с ' . $startRow . ' по ' . ($startRow + $chunkSize) . ' : ' . Yii::$app->formatter->asShortSize(memory_get_usage(true));
                             $startRow += $chunkSize;     //переходим на следующий шаг цикла, увеличивая строку, с которой будем читать файл
                         }
-                        $logreport->logreport_amount += self::$rownum_xls - (self::$os ? self::$os_start : self::$mat_start);
-                        if (self::$os)
+                        $logreport->logreport_amount += self::$rownum_xls - (self::IsFileType(self::os) ? self::$os_start : (self::IsFileType(self::mat) ? self::$mat_start : self::$gu_start));
+                        if (self::IsFileType(self::os))
                             $logreport->logreport_oslastdate = self::$filelastdate;
-                        else
+                        elseif (self::IsFileType(self::mat))
                             $logreport->logreport_matlastdate = self::$filelastdate;
+                        else
+                            $logreport->logreport_gulastdate = self::$filelastdate;
 
-                        if (!self::$os)
+
+                        if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
                             self::MaterialSpisanie();
                     }
                     $logreport->logreport_additions += self::$logreport_additions;
@@ -1502,10 +1526,12 @@ class FregatImport
 
                     $logreport->save();
                 } else {
-                    if (self::$os)
+                    if (self::IsFileType(self::os))
                         $logreport->logreport_oslastdate = self::$filelastdate;
-                    else
+                    elseif (self::IsFileType(self::mat))
                         $logreport->logreport_matlastdate = self::$filelastdate;
+                    else
+                        $logreport->logreport_gulastdate = self::$filelastdate;
 
                     if ($filename === $Importconfig['emp_filename'] . '.txt')
                         $logreport->logreport_employeelastdate = self::$filelastdate;
@@ -1707,7 +1733,8 @@ class FregatImport
                 'string' => ['material_1c', 'material_inv', 'material_serial'],
                 'case' => ['material_tip' => [
                     1 => 'Основное средство',
-                    2 => 'Материал'
+                    2 => 'Материал',
+                    3 => 'Групповой учет',
                 ]]
             ]);
         }

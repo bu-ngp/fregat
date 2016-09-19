@@ -59,7 +59,7 @@ class Material extends \yii\db\ActiveRecord
             [['material_1c'], 'string', 'max' => 20],
             [['material_inv'], 'string', 'max' => 50],
             [['material_serial'], 'string', 'max' => 255],
-            [['material_tip'], 'integer', 'min' => 1, 'max' => 2], // 1 - Основное средство, 2 - Материалы
+            [['material_tip'], 'integer', 'min' => 1, 'max' => 3], // 1 - Основное средство, 2 - Материалы, 3 - Групповой учет основных средств
             [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
             ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_1c', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
             [['material_1c'], 'required', 'on' => 'import1c'],
@@ -142,7 +142,7 @@ class Material extends \yii\db\ActiveRecord
     public static function VariablesValues($attribute)
     {
         $values = [
-            'material_tip' => [1 => 'Основное средство', 2 => 'Материал'],
+            'material_tip' => [1 => 'Основное средство', 2 => 'Материал', 3 => 'Групповой учет'],
             'material_writeoff' => [0 => 'Нет', 1 => 'Да'],
             'material_importdo' => [0 => 'Нет', 1 => 'Да'],
         ];
