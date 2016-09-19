@@ -56,6 +56,19 @@ class Proc
      * Константа для сравнения с мультивыбором из списка в доп фильтре ModelSearch, используется в Filter_Compare().
      */
     const MultiChoice = 7;
+    /**
+     * Константа для использования в методе WhereConstruct(), определяет что поиск осуществляется по времени.
+     */
+    const Time = 20;
+    /**
+     * Константа для использования в методе WhereConstruct(), определяет что поиск осуществляется по дате.
+     */
+    const Date = 21;
+    /**
+     * Константа для использования в методе WhereConstruct(), определяет что поиск осуществляется по дате и времени.
+     */
+    const DateTime = 22;
+
 
     /**
      * Функция создает массив ссылок для хлебных крошек используя сессию.
@@ -629,8 +642,9 @@ class Proc
     }
 
     /**
-     * @param View $View
-     * @return array
+     * Формирует массив настроек для Nav::Widget(['items' => Proc::GetMenuButtons($this)]).
+     * @param View $View Текущее представление.
+     * @return array Массив конфигурации меню навигации.
      */
     public static function GetMenuButtons($View)
     {
@@ -695,7 +709,11 @@ class Proc
     }
 
     /**
-     * @param $ButtonsGroup
+     * Устанавливает начальную группу кнопок для определенной системы портала, применяется в контроллерах.
+     * @param string $ButtonsGroup Определяет начальную группу кнопок по имени системы.
+     * 1) 'fregat' - Система "Фрегат".
+     * 2) 'config' - Настройки портала.
+     * 3) 'glauk' - Регистр глаукомных пациентов.
      */
     public static function SetMenuButtons($ButtonsGroup)
     {
@@ -706,6 +724,7 @@ class Proc
     }
 
     /**
+     * Функция preg_match_all с использованием заданной кодироки.
      * @param $ps_pattern
      * @param $ps_subject
      * @param $pa_matches
@@ -756,28 +775,42 @@ class Proc
     }
 
     /**
-     * @param $modelsearch
-     * @param $field
-     * @param string $type
-     * @return array
+     * Формирует массив конструкции Where() ActiveQuery.
+     * @param ActiveRecord $ModelSearch Модель, для который создаем конструкцию Where().
+     * @param string $Field Атрибут модели, по которому осуществляем поиск, фильтрацию.
+     * @param string|integer $Type
+     * @return array Массив конструкции Where().
      */
-    static function WhereConstruct($modelsearch, $field, $type = '')
+    static function WhereConstruct($ModelSearch, $Field, $Type = '')
     {
-        $getattr = $modelsearch->getAttribute($field);
-        $attrval = empty($getattr) ? $modelsearch->$field : $modelsearch->getAttribute($field);
+        $AttributeModelValue = $ModelSearch->getAttribute($Field);
+        $AttributeValue = empty($AttributeModelValue) ? $ModelSearch->$Field : $ModelSearch->getAttribute($Field);
 
-        preg_match('/(>=|<=|>|<|=)?(.*)/', $attrval, $matches);
-        $operator = $matches[1];
-        $value = $matches[2];
+        preg_match('/(>=|<=|>|<|=)?(.*)/', $AttributeValue, $Matches);
+        $Operator = $Matches[1];
+        $Value = $Matches[2];
 
-        if ($type === 'date')
-            $value = !empty($value) ? date("Y-m-d", strtotime($value)) : $value;
-        elseif ($type === 'datetime')
-            $value = !empty($value) ? date("Y-m-d H:i:s", strtotime($value)) : $value;
-        elseif ($type === 'time')
-            $value = !empty($value) ? date("H:i:s", strtotime($value)) : $value;
+        if ($Type === 'time')
+            $Type = self::Time;
+        if ($Type === 'date')
+            $Type = self::Date;
+        if ($Type === 'datetime')
+            $Type = self::DateTime;
 
-        return [empty($operator) ? '=' : $operator, $field, $value];
+        if (!empty($Value))
+            switch ($Type) {
+                case self::Time:
+                    $Value = date("H:i:s", strtotime($Value));
+                    break;
+                case self::Date:
+                    $Value = date("Y-m-d", strtotime($Value));
+                    break;
+                case self::DateTime:
+                    $Value = date("Y-m-d H:i:s", strtotime($Value));
+                    break;
+            }
+
+        return [empty($Operator) ? '=' : $Operator, $Field, $Value];
     }
 
     /**
