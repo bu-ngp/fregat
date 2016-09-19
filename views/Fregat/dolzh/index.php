@@ -25,7 +25,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/dolzh/assign-to-employee']
+                                'chooseajax' => ['Fregat/dolzh/assign-to-select2']
                                     ], Yii::$app->user->can('DolzhEdit') ? [
                                 'update' => ['Fregat/dolzh/update', 'dolzh_id'],
                                 'deleteajax' => ['Fregat/dolzh/delete', 'dolzh_id'],

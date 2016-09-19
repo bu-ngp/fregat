@@ -97,7 +97,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Карта материальной ценности', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                     }
                 ] : [
-                    'chooseajax' => ['Fregat/material/assign-material']
+                    'chooseajax' => ['Fregat/material/assign-to-select2']
                 ]
             ),
         ]),

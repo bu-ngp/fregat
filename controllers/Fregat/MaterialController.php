@@ -34,7 +34,7 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-material', 'materialfilter', 'toexcel'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -171,10 +171,9 @@ class MaterialController extends Controller
         ]);
     }
 
-    public function actionAssignMaterial()
+    public function actionAssignToSelect2()
     {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     public function actionMaterialfilter()

@@ -493,7 +493,7 @@ class FregatImport
         $xls_attributes_material = self::xls_attributes_material($row);
 
         // Проверяем, что ТипНоменклатуры Материалов принадлежат к "Продукты питания" или "Прочие материальные запасы"
-        $material_assigned = ((self::$os && in_array($xls_attributes_material['groupuchet'], ['Нет'])) || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
+        $material_assigned = ((self::$os && (in_array($xls_attributes_material['groupuchet'], ['Нет']) || empty($xls_attributes_material['groupuchet']))) || (!self::$os && in_array($xls_attributes_material['material_tip_nomenklaturi'], ['Мягкий инвентарь', 'Оборудование', 'Посуда', 'Строительные материалы', 'Продукты питания', 'Прочие материальные запасы']))) ? true : false;
 
         if ($material_assigned) {
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись

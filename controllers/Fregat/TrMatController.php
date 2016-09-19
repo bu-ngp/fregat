@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\TrMatOsmotr;
 use Yii;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrMatSearch;
@@ -40,12 +41,12 @@ class TrMatController extends Controller
                         'roles' => ['InstallEdit'],
                     ],
                     [
-                        'actions' => ['fortrrmmat', 'assign-to-trrmmat'],
+                        'actions' => ['fortrrmmat', 'assign-to-grid'],
                         'allow' => true,
                         'roles' => ['RemoveaktEdit'],
                     ],
                     [
-                        'actions' => ['fortrmatosmotr', 'assign-to-trmatosmotr'],
+                        'actions' => ['fortrmatosmotr'/*, 'assign-to-trmatosmotr'*/],
                         'allow' => true,
                         'roles' => ['OsmotraktEdit'],
                     ]
@@ -168,10 +169,9 @@ class TrMatController extends Controller
         ]);
     }
 
-    public function actionAssignToTrrmmat()
+    public function actionAssignToGrid()
     {
-        Proc::AssignToModelFromGrid(new TrRmMat, 'id_removeakt');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        Proc::AssignToModelFromGrid(True, new TrRmMat, 'id_removeakt');
     }
 
     public function actionFortrmatosmotr()
@@ -185,11 +185,10 @@ class TrMatController extends Controller
         ]);
     }
 
-    public function actionAssignToTrmatosmotr()
+   /* public function actionAssignToTrmatosmotr()
     {
-        Proc::AssignToModelFromGrid(new \app\models\Fregat\TrMatOsmotr, 'id_osmotraktmat');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-    }
+        Proc::AssignToModelFromGrid(True, new TrMatOsmotr, 'id_osmotraktmat');
+    }*/
 
     public function actionSelectinputfortrmatosmotr($q = null, $idosmotraktmat = null)
     {

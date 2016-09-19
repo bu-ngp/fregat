@@ -27,7 +27,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'name',
                     ],
                     'buttons' => empty($foreign) ? [] : [
-                        'chooseajax' => ['Base/classmkb/assign-to-glaukuchet']
+                        'chooseajax' => ['Base/classmkb/assign-to-select2']
                             ],
                 ]),
                 'gridOptions' => [

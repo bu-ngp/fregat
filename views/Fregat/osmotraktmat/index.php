@@ -42,7 +42,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'buttons' => array_merge(
                             empty($foreign) ? [
                                 'downloadreport' => ['Fregat/osmotraktmat/osmotraktmat-report']] : [
-                                'chooseajax' => ['Fregat/osmotrakt/assign-to-recoveryrecieveakt']], Yii::$app->user->can('OsmotraktEdit') ? [
+                                'chooseajax' => ['Fregat/osmotrakt/assign-to-grid']], Yii::$app->user->can('OsmotraktEdit') ? [
                                 'update' => ['Fregat/osmotraktmat/update'],
                                 'deleteajax' => ['Fregat/osmotraktmat/delete'],
                                     ] : []

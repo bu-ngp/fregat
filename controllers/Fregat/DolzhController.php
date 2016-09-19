@@ -22,7 +22,7 @@ class DolzhController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-employee'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -94,9 +94,8 @@ class DolzhController extends Controller {
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToEmployee() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

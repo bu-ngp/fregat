@@ -36,7 +36,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ),
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Config/authitem/assign-to-authassignment']], Yii::$app->user->can('RoleEdit') ? [
+                                'chooseajax' => ['Config/authitem/assign-to-grid']], Yii::$app->user->can('RoleEdit') ? [
                                 'update' => ['Config/authitem/update', 'name'],
                                 'deleteajax' => ['Config/authitem/delete', 'name'],
                                     ] : []

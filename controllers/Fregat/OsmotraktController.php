@@ -35,7 +35,7 @@ class OsmotraktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-grid', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -167,10 +167,9 @@ class OsmotraktController extends Controller
         }
     }
 
-    public function actionAssignToRecoveryrecieveakt()
+    public function actionAssignToGrid()
     {
-        Proc::AssignToModelFromGrid(new Recoveryrecieveakt, 'id_recoverysendakt');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        Proc::AssignToModelFromGrid(True, new Recoveryrecieveakt, 'id_recoverysendakt');
     }
 
     // Действие наполнения списка Select2 при помощи ajax

@@ -31,7 +31,7 @@ class AuthitemController extends Controller {
                         'roles' => ['RoleEdit'],
                     ],
                     [
-                        'actions' => ['forauthassignment', 'assign-to-authassignment'],
+                        'actions' => ['forauthassignment', 'assign-to-grid'],
                         'allow' => true,
                         'roles' => ['UserEdit'],
                     ],
@@ -144,14 +144,12 @@ class AuthitemController extends Controller {
         }
     }
 
-    public function actionAssignToAuthassignment() {
+    public function actionAssignToGrid() {
         $LastBC = Proc::GetLastBreadcrumbsFromSession();
         if ($LastBC['dopparams']['foreign']['model'] === 'Authassignment')
-            Proc::AssignToModelFromGrid(new Authassignment, 'user_id');
+            Proc::AssignToModelFromGrid(True, new Authassignment, 'user_id');
         elseif ($LastBC['dopparams']['foreign']['model'] === 'Authitemchild')
-            Proc::AssignToModelFromGrid(new Authitemchild, 'parent');
-
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+            Proc::AssignToModelFromGrid(True, new Authitemchild, 'parent');
     }
 
     /**

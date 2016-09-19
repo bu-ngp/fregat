@@ -25,7 +25,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/grupa/assign-to-material']
+                                'chooseajax' => ['Fregat/grupa/assign-to-select2']
                                 ], Yii::$app->user->can('GrupaEdit') ? [
                                         'update' => ['Fregat/grupa/update', 'grupa_id'],
                                         'deleteajax' => ['Fregat/grupa/delete', 'grupa_id']] : []

@@ -26,7 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Base/preparat/assign-to-glaukuchet']
+                                'chooseajax' => ['Base/preparat/assign-to-select2']
                                     ], Yii::$app->user->can('PreparatEdit') ? [
                                 'update' => ['Base/preparat/update', 'preparat_id'],
                                 'deleteajax' => ['Base/preparat/delete', 'preparat_id'],

@@ -62,7 +62,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/tr-mat-osmotr/assign-to-recoverysendakt']]
+                                'chooseajax' => ['Fregat/tr-mat-osmotr/assign-to-grid']]
                     ),
                 ]),
                 'gridOptions' => [

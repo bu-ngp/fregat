@@ -31,7 +31,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             ],
             'buttons' => array_merge(
                 empty($foreign) ? [] : [
-                    'chooseajax' => ['Fregat/employee/assign-to-material']
+                    'chooseajax' => ['Fregat/employee/assign-to-grid']
                 ], (Yii::$app->user->can('EmployeeEdit') || Yii::$app->user->can('EmployeeBuildEdit') || Yii::$app->user->can('EmployeeSpecEdit') ? [
                 'update' => ['Fregat/employee/update', 'employee_id']] : []), (Yii::$app->user->can('EmployeeEdit') ? [
                 'deleteajax' => ['Fregat/employee/delete', 'employee_id']] : [])

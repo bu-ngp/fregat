@@ -24,7 +24,7 @@ class MatvidController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'forgrupavid', 'assign-to-material'],
+                        'actions' => ['index', 'selectinput', 'forgrupavid', 'assign-to-grid'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -103,9 +103,8 @@ class MatvidController extends Controller {
         ]);
     }
 
-    public function actionAssignToMaterial() {
-        Proc::AssignToModelFromGrid(new Grupavid, 'id_grupa');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+    public function actionAssignToGrid() {
+        Proc::AssignToModelFromGrid(True, new Grupavid, 'id_grupa');
     }
 
     /**

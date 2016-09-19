@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Recoveryrecieveaktmat;
 use Yii;
 use app\models\Fregat\TrMatOsmotr;
 use app\models\Fregat\TrMatOsmotrSearch;
@@ -33,7 +34,7 @@ class TrMatOsmotrController extends Controller
                         'roles' => ['OsmotraktEdit'],
                     ],
                     [
-                        'actions' => ['forrecoveryrecieveaktmat', 'assign-to-recoverysendakt'],
+                        'actions' => ['forrecoveryrecieveaktmat', 'assign-to-grid'],
                         'allow' => true,
                         'roles' => ['RecoveryEdit'],
                     ],
@@ -92,10 +93,9 @@ class TrMatOsmotrController extends Controller
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToRecoverysendakt()
+    public function actionAssignToGrid()
     {
-        Proc::AssignToModelFromGrid(new \app\models\Fregat\Recoveryrecieveaktmat, 'id_recoverysendakt');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        Proc::AssignToModelFromGrid(True, new Recoveryrecieveaktmat, 'id_recoverysendakt');
     }
 
     /**

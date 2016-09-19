@@ -24,7 +24,7 @@ class GrupaController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'assign-to-material'],
+                        'actions' => ['index', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -110,9 +110,8 @@ class GrupaController extends Controller {
         }
     }
 
-    public function actionAssignToMaterial() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

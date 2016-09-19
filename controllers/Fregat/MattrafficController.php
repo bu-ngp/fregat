@@ -27,7 +27,7 @@ class MattrafficController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-matparent', 'forosmotrakt'],
+                        'actions' => ['index', 'selectinputformaterial', 'forinstallakt', 'forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-select2', 'forosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -161,10 +161,9 @@ class MattrafficController extends Controller
     }
 
     public
-    function actionAssignToMatparent()
+    function actionAssignToSelect2()
     {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     public

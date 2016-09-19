@@ -22,7 +22,7 @@ class IzmerController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-material'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -88,9 +88,8 @@ class IzmerController extends Controller {
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToMaterial() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

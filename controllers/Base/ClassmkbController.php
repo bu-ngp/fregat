@@ -13,18 +13,20 @@ use yii\filters\AccessControl;
 /**
  * ClassmkbController implements the CRUD actions for Classmkb model.
  */
-class ClassmkbController extends Controller {
+class ClassmkbController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'indexglauk', 'selectinputfordiag', 'assign-to-glaukuchet'],
+                        'actions' => ['index', 'indexglauk', 'selectinputfordiag', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -33,39 +35,42 @@ class ClassmkbController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new ClassmkbSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionIndexglauk() {
+    public function actionIndexglauk()
+    {
         $searchModel = new ClassmkbSearch();
         $dataProvider = $searchModel->searchglauk(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfordiag($q = null) {
+    public function actionSelectinputfordiag($q = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::ResultSelect2([
-                        'model' => new Classmkb,
-                        'q' => $q,
-                        'methodquery' => 'selectinput',
+                'model' => new Classmkb,
+                'q' => $q,
+                'methodquery' => 'selectinput',
             ]);
     }
 
-    public function actionAssignToGlaukuchet() {
+    public function actionAssignToSelect2()
+    {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**
@@ -75,7 +80,8 @@ class ClassmkbController extends Controller {
      * @return Classmkb the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Classmkb::findOne($id)) !== null) {
             return $model;
         } else {

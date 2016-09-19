@@ -25,7 +25,7 @@ class PreparatController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-glaukuchet'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['GlaukUserPermission'],
                     ],
@@ -94,9 +94,8 @@ class PreparatController extends Controller {
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToGlaukuchet() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

@@ -28,7 +28,7 @@ class TrOsnovController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt', 'assign-to-osmotrakt', 'fillinstalledmat'],
+                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt', 'assign-to-select2', 'fillinstalledmat'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -181,9 +181,8 @@ class TrOsnovController extends Controller {
             ]);
     }
 
-    public function actionAssignToOsmotrakt() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     // Заполнение полей формы после выбора материальной ценности по инвентарнику

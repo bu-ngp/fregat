@@ -26,7 +26,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             ],
             'buttons' => array_merge(
                 empty($foreign) ? [] : [
-                    'chooseajax' => ['Fregat/reason/assign-to-osmotrakt']
+                    'chooseajax' => ['Fregat/reason/assign-to-select2']
                 ], Yii::$app->user->can('ReasonEdit') ? [
                 'update' => ['Fregat/reason/update', 'reason_id'],
                 'deleteajax' => ['Fregat/reason/delete', 'reason_id'],

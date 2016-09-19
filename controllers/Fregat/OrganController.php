@@ -25,7 +25,7 @@ class OrganController extends Controller {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-osmotrakt'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -92,9 +92,8 @@ class OrganController extends Controller {
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToOsmotrakt() {
+    public function actionAssignToSelect2() {
         Proc::AssignToModelFromGrid();
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
     }
 
     /**

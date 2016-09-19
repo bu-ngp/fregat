@@ -25,7 +25,7 @@ class EmployeeController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'assign-to-material', 'foractiveemployee'],
+                        'actions' => ['index', 'assign-to-grid', 'foractiveemployee'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -145,10 +145,9 @@ class EmployeeController extends Controller
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToMaterial()
+    public function actionAssignToGrid()
     {
-        Proc::AssignToModelFromGrid(new Impemployee, 'id_importemployee');
-        $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        Proc::AssignToModelFromGrid(True, new Impemployee, 'id_importemployee');
     }
 
     /**

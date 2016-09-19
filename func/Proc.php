@@ -157,11 +157,11 @@ class Proc
 
             $session['breadcrumbs'] = $result;
 
-       /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-            $s1 = $_SESSION;
-            unset($s1['__flash']);
-            print_r($s1);
-            echo '</pre>';*/
+            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+                 $s1 = $_SESSION;
+                 unset($s1['__flash']);
+                 print_r($s1);
+                 echo '</pre>';*/
 
             $session->close();
 
@@ -1547,13 +1547,15 @@ class Proc
             }
     }
 
-    // Присваивает выбранное значение из справочника модели, в сессии
     /**
-     * @param null $ActiveRecord
-     * @param null $AttributeForeignID
+     * Присваивает выбранное значение из справочника модели, в сессии.
+     * При выборе значения из справочника, значение присваивается в сессию предыдущей хлебной крошки, для формы, с которой был открыт справочник.
+     * @param bool $RedirectPreviousUrl
+     * @param ActiveRecord $ActiveRecord Модель к которой присваивается знаечния из справочника.
+     * @param string $AttributeForeignID Имя атрибута
      * @return string
      */
-    public static function AssignToModelFromGrid($ActiveRecord = NULL, $AttributeForeignID = NULL)
+    public static function AssignToModelFromGrid($RedirectPreviousUrl = True, $ActiveRecord = NULL, $AttributeForeignID = NULL)
     {
         if (Yii::$app->request->isAjax) {
             $LastBC = Proc::GetLastBreadcrumbsFromSession();
@@ -1579,6 +1581,9 @@ class Proc
                             $ActiveRecord->save(false);
                     }
                 }
+
+                if ($RedirectPreviousUrl)
+                    Yii::$app->response->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
             } else
                 return 'error foreign or assigndata empty AssignToModelFromGrid()';
         }

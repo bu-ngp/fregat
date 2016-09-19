@@ -39,7 +39,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/tr-osnov/assign-to-osmotrakt']
+                                'chooseajax' => ['Fregat/tr-osnov/assign-to-select2']
                                     ]
                     ),
                 ]),

@@ -25,7 +25,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                     'buttons' => array_merge(
                             empty($foreign) ? [] : [
-                                'chooseajax' => ['Fregat/izmer/assign-to-material']
+                                'chooseajax' => ['Fregat/izmer/assign-to-select2']
                                     ], Yii::$app->user->can('IzmerEdit') ? [
                                 'update' => ['Fregat/izmer/update', 'izmer_id'],
                                 'deleteajax' => ['Fregat/izmer/delete', 'izmer_id'],
