@@ -116,7 +116,7 @@ class MattrafficSearch extends Mattraffic
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_release', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_release', Proc::Date));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_number'));
         $query->andFilterWhere(['LIKE', 'idIzmer.izmer_name', $this->getAttribute('idMaterial.idIzmer.izmer_name')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_price'));
@@ -125,17 +125,17 @@ class MattrafficSearch extends Mattraffic
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idMol.idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_dateinactive', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_dateinactive', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_writeoff', $this->getAttribute('idMaterial.material_writeoff')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_username', $this->getAttribute('idMaterial.material_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMaterial.material_lastchange', Proc::DateTime));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_importdo', $this->getAttribute('idMaterial.material_importdo')]);
         $query->andFilterWhere(['LIKE', 'idMol.employee_username', $this->getAttribute('idMol.employee_username')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_lastchange', Proc::DateTime));
         $query->andFilterWhere(['LIKE', 'idMol.employee_importdo', $this->getAttribute('idMol.employee_importdo')]);
         $query->andFilterWhere(['LIKE', 'mattraffic_username', $this->getAttribute('mattraffic_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_lastchange', Proc::DateTime));
     }
 
     private function baseSort(&$dataProvider)

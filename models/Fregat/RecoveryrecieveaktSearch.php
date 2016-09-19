@@ -87,7 +87,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotrakt.osmotrakt_id'));
         $query->andFilterWhere(['like', 'recoveryrecieveakt_result', $this->recoveryrecieveakt_result]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'recoveryrecieveakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'recoveryrecieveakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name')]);
@@ -96,7 +96,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
         $query->andFilterWhere(['LIKE', 'idOsmotrakt.osmotrakt_comment', $this->getAttribute('idOsmotrakt.osmotrakt_comment')]);
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idOsmotrakt.idMaster.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idOsmotrakt.idMaster.iddolzh.dolzh_name')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotrakt.osmotrakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotrakt.osmotrakt_date', Proc::Date));
     }
 
     private function baseSort(&$dataProvider)

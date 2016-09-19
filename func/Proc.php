@@ -4,6 +4,7 @@ namespace app\func;
 
 use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportsTemplate\RecoverysendaktReport;
+use app\models\Config\Authuser;
 use app\models\Fregat\Fregatsettings;
 use Yii;
 use yii\base\View;
@@ -778,10 +779,10 @@ class Proc
      * Формирует массив конструкции Where() ActiveQuery.
      * @param ActiveRecord $ModelSearch Модель, для который создаем конструкцию Where().
      * @param string $Field Атрибут модели, по которому осуществляем поиск, фильтрацию.
-     * @param string|integer $Type
+     * @param integer $Type Тип значения в атрибуте модели (Proc::Time, Proc::Date, Proc::DateTime).
      * @return array Массив конструкции Where().
      */
-    static function WhereConstruct($ModelSearch, $Field, $Type = '')
+    static function WhereConstruct($ModelSearch, $Field, $Type = 0)
     {
         $AttributeModelValue = $ModelSearch->getAttribute($Field);
         $AttributeValue = empty($AttributeModelValue) ? $ModelSearch->$Field : $ModelSearch->getAttribute($Field);
@@ -789,13 +790,6 @@ class Proc
         preg_match('/(>=|<=|>|<|=)?(.*)/', $AttributeValue, $Matches);
         $Operator = $Matches[1];
         $Value = $Matches[2];
-
-        if ($Type === 'time')
-            $Type = self::Time;
-        if ($Type === 'date')
-            $Type = self::Date;
-        if ($Type === 'datetime')
-            $Type = self::DateTime;
 
         if (!empty($Value))
             switch ($Type) {
@@ -814,8 +808,9 @@ class Proc
     }
 
     /**
-     * @param $string
-     * @return string
+     * Метод транслитирирует русские символы на латинский.
+     * @param string $string Строка, которую необходимо транслитирировать.
+     * @return string Строка результат транслитерации.
      */
     static function Translit($string)
     {
@@ -862,8 +857,11 @@ class Proc
     }
 
     /**
-     * @param $Fullname
-     * @return string
+     * Фукния создает Логин пользователя на основе полного ФИО.
+     * Например, $Fullname = 'Иванов Петр Сергеевич' выведет 'IvanovPS'.
+     * Если логин 'IvanovPS' существует, то метод добавит количество совпадающих логинов в конце результата, т.е. IvanovPS1, IvanovPS2, и т.д.
+     * @param $Fullname ФИО пользователя полностью.
+     * @return string Преобразованный логин.
      */
     public static function CreateLogin($Fullname)
     {
@@ -871,32 +869,17 @@ class Proc
         $result = '';
 
         if (!empty($matches[1]))
-            $result .= ucfirst(Proc::Translit($matches[1]));
+            $result .= ucfirst(self::Translit($matches[1]));
         if (!empty($matches[2]))
-            $result .= ucfirst(Proc::Translit(mb_substr($matches[2], 0, 1, 'UTF-8')));
+            $result .= ucfirst(self::Translit(mb_substr($matches[2], 0, 1, 'UTF-8')));
         if (!empty($matches[3]))
-            $result .= ucfirst(Proc::Translit(mb_substr($matches[3], 0, 1, 'UTF-8')));
+            $result .= ucfirst(self::Translit(mb_substr($matches[3], 0, 1, 'UTF-8')));
 
-        $count = \app\models\Config\Authuser::find()
+        $count = Authuser::find()
             ->where(['like', 'auth_user_login', $result . '%', false])
             ->count();
 
         return $count > 0 ? $result . $count : $result;
-    }
-
-    /**
-     * @param $file
-     * @return bool
-     */
-    public static function file_exists_ci($file)
-    {
-        if (file_exists($file))
-            return $file;
-        $lowerfile = strtolower($file);
-        foreach (glob(dirname($file) . '/*') as $file)
-            if (strtolower($file) == $lowerfile)
-                return $file;
-        return FALSE;
     }
 
     /**
@@ -907,11 +890,12 @@ class Proc
      */
     public static function GetAllLabelsFromAR($DataProvider, $fields = NULL, $LabelValues = NULL)
     {
+        $labels = [];
         $cls_ar = class_exists($DataProvider->query->modelClass) ? new $DataProvider->query->modelClass : false;
         if ($cls_ar instanceof ActiveRecord) {
             if (!is_array($fields))
                 $fields = $cls_ar->attributes;
-            $labels = [];
+
             array_walk($fields, function ($value, $key) use (&$labels, $cls_ar, $LabelValues) {
                 $labels[$key] = !empty($LabelValues) && property_exists($LabelValues, $key) ? $LabelValues->$key : $cls_ar->getAttributeLabel($key);
             });

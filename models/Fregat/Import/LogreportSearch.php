@@ -11,7 +11,8 @@ use app\func\Proc;
 /**
  * LogreportSearch represents the model behind the search form about `app\models\Fregat\Import\Logreport`.
  */
-class LogreportSearch extends Logreport {
+class LogreportSearch extends Logreport
+{
     /*  public function attributes() {
       // add related fields to searchable attributes
       return array_merge(parent::attributes(), ['maxfilelastdate']);
@@ -20,7 +21,8 @@ class LogreportSearch extends Logreport {
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['logreport_id', 'logreport_errors', 'logreport_updates', 'logreport_additions', 'logreport_amount', 'logreport_missed', 'logreport_executetime', 'logreport_memoryused'], 'safe'],
             [['logreport_date', 'maxfilelastdate'], 'safe'],
@@ -30,12 +32,14 @@ class LogreportSearch extends Logreport {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    public function search($params) {
+    public function search($params)
+    {
         $query = Logreport::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -52,8 +56,8 @@ class LogreportSearch extends Logreport {
         }
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_executetime', 'time'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_executetime', Proc::Time));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_date', Proc::Date));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_errors'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_updates'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'logreport_additions'));

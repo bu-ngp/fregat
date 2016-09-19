@@ -115,7 +115,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
 
         $query->andFilterWhere(['like', 'tr_mat_osmotr_comment', $this->tr_mat_osmotr_comment]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', Proc::Date));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'tr_mat_osmotr_number'));
         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idTrMat.idMattraffic.idMaterial.idMatv.matvid_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMat.idMattraffic.idMaterial.material_name')]);
@@ -189,7 +189,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
         $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idTrMat.idParent.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idTrMat.idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idpersonmaster.auth_user_fullname', $this->getAttribute('idOsmotraktmat.idMaster.idpersonmaster.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzhmaster.dolzh_name', $this->getAttribute('idOsmotraktmat.idMaster.iddolzhmaster.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
@@ -240,7 +240,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
         $query->andWhere(['idMattraffic.id_material' => $params['id']]);
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idOsmotraktmat.osmotraktmat_date', Proc::Date));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'tr_mat_osmotr_number'));
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
         $query->andFilterWhere(['LIKE', 'tr_mat_osmotr_comment', $this->getAttribute('tr_mat_osmotr_comment')]);

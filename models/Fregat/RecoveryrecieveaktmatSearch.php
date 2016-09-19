@@ -87,10 +87,10 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat
             'id_tr_mat_osmotr' => $this->id_tr_mat_osmotr,
         ]);
 
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'recoveryrecieveaktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'recoveryrecieveaktmat_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'recoveryrecieveaktmat_result', $this->getAttribute('recoveryrecieveaktmat_result')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMatOsmotr.tr_mat_osmotr_number'));

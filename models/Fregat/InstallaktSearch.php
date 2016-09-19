@@ -74,7 +74,7 @@ class InstallaktSearch extends Installakt
             'id_installer' => $this->id_installer,
         ]);
 
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'installakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'installakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idInstaller.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idInstaller.iddolzh.dolzh_name')]);
 

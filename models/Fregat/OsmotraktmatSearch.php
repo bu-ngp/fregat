@@ -77,7 +77,7 @@ class OsmotraktmatSearch extends Osmotraktmat
 
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotraktmat_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotraktmat_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'osmotraktmat_date', Proc::Date));
 
         $query->groupBy(['osmotraktmat_id']);
         if (!empty($this->osmotraktmat_countmat)) {

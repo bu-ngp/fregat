@@ -82,7 +82,7 @@ class TrOsnovSearch extends TrOsnov
 
         $query->andFilterWhere(['like', 'tr_osnov_kab', $this->tr_osnov_kab]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_id'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMattraffic.idMaterial.material_serial')]);

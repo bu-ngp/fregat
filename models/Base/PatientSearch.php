@@ -115,7 +115,7 @@ class PatientSearch extends Patient
         $query->andFilterWhere(['LIKE', 'patient_fam', $this->getAttribute('patient_fam')]);
         $query->andFilterWhere(['LIKE', 'patient_im', $this->getAttribute('patient_im')]);
         $query->andFilterWhere(['LIKE', 'patient_ot', $this->getAttribute('patient_ot')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_dr', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_dr', Proc::Date));
         $query->andFilterWhere(['LIKE', 'patient_pol', $this->getAttribute('patient_pol')]);
         $fias_city = $this->getAttribute('idFias.fias_city');
         if (!empty($fias_city))
@@ -127,26 +127,26 @@ class PatientSearch extends Patient
         $query->andFilterWhere(['LIKE', 'patient_korp', $this->getAttribute('patient_korp')]);
         $query->andFilterWhere(['LIKE', 'patient_kvartira', $this->getAttribute('patient_kvartira')]);
         $query->andFilterWhere(['LIKE', 'patient_username', $this->getAttribute('patient_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_lastchange', Proc::DateTime));
 
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_uchetbegin', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_uchetbegin', Proc::Date));
         $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_detect', $this->getAttribute('glaukuchets.glaukuchet_detect')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_deregdate', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_deregdate', Proc::Date));
         $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_deregreason', $this->getAttribute('glaukuchets.glaukuchet_deregreason')]);
         $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_stage', $this->getAttribute('glaukuchets.glaukuchet_stage')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_operdate', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_operdate', Proc::Date));
         $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_invalid', $this->getAttribute('glaukuchets.glaukuchet_invalid')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastvisit', 'date'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastmetabol', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastvisit', Proc::Date));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastmetabol', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('glaukuchets.idEmployee.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('glaukuchets.idEmployee.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('glaukuchets.idEmployee.idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('glaukuchets.idEmployee.idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idClassMkb.code', $this->getAttribute('glaukuchets.idClassMkb.code')]);
         $query->andFilterWhere(['LIKE', 'idClassMkb.name', $this->getAttribute('glaukuchets.idClassMkb.name')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'patient_lastchange', Proc::DateTime));
         $query->andFilterWhere(['LIKE', 'patient_username', $this->getAttribute('patient_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastchange', 'datetime'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'glaukuchets.glaukuchet_lastchange', Proc::DateTime));
         $query->andFilterWhere(['LIKE', 'glaukuchets.glaukuchet_username', $this->getAttribute('glaukuchets.glaukuchet_username')]);
     }
 

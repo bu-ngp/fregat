@@ -79,8 +79,8 @@ class EmployeeSearch extends Employee
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idperson.auth_user_fullname')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', 'datetime'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
@@ -121,8 +121,8 @@ class EmployeeSearch extends Employee
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idperson.auth_user_fullname')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', 'datetime'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
@@ -165,8 +165,8 @@ class EmployeeSearch extends Employee
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', 'datetime'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
@@ -204,8 +204,8 @@ class EmployeeSearch extends Employee
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', 'datetime'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, ['iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 

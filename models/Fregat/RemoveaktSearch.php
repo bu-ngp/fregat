@@ -74,7 +74,7 @@ class RemoveaktSearch extends Removeakt
             'id_remover' => $this->id_remover,
         ]);
 
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'removeakt_date', 'date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'removeakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idRemover.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idRemover.iddolzh.dolzh_name')]);
 
