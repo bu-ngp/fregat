@@ -61,8 +61,16 @@ class Mattraffic extends \yii\db\ActiveRecord
             [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
             ['mattraffic_number', 'MaxNumberMove', 'on' => 'traffic'],
             [['mattraffic_number'], 'MaxNumberMoveMat', 'on' => 'trafficmat'],
+            [['mattraffic_number'], 'FoldDevision'],
             //  [['mattraffic_id'], 'safe'],
         ];
+    }
+
+    public function FoldDevision($attribute)
+    {
+        if (!(ctype_digit(strval($this->$attribute)) && in_array($this->idMaterial->material_tip, [1, 3]) || in_array($this->idMaterial->material_tip, [2])))
+            $this->addError($attribute, 'Количество должно быть целым числом');
+
     }
 
     // Определяем максимальное кол-во мат. цен-ти для перемещения (Основное средство - кол-во всегда не более 1, Материал - кол-во не более (Общее кол-во материала МОЛ'а - кол-во перемещенного материала МОЛ'а))
@@ -330,7 +338,8 @@ class Mattraffic extends \yii\db\ActiveRecord
             $dopparams = [];
 
         $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
-        $SumMT = self::GetSumMattraffic_Number($mattraffic_id);
+        // $SumMT = self::GetSumMattraffic_Number($mattraffic_id);
+        $SumMT = self::findOne($mattraffic_id)->mattraffic_number;
         $SumMT = (!$os && $SumMT == 0) ? 1 : $SumMT;
 
         return $os ? 1 : $SumMT;
