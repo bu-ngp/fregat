@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Mattraffic;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -25,7 +26,7 @@ use app\models\Fregat\Build;
             <?=
             $form->field($model, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
                                 'model' => $model,
-                                'resultmodel' => new app\models\Fregat\Mattraffic,
+                                'resultmodel' => new Mattraffic,
                                 'fields' => [
                                     'keyfield' => 'id_mattraffic',
                                 ],
