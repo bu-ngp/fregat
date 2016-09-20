@@ -44,47 +44,33 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 
 }
 
-function SetSession(thiselem) {
-    setTimeout(function () {
-        var field = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").attr("name") : $(thiselem).attr("name");
-        var elemval = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").val() : $(thiselem).val();
-
-        $.ajax({
-            url: "?r=site%2Fsetsession",
-            type: "post",
-            data: {
-                modelclass: field.substring(0, field.indexOf("[")),
-                field: field.substring(field.indexOf("[") + 1, field.indexOf("]")),
-                value: elemval
-            },
-            async: false,
-            error: function (data) {
-                console.error("Ошибка SetSession");
-            }
-        });
-    }, 1000);  // Переделать ready change для datacontrol
-}
-
-function SetSessionEach(thiselems_array) {
-    var data = [];
-    $.each(thiselems_array, function (i, elem) {
-        var field = elem.attr("name");
-        data.push({
-            modelclass: field.substring(0, field.indexOf("[")),
-            field: field.substring(field.indexOf("[") + 1, field.indexOf("]")),
-            value: elem.val()
-        });
-    });
-
+function SendSetSession(Field, Value) {
     $.ajax({
         url: "?r=site%2Fsetsession",
         type: "post",
-        data: {data: JSON.stringify(data)},
+        data: {
+            modelclass: Field.substring(0, Field.indexOf("[")),
+            field: Field.substring(Field.indexOf("[") + 1, Field.indexOf("]")),
+            value: Value,
+        },
         async: false,
         error: function (data) {
-            console.error("Ошибка SetSession");
+            console.error("Ошибка SendSetSession");
         }
     });
+}
+
+function SetSession(thiselem) {
+    var field = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").attr("name") : $(thiselem).attr("name");
+    var elem = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input") : $(thiselem);
+
+    if ($(thiselem).hasClass("krajee-datepicker")) {
+        elem.unbind('change');
+        elem.on("change", function () {
+            SendSetSession(field, $(this).val())
+        });
+    } else
+        SendSetSession(field, elem.val())
 }
 
 function InitWindowGUID() {

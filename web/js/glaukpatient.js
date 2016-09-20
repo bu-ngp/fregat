@@ -55,12 +55,9 @@ function ClearCity() {
     $('input[name="Patient[patient_korp]').prop("disabled", true);
     $('input[name="Patient[patient_kvartira]').prop("disabled", true);
 
-    SetSessionEach([
-        $('select[name="Patient[id_fias]"]'),
-        $('input[name="Patient[patient_dom]'),
-        $('input[name="Patient[patient_korp]'),
-        $('input[name="Patient[patient_kvartira]')
-    ]);
+    $('select[name="Patient[id_fias]"], input[name="Patient[patient_dom]"], input[name="Patient[patient_korp]"], input[name="Patient[patient_kvartira]"]').change(function () {
+        SetSession(this);
+    });
 }
 
 $(document).ready(function () {

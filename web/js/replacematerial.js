@@ -15,15 +15,9 @@ function FillTrOsnov() {
                 $("#build-build_name").val(obj.build_name);
                 $("#mattraffic_number_max").text("Не более " + obj.mattraffic_number);
 
-                SetSessionEach([
-                    $("#material-material_tip"),
-                    $("#material-material_name"),
-                    $("#material-material_writeoff"),
-                    $("#authuser-auth_user_fullname"),
-                    $("#dolzh-dolzh_name"),
-                    $("#podraz-podraz_name"),
-                    $("#build-build_name")
-                ]);
+                $('#material-material_tip, #material-material_name, #material-material_writeoff, #authuser-auth_user_fullname, #dolzh-dolzh_name, #podraz-podraz_name, #build-build_name').change(function () {
+                    SetSession(this);
+                });
             },
             error: function (data) {
                 console.error("Ошибка FillTrOsnov()");
@@ -42,13 +36,7 @@ function ClearTrOsnov() {
     $("#build-build_name").val('');
     $("#mattraffic_number_max").text('');
 
-    SetSessionEach([
-        $("#material-material_tip"),
-        $("#material-material_name"),
-        $("#material-material_writeoff"),
-        $("#authuser-auth_user_fullname"),
-        $("#dolzh-dolzh_name"),
-        $("#podraz-podraz_name"),
-        $("#build-build_name")
-    ]);
+    $('#material-material_tip, #material-material_name, #material-material_writeoff, #authuser-auth_user_fullname, #dolzh-dolzh_name, #podraz-podraz_name, #build-build_name').change(function () {
+        SetSession(this);
+    });
 }
