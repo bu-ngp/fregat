@@ -96,6 +96,7 @@ class InstallTrOsnov extends Model
                             return false;
                         }
                     } else {
+                        $this->addError('mattraffic_number', $Mattraffic->getErrors('mattraffic_number')[0]);
                         $transaction->rollBack();
                         return false;
                     }
