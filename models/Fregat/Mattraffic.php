@@ -68,9 +68,8 @@ class Mattraffic extends \yii\db\ActiveRecord
 
     public function FoldDevision($attribute)
     {
-        if (!(ctype_digit(strval($this->$attribute)) && in_array($this->idMaterial->material_tip, [1, 3]) || in_array($this->idMaterial->material_tip, [2])))
+        if (!(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->idMaterial->material_tip, [1, 3]) || in_array($this->idMaterial->material_tip, [2])))
             $this->addError($attribute, 'Количество должно быть целым числом');
-
     }
 
     // Определяем максимальное кол-во мат. цен-ти для перемещения (Основное средство - кол-во всегда не более 1, Материал - кол-во не более (Общее кол-во материала МОЛ'а - кол-во перемещенного материала МОЛ'а))
