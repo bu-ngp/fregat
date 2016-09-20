@@ -79,7 +79,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             'filterModel' => $searchModel,
             'rowOptions' => function ($model, $index, $widget, $grid) {
                 $class = [];
-                if ($model->idMaterial->material_tip == 1) {
+              /*  if ($model->idMaterial->material_tip == 1) {
                     $class = ['class' => 'warning'];
                 } else
                     $class = ['class' => 'danger'];
@@ -90,7 +90,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
                 if ($model->mattraffic_tip == 3) {
                     $class = ['class' => 'success'];
-                }
+                }*/
 
                 return $class;
             },

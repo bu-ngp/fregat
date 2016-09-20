@@ -132,7 +132,7 @@ use \yii\helpers\Url;
                         'options' => ['class' => 'form-control setsession'],
                         'pluginOptions' => [
                             'verticalbuttons' => true,
-                            'min' => 0.001,
+                            'min' => 1,
                             'max' => 10000000000,
                             'step' => 1,
 
