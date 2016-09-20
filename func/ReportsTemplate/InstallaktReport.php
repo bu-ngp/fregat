@@ -75,7 +75,7 @@ class InstallaktReport extends BaseReportPortal
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idMattraffic->idMaterial->material_name);
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, 1);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
 
                 $mattraffic_previous = Mattraffic::GetPreviousMattrafficByInstallaktMaterial($ID, $ar->idMattraffic->id_material);
