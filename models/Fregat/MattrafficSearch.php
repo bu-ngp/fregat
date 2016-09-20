@@ -312,7 +312,7 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
-        $query->andWhere('mattraffic_number > 0')
+        $query->andWhere('mattraffic_number >= 0')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
             ->andWhere(['tr_mat.id_mattraffic' => NULL])
