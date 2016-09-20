@@ -79,7 +79,7 @@ use app\models\Fregat\Build;
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
             'verticalbuttons' => true,
-            'min' => 1,
+            'min' => 0.001,
             'max' => 10000000000,
             'step' => 1,
             'decimals' => 3,
