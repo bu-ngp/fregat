@@ -2,6 +2,7 @@
 
 namespace app\models\Base;
 
+use app\models\Config\Authuser;
 use Yii;
 use yii\base\Model;
 use app\models\Glauk\Glaukuchet;
@@ -52,6 +53,8 @@ class PatientFilter extends Model
     public $glaukuchet_not_lastmetabol_mark;
     public $glaukuchet_id_employee;
     public $glaukuchet_id_employee_not;
+    public $employee_id_person;
+    public $employee_id_person_not;
     public $employee_id_dolzh;
     public $employee_id_dolzh_not;
     public $employee_id_podraz;
@@ -104,6 +107,7 @@ class PatientFilter extends Model
                 'glprep_rlocat_not',
                 'glprep_id_preparat_not',
                 'glaukuchet_id_employee_not',
+                'employee_id_person_not',
                 'employee_id_dolzh_not',
                 'employee_id_podraz_not',
                 'employee_id_build_not',
@@ -133,6 +137,7 @@ class PatientFilter extends Model
                 'glaukuchet_stage',
                 'glaukuchet_invalid',
                 'glaukuchet_id_employee',
+                'employee_id_person',
                 'employee_id_dolzh',
                 'employee_id_podraz',
                 'employee_id_build',
@@ -171,6 +176,7 @@ class PatientFilter extends Model
             'glaukuchet_lastmetabol_beg' => 'Дата последнего курса метоболической терапии',
             'glaukuchet_not_lastmetabol_mark' => 'Отсутствует курс метоболической терапии',
             'glaukuchet_id_employee' => 'Врач',
+            'employee_id_person' => 'ФИО врача',
             'employee_id_dolzh' => 'Должность',
             'employee_id_podraz' => 'Подразделение',
             'employee_id_build' => 'Здание',
@@ -204,6 +210,7 @@ class PatientFilter extends Model
             'glaukuchet_stage' => Glaukuchet::VariablesValues($attribute),
             'glaukuchet_invalid' => Glaukuchet::VariablesValues($attribute),
             'glaukuchet_id_employee' => [$value => Employee::getEmployeeByID($value)],
+            'employee_id_person' => [$value => Authuser::getAuthuserByID($value)],
             'employee_id_dolzh' => [$value => Dolzh::getDolzhByID($value)],
             'employee_id_podraz' => [$value => Podraz::getPodrazByID($value)],
             'employee_id_build' => [$value => Build::getBuildByID($value)],

@@ -124,18 +124,18 @@ use yii\web\Session;
             }
         }
         ?>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                
-                <?php if (!Yii::$app->user->can('EmployeeSpecEdit')): ?>
-                    <?= Html::submitButton($label, ['class' => $class, 'form' => 'Authassignmentform']) ?>
-                <?php endif; ?>
-                <?php if (!$model->isNewRecord && $model->scenario !== 'Changepassword' && Yii::$app->user->can('UserEdit') && !$emp): ?>
-                    <?= Html::a('<i class="glyphicon glyphicon-lock"></i> Сменить пароль', ['Config/authuser/changepassword', 'id' => $model['auth_user_id']], ['class' => 'btn btn-info']) ?>
-                <?php endif; ?>
+        <?php if (!Yii::$app->user->can('EmployeeSpecEdit') || (!$model->isNewRecord && $model->scenario !== 'Changepassword' && Yii::$app->user->can('UserEdit') && !$emp)): ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <?php if (!Yii::$app->user->can('EmployeeSpecEdit')): ?>
+                        <?= Html::submitButton($label, ['class' => $class, 'form' => 'Authassignmentform']) ?>
+                    <?php endif; ?>
+                    <?php if (!$model->isNewRecord && $model->scenario !== 'Changepassword' && Yii::$app->user->can('UserEdit') && !$emp): ?>
+                        <?= Html::a('<i class="glyphicon glyphicon-lock"></i> Сменить пароль', ['Config/authuser/changepassword', 'id' => $model['auth_user_id']], ['class' => 'btn btn-info']) ?>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
-
+        <?php endif; ?>
 
     </div>
 

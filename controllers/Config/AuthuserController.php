@@ -31,7 +31,7 @@ class AuthuserController extends Controller
                     [
                         'actions' => ['index', 'selectinput'],
                         'allow' => true,
-                        'roles' => ['FregatUserPermission'],
+                        'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
                         'actions' => ['index', 'create', 'update', 'delete', 'changepassword'],

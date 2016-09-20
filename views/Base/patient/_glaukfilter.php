@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Config\Authuser;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -95,13 +96,13 @@ use app\func\Proc;
             <div class="panel-heading"><?= Html::encode('Карта глаукомного пациента') ?></div>
             <div class="panel-body">
 
-                <?= $form->field($model, 'is_glauk_mark')->checkbox(); ?>
+                <?= $form->field($model, 'is_glauk_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= Proc::FilterFieldDateRange($form, $model, 'glaukuchet_uchetbegin') ?>
 
                 <?= Proc::FilterFieldSelectMultiple($form, $model, 'glaukuchet_detect', 'Выберете вид выявления заболевания') ?>
 
-                <?= $form->field($model, 'is_glaukuchet_mark')->checkbox(); ?>
+                <?= $form->field($model, 'is_glaukuchet_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= Proc::FilterFieldSelectMultiple($form, $model, 'glaukuchet_deregreason', 'Выберете причину снятия с учета') ?>
 
@@ -111,17 +112,17 @@ use app\func\Proc;
 
                 <?= Proc::FilterFieldDateRange($form, $model, 'glaukuchet_operdate') ?>
 
-                <?= $form->field($model, 'glaukuchet_not_oper_mark')->checkbox(); ?>
+                <?= $form->field($model, 'glaukuchet_not_oper_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= Proc::FilterFieldSelectMultiple($form, $model, 'glaukuchet_invalid', 'Выберете группу инвалидности') ?>
 
-                <?= $form->field($model, 'glaukuchet_not_invalid_mark')->checkbox(); ?>
+                <?= $form->field($model, 'glaukuchet_not_invalid_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= Proc::FilterFieldDateRange($form, $model, 'glaukuchet_lastvisit') ?>
 
                 <?= Proc::FilterFieldDateRange($form, $model, 'glaukuchet_lastmetabol') ?>
 
-                <?= $form->field($model, 'glaukuchet_not_lastmetabol_mark')->checkbox(); ?>
+                <?= $form->field($model, 'glaukuchet_not_lastmetabol_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
                     <div class="panel-heading"><?= Html::encode('Врач') ?></div>
@@ -143,6 +144,34 @@ use app\func\Proc;
                             'addon' => [
                                 'prepend' => [
                                     'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'glaukuchet_id_employee'),
+                                ],
+                                'groupOptions' => [
+                                    'class' => 'notforselect2',
+                                ],
+                            ],
+                        ]));
+                        ?>
+
+                        <?=
+                        $form->field($model, 'employee_id_person')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                            'model' => $model,
+                            'resultmodel' => new Authuser,
+                            'placeholder' => 'Введите ФИО врача',
+                            'setsession' => false,
+                            'multiple' => [
+                                'multipleshowall' => false,
+                                'idvalue' => 'auth_user_id',
+                            ],
+                            'fields' => [
+                                'keyfield' => 'employee_id_person',
+                                'resultfield' => 'auth_user_fullname',
+                            ],
+                            'resultrequest' => 'Config/authuser/selectinput',
+                            'thisroute' => $this->context->module->requestedRoute,
+                        ]), [
+                            'addon' => [
+                                'prepend' => [
+                                    'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'employee_id_person'),
                                 ],
                                 'groupOptions' => [
                                     'class' => 'notforselect2',
@@ -272,14 +301,14 @@ use app\func\Proc;
 
                         <?= Proc::FilterFieldSelectMultiple($form, $model, 'glprep_rlocat', 'ыберете категорию льготного лекарственного обеспечения') ?>
 
-                        <?= $form->field($model, 'glprep_not_preparat_mark')->checkbox(); ?>
+                        <?= $form->field($model, 'glprep_not_preparat_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
-                        <?= $form->field($model, 'glprep_preparat_mark')->checkbox(); ?>
+                        <?= $form->field($model, 'glprep_preparat_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                     </div>
                 </div>
 
-                <?= $form->field($model, 'glaukuchet_comment_mark')->checkbox(); ?>
+                <?= $form->field($model, 'glaukuchet_comment_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= $form->field($model, 'glaukuchet_comment')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
 

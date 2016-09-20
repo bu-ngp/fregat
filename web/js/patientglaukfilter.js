@@ -60,8 +60,7 @@ $(document).on("beforeFilter", filtergrid, function (event) {
             formgrid.append($('<input type="hidden" class="form-control" name="' + filtersearch + '[_filter]" />').val(formcontain));
         else
             input.val(formcontain);
-    } else
-    if (input.length)
+    } else if (input.length)
         input.remove();
 
     return true;
@@ -106,7 +105,7 @@ function ClearCity() {
 $(document).on("keyup", "input.searchfilterform", function () {
     $("div.insideforms").find("div.panelblock").hide();
 
-    $("label").each(function (key, value) {
+    $("label.control-label").each(function (key, value) {
         var searchinput = ($("input.searchfilterform").val()).toUpperCase();
         var labelinput = $.trim(($(value).text()).toUpperCase());
 

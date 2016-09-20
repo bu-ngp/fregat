@@ -242,6 +242,10 @@ class PatientSearch extends Patient
                 'SQLAttribute' => 'glaukuchets.id_employee',
             ]);
             Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, [
+                'Attribute' => 'employee_id_person',
+                'SQLAttribute' => 'idEmployee.id_person',
+            ]);
+            Proc::Filter_Compare(Proc::MultiChoice, $query, $filter, [
                 'Attribute' => 'employee_id_dolzh',
                 'SQLAttribute' => 'idEmployee.id_dolzh',
             ]);
