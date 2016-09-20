@@ -70,7 +70,14 @@ class Material extends \yii\db\ActiveRecord
             [['material_username'], 'string', 'max' => 128],
             [['material_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность при импорте не изменяется, 1 - Материальная ценность может быть изменена при импорте
+            [['material_number'], 'FoldDevision'],
         ];
+    }
+
+    public function FoldDevision($attribute)
+    {
+        if (!(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->material_tip, [1, 3]) || in_array($this->material_tip, [2])))
+            $this->addError($attribute, 'Количество должно быть целым числом');
     }
 
     /**
