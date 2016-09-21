@@ -3,8 +3,10 @@
 namespace app\controllers\Fregat;
 
 use app\models\Config\Authuser;
+use app\models\Config\Profile;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Fregatsettings;
+use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Reason;
 use Yii;
 use app\models\Fregat\Build;
@@ -50,7 +52,7 @@ class FregatController extends Controller
                         'roles' => ['FregatConfig'],
                     ],
                     [
-                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont'],
+                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont', 'update-profiles'],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
                     ],
@@ -553,6 +555,63 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
         } catch (PDOException $e) {
             die('Подключение не удалось: ' . $e->getMessage());
         }
+    }
+
+    public function actionUpdateProfiles()
+    {
+        $Importconfig = Importconfig::findOne(1);
+        $filename = 'imp/' . $Importconfig['emp_filename'] . '.txt';
+        if (file_exists($filename)) {
+            ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+            ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
+
+            $i = 0;
+            $j = 0;
+            $handle = @fopen($filename, "r");
+
+            if ($handle) {
+                $UTF8deleteBOM = true;
+                while (($subject = fgets($handle, 4096)) !== false) {
+                    if ($UTF8deleteBOM) {
+                        $subject = str_replace("\xEF\xBB\xBF", '', $subject);
+                        $UTF8deleteBOM = false;
+                    }
+
+                    $pattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
+                    preg_match($pattern, $subject, $matches);
+
+                    $employee_fio = $matches[1];
+
+                    $AuthuserCount = Authuser::find()
+                        ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                        ->count();
+
+                    $Authuser = $AuthuserCount == 1 ? Authuser::find()
+                        ->where(['like', 'auth_user_fullname', $employee_fio, false])
+                        ->one() : false;
+
+                    if (!empty($Authuser)) {
+                        $Profile = Profile::findOne($Authuser->primaryKey);
+                        $Profile = empty($Profile) ? new Profile : $Profile;
+                        $Profile->profile_id = $Authuser->primaryKey;
+                        $Profile->profile_dr = $matches[16];
+                        $Profile->profile_pol = $matches[15];
+                        $Profile->profile_inn = $matches[11];
+                        $Profile->profile_snils = $matches[12];
+                        $Profile->profile_address = $matches[10];
+                        $Profile->save();
+                        if ($Profile->getErrors())
+                            var_dump($Profile->getErrors());
+                        else
+                            $i++;
+                    }
+                    $j++;
+                }
+                fclose($handle);
+                echo 'Профилей создано ' . $i . ' из ' . $j;
+            }
+        } else
+            echo 'Файл не существует ' . $filename;
     }
 
     public function actionTest()

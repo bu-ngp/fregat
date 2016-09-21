@@ -2,6 +2,7 @@
 
 namespace app\func;
 
+use app\models\Config\Profile;
 use Yii;
 use app\models\Config\Authuser;
 use app\models\Fregat\Import\Importconfig;
@@ -1276,6 +1277,19 @@ class FregatImport
 
                                             if ($Authuser->validate()) {
                                                 $Authuser->save(false);
+
+                                                $Profile = Profile::findOne($Authuser->primaryKey);
+                                                $Profile = empty($Profile) ? new Profile : $Profile;
+                                                $Profile->profile_id = $Authuser->primaryKey;
+                                                $Profile->profile_dr = $matches[16];
+                                                $Profile->profile_pol = $matches[15];
+                                                $Profile->profile_inn = $matches[11];
+                                                $Profile->profile_snils = $matches[12];
+                                                $Profile->profile_address = $matches[10];
+                                                $Profile->save();
+
+                                                $Employeelog->employeelog_message = empty($Profile->getErrors()) ? 'Запись добавлена.' : 'Запись добавлена. Ошибка при создании профиля';
+
                                                 $Employee->id_person = $Authuser->getPrimaryKey();
                                                 if ($Employee->validate()) {
                                                     $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;

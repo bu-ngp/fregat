@@ -80,6 +80,14 @@ class Authuser extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getAuthuser()
+    {
+        return $this->hasOne(Profile::className(), ['profile_id' => 'auth_user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getEmployees()
     {
         return $this->hasMany(Employee::className(), ['id_person' => 'auth_user_id'])->from(['employees' => Employee::tableName()]);
@@ -92,7 +100,7 @@ class Authuser extends \yii\db\ActiveRecord
             return $query->auth_user_fullname;
     }
 
-    public function save($runValidation = true, $attributeNames = null)
+    public function save($runValidation = true, $attributeNames = null, $Profile = null)
     {
 
         if ($this->getIsNewRecord() || $this->scenario === 'Changepassword') {

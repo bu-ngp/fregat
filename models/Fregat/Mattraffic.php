@@ -61,14 +61,14 @@ class Mattraffic extends \yii\db\ActiveRecord
             [['mattraffic_forimport'], 'integer', 'min' => 1, 'max' => 1], // 1 - У сотрудника не найден материал в фале excel, NULL по умолчанию
             ['mattraffic_number', 'MaxNumberMove', 'on' => 'traffic'],
             [['mattraffic_number'], 'MaxNumberMoveMat', 'on' => 'trafficmat'],
-          //  [['mattraffic_number'], 'FoldDevision'],
+            [['mattraffic_number'], 'FoldDevision'],
             //  [['mattraffic_id'], 'safe'],
         ];
     }
 
     public function FoldDevision($attribute)
     {
-        if (!(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->idMaterial->material_tip, [1, 3]) || in_array($this->idMaterial->material_tip, [2])))
+        if (isset($this->idMaterial) && !(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->idMaterial->material_tip, [1, 3]) || in_array($this->idMaterial->material_tip, [2])))
             $this->addError($attribute, 'Количество должно быть целым числом');
     }
 
