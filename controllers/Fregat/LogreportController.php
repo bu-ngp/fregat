@@ -62,7 +62,7 @@ class LogreportController extends Controller {
                 array_map('unlink', glob("importreports/*.xlsx"));
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }

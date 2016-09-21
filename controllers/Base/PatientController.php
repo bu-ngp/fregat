@@ -5,6 +5,7 @@ namespace app\controllers\Base;
 use Yii;
 use app\models\Base\Patient;
 use app\models\Base\PatientSearch;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -108,7 +109,7 @@ class PatientController extends Controller {
                 return $this->redirect(['update', 'id' => $model->patient_id, 'patienttype' => $patienttype]);
             } else {
                 // Откатываем транзакцию
-                $transaction->rollback();
+                $transaction->rollBack();
                 return $this->render('create', array_merge([
                             'model' => $model,
                             'Fias' => $Fias,
@@ -116,7 +117,7 @@ class PatientController extends Controller {
                                         ], $dopparams));
             }
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             throw new Exception($e->getMessage());
         }
     }
@@ -200,7 +201,7 @@ class PatientController extends Controller {
                     }
                 } else {
                     // Откатываем транзакцию
-                    $transaction->rollback();
+                    $transaction->rollBack();
                     return $this->render('update', array_merge([
                                 'model' => $model,
                                 'Fias' => $Fias,
@@ -208,7 +209,7 @@ class PatientController extends Controller {
                                             ], $dopparams));
                 }
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         } elseif (Yii::$app->user->can('GlaukUserPermission')) {
@@ -239,7 +240,7 @@ class PatientController extends Controller {
                 echo $this->findModel($id)->delete();
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }

@@ -7,9 +7,11 @@ use app\models\Config\Authassignment;
 use app\models\Config\AuthassignmentSearch;
 use app\models\Config\Authuser;
 use app\models\Config\AuthuserSearch;
+use app\models\Config\Profile;
 use app\models\Fregat\Employee;
 use app\models\Fregat\EmployeeSearch;
 use Yii;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -119,8 +121,19 @@ class AuthuserController extends Controller
         if (Yii::$app->request->isAjax)
             if ($id == 1)
                 throw new HttpException(500, 'Администратора удалить нельзя');
-            else
-                echo $this->findModel($id)->delete();
+            else {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    Profile::deleteAll(['profile_id' => $id]);
+                    echo $this->findModel($id)->delete();
+                    $transaction->commit();
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                    throw new Exception($e->getMessage());
+                }
+
+            }
+
     }
 
     public function actionChangepassword($id)

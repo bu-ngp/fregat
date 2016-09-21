@@ -122,7 +122,7 @@ class TrOsnovController extends Controller {
                 }
 
                 // Откатываем транзакцию
-                $transaction->rollback();
+                $transaction->rollBack();
 
                 return $this->render('create', [
                             'model' => $model,
@@ -133,7 +133,7 @@ class TrOsnovController extends Controller {
                 ]);
             }
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             throw new Exception($e->getMessage());
         }
     }
@@ -218,7 +218,7 @@ class TrOsnovController extends Controller {
 
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }

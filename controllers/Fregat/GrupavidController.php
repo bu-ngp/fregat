@@ -44,7 +44,7 @@ class GrupavidController extends Controller {
                 echo Grupavid::updateAll(['grupavid_main' => 1], ['grupavid_id' => $grupavid_id]);
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }

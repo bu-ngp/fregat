@@ -95,7 +95,7 @@ class OsmotraktController extends Controller
                         $transaction->commit();
                         return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
                     } else {
-                        $transaction->rollback();
+                        $transaction->rollBack();
                         return $this->render('create', [
                             'model' => $model,
                             'InstallTrOsnov' => $InstallTrOsnov,
@@ -107,7 +107,7 @@ class OsmotraktController extends Controller
                     elseif (empty($model->id_tr_osnov) && !empty($InstallTrOsnov->id_mattraffic))
                         $model->clearErrors('id_tr_osnov');
 
-                    $transaction->rollback();
+                    $transaction->rollBack();
                     return $this->render('create', [
                         'model' => $model,
                         'InstallTrOsnov' => $InstallTrOsnov,
@@ -115,7 +115,7 @@ class OsmotraktController extends Controller
                 }
             }
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             throw new Exception($e->getMessage());
         }
     }

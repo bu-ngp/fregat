@@ -103,7 +103,7 @@ class TrMatController extends Controller
                   if (isset($Mattraffic->errors['mattraffic_number']))
                   $model->clearErrors('id_mattraffic'); */
 
-                $transaction->rollback();
+                $transaction->rollBack();
                 return $this->render('create', [
                     'model' => $model,
                     'Mattraffic' => $Mattraffic,
@@ -111,7 +111,7 @@ class TrMatController extends Controller
                 ]);
             }
         } catch (Exception $e) {
-            $transaction->rollback();
+            $transaction->rollBack();
             throw new Exception($e->getMessage());
         }
     }
@@ -128,7 +128,7 @@ class TrMatController extends Controller
 
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }

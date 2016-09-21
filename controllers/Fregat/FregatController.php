@@ -190,13 +190,14 @@ class FregatController extends Controller
                     $au2 = \app\models\Config\Authuser::findOne($ar->id_person)->auth_user_fullname;
                     \app\models\Fregat\Employee::deleteAll(['id_person' => $ar->id_person]);
                     \app\models\Config\Authuser::deleteAll(['auth_user_id' => $ar->id_person]);
+                    Profile::deleteAll(['profile_id' => $ar->id_person]);
                     $transaction->commit();
                     $del++;
                     echo 'Deleted "' . $au2 . '"<br>';
                 } catch (\yii\db\IntegrityException $e) {
                     $nodel++;
                     echo 'Can\'t delete "' . $au2 . '"<br>';
-                    $transaction->rollback();
+                    $transaction->rollBack();
                 }
             }
         }
@@ -535,7 +536,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                                     }
                                 }
                             } catch (Exception $e) {
-                                $transaction->rollback();
+                                $transaction->rollBack();
                                 throw new Exception($e->getMessage());
                             }
                         }

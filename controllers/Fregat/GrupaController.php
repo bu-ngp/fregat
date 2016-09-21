@@ -104,7 +104,7 @@ class GrupaController extends Controller {
                 echo $this->findModel($id)->delete();
                 $transaction->commit();
             } catch (Exception $e) {
-                $transaction->rollback();
+                $transaction->rollBack();
                 throw new Exception($e->getMessage());
             }
         }
