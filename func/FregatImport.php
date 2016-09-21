@@ -1144,7 +1144,7 @@ class FregatImport
         self::DeleteOldReports();
 
         // Идем по файлам импорта из 1С (os.xls - Основные средства, mat.xls - Материалы)        
-        foreach ([/*$Importconfig['emp_filename'] . '.txt',*/ $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx', $Importconfig['gu_filename'] . '.xlsx'] as $filename) {
+        foreach ([$Importconfig['emp_filename'] . '.txt'/*, $Importconfig['os_filename'] . '.xlsx', $Importconfig['mat_filename'] . '.xlsx', $Importconfig['gu_filename'] . '.xlsx'*/] as $filename) {
             self::$filename = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $filename;
             $FileType = (self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['os_filename'] . '.xlsx') ? self::os : ((self::$filename === dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $Importconfig['mat_filename'] . '.xlsx') ? self::mat : self::gu);
             self::SetFileType($FileType);
