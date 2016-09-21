@@ -6,6 +6,7 @@ use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportsTemplate\RecoverysendaktReport;
 use app\models\Config\Authuser;
 use app\models\Fregat\Fregatsettings;
+use app\models\Fregat\Recoverysendakt;
 use Yii;
 use yii\base\View;
 use yii\data\ActiveDataProvider;
@@ -1651,25 +1652,33 @@ class Proc
      */
     public static function SendReportAkt($Typereport)
     {
-        $Report = ($Typereport === 1) ? new RecoverysendaktReport() : new RecoverysendaktmatReport();
-        $Report->setDirectoryFiles('tmpfiles');
-        $filename = $Report->Execute();
-        $fnutf8 = $filename;
-        $fregatsettings = Fregatsettings::findOne(1);
+        $dopparams = json_decode(Yii::$app->request->post()['dopparams']);
+        if (!empty($dopparams)) {
+            $email = Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email;
+            if (!empty($email)) {
+                $Report = ($Typereport === 1) ? new RecoverysendaktReport() : new RecoverysendaktmatReport();
+                $Report->setDirectoryFiles('tmpfiles');
+                $filename = $Report->Execute();
+                $fnutf8 = $filename;
+                $fregatsettings = Fregatsettings::findOne(1);
 
-        $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+                $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
 
-        Yii::$app->mailer->compose('//Fregat/recoverysendakt/_send', [
-            'filename' => $filename,
-        ])
-            ->setFrom($fregatsettings->fregatsettings_recoverysend_emailfrom)
-            ->setTo([
-                'karpovvv@mugp-nv.ru', // Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email,
-            ])
-            ->setSubject($fregatsettings->fregatsettings_recoverysend_emailtheme)
-            ->attach($fl, ['fileName' => $fnutf8])
-            ->send();
-        echo $fnutf8;
+                Yii::$app->mailer->compose('//Fregat/recoverysendakt/_send', [
+                    'filename' => $filename,
+                ])
+                    ->setFrom($fregatsettings->fregatsettings_recoverysend_emailfrom)
+                    ->setTo([
+                        'karpovvv@mugp-nv.ru', // Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email,
+                    ])
+                    ->setSubject($fregatsettings->fregatsettings_recoverysend_emailtheme)
+                    ->attach($fl, ['fileName' => $fnutf8])
+                    ->send();
+                echo $fnutf8;
+            } else
+                throw new \Exception('У организации ' . Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_name . ' отсутствует E-mail');
+        } else
+            throw new \Exception('Не передан параметр POST dopparams');
     }
 
     /**
