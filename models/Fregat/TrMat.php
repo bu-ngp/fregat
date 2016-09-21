@@ -120,8 +120,10 @@ class TrMat extends \yii\db\ActiveRecord
                 'idMattraffic.idMaterial',
                 'idMattraffic.idMol.idperson',
                 'idMattraffic.idMol.iddolzh',
+                'trRmMats',
             ])
             ->where($where)
+            ->andWhere(['trRmMats.id_tr_mat' => NULL])
             //   ->andWhere('tr_mat_id not in (select tmo.id_tr_mat from tr_mat_osmotr tmo where tmo.id_osmotraktmat = ' . $params['idosmotraktmat'] . ')')
             ->limit(20)
             ->asArray()

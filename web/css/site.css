@@ -909,3 +909,13 @@ button.btn-primary:active:hover, button.btn-primary:active {
     border-color: rgb(42, 1, 0);
     outline: 5px auto rgb(42, 1, 0);
 }
+
+.datepicker table tr td.active:active, .datepicker table tr td.active.highlighted:active, .datepicker table tr td.active.active, .datepicker table tr td.active.highlighted.active {
+    background-color: rgb(103, 18, 16);
+    border-color: rgb(42, 1, 0);
+}
+
+.datepicker table tr td.active:active:hover, .datepicker table tr td.active.highlighted:active:hover, .datepicker table tr td.active.active:hover, .datepicker table tr td.active.highlighted.active:hover, .datepicker table tr td.active:active:focus, .datepicker table tr td.active.highlighted:active:focus, .datepicker table tr td.active.active:focus, .datepicker table tr td.active.highlighted.active:focus, .datepicker table tr td.active:active.focus, .datepicker table tr td.active.highlighted:active.focus, .datepicker table tr td.active.active.focus, .datepicker table tr td.active.highlighted.active.focus {
+    background-color: rgb(82, 14, 13);
+    border-color: rgb(42, 1, 0);
+}
