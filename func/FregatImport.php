@@ -1288,6 +1288,9 @@ class FregatImport
                                                 $Profile->profile_address = $matches[10];
                                                 $Profile->save();
 
+                                                if ($Profile->getErrors())
+                                                    var_dump($Profile->getErrors());
+
                                                 $Employeelog->employeelog_message = $Profile->getErrors() ? 'Запись добавлена.' : 'Запись добавлена. Ошибка при создании профиля';
 
                                                 $Employee->id_person = $Authuser->getPrimaryKey();
