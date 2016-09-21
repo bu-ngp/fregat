@@ -1156,7 +1156,179 @@ class FregatImport
                 $filelastdateFromDB = self::GetMaxFileLastDate($Importconfig);
 
                 if (self::$Debug || empty($filelastdateFromDB) || strtotime(self::$filelastdate) > strtotime($filelastdateFromDB)) {
+                    /*   var_dump(self::$filename);
+                      var_dump(self::$filelastdate);
+                      var_dump($filelastdateFromDB);
+                      var_dump($_SERVER);
+                      var_dump($_ENV); */
+                    ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+                    ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
+                    $logreport->save();
+                    self::$logreport_id = $logreport->logreport_id;
+                    $doreport = true;
+                    // Определяем показатели импорта
+                    self::$logreport_errors = 0; // Не загружено записей из-за ошибок
+                    self::$logreport_updates = 0; // Записей изменено
+                    self::$logreport_additions = 0; // Записей добавлено
+                    self::$logreport_missed = 0; // Записей пропущено (исключены из обработки)
+                    self::$logreport_amount = 0; // Всего записей
 
+                    if ($filename === $Importconfig['emp_filename'] . '.txt')
+                        self::$employee = true;
+
+                    if (self::$employee) {
+                    } else {
+                        if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
+                            Mattraffic::updateAll(['mattraffic_forimport' => NULL], ['mattraffic_forimport' => 1]);
+
+                        $startRow = self::IsFileType(self::os) ? self::$os_start : (self::IsFileType(self::mat) ? self::$mat_start : self::$gu_start);   //начинаем читать с определенной строки
+                        $exit = false;   //флаг выхода
+                        $empty_value = 0;  //счетчик пустых знаений
+                        // Загружаем данные из файла Excel
+                        //        $inputFileType = 'Excel5';
+                        //       $inputFileName = self::$filename;
+                        $chunkSize = 1000;  //размер считываемых строк за раз
+                        //
+                        $objReader = \PHPExcel_IOFactory::createReaderForFile(self::$filename);
+                        //     $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+
+                        $chunkFilter = new chunkReadFilter();
+                        $objReader->setReadFilter($chunkFilter);
+                        $objReader->setReadDataOnly(true);
+
+
+                        while (!$exit) {
+                            // Инициализируем переменные
+                            //  $row = $sheetData[self::$rownum_xls];
+
+                            $chunkFilter->setRows($startRow, $chunkSize);  //устанавливаем знаечние фильтра
+                            $objPHPExcel = $objReader->load(self::$filename);  //открываем файл
+                            $objPHPExcel->setActiveSheetIndex(0);  //устанавливаем индекс активной страницы
+                            $objWorksheet = $objPHPExcel->getActiveSheet(); //делаем активной нужную страницу
+                            // Идем по данных excel
+                            for ($i = $startRow; $i < $startRow + $chunkSize; $i++) {  //внутренний цикл по строкам
+                                self::$rownum_xls = $i;
+                                $value = trim(htmlspecialchars($objWorksheet->getCellByColumnAndRow(0, $i)->getValue()));  //получаем первое знаение в строке
+                                if (empty($value))  //проверяем значение на пустоту
+                                    $empty_value++;
+                                if ($empty_value == 1) {  //после трех пустых значений, завершаем обработку файла, думая, что это конец
+                                    $exit = true;
+                                    break;
+                                }
+                                /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
+
+                                $row = $objWorksheet->rangeToArray('A' . $i . ':K' . $i, null, true, true, true);
+                                $row = $row[key($row)];
+
+                                $material = new Material;
+                                $authuser = new Authuser;
+                                $employee = new Employee;
+                                $mattraffic = new Mattraffic;
+                                $matlog = new Matlog;
+                                $employeelog = new Employeelog;
+                                $traflog = new Traflog;
+
+                                $MaterialDo = false;
+                                $EmployeeDo = false;
+                                $MattrafficDo = false;
+
+                                // Начинаем транзакцию
+                                $transaction = Yii::$app->db->beginTransaction();
+                                try {
+
+                                    // Применяем значения атрубутов Материальной ценности
+                                    $MaterialDo = self::MaterialDo($material, $matlog, $row);
+                                    if ($MaterialDo) {
+                                        // Применяем значения атрубутов Сотрудника
+                                        $EmployeeDo = self::EmployeeDo($employee, $employeelog, $row);
+                                        if ($EmployeeDo) {
+                                            // Применяем значения атрубутов "Операции над материальной ценностью"
+                                            $MattrafficDo = self::MattrafficDo($mattraffic, $traflog, $row, $material, $employee->employee_id);
+                                        }
+                                    }
+
+
+                                    // $matlog->matlog_type !== 5 - Если Запись не изменилась не пишем в лог
+                                    if ($matlog->matlog_type !== 5 && ($MaterialDo || (count($material->getErrors()) > 0))) {
+                                        $matlog->save(false);
+                                        if ($matlog->matlog_type === 2) {
+                                            $material->save(false);
+                                        }
+                                    }
+
+                                    if ($MaterialDo) {
+                                        // $employeelog->employeelog_type !== 5 - Если Запись не изменилась не пишем в лог
+                                        if ($employeelog->employeelog_type !== 5 && ($EmployeeDo || (count($employee->getErrors()) > 0))) {
+
+                                            $employeelog->save(false);
+                                        }
+
+                                        if ($EmployeeDo) {
+                                            if ($MattrafficDo || (count($mattraffic->getErrors()) > 0)) {
+                                                if ($matlog->IsNewRecord) {
+                                                    $matlog->material_number = $material->material_number; // Иначе пишется предыдущее значение количества материальной ценности
+                                                    $matlog->save(false);
+                                                }
+
+                                                if ($employeelog->IsNewRecord)
+                                                    $employeelog->save(false);
+                                                $traflog->id_matlog = $matlog->matlog_id;
+                                                $traflog->id_employeelog = $employeelog->employeelog_id;
+                                                if ($traflog->validate())
+                                                    $traflog->save(false);
+                                            }
+
+                                            if ($MattrafficDo) {
+                                                $material->save(false);
+                                                $employee->save(false);
+                                                $mattraffic->id_material = $material->material_id;
+                                                $mattraffic->id_mol = $employee->employee_id;
+                                                $mattraffic->save(false);
+
+                                                // Применяем значения атрубутов, если материальная ценность списна
+                                                self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
+                                            }
+                                        }
+                                    }
+                                    //    if ($transaction->isActive)
+                                    $transaction->commit();
+                                } catch (Exception $e) {
+                                    $transaction->rollBack();
+                                    throw new Exception($e->getMessage() . ' $rownum_xls = ' . self::$rownum_xls . '; $filename = ' . self::$filename);
+                                }
+                            }
+                            $objPHPExcel->disconnectWorksheets();     //чистим
+                            unset($objPHPExcel);       //память
+
+                            unset($material);
+                            unset($employee);
+                            unset($mattraffic);
+                            unset($matlog);
+                            unset($employeelog);
+                            unset($traflog);
+                            unset($objWorksheet);
+
+                            echo '<BR>Память использована с ' . $startRow . ' по ' . ($startRow + $chunkSize) . ' : ' . Yii::$app->formatter->asShortSize(memory_get_usage(true));
+                            $startRow += $chunkSize;     //переходим на следующий шаг цикла, увеличивая строку, с которой будем читать файл
+                        }
+                        $logreport->logreport_amount += self::$rownum_xls - (self::IsFileType(self::os) ? self::$os_start : (self::IsFileType(self::mat) ? self::$mat_start : self::$gu_start));
+                        if (self::IsFileType(self::os))
+                            $logreport->logreport_oslastdate = self::$filelastdate;
+                        elseif (self::IsFileType(self::mat))
+                            $logreport->logreport_matlastdate = self::$filelastdate;
+                        else
+                            $logreport->logreport_gulastdate = self::$filelastdate;
+
+
+                        if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
+                            self::MaterialSpisanie();
+                    }
+                    $logreport->logreport_additions += self::$logreport_additions;
+                    $logreport->logreport_updates += self::$logreport_updates;
+                    $logreport->logreport_errors += self::$logreport_errors;
+                    $logreport->logreport_missed += self::$logreport_missed;
+
+                    $logreport->save();
                 } else {
                     if (self::IsFileType(self::os))
                         $logreport->logreport_oslastdate = self::$filelastdate;
