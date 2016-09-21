@@ -1,7 +1,6 @@
 <?php
 \Yii::$app->getView()->registerJsFile('js/freewall.js');
 \Yii::$app->getView()->registerJsFile('js/fregatmainmenu.js');
-var_dump(defined('YII_DEBUG'));
 ?>
 
 <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> menuplitka">

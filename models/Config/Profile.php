@@ -34,7 +34,7 @@ class Profile extends \yii\db\ActiveRecord
         return [
             [['profile_id'], 'required'],
             [['profile_pol'], 'filter', 'filter' => function ($value) {
-                return 'М' ? 1 : ('Ж' ? 2 : NULL);
+                return $value === 'М' ? 1 : ($value === 'Ж' ? 2 : NULL);
             }],
             [['profile_dr'], 'filter', 'filter' => function ($value) {
                 return substr($value, 6, 4) . '-' . substr($value, 3, 2) . '-' . substr($value, 0, 2);
