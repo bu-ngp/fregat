@@ -103,7 +103,6 @@ class FregatController extends Controller
 
     public function actionImportDo()
     {
-        echo 'ok';
         FregatImport::ImportDo();
     }
 
