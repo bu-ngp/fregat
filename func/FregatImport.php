@@ -1135,7 +1135,7 @@ class FregatImport
         self::$mat_start = $Importconfig['mat_startrow'];
         self::$gu_start = $Importconfig['gu_startrow'];
         self::$Mishanya = 0;
-        self::$Debug = defined('YII_DEBUG');
+        self::$Debug = YII_DEBUG;
         $starttime = microtime(true);
         $logreport->logreport_date = date('Y-m-d');
         $doreport = false;
