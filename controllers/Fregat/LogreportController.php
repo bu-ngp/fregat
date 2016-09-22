@@ -2,9 +2,13 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\Proc;
+use app\models\Fregat\Import\Importconfig;
+use app\models\Fregat\Mattraffic;
 use Yii;
 use app\models\Fregat\Import\Logreport;
 use app\models\Fregat\Import\LogreportSearch;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -16,15 +20,17 @@ use app\models\Fregat\Import\Employeelog;
 /**
  * LogreportController implements the CRUD actions for Logreport model.
  */
-class LogreportController extends Controller {
+class LogreportController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'clear'],
+                        'actions' => ['index', 'clear', 'remove-import'],
                         'allow' => true,
                         'roles' => ['FregatImport'],
                     ],
@@ -39,17 +45,25 @@ class LogreportController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new LogreportSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $Importconfig = Importconfig::findOne(1);
 
-        return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
+        if ($Importconfig->load(Yii::$app->request->post()) && $Importconfig->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            return $this->render('index', [
+                'Importconfig' => $Importconfig,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }
     }
 
-    public function actionClear() {
+    public function actionClear()
+    {
         if (Yii::$app->request->isAjax) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -68,6 +82,25 @@ class LogreportController extends Controller {
         }
     }
 
+    public function actionRemoveImport($id)
+    {
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                echo 'Traflog deleted '. Traflog::deleteAll(['id_logreport' => $id]) . ' rows.<br>';
+                echo 'Matlog deleted '. Matlog::deleteAll(['id_logreport' => $id]) . ' rows.<br>';
+                echo 'Employeelog deleted '. Employeelog::deleteAll(['id_logreport' => $id]) . ' rows.<br>';
+                echo 'Logreport deleted '. Logreport::deleteAll(['logreport_id' => $id]) . ' rows.<br>';
+
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage());
+            }
+
+        }
+    }
+
     /**
      * Finds the Logreport model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -75,7 +108,8 @@ class LogreportController extends Controller {
      * @return Logreport the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Logreport::findOne($id)) !== null) {
             return $model;
         } else {

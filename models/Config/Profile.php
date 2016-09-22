@@ -72,8 +72,17 @@ class Profile extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthUser()
+    public function getAuthuser()
     {
-        return $this->hasOne(AuthUser::className(), ['auth_user_id' => 'profile_id']);
+        return $this->hasOne(Authuser::className(), ['auth_user_id' => 'profile_id']);
+    }
+
+    public static function VariablesValues($attribute)
+    {
+        $values = [
+            'profile_pol' => [1 => 'Мужской', 2 => 'Женский'],
+        ];
+
+        return isset($values[$attribute]) ? $values[$attribute] : NULL;
     }
 }

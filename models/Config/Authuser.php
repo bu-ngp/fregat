@@ -80,9 +80,9 @@ class Authuser extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthuser()
+    public function getProfile()
     {
-        return $this->hasOne(Profile::className(), ['profile_id' => 'auth_user_id']);
+        return $this->hasOne(Profile::className(), ['profile_id' => 'auth_user_id'])->from(['profile' => Profile::tableName()]);
     }
 
     /**

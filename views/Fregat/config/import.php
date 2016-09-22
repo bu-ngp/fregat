@@ -27,7 +27,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 </div>
                 <div class="menubutton menubutton_activeanim mb_yellow" id="mb_fregatimp_reports">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-inbox"></i> Отчеты</div>
+                    <div class="menubutton_cn"><i class="glyphicon glyphicon-inbox"></i> Сервис</div>
                 </div>
                 <div class="menubutton menubutton_activeanim mb_gray" id="mb_fregatimp_conf">
                     <span class="hoverspan"></span>

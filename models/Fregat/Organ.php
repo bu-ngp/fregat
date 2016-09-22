@@ -29,6 +29,10 @@ class Organ extends \yii\db\ActiveRecord
     {
         return [
             [['organ_name'], 'required'],
+            [['organ_name'], 'filter', 'filter' => function ($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
+            [['organ_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['organ_name', 'organ_phones'], 'string', 'max' => 255],
             [['organ_email'], 'email'],
         ];

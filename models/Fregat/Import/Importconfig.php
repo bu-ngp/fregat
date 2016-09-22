@@ -48,6 +48,7 @@ use Yii;
  * @property string $gu_dolzh_name
  * @property string $gu_filename
  * @property integer $gu_startrow
+ * @property integer $importconfig_do
  */
 class Importconfig extends \yii\db\ActiveRecord
 {
@@ -66,8 +67,8 @@ class Importconfig extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['os_startrow', 'mat_startrow', 'os_filename', 'os_mattraffic_date', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filename', 'max_execution_time', 'memory_limit', 'gu_material_1c', 'gu_material_inv', 'gu_material_name1c', 'gu_material_serial', 'gu_material_release', 'gu_material_number', 'gu_material_price', 'gu_podraz_name', 'gu_employee_fio', 'gu_dolzh_name', 'gu_filename', 'gu_startrow'], 'required'],
-            [['os_startrow', 'mat_startrow', 'logreport_reportcount', 'max_execution_time', 'memory_limit', 'gu_startrow'], 'integer'],
+            [['os_startrow', 'mat_startrow', 'os_filename', 'os_mattraffic_date', 'os_material_1c', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_filename', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'logreport_reportcount', 'emp_filename', 'max_execution_time', 'memory_limit', 'gu_material_1c', 'gu_material_inv', 'gu_material_name1c', 'gu_material_serial', 'gu_material_release', 'gu_material_number', 'gu_material_price', 'gu_podraz_name', 'gu_employee_fio', 'gu_dolzh_name', 'gu_filename', 'gu_startrow', 'importconfig_do'], 'required'],
+            [['os_startrow', 'mat_startrow', 'logreport_reportcount', 'max_execution_time', 'memory_limit', 'gu_startrow', 'importconfig_do'], 'integer'],
             [['os_filename', 'mat_filename', 'emp_filename', 'gu_filename'], 'string', 'max' => 255],
             [['os_material_1c', 'os_mattraffic_date', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'gu_material_1c', 'gu_material_inv', 'gu_material_name1c', 'gu_material_serial', 'gu_material_release', 'gu_material_number', 'gu_material_price', 'gu_podraz_name', 'gu_employee_fio', 'gu_dolzh_name'], 'string', 'max' => 5],
             [['os_material_1c', 'os_mattraffic_date', 'os_material_inv', 'os_material_name1c', 'os_material_price', 'os_employee_fio', 'os_dolzh_name', 'os_podraz_name', 'os_material_serial', 'os_material_release', 'os_material_status', 'mat_material_1c', 'mat_material_inv', 'mat_material_name1c', 'mat_material_number', 'mat_izmer_name', 'mat_material_price', 'mat_employee_fio', 'mat_dolzh_name', 'mat_podraz_name', 'mat_material_tip_nomenklaturi', 'gu_material_1c', 'gu_material_inv', 'gu_material_name1c', 'gu_material_serial', 'gu_material_release', 'gu_material_number', 'gu_material_price', 'gu_podraz_name', 'gu_employee_fio', 'gu_dolzh_name'], 'match', 'pattern' => '/^[a-z]$/iu', 'message' => '"{attribute}" Может состоять только из латинских букв'],
@@ -125,6 +126,7 @@ class Importconfig extends \yii\db\ActiveRecord
             'gu_dolzh_name' => 'Позиция колонки "Должность Материально-ответственного лица" группового учета основных средств',
             'gu_filename' => 'Имя файла группового учета основных средств (.xlsx в директории "imp")',
             'gu_startrow' => 'Номер строки файла Excel, с которой считывается групповой учет основных средств',
+            'importconfig_do' => 'Включить импорт файлов из 1С',
         ];
     }
 

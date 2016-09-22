@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Config\Profile;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
@@ -17,13 +18,41 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
+    $profile_pol = Profile::VariablesValues('profile_pol');
+
     echo DynaGrid::widget(Proc::DGopts([
         'options' => ['id' => 'authusergrid'],
         'columns' => Proc::DGcols([
             'columns' => array_merge([
                 'auth_user_id',
                 'auth_user_fullname',
-            ], $emp ? [] : ['auth_user_login']),
+            ], $emp ? [] : ['auth_user_login'], Yii::$app->user->can('Administrator') ? [
+                [
+                    'attribute' => 'profile.profile_pol',
+                    'filter' => $profile_pol,
+                    'value' => function ($model) use ($profile_pol) {
+                        return isset($profile_pol[$model->profile->profile_pol]) ? $profile_pol[$model->profile->profile_pol] : '';
+                    },
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'profile.profile_dr',
+                    'format' => 'date',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'profile.profile_address',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'profile.profile_inn',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'profile.profile_snils',
+                    'visible' => false,
+                ],
+            ] : []),
             'buttons' => array_merge(Yii::$app->user->can('UserEdit') && !$emp ? [
                 'changepassword' => function ($url, $model, $key) {
                     $customurl = Url::to(['Config/authuser/changepassword', 'id' => $model['auth_user_id']]);
