@@ -55,7 +55,7 @@ use app\func\Proc;
                 ]));
                 ?>
 
-                <?= Proc::FilterFieldSelectSingle($form, $model, 'material_writeoff', 'Выберете пол пациента') ?>
+                <?= Proc::FilterFieldSelectSingle($form, $model, 'material_writeoff', 'Выберете условие') ?>
 
             </div>
         </div>
