@@ -747,7 +747,7 @@ class FregatImport
         ]);
 
         // Ищем Материальную ценность закрепленную за сотрудником
-        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol' . (self::IsFileType(self::os) ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
+        $search = self::GetRowsPDO('select * from mattraffic where id_material = :id_material and id_mol = :id_mol and mattraffic_tip in (1,2)' . (self::IsFileType(self::os) ? ' and mattraffic_date = :mattraffic_date' : '') . ' order by mattraffic_date desc, mattraffic_id desc limit 1', array_merge([
             'id_material' => $xls_attributes_mattraffic['id_material'],
             'id_mol' => $xls_attributes_mattraffic['id_mol'],
         ], self::IsFileType(self::os) ? ['mattraffic_date' => $xls_attributes_mattraffic['mattraffic_date']] : []));
@@ -927,7 +927,7 @@ class FregatImport
             ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
             ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
             ->andWhere(['in', 'material_tip', [$Typemat]])
-            ->andWhere('m1.mattraffic_tip <> 2')
+            ->andWhere(['m1.mattraffic_tip' => 1])
             ->andWhere(['m2.mattraffic_date' => NULL])
             ->andWhere(['m1.id_material' => $MaterialID])
             ->count();
@@ -941,7 +941,7 @@ class FregatImport
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
                 ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
                 ->andWhere(['in', 'material_tip', [$Typemat]])
-                ->andWhere('m1.mattraffic_tip <> 2')
+                ->andWhere(['m1.mattraffic_tip' => 1])
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
                 ->one();
@@ -974,7 +974,7 @@ class FregatImport
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date')
                 ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
                 ->andWhere(['in', 'material_tip', [$Typemat]])
-                ->andWhere('m1.mattraffic_tip <> 2')
+                ->andWhere(['m1.mattraffic_tip' => 1])
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->all();
 

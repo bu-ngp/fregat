@@ -143,7 +143,7 @@ class Mattraffic extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'mattraffic_id' => 'Mattraffic ID',
+            'mattraffic_id' => 'ИД операции',
             'mattraffic_date' => 'Дата операции',
             'mattraffic_number' => 'Количество (Задействованное в операции)',
             'id_material' => 'Материальная ценность',

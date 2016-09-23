@@ -195,6 +195,10 @@ use yii\helpers\Url;
                     'columns' => Proc::DGcols([
                         'columns' => [
                             [
+                                'attribute' => 'mattraffic_id',
+                                'visible' => false,
+                            ],
+                            [
                                 'attribute' => 'mattraffic_date',
                                 'format' => 'date',
                             ],

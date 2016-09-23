@@ -28,7 +28,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         'options' => ['id' => 'materialgrid'],
         'columns' => Proc::DGcols([
             'buttonsfirst' => true,
-            'columns' => [
+            'columns' => [                
                 [
                     'attribute' => 'material_tip',
                     'filter' => $material_tip,
