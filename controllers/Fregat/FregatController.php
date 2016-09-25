@@ -60,7 +60,7 @@ class FregatController extends Controller
                     [
                         'actions' => ['resetadmin'],
                         'allow' => true,
-                        'ips' => ['127.0.0.1', 'localhost', '::1'],
+                        'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.253'],
                     ],
                 ],
             ],
