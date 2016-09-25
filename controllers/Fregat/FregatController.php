@@ -8,6 +8,7 @@ use app\models\Fregat\Employee;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Reason;
+use Exception;
 use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
@@ -55,6 +56,11 @@ class FregatController extends Controller
                         'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont', 'update-profiles'],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
+                    ],
+                    [
+                        'actions' => ['resetadmin'],
+                        'allow' => true,
+                        'ips' => ['127.0.0.1', 'localhost', '::1'],
                     ],
                 ],
             ],
@@ -615,15 +621,37 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             echo 'Файл не существует ' . $filename;
     }
 
+    public function actionResetadmin()
+    {
+        $auth = Yii::$app->authManager;
+
+        $auth->revokeAll(1);
+        $ar = Authuser::findOne(1);
+        if ($ar) {
+            $ar->scenario = 'Changepassword';
+            $ar->auth_user_login = 'admin';
+            $ar->auth_user_fullname = 'Администратор';
+            $ar->auth_user_password = 'admin';
+            $ar->auth_user_password2 = 'admin';
+            if ($ar->save()) {
+                $item = $auth->getRole('Administrator');
+                if ($item) {
+                    $auth->assign($item, 1);
+                    echo 'The Administrator Reset<br>';
+                } else
+                    echo 'Role "Administrator" is missing<br>';
+            } else {
+                echo 'An error occurred while resetting the password and login of administrator:<br>';
+                var_dump($ar->errors);
+            }
+        } else
+            echo 'User ID = 1 Not Found<br>';
+    }
+
     public function actionTest()
     {
         $a = new \yii\web\Request;
         var_dump($a->getUserIP());
-    }
-
-    function actionAkt2()
-    {
-
     }
 
 }
