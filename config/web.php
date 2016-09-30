@@ -17,6 +17,9 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'assetManager' => [
+            'appendTimestamp' => true,
+        ],
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
@@ -51,8 +54,8 @@ $config = [
                 'Config/<controller:\w+>/<action:\w+>' => 'Config/<controller>/<action>',
                 'Base/<controller:\w+>/<action:\w+>' => 'Base/<controller>/<action>',
                 'Glauk/<controller:\w+>/<action:\w+>' => 'Glauk/<controller>/<action>',
-            //  'encodeParams' => FALSE,
-            // my rules
+                //  'encodeParams' => FALSE,
+                // my rules
             ],
         ],
         'authManager' => [
@@ -105,16 +108,16 @@ $config = [
                     ],
                 ],
             ]
-        // other module settings
+            // other module settings
         ],
         'gridview' => [
             'class' => '\kartik\grid\Module',
-        // other module settings
+            // other module settings
         ],
         'datecontrol' => [
             'class' => '\kartik\datecontrol\Module',
             'autoWidgetSettings' => [
-                \kartik\datecontrol\Module::FORMAT_DATE => ['pluginOptions' => ['autoclose' => true]], // example
+                \kartik\datecontrol\Module::FORMAT_DATE => ['pluginOptions' => ['autoclose' => true, 'todayHighlight' => true]], // example
                 \kartik\datecontrol\Module::FORMAT_DATETIME => ['pluginOptions' => ['autoclose' => true]], // setup if needed
                 \kartik\datecontrol\Module::FORMAT_TIME => ['pluginOptions' => ['autoclose' => true]], // setup if needed
             ],
