@@ -474,8 +474,10 @@ class FregatImport
             $fieldname = 'logreport_oslastdate';
         elseif (mb_strpos(self::$filename, $Importconfig['mat_filename'], 0, 'UTF-8') > 0)
             $fieldname = 'logreport_matlastdate';
+        elseif (mb_strpos(self::$filename, $Importconfig['gu_filename'], 0, 'UTF-8') > 0)
+            $fieldname = 'logreport_gulastdate';
 
-        $dataReader = self::GetRowsPDO('select max(logreport_employeelastdate) as logreport_employeelastdate, max(logreport_oslastdate) as logreport_oslastdate, max(logreport_matlastdate) as logreport_matlastdate from logreport');
+        $dataReader = self::GetRowsPDO('select max(logreport_employeelastdate) as logreport_employeelastdate, max(logreport_oslastdate) as logreport_oslastdate, max(logreport_matlastdate) as logreport_matlastdate, max(logreport_gulastdate) as logreport_gulastdate from logreport');
 
         if (empty($dataReader[$fieldname]))
             return NULL;
