@@ -468,13 +468,13 @@ class FregatImport
     // Выводи последнюю дату изменения загруженных файлов
     private static function GetMaxFileLastDate($Importconfig)
     {
-        if (mb_strpos(self::$filename, $Importconfig['emp_filename'], 0, 'UTF-8') > 0)
+        if (preg_match("#" . $Importconfig['emp_filename'] . ".txt$#", self::$filename))
             $fieldname = 'logreport_employeelastdate';
-        elseif (mb_strpos(self::$filename, $Importconfig['os_filename'], 0, 'UTF-8') > 0)
+        elseif (preg_match("#" . $Importconfig['os_filename'] . ".xlsx$#", self::$filename))
             $fieldname = 'logreport_oslastdate';
-        elseif (mb_strpos(self::$filename, $Importconfig['mat_filename'], 0, 'UTF-8') > 0)
+        elseif (preg_match("#" . $Importconfig['mat_filename'] . ".xlsx$#", self::$filename))
             $fieldname = 'logreport_matlastdate';
-        elseif (mb_strpos(self::$filename, $Importconfig['gu_filename'], 0, 'UTF-8') > 0)
+        elseif (preg_match("#" . $Importconfig['gu_filename'] . ".xlsx$#", self::$filename))
             $fieldname = 'logreport_gulastdate';
 
         $dataReader = self::GetRowsPDO('select max(logreport_employeelastdate) as logreport_employeelastdate, max(logreport_oslastdate) as logreport_oslastdate, max(logreport_matlastdate) as logreport_matlastdate, max(logreport_gulastdate) as logreport_gulastdate from logreport');
