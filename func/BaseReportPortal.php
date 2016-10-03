@@ -228,11 +228,19 @@ abstract class BaseReportPortal
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setSheet(true); // This should be enabled in order to enable any of the following!
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setSort(true);
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setInsertRows(true);
+                $this->_objPHPExcel->getActiveSheet()->getProtection()->setInsertColumns(true);
+                $this->_objPHPExcel->getActiveSheet()->getProtection()->setDeleteRows(true);
+                $this->_objPHPExcel->getActiveSheet()->getProtection()->setDeleteColumns(true);
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setFormatCells(true);
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setObjects(true);
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setFormatColumns(true);
                 $this->_objPHPExcel->getActiveSheet()->getProtection()->setFormatRows(true);
             }
+            // Костыль - PHP Excel устанавливает ширину в колонке после последней. В результате на печать выводится второй лист, пустой.
+            $HighestColumn = $this->_objPHPExcel->getActiveSheet()->getHighestColumn();
+            $HighestDataColumn = $this->_objPHPExcel->getActiveSheet()->getHighestDataColumn();
+            if ($HighestColumn !== $HighestDataColumn)
+                $this->_objPHPExcel->getActiveSheet()->getColumnDimension($HighestColumn)->setWidth(0);
 
             $objWriter = \PHPExcel_IOFactory::createWriter($this->_objPHPExcel, 'Excel2007');
 
