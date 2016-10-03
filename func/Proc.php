@@ -1669,7 +1669,7 @@ class Proc
                 ])
                     ->setFrom($fregatsettings->fregatsettings_recoverysend_emailfrom)
                     ->setTo([
-                        'karpovvv@mugp-nv.ru', // Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email,
+                        YII_DEBUG ? 'karpovvv@mugp-nv.ru' : Recoverysendakt::findOne($dopparams->id)->idOrgan->organ_email,
                     ])
                     ->setSubject($fregatsettings->fregatsettings_recoverysend_emailtheme)
                     ->attach($fl, ['fileName' => $fnutf8])
