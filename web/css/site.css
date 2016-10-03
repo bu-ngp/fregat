@@ -919,3 +919,24 @@ button.btn-primary:active:hover, button.btn-primary:active {
     background-color: rgb(82, 14, 13);
     border-color: rgb(42, 1, 0);
 }
+
+
+/* Стиль скроллинга begin */
+
+::-webkit-scrollbar
+{
+    width: 12px;  /* for vertical scrollbars */
+    height: 12px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(237, 135, 123, 0.45);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgba(159, 53, 50, 0.77);
+}
+
+/* Стиль скроллинга end */
