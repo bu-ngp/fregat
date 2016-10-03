@@ -155,6 +155,8 @@ class AuthitemSearch extends Authitem
             ->andFilterWhere(['like', 'rule_name', $this->rule_name])
             ->andFilterWhere(['like', 'data', $this->data]);
 
+        $query->groupBy(['name']);
+
         return $dataProvider;
     }
 
