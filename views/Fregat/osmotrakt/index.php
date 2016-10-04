@@ -76,7 +76,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'sendosmotrakt' => function ($url, $model) {
                         return \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-send"></i>', ['send-osmotrakt-content', 'osmotrakt_id' => $model->primaryKey], [
-                            'title' => 'Отправить акт в организацию',
+                            'title' => 'Отправить акт в организацию по электронной почте',
                             'class' => 'btn btn-xs btn-success osmotraktsend'
                         ]);
                     }
@@ -103,7 +103,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
 <?php
 yii\bootstrap\Modal::begin([
-    'header' => 'Отправить акт осмотра в организацию',
+    'header' => 'Отправить акт осмотра в организацию по электронной почте',
     'id' => 'SendOsmotraktDialog',
     'options' => [
         'class' => 'modal_filter',
