@@ -318,6 +318,17 @@ a#backbutton:hover:focus {
     -webkit-transform: translateZ(0px);
 }
 
+.menubutton > i.glyphicon {
+    position: relative;
+    float: right;
+    right: 5px;
+    bottom: 5px;
+    top: calc(100% - 65px);
+    font-size: 60px;
+    color: rgba(0, 0, 0, 0.08);
+    width: 70px;
+}
+
 .menubutton.mb_blue:hover .menubutton_cn,
 .menubutton.mb_red:hover .menubutton_cn,
 .menubutton.mb_green:hover .menubutton_cn,
@@ -920,23 +931,26 @@ button.btn-primary:active:hover, button.btn-primary:active {
     border-color: rgb(42, 1, 0);
 }
 
-
 /* Стиль скроллинга begin */
 
-::-webkit-scrollbar
-{
-    width: 12px;  /* for vertical scrollbars */
+::-webkit-scrollbar {
+    width: 12px; /* for vertical scrollbars */
     height: 12px; /* for horizontal scrollbars */
 }
 
-::-webkit-scrollbar-track
-{
+::-webkit-scrollbar-track {
     background: rgba(237, 135, 123, 0.45);
 }
 
-::-webkit-scrollbar-thumb
-{
+::-webkit-scrollbar-thumb {
     background: rgba(159, 53, 50, 0.77);
 }
 
 /* Стиль скроллинга end */
+
+div.errordialog {
+    background: #ffc6d5;
+    color: #7c5353;
+    padding: 10px 5px;
+    margin-bottom: 10px;
+}

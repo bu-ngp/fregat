@@ -3,20 +3,21 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\OsmotraktReport;
+use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\InstallTrOsnov;
 use app\models\Fregat\Material;
+use app\models\Fregat\Organ;
 use Exception;
 use Yii;
 use app\models\Fregat\Osmotrakt;
 use app\models\Fregat\OsmotraktSearch;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
-use app\models\Fregat\TrOsnov;
 use app\models\Fregat\Mattraffic;
-use app\models\Fregat\Installakt;
 use app\models\Fregat\Recoveryrecieveakt;
 
 /**
@@ -40,7 +41,7 @@ class OsmotraktController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'send-osmotrakt-content', 'osmotrakt-send'],
                         'allow' => true,
                         'roles' => ['OsmotraktEdit'],
                     ],
@@ -194,6 +195,54 @@ class OsmotraktController extends Controller
     {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
+    }
+
+
+    public function actionSendOsmotraktContent($osmotrakt_id)
+    {
+        $model = new Organ;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            return $this->renderAjax('_osmotraktsend', [
+                'model' => $model,
+                'osmotrakt_id' => $osmotrakt_id,
+            ]);
+        }
+    }
+
+    public function actionOsmotraktSend()
+    {
+        $dopparams = json_decode(Yii::$app->request->post()['dopparams']);
+        if (Yii::$app->request->isAjax) {
+            $organ_id = Yii::$app->request->post('organ_id');
+            if (!empty($dopparams->id) && !empty($organ_id)) {
+                $Organ = Organ::findOne($organ_id);
+                if (!empty($Organ->organ_email)) {
+                    $Report = new OsmotraktReport();
+                    $Report->setDirectoryFiles('tmpfiles');
+                    $filename = $Report->Execute();
+                    $fnutf8 = $filename;
+                    $fregatsettings = Fregatsettings::findOne(1);
+
+                    $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+
+                    $sended = Yii::$app->mailer->compose('//Fregat/osmotrakt/_send', [
+                        'filename' => $filename,
+                    ])
+                        ->setFrom($fregatsettings->fregatsettings_recoverysend_emailfrom)
+                        ->setTo([
+                            YII_DEBUG ? 'karpovvv@mugp-nv.ru' : Organ::findOne($organ_id)->organ_email,
+                        ])
+                        ->setSubject($fregatsettings->fregatsettings_recoverysend_emailtheme)
+                        ->attach($fl, ['fileName' => $fnutf8])
+                        ->send();
+                    if (!$sended)
+                        throw new HttpException(500, 'Возникла ошибка при отправке письма');
+                    echo $fnutf8;
+                } else
+                    throw new HttpException(500, 'Не заполнен Email у организации');
+            }
+        }
     }
 
     /**

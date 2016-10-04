@@ -24,6 +24,9 @@ class MaterialSearch extends Material
             'idIzmer.izmer_name',
             'mattraffics.mattraffic_lastchange',
             'mattraffics.mattraffic_username',
+            'currentMattraffic.idMol.idperson.auth_user_fullname',
+            'currentMattraffic.idMol.iddolzh.dolzh_name',
+            'currentMattraffic.idMol.idbuild.build_name',
         ]);
     }
 
@@ -39,6 +42,9 @@ class MaterialSearch extends Material
             [[
                 'mattraffics.mattraffic_lastchange',
                 'mattraffics.mattraffic_username',
+                'currentMattraffic.idMol.idperson.auth_user_fullname',
+                'currentMattraffic.idMol.iddolzh.dolzh_name',
+                'currentMattraffic.idMol.idbuild.build_name',
             ], 'safe'],
         ];
     }
@@ -106,6 +112,23 @@ class MaterialSearch extends Material
             'idMatv.matvid_name',
             'idIzmer.izmer_name',
         ]);
+
+       $query->joinWith([
+            'currentMattraffic.idMol.idperson currentidperson',
+            'currentMattraffic.idMol.iddolzh currentiddolzh',
+            'currentMattraffic.idMol.idbuild currentidbuild',
+        ]);
+
+        $query->andFilterWhere(['LIKE', 'currentidperson.auth_user_fullname', $this->getAttribute('currentMattraffic.idMol.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'currentiddolzh.dolzh_name', $this->getAttribute('currentMattraffic.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'currentidbuild.build_name', $this->getAttribute('currentMattraffic.idMol.idbuild.build_name')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'currentMattraffic.idMol.idperson.auth_user_fullname' => 'currentidperson',
+            'currentMattraffic.idMol.iddolzh.dolzh_name' => 'currentiddolzh',
+            'currentMattraffic.idMol.idbuild.build_name' => 'currentidbuild',
+        ]);
+
 
         $this->materialDopfilter($query);
 

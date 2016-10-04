@@ -263,7 +263,7 @@ function LoadingButtonShow(param) {
     if (typeof param !== "undefined" && ("buttonelem" in param)) {
         param.buttonelem.width(param.buttonelem.width());
         param.buttonelem.attr("disabled", true);
-        param.buttonelem.html('<img src="images/progress.gif">');
+        param.buttonelem.html('<img src="images/progress.svg">');
     }
 }
 
@@ -347,13 +347,11 @@ function ConfirmDeleteDialogToAjax(message, url, gridpjax, data, funcafteraccess
                 else if (typeof (gridpjax) !== "undefined")
                     gridpjax = gridpjax + "-pjax";
 
-
                 $.ajax({
                     url: url,
                     type: "post",
                     data: data,
                     success: function () {
-
                         if (typeof (gridpjax) !== "undefined")
                             $.pjax.reload({container: "#" + gridpjax});
 

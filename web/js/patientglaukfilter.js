@@ -5,7 +5,7 @@ var filtersearch = "PatientSearch";
 $(document).on('ready pjax:success', function () {
     $('.filter_button').click(function (e) {
         e.preventDefault(); //for prevent default behavior of <a> tag.
-        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(images/progress.gif) center center no-repeat; background-size: 20px;"></div>');
+        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
 
         $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
             InitAddress();

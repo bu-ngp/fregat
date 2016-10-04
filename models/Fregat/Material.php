@@ -3,6 +3,8 @@
 namespace app\models\Fregat;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\Query;
 
 /**
  * This is the model class for table "material".
@@ -127,6 +129,15 @@ class Material extends \yii\db\ActiveRecord
     public function getMattraffics()
     {
         return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id'])->from(['mattraffics' => Mattraffic::tableName()]);
+    }
+
+    public function getCurrentMattraffic()
+    {
+        return $this->hasOne(Mattraffic::className(), ['id_material' => 'material_id'])
+            ->from(['currentmattraffic' => Mattraffic::tableName()])
+            ->leftJoin('mattraffic mt1','currentmattraffic.id_material = mt1.id_material and `currentmattraffic`.`mattraffic_tip` IN (1, 2) and mt1.mattraffic_tip IN (1, 2) and (currentmattraffic.mattraffic_date < mt1.mattraffic_date or currentmattraffic.mattraffic_date = mt1.mattraffic_date  and currentmattraffic.mattraffic_id < mt1.mattraffic_id)')
+            ->andWhere(['in', 'currentmattraffic.mattraffic_tip', [1, 2]])
+            ->andWhere(['mt1.mattraffic_date' => NULL]);
     }
 
     public function selectinputfortrmat_parent($params)

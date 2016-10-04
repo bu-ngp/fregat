@@ -44,7 +44,7 @@ class Organ extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'organ_id' => 'Organ ID',
+            'organ_id' => 'Организация',
             'organ_name' => 'Организация',
             'organ_email' => 'Электронная почта организации',
             'organ_phones' => 'Телефоны организации',

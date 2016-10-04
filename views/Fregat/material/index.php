@@ -28,7 +28,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         'options' => ['id' => 'materialgrid'],
         'columns' => Proc::DGcols([
             'buttonsfirst' => true,
-            'columns' => [                
+            'columns' => [
                 [
                     'attribute' => 'material_tip',
                     'filter' => $material_tip,
@@ -88,6 +88,30 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         return Yii::$app->formatter->asDatetime($model->mattraffics[0]->mattraffic_lastchange);
                     },
                     'visible' => false,
+                ],
+                [
+                    'attribute' => 'currentMattraffic.idMol.idperson.auth_user_fullname',
+                    'visible' => false,
+                    'label' => 'ФИО текущего МОЛ',
+                    'value' => function ($model) {
+                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->idperson->auth_user_fullname : '';
+                    },
+                ],
+                [
+                    'attribute' => 'currentMattraffic.idMol.iddolzh.dolzh_name',
+                    'visible' => false,
+                    'label' => 'Должность текущего МОЛ',
+                    'value' => function ($model) {
+                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->iddolzh->dolzh_name : '';
+                    },
+                ],
+                [
+                    'attribute' => 'currentMattraffic.idMol.idbuild.build_name',
+                    'visible' => false,
+                    'label' => 'Здание текущего МОЛ',
+                    'value' => function ($model) {
+                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->idbuild->build_name : '';
+                    },
                 ],
             ],
             'buttons' => array_merge(

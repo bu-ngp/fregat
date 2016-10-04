@@ -73,13 +73,24 @@ use yii\bootstrap\ActiveForm;
             -webkit-border-radius: 50%;
             border-radius: 50%;
         }
+
+        div.account-wall div.lockglyph {
+            text-align: center;
+            font-size: 70px;
+            height: 80px;
+        }
+
+        div.account-wall div.lockglyph i.glyphicon {
+            color: rgb(215, 215, 215);
+        }
+
     </style>
         <div class="row">
             <div class="col-sm-6 col-md-4 col-md-offset-4">
                 <h1 class="text-center login-title">Введите логин и пароль для входа в систему:</h1>
                 <div class="account-wall">
-                    <img class="profile-img" src="images/login.jpg"
-                         alt="">
+                 <!--   <img class="profile-img" src="images/login.jpg" alt=""> -->
+                  <div class="lockglyph">  <i class="glyphicon glyphicon-lock"></i> </div>
 
                     <?php
                     $form = ActiveForm::begin([

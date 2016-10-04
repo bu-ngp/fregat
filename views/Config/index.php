@@ -24,13 +24,15 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?php if (Yii::$app->user->can('UserEdit')): ?>
                 <div class="menubutton menubutton_activeanim mb_yellow" id="mb_usermanager">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-user"></i> Менеджер пользователей</div>
+                    <div class="menubutton_cn">Менеджер пользователей</div>
+                    <i class="glyphicon glyphicon-user"></i>
                 </div>
             <?php endif; ?>
             <?php if (Yii::$app->user->can('RoleEdit')): ?>
                 <div class="menubutton menubutton_activeanim mb_red" id="mb_rolemanager">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-align-justify"></i> Менеджер ролей</div>
+                    <div class="menubutton_cn">Менеджер ролей</div>
+                    <i class="glyphicon glyphicon-align-justify"></i>
                 </div>
             <?php endif; ?>
         </div>

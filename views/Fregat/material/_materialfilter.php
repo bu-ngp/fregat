@@ -9,7 +9,7 @@ use app\func\Proc;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="patientglaukfilter-form">
+<div class="materialfilter-form">
     <div class="form-group">
         <div class="row">
             <div class="col-xs-12">

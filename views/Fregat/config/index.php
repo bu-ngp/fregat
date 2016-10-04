@@ -23,19 +23,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?php if (Yii::$app->user->can('FregatImport')): ?>
                 <div class="menubutton menubutton_activeanim mb_yellow" id="mb_fregatimport">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-import"></i> Импорт данных</div>
+                    <div class="menubutton_cn">Импорт данных</div>
+                    <i class="glyphicon glyphicon-import"></i>
                 </div>
             <?php endif; ?>
             <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
                 <div class="menubutton menubutton_activeanim mb_blue" id="mb_fregatsprav">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-list-alt"></i> Справочники</div>
+                    <div class="menubutton_cn">Справочники</div>
+                    <i class="glyphicon glyphicon-list-alt"></i>
                 </div>
             <?php endif; ?>
             <?php if (Yii::$app->user->can('FregatConfig')): ?>
                 <div class="menubutton menubutton_activeanim mb_gray" id="mb_fregatconfig">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-tasks"></i> Настройки системы</div>
+                    <div class="menubutton_cn">Настройки системы</div>
+                    <i class="glyphicon glyphicon-tasks"></i>
                 </div>
             <?php endif; ?>
         </div>

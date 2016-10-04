@@ -22,7 +22,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?php if (Yii::$app->user->can('GlaukUserPermission')): ?>
                 <div class="menubutton menubutton_activeanim mb_blue" id="mb_glauksprav">
                     <span class="hoverspan"></span>
-                    <div class="menubutton_cn"><i class="glyphicon glyphicon-list-alt"></i> Справочники</div>
+                    <div class="menubutton_cn">Справочники</div>
+                    <i class="glyphicon glyphicon-list-alt"></i>
                 </div>
             <?php endif; ?>
         </div>
