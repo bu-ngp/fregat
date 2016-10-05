@@ -1115,11 +1115,11 @@ class FregatImport
                     ->setTo([
                         'karpovvv@mugp-nv.ru',
                         'mns@mugp-nv.ru',
-                        /*   'dnn@mugp-nv.ru',
-                          'mns@mugp-nv.ru',
-                          'dvg@mugp-nv.ru',
-                          'chepenkoav@mugp-nv.ru',
-                          'valikanovae@mugp-nv.ru', */
+                        'dnn@mugp-nv.ru',
+                        'mns@mugp-nv.ru',
+                        'dvg@mugp-nv.ru',
+                        'chepenkoav@mugp-nv.ru',
+                        'valikanovae@mugp-nv.ru',
                     ])
                     ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
                     ->send();
