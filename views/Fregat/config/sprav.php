@@ -42,6 +42,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         </div>
                         <i class="glyphicon glyphicon-book"></i>
                     </div>
+                    <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_schetuchet">
+                        <span class="hoverspan"></span>
+                        <div class="menubutton_cn">Счета учета</div>
+                        <i class="glyphicon glyphicon-folder-open"></i>
+                    </div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

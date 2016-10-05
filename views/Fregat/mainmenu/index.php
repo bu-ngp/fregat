@@ -70,6 +70,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 <i class="glyphicon glyphicon-wrench"></i>
             </div>
         <?php endif; ?>
+        <?php if (Yii::$app->user->can('SpisosnovaktEdit')): ?>
+            <div class="menubutton menubutton_activeanim mb_green" id="mb_spisosnov_j">
+                <span class="hoverspan"></span>
+                <div class="menubutton_cn">Журнал списания основных средств</div>
+                <i class="glyphicon glyphicon-trash"></i>
+            </div>
+        <?php endif; ?>
     </div>
 <?php endif; ?>
 

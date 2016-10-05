@@ -22,10 +22,12 @@ use yii\db\Query;
  * @property integer $material_writeoff
  * @property integer $id_matvid
  * @property integer $id_izmer
+ * @property integer $id_schetuchet
  *
  * @property Izmer $idIzmer
  * @property Matvid $idMatv
  * @property Mattraffic[] $mattraffics
+ * @property Schetuchet $idSchetuchet
  * @property TrMat[] $trMats
  */
 class Material extends \yii\db\ActiveRecord
@@ -53,10 +55,13 @@ class Material extends \yii\db\ActiveRecord
             }, 'on' => 'import1c'],
             [['material_number'], 'default', 'value' => 1],
             [['material_name', 'material_number', 'material_price', 'material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
+            [['id_izmer'], 'exist', 'skipOnError' => true, 'targetClass' => Izmer::className(), 'targetAttribute' => ['id_izmer' => 'izmer_id']],
+            [['id_matvid'], 'exist', 'skipOnError' => true, 'targetClass' => Matvid::className(), 'targetAttribute' => ['id_matvid' => 'matvid_id']],
+            [['id_schetuchet'], 'exist', 'skipOnError' => true, 'targetClass' => Schetuchet::className(), 'targetAttribute' => ['id_schetuchet' => 'schetuchet_id']],
             [['material_inv'], 'required', 'except' => 'import1c'],
             [['material_release'], 'safe'],
             [['material_number', 'material_price'], 'number'],
-            [['material_writeoff', 'id_matvid', 'id_izmer'], 'integer'],
+            [['material_writeoff', 'id_matvid', 'id_izmer', 'id_izmer'], 'integer'],
             [['material_name', 'material_name1c'], 'string', 'max' => 500],
             [['material_1c'], 'string', 'max' => 20],
             [['material_inv'], 'string', 'max' => 50],
@@ -104,6 +109,7 @@ class Material extends \yii\db\ActiveRecord
             'material_username' => 'Пользователь изменивший запись',
             'material_lastchange' => 'Дата изменения записи',
             'material_importdo' => 'Запись изменяема при импортировании из 1С',
+            'id_schetuchet' => 'Счет учета',
         ];
     }
 
@@ -121,6 +127,14 @@ class Material extends \yii\db\ActiveRecord
     public function getIdMatv()
     {
         return $this->hasOne(Matvid::className(), ['matvid_id' => 'id_matvid'])->from(['idMatv' => Matvid::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdSchetuchet()
+    {
+        return $this->hasOne(Schetuchet::className(), ['schetuchet_id' => 'id_schetuchet'])->from(['idSchetuchet' => Schetuchet::tableName()]);
     }
 
     /**
