@@ -25,6 +25,8 @@ use Yii;
  * @property string $material_writeoff
  * @property string $izmer_name
  * @property string $matvid_name
+ * @property string $schetuchet_kod
+ * @property string $schetuchet_name
  *
  * @property Logreport $idLogreport
  * @property Traflog[] $traflogs
@@ -45,9 +47,10 @@ class Matlog extends \yii\db\ActiveRecord {
         return [
             [['id_logreport', 'matlog_filename', 'matlog_rownum', 'matlog_type', 'matlog_message', 'matlog_filelastdate'], 'required'],
             [['id_logreport', 'matlog_rownum', 'matlog_type'], 'integer'],
-            [['matlog_filename', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'material_writeoff', 'izmer_name', 'matvid_name'], 'string', 'max' => 255],
+            [['matlog_filename', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'material_writeoff', 'izmer_name', 'matvid_name', 'schetuchet_kod', 'schetuchet_name'], 'string', 'max' => 255],
             [['matlog_message'], 'string', 'max' => 1000],
-            [['material_name1c'], 'string', 'max' => 400]
+            [['material_name1c'], 'string', 'max' => 400],
+            [['id_logreport'], 'exist', 'skipOnError' => true, 'targetClass' => Logreport::className(), 'targetAttribute' => ['id_logreport' => 'logreport_id']],
         ];
     }
 
@@ -74,6 +77,8 @@ class Matlog extends \yii\db\ActiveRecord {
             'material_writeoff' => 'Статус списания',
             'izmer_name' => 'Единица измерения',
             'matvid_name' => 'Вид',
+            'schetuchet_kod' => 'Код счета учета',
+            'schetuchet_name' => 'Наименование счета учета',
         ];
     }
 

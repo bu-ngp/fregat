@@ -3,6 +3,8 @@
 namespace app\func;
 
 use app\models\Config\Profile;
+use app\models\Fregat\Schetuchet;
+use PDOException;
 use Yii;
 use app\models\Config\Authuser;
 use app\models\Fregat\Import\Importconfig;
@@ -114,6 +116,8 @@ class FregatImport
             'material_serial' => self::IsFileType(self::os) ? $Importconfig['os_material_serial'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_serial'] : ''),
             'material_release' => self::IsFileType(self::os) ? $Importconfig['os_material_release'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_release'] : ''),
             'material_status' => self::IsFileType(self::os) ? $Importconfig['os_material_status'] : '',
+            'schetuchet_kod' => self::IsFileType(self::os) ? $Importconfig['os_material_schetuchet_kod'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_schetuchet_kod'] : $Importconfig['mat_material_schetuchet_kod']),
+            'schetuchet_name' => self::IsFileType(self::os) ? $Importconfig['os_material_schetuchet_name'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_schetuchet_name'] : $Importconfig['mat_material_schetuchet_name']),
             'material_tip_nomenklaturi' => self::IsFileType(self::mat) ? $Importconfig['mat_material_tip_nomenklaturi'] : '', // Колонка "ТипНоменклатуры" в файле Материалов
         ];
     }
@@ -195,6 +199,30 @@ class FregatImport
         } else
             $izmer_id = $izmer_id['izmer_id'];
         return $izmer_id;
+    }
+
+    // Определяем Счет учета
+    // Если счет учета не найден в справочнике, он добавляется.
+    private static function AssignSchetuchet($Schetuchet_kod, $Schetuchet_name)
+    {
+        if (!empty($Schetuchet_kod) && !empty($Schetuchet_name)) {
+            $schetuchet_id = self::GetRowsPDO('select schetuchet_id from schetuchet where schetuchet_kod like :schetuchet_kod and schetuchet_name like :schetuchet_name', [
+                'schetuchet_kod' => $Schetuchet_kod,
+                'schetuchet_name' => $Schetuchet_name,
+            ]);
+
+            if (empty($schetuchet_id)) {
+                $Schetuchet = new Schetuchet;
+                $Schetuchet->schetuchet_kod = $Schetuchet_kod;
+                $Schetuchet->schetuchet_name = $Schetuchet_name;
+                if ($Schetuchet->Save())
+                    $schetuchet_id = $Schetuchet->primaryKey;
+                unset($Schetuchet);
+            } else
+                $schetuchet_id = $schetuchet_id['schetuchet_id'];
+            return $schetuchet_id;
+        } else
+            return NULL;
     }
 
     // Конвертирует наименования должностей
@@ -372,6 +400,7 @@ class FregatImport
             'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3), // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал, 3 - Групповой учет основных средств)
             'id_matvid' => self::AssignMatvid(trim($row[self::xls('material_name1c')])), // Определяем Вид материальной ценности согласно таблицы соответствий importmaterial, если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
             'id_izmer' => (self::IsFileType(self::os) || self::IsFileType(self::gu)) ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')])), // Определяем Единицу измерения
+            'id_schetuchet' => self::AssignSchetuchet(trim($row[self::xls('schetuchet_kod')]), trim($row[self::xls('schetuchet_name')])), // Определяем Единицу измерения
             'material_tip_nomenklaturi' => self::IsFileType(self::mat) ? trim($row[self::xls('material_tip_nomenklaturi')]) : '', // Колонка "ТипНоменклатуры" в файле Материалов
         ];
     }
@@ -583,6 +612,9 @@ class FregatImport
 
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
+                $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
+
                 $Matlog->material_writeoff = 'Нет';
 
                 $Matlog->matlog_message = $Material->isNewRecord ? 'Запись добавлена' : 'Запись изменена: ';
@@ -596,6 +628,8 @@ class FregatImport
                 $Matlog->attributes = $Material->attributes;
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
+                $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
                 $Matlog->material_writeoff = $Material->material_writeoff === '1' ? 'Да' : 'Нет';
 
                 // Добавляем в лог не измененные значения ActiveRecord
@@ -1010,6 +1044,8 @@ class FregatImport
                     $Matlog->matlog_message = $spismat ? 'Материал списан. ' : 'Запись не изменялась. ';
                     $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                     $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                    $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
+                    $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
                     $Matlog->material_writeoff = $Material->material_writeoff === 1 ? 'Да' : 'Нет';
                     $Matlog->material_release = isset($Material->material_release) ? Yii::$app->formatter->asDate($Material->material_release) : $Material->material_release;
                     $Matlog->save(false);
@@ -1434,7 +1470,7 @@ class FregatImport
                                     }
                                     /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
 
-                                    $row = $objWorksheet->rangeToArray('A' . $i . ':K' . $i, null, true, true, true);
+                                    $row = $objWorksheet->rangeToArray('A' . $i . ':N' . $i, null, true, true, true);
                                     $row = $row[key($row)];
 
                                     $material = new Material;
@@ -1741,7 +1777,7 @@ class FregatImport
 
         //      ----------------  Материальные ценности ------------------------------------------
         $rows = Matlog::find()
-            ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'matvid_name'])
+            ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'matvid_name', 'schetuchet_kod', 'schetuchet_name'])
             ->where(['id_logreport' => $logreport['logreport_id']])
             ->asArray()
             ->all();
