@@ -1,5 +1,6 @@
 <?php
 
+use app\func\Proc;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -7,7 +8,7 @@ use yii\helpers\Html;
 
 $this->title = 'Обновить материальную ценность';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-    'model' => [$model, $Mattraffic],
+    'model' => [$model],
 ]);
 ?>
 <div class="spisosnovmaterials-update">

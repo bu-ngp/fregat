@@ -24,14 +24,14 @@ use yii\widgets\ActiveForm;
         ],
         'placeholder' => 'Введите инвентарный номер материальной ценности',
         'fromgridroute' => 'Fregat/mattraffic/forspisosnovakt',
-        'resultrequest' => 'Fregat/osmotrakt/selectinputforspisosnovakt',
+        'resultrequest' => 'Fregat/mattraffic/selectinputforspisosnovakt',
         'thisroute' => $this->context->module->requestedRoute,
         'methodquery' => 'selectinputforspisosnovakt',
     ]));
     ?>
 
-    <?php
-    echo $form->field($model, 'spisosnovmaterials_number', ['enableClientValidation' => false])->widget(kartik\touchspin\TouchSpin::classname(), [
+    <?=
+    $form->field($model, 'spisosnovmaterials_number', ['enableClientValidation' => false])->widget(kartik\touchspin\TouchSpin::classname(), [
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
             'verticalbuttons' => true,
@@ -48,7 +48,7 @@ use yii\widgets\ActiveForm;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Osmotraktform']) ?>
+                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
             </div>
         </div>
     </div>

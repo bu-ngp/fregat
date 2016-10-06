@@ -46,6 +46,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'idSchetuchet.schetuchet_name',
             ],
             'buttons' => array_merge(Yii::$app->user->can('SpisosnovaktEdit') ? [
+                'downloadreport' => ['Fregat/spisosnovakt/spisosnovakt-report'],
                 'update' => ['Fregat/spisosnovakt/update'],
                 'deleteajax' => ['Fregat/spisosnovakt/delete'],
             ] : []

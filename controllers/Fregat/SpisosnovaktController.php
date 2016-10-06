@@ -3,10 +3,13 @@
 namespace app\controllers\Fregat;
 
 use app\func\Proc;
+use app\func\ReportsTemplate\SpisosnovaktReport;
+use app\models\Fregat\Spisosnovmaterials;
 use app\models\Fregat\SpisosnovmaterialsSearch;
 use Yii;
 use app\models\Fregat\Spisosnovakt;
 use app\models\Fregat\SpisosnovaktSearch;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -98,7 +101,7 @@ class SpisosnovaktController extends Controller
         } else {
             $searchModel = new SpisosnovmaterialsSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-            
+
             return $this->render('update', [
                 'model' => $model,
                 'searchModel' => $searchModel,
@@ -115,9 +118,24 @@ class SpisosnovaktController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            Spisosnovmaterials::deleteAll([
+                'id_spisosnovakt' => $id,
+            ]);
+            $this->findModel($id)->delete();
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw new Exception($e->getMessage());
+        }
+    }
 
-        return $this->redirect(['index']);
+    // Печать заявки на списание основных средств
+    public function actionSpisosnovaktReport()
+    {
+        $Report = new SpisosnovaktReport;
+        echo $Report->Execute();
     }
 
     /**

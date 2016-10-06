@@ -26,7 +26,7 @@ class SpisosnovmaterialsController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'addmattraffic'],
                         'allow' => true,
                         'roles' => ['SpisosnovaktEdit'],
                     ],
@@ -46,13 +46,15 @@ class SpisosnovmaterialsController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($idspisosnovakt)
     {
         $model = new Spisosnovmaterials();
+        $model->id_spisosnovakt = $idspisosnovakt;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
+            $model->spisosnovmaterials_number = empty($model->spisosnovmaterials_number) ? 1 : $model->spisosnovmaterials_number;
             return $this->render('create', [
                 'model' => $model,
             ]);
@@ -86,9 +88,26 @@ class SpisosnovmaterialsController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
+    }
 
-        return $this->redirect(['index']);
+    // Для быстрого добавления материальной ценности в таблицу заявки на списание основных средств на форме "Обновить заявку на списание основных средств"
+    public function actionAddmattraffic()
+    {
+        if (Yii::$app->request->isAjax) {
+            $id_mattraffic = Yii::$app->request->post('id_mattraffic');
+            $id_spisosnovakt = Yii::$app->request->post('id_spisosnovakt');
+            if (!empty($id_mattraffic) && !empty($id_spisosnovakt)) {
+                $Spisosnovmaterials = new Spisosnovmaterials;
+                $Spisosnovmaterials->id_mattraffic = $id_mattraffic;
+                $Spisosnovmaterials->id_spisosnovakt = $id_spisosnovakt;
+                $Spisosnovmaterials->spisosnovmaterials_number = 1;
+                echo json_encode([
+                    'status' => $Spisosnovmaterials->save(),
+                ]);
+            }
+        }
     }
 
     /**

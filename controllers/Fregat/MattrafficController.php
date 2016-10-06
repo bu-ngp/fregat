@@ -41,6 +41,11 @@ class MattrafficController extends Controller
                         'allow' => true,
                         'roles' => ['MaterialMolDelete'],
                     ],
+                    [
+                        'actions' => ['selectinputforspisosnovakt', 'forspisosnovakt'],
+                        'allow' => true,
+                        'roles' => ['SpisosnovaktEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -138,6 +143,17 @@ class MattrafficController extends Controller
         ]);
     }
 
+    public function actionForspisosnovakt()
+    {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchforspisosnovakt(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     public
     function actionSelectinputformaterial($q = null)
     {
@@ -145,6 +161,15 @@ class MattrafficController extends Controller
             'model' => new Mattraffic,
             'q' => $q,
             'methodquery' => 'selectinput',
+        ]);
+    }
+
+    public function actionSelectinputforspisosnovakt($q = null)
+    {
+        return Proc::ResultSelect2([
+            'model' => new Mattraffic,
+            'q' => $q,
+            'methodquery' => 'selectinputforspisosnovakt',
         ]);
     }
 

@@ -36,6 +36,7 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
             [['spisosnovmaterials_number'], 'number'],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
             [['id_spisosnovakt'], 'exist', 'skipOnError' => true, 'targetClass' => Spisosnovakt::className(), 'targetAttribute' => ['id_spisosnovakt' => 'spisosnovakt_id']],
+            [['spisosnovmaterials_number'], 'MaxNumberSpis'],
         ];
     }
 
@@ -50,6 +51,26 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
             'id_spisosnovakt' => 'Заявка списания основных средств',
             'spisosnovmaterials_number' => 'Количество на списание',
         ];
+    }
+
+    public function MaxNumberSpis($attribute)
+    {
+        if (!empty($this->id_mattraffic)) {
+            $currentMattraffic = Mattraffic::findOne($this->id_mattraffic);
+
+            $query = Mattraffic::find()
+                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                ->andWhere([
+                    'id_material' => $currentMattraffic->id_material,
+                    'id_mol' => $currentMattraffic->id_mol,
+                ])
+                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                ->one();
+
+            if (!empty($query) && $this->spisosnovmaterials_number > $query->mattraffic_number)
+                $this->addError($attribute, 'Количество не может превышать ' . $query->mattraffic_number);
+        }
     }
 
     /**

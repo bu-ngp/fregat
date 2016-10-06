@@ -34,7 +34,7 @@ class Spisosnovakt extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['spisosnovakt_date', 'id_schetuchet', 'id_mol', 'id_employee'], 'required'],
+            [['spisosnovakt_date', 'id_schetuchet', 'id_mol'], 'required'],
             [['spisosnovakt_date'], 'safe'],
             [['id_schetuchet', 'id_mol', 'id_employee'], 'integer'],
             [['id_mol'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_mol' => 'employee_id']],

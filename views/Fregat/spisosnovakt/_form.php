@@ -2,12 +2,14 @@
 
 use app\func\Proc;
 use app\models\Fregat\Employee;
+use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Schetuchet;
 use kartik\datecontrol\DateControl;
 use kartik\dynagrid\DynaGrid;
 use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -85,6 +87,31 @@ use yii\widgets\ActiveForm;
 
     <?php
     if (!$model->isNewRecord) {
+        echo $form->field(new Mattraffic, 'mattraffic_id')->widget(Select2::classname(), [
+            'options' => ['placeholder' => 'Введите инвентарный номер материальной ценности', 'class' => 'form-control'],
+            'theme' => Select2::THEME_BOOTSTRAP,
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 3,
+                'ajax' => [
+                    'url' => Url::to(['Fregat/mattraffic/selectinputforspisosnovakt']),
+                    'dataType' => 'json',
+                    'data' => new JsExpression('function(params) { return {q:params.term} }'),
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            ],
+            'addon' => [
+                'append' => [
+                    'content' => Html::button('<i class="glyphicon glyphicon-arrow-down"></i>  Вставить в таблицу', ['class' => 'btn btn-success', 'id' => 'addspisosnovmaterials', 'onclick' => 'AddMattraffic(' . $_GET['id'] . ')']),
+                    'asButton' => true
+                ]
+            ],
+        ])->label('Для быстрого добавления материальных ценностей ( при условии что количество на списание = 1 )');
+    }
+    ?>
+
+    <?php
+    if (!$model->isNewRecord) {
         echo DynaGrid::widget(Proc::DGopts([
             'options' => ['id' => 'spisosnovmaterialsgrid'],
             'columns' => Proc::DGcols([
@@ -118,7 +145,6 @@ use yii\widgets\ActiveForm;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Spisosnovaktform']) ?>
                 <?php
                 if (!$model->isNewRecord)

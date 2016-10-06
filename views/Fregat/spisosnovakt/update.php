@@ -1,5 +1,7 @@
 <?php
 
+\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/spisosnovaktform.js');
+
 use app\func\Proc;
 use yii\helpers\Html;
 
