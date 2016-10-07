@@ -113,6 +113,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->idbuild->build_name : '';
                     },
                 ],
+                [
+                    'attribute' => 'idSchetuchet.schetuchet_kod',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'idSchetuchet.schetuchet_name',
+                    'visible' => false,
+                ],
             ],
             'buttons' => array_merge(
                 empty($foreign) ? [

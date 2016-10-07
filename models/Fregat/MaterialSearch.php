@@ -27,6 +27,8 @@ class MaterialSearch extends Material
             'currentMattraffic.idMol.idperson.auth_user_fullname',
             'currentMattraffic.idMol.iddolzh.dolzh_name',
             'currentMattraffic.idMol.idbuild.build_name',
+            'idSchetuchet.schetuchet_kod',
+            'idSchetuchet.schetuchet_name',
         ]);
     }
 
@@ -45,6 +47,8 @@ class MaterialSearch extends Material
                 'currentMattraffic.idMol.idperson.auth_user_fullname',
                 'currentMattraffic.idMol.iddolzh.dolzh_name',
                 'currentMattraffic.idMol.idbuild.build_name',
+                'idSchetuchet.schetuchet_kod',
+                'idSchetuchet.schetuchet_name',
             ], 'safe'],
         ];
     }
@@ -74,7 +78,7 @@ class MaterialSearch extends Material
             'sort' => ['defaultOrder' => ['material_name' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['idMatv', 'idIzmer']);
+        $query->joinWith(['idMatv', 'idIzmer','idSchetuchet']);
 
         $this->load($params);
 
@@ -107,10 +111,14 @@ class MaterialSearch extends Material
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_username'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_lastchange', Proc::DateTime));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
+        $query->andFilterWhere(['LIKE', 'idSchetuchet.schetuchet_kod', $this->getAttribute('idSchetuchet.schetuchet_kod')]);
+        $query->andFilterWhere(['LIKE', 'idSchetuchet.schetuchet_name', $this->getAttribute('idSchetuchet.schetuchet_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMatv.matvid_name',
             'idIzmer.izmer_name',
+            'idSchetuchet.schetuchet_kod',
+            'idSchetuchet.schetuchet_name',
         ]);
 
        $query->joinWith([
@@ -128,8 +136,7 @@ class MaterialSearch extends Material
             'currentMattraffic.idMol.iddolzh.dolzh_name' => 'currentiddolzh',
             'currentMattraffic.idMol.idbuild.build_name' => 'currentidbuild',
         ]);
-
-
+        
         $this->materialDopfilter($query);
 
         return $dataProvider;

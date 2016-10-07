@@ -612,8 +612,8 @@ class FregatImport
 
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
-                $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
-                $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
+                $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
+                $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
 
                 $Matlog->material_writeoff = 'Нет';
 
@@ -628,8 +628,8 @@ class FregatImport
                 $Matlog->attributes = $Material->attributes;
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
-                $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
-                $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
+                $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
+                $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
                 $Matlog->material_writeoff = $Material->material_writeoff === '1' ? 'Да' : 'Нет';
 
                 // Добавляем в лог не измененные значения ActiveRecord
@@ -1044,8 +1044,8 @@ class FregatImport
                     $Matlog->matlog_message = $spismat ? 'Материал списан. ' : 'Запись не изменялась. ';
                     $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                     $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
-                    $Matlog->schetuchet_kod = self::GetNameByID('schetuchet', 'schetuchet_kod', $Material->id_schetuchet);
-                    $Matlog->schetuchet_name = self::GetNameByID('schetuchet', 'schetuchet_name', $Material->id_schetuchet);
+                    $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
+                    $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
                     $Matlog->material_writeoff = $Material->material_writeoff === 1 ? 'Да' : 'Нет';
                     $Matlog->material_release = isset($Material->material_release) ? Yii::$app->formatter->asDate($Material->material_release) : $Material->material_release;
                     $Matlog->save(false);
@@ -1540,6 +1540,7 @@ class FregatImport
 
                                                     // Применяем значения атрубутов, если материальная ценность списна
                                                     self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
+                                                    $a = '';
                                                 }
                                             }
                                         }

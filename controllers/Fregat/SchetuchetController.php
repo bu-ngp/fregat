@@ -61,13 +61,12 @@ class SchetuchetController extends Controller
         ]);
     }
 
-    public function actionSelectinput($field, $q = null)
+    public function actionSelectinput($q = null)
     {
         return Proc::ResultSelect2([
             'model' => new Schetuchet,
-            'field' => $field,
             'q' => $q,
-            'order' => 'schetuchet_kod',
+            'methodquery' => 'selectinput',
         ]);
     }
 
@@ -120,10 +119,11 @@ class SchetuchetController extends Controller
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToSelect2() {
+    public function actionAssignToSelect2()
+    {
         Proc::AssignToModelFromGrid();
     }
-    
+
     /**
      * Finds the Schetuchet model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

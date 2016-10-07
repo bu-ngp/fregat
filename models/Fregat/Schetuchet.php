@@ -81,4 +81,21 @@ class Schetuchet extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Material::className(), ['id_schetuchet' => 'schetuchet_id'])->from(['spisosnovakts' => Material::tableName()]);
     }
+
+    public function selectinput($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $where = isset($params['init']) ? ['schetuchet_id' => $params['q']] : ['or', ['like', 'schetuchet_kod', $params['q']], ['like', 'schetuchet_name', $params['q']]];
+
+        $query = self::find()
+            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", schetuchet_kod, schetuchet_name) AS text']))
+            ->where($where)
+            ->orderBy('schetuchet_kod')
+            ->limit(20)
+            ->asArray()
+            ->$method();
+
+        return $query;
+    }
 }

@@ -42,12 +42,12 @@ use yii\widgets\ActiveForm;
         'fields' => [
             'keyfield' => 'id_schetuchet',
             'resultfield' => 'schetuchet_kod',
-            'showresultfields' => ['schetuchet_kod', 'schetuchet_name'],
         ],
         'placeholder' => 'Выберете счет учета',
         'resultrequest' => 'Fregat/schetuchet/selectinput',
         'thisroute' => $this->context->module->requestedRoute,
         'fromgridroute' => 'Fregat/schetuchet/index',
+        'methodquery' => 'selectinput',
     ]));
     ?>
 
