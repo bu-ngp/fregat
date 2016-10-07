@@ -16,15 +16,17 @@ use app\func\Proc;
 /**
  * GrupaController implements the CRUD actions for Grupa model.
  */
-class GrupaController extends Controller {
+class GrupaController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'assign-to-select2'],
+                        'actions' => ['index', 'assign-to-select2', 'selectinput'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -44,17 +46,29 @@ class GrupaController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new GrupaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionSelectinput($field, $q = null)
+    {
+        return Proc::ResultSelect2([
+            'model' => new Grupa,
+            'field' => $field,
+            'q' => $q,
+            'order' => 'grupa_name'
+        ]);
+    }
+
+    public function actionCreate()
+    {
         $model = new Grupa();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -62,12 +76,13 @@ class GrupaController extends Controller {
             return $this->redirect(['update', 'id' => $model->grupa_id]);
         } else {
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -88,15 +103,16 @@ class GrupaController extends Controller {
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'Grupavid' => $Grupavid,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
+                'model' => $model,
+                'Grupavid' => $Grupavid,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -110,7 +126,8 @@ class GrupaController extends Controller {
         }
     }
 
-    public function actionAssignToSelect2() {
+    public function actionAssignToSelect2()
+    {
         Proc::AssignToModelFromGrid();
     }
 
@@ -121,7 +138,8 @@ class GrupaController extends Controller {
      * @return Grupa the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Grupa::findOne($id)) !== null) {
             return $model;
         } else {

@@ -15,7 +15,7 @@ use app\func\Proc;
 
     <?= $form->field($model, 'organ_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true]) ?>
 
-    <?= $form->field($model, 'organ_email')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
+    <?= $form->field($model, 'organ_email')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
 
     <?= $form->field($model, 'organ_phones')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
 

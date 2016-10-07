@@ -238,6 +238,10 @@ class OsmotraktController extends Controller
                         ->send();
                     if (!$sended)
                         throw new HttpException(500, 'Возникла ошибка при отправке письма');
+                    else {
+                        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . $filename : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+                        unlink($FileName);
+                    }
                     echo $fnutf8;
                 } else
                     throw new HttpException(500, 'Не заполнен Email у организации');

@@ -34,7 +34,7 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel','selectinput'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -187,6 +187,15 @@ class MaterialController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionSelectinput($q = null)
+    {
+        return Proc::ResultSelect2([
+            'model' => new Material,
+            'q' => $q,
+            'methodquery' => 'selectinput',
+        ]);
     }
 
     public function actionToexcel()

@@ -35,14 +35,6 @@ $(document).ready(function () {
                     buttonloadingid: "SendOsmotraktDialog_apply"
                 },
                 success: function (data) {
-                    setTimeout(function () {
-                        $.ajax({
-                            url: "?r=site%2Fdelete-tmp-file",
-                            type: "post",
-                            data: {filename: response},
-                            async: true
-                        });
-                    }, 5000);
                     $(SendOsmotraktDialog).modal("hide");
                 },
                 error: function (err) {

@@ -135,7 +135,7 @@ class Material extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Mattraffic::className(), ['id_material' => 'material_id'])
             ->from(['currentmattraffic' => Mattraffic::tableName()])
-            ->leftJoin('mattraffic mt1','currentmattraffic.id_material = mt1.id_material and `currentmattraffic`.`mattraffic_tip` IN (1, 2) and mt1.mattraffic_tip IN (1, 2) and (currentmattraffic.mattraffic_date < mt1.mattraffic_date or currentmattraffic.mattraffic_date = mt1.mattraffic_date  and currentmattraffic.mattraffic_id < mt1.mattraffic_id)')
+            ->leftJoin('mattraffic mt1', 'currentmattraffic.id_material = mt1.id_material and `currentmattraffic`.`mattraffic_tip` IN (1, 2) and mt1.mattraffic_tip IN (1, 2) and (currentmattraffic.mattraffic_date < mt1.mattraffic_date or currentmattraffic.mattraffic_date = mt1.mattraffic_date  and currentmattraffic.mattraffic_id < mt1.mattraffic_id)')
             ->andWhere(['in', 'currentmattraffic.mattraffic_tip', [1, 2]])
             ->andWhere(['mt1.mattraffic_date' => NULL]);
     }
@@ -155,6 +155,26 @@ class Material extends \yii\db\ActiveRecord
             ->$method();
 
         return $query;
+    }
+
+    public function selectinput($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $where = isset($params['init']) ? ['material_id' => $params['q']] : ['like','material_inv',$params['q']];
+        $query = self::find()
+            ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
+            ->andWhere($where)
+            ->limit(20)
+            ->asArray()
+            ->$method();
+
+        return $query;
+    }
+
+    public static function getMaterialByID($ID)
+    {
+        return 'инв. '.self::findOne($ID)->material_inv . ', ' . self::findOne($ID)->material_name;
     }
 
     public static function VariablesValues($attribute)

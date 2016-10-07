@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Recoverysendakt;
 use app\func\Proc;
+use yii\db\Query;
 
 /**
  * RecoverysendaktSearch represents the model behind the search form about `app\models\Fregat\Recoverysendakt`.
@@ -79,7 +80,41 @@ class RecoverysendaktSearch extends Recoverysendakt
 
         Proc::AssignRelatedAttributes($dataProvider, ['idOrgan.organ_name']);
 
+        $this->recoverysendaktDopFilter($query);
+
         return $dataProvider;
+    }
+
+    private function recoverysendaktDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'RecoverysendaktFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('recoveryrecieveakts.id_recoverysendakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->leftJoin('osmotrakt idOsmotrakt', 'idOsmotrakt.osmotrakt_id = recoveryrecieveakts.id_osmotrakt')
+                    ->leftJoin('tr_osnov idTrosnov', 'idOsmotrakt.id_tr_osnov = idTrosnov.tr_osnov_id')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrosnov.id_mattraffic')
+                    ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')
+            ]);
+
+            $attr = 'recoverysendakt_closed_mark';
+            if ($filter[$attr] === '1')
+                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
+                    'Attribute' => $attr,
+                    'WhereStatement' => ['not exists', (new Query())
+                        ->select('recoveryrecieveakts.id_recoverysendakt')
+                        ->from('recoveryrecieveakt recoveryrecieveakts')
+                        ->andWhere(['recoveryrecieveakt_repaired' => NULL])
+                        ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')],
+                ]);
+        }
     }
 
 }

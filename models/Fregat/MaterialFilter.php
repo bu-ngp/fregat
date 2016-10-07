@@ -12,6 +12,8 @@ class MaterialFilter extends Model
     public $mol_fullname_material;
     public $mol_fullname_material_not;
     public $material_writeoff;
+    public $mat_id_grupa;
+    public $mat_id_grupa_not;
     public $mol_id_build;
     public $mol_id_build_not;
     public $tr_osnov_kab;
@@ -25,6 +27,8 @@ class MaterialFilter extends Model
             [[
                 'mol_fullname_material',
                 'mol_fullname_material_not',
+                'mat_id_grupa',
+                'mat_id_grupa_not',
                 'mattraffic_username',
                 'tr_osnov_kab',
             ], 'safe'],
@@ -46,6 +50,7 @@ class MaterialFilter extends Model
             'mol_fullname_material' => 'Текущее материально-ответственное лицо',
             'mol_id_build' => 'Здание в котором установлена материальная ценность',
             'material_writeoff' => 'Списан',
+            'mat_id_grupa' => 'Группа',
             'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
@@ -64,6 +69,7 @@ class MaterialFilter extends Model
             'mol_id_build' => [$value => Build::getBuildByID($value)],
             'mol_fullname_material' => [$value => Authuser::getAuthuserByID($value)],
             'material_writeoff' => Material::VariablesValues($attribute),
+            'mat_id_grupa' => [$value => Grupa::getGrupaByID($value)],
             /* 'patient_pol' => Patient::VariablesValues($attribute),
              'fias_city' => [$value => Fias::GetCityByAOGUID($value)],
              'fias_street' => [$value => Fias::GetStreetByAOGUID($value)],

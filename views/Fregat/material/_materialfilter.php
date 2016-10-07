@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Grupa;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -56,6 +57,34 @@ use app\func\Proc;
                 ?>
 
                 <?= Proc::FilterFieldSelectSingle($form, $model, 'material_writeoff', 'Выберете условие') ?>
+
+                <?=
+                $form->field($model, 'mat_id_grupa')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new Grupa,
+                    'placeholder' => 'Введите группу материальной ценности',
+                    'setsession' => false,
+                    'multiple' => [
+                        'multipleshowall' => false,
+                        'idvalue' => 'grupa_id',
+                    ],
+                    'fields' => [
+                        'keyfield' => 'mat_id_grupa',
+                        'resultfield' => 'grupa_name',
+                    ],
+                    'resultrequest' => 'Fregat/grupa/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                ]), [
+                    'addon' => [
+                        'prepend' => [
+                            'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'mat_id_grupa'),
+                        ],
+                        'groupOptions' => [
+                            'class' => 'notforselect2',
+                        ],
+                    ],
+                ]));
+                ?>
 
             </div>
         </div>

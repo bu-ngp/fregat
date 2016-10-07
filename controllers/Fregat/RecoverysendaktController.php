@@ -6,6 +6,7 @@ use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportTemplates;
 use app\models\Config\Generalsettings;
 use app\models\Fregat\Fregatsettings;
+use app\models\Fregat\RecoverysendaktFilter;
 use Yii;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RecoverysendaktSearch;
@@ -35,7 +36,7 @@ class RecoverysendaktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report', 'toexcel', 'recoverysendakt-reportsend', 'recoverysendaktmat-reportsend'],
+                        'actions' => ['index', 'recoverysendakt-report', 'recoverysendaktmat-report', 'toexcel', 'recoverysendakt-reportsend', 'recoverysendaktmat-reportsend', 'recoverysendaktfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -58,11 +59,13 @@ class RecoverysendaktController extends Controller
     public function actionIndex()
     {
         $searchModel = new RecoverysendaktSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new RecoverysendaktFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -150,6 +153,19 @@ class RecoverysendaktController extends Controller
 
         ReportTemplates::Recoverysendakt_ExportExcel();
         //  Proc::Grid2Excel($dataProvider, $modelname, 'Список пациентов', $selectvalues, new PatientFilter, $labelvalues);
+    }
+
+    public function actionRecoverysendaktfilter()
+    {
+        $model = new RecoverysendaktFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('RecoverysendaktSearch', $model);
+
+            return $this->renderAjax('_recoverysendaktfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

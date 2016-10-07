@@ -113,7 +113,7 @@ class MaterialSearch extends Material
             'idIzmer.izmer_name',
         ]);
 
-       $query->joinWith([
+        $query->joinWith([
             'currentMattraffic.idMol.idperson currentidperson',
             'currentMattraffic.idMol.iddolzh currentiddolzh',
             'currentMattraffic.idMol.idbuild currentidbuild',
@@ -156,6 +156,18 @@ class MaterialSearch extends Material
             ]);
 
             Proc::Filter_Compare(Proc::Strict, $query, $filter, ['Attribute' => 'material_writeoff']);
+
+            $attr = 'mat_id_grupa';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'grupavids.id_grupa',
+                'ExistsSubQuery' => (new Query())
+                    ->select('material_id')
+                    ->from('material materials')
+                    ->leftJoin('matvid idMatv', 'idMatv.matvid_id = materials.id_matvid')
+                    ->leftJoin('grupavid grupavids', 'idMatv.matvid_id = grupavids.id_matvid')
+                    ->andWhere('materials.material_id = material.material_id')
+            ]);
 
             $attr = 'mol_id_build';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
