@@ -12,7 +12,7 @@ $this->title = 'Счета учета';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="schetuchet-index">
-    <?=
+    <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
 
