@@ -128,6 +128,10 @@ $("#mb_sp_schetuchet").click(function () {
     window.location.href = "?r=Fregat%2Fschetuchet%2Findex";
 });
 
+$("#mb_sp_docfiles").click(function () {
+    window.location.href = "?r=Fregat%2Fdocfiles%2Findex";
+});
+
 $("#mb_sp_employee").click(function () {
     window.location.href = "?r=Config%2Fauthuser%2Findex&emp=1";
 });

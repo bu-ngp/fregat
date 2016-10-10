@@ -16,6 +16,7 @@ use Yii;
  *
  * @property Recoverysendakt $idRecoverysendakt
  * @property TrMatOsmotr $idTrMatOsmotr
+ * @property RramatDocfiles[] $rramatDocfiles
  */
 class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
 {
@@ -100,6 +101,14 @@ class Recoveryrecieveaktmat extends \yii\db\ActiveRecord
     public function getIdTrMatOsmotr()
     {
         return $this->hasOne(TrMatOsmotr::className(), ['tr_mat_osmotr_id' => 'id_tr_mat_osmotr'])->from(['idTrMatOsmotr' => TrMatOsmotr::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRramatDocfiles()
+    {
+        return $this->hasMany(RramatDocfiles::className(), ['id_recoveryrecieveaktmat' => 'recoveryrecieveaktmat_id'])->from(['RramatDocfiles' => RramatDocfiles::tableName()]);
     }
 
     public static function getMolsByRecoverysendakt($Recoverysendakt_id)

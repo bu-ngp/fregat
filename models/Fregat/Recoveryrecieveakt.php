@@ -16,6 +16,7 @@ use Yii;
  *
  * @property Osmotrakt $idOsmotrakt
  * @property Recoverysendakt $idRecoverysendakt
+ * @property RraDocfiles[] $rraDocfiles
  */
 class Recoveryrecieveakt extends \yii\db\ActiveRecord
 {
@@ -98,6 +99,14 @@ class Recoveryrecieveakt extends \yii\db\ActiveRecord
     public function getIdRecoverysendakt()
     {
         return $this->hasOne(Recoverysendakt::className(), ['recoverysendakt_id' => 'id_recoverysendakt'])->from(['idRecoverysendakt' => Recoverysendakt::tableName()])->inverseOf('recoveryrecieveakts');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRraDocfiles()
+    {
+        return $this->hasMany(RraDocfiles::className(), ['id_recoveryrecieveakt' => 'recoveryrecieveakt_id'])->from(['RraDocfiles' => RraDocfiles::tableName()]);
     }
 
     public static function getMolsByRecoverysendakt($Recoverysendakt_id)
