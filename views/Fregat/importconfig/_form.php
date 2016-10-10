@@ -40,6 +40,10 @@ use app\func\Proc;
             <?= $form->field($model, 'os_material_release')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'os_material_status')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'os_material_schetuchet_kod')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'os_material_schetuchet_name')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -68,6 +72,10 @@ use app\func\Proc;
             <?= $form->field($model, 'gu_material_serial')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'gu_material_release')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_schetuchet_kod')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'gu_material_schetuchet_name')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -96,6 +104,10 @@ use app\func\Proc;
             <?= $form->field($model, 'mat_podraz_name')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'mat_material_tip_nomenklaturi')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'mat_material_schetuchet_kod')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'mat_material_schetuchet_name')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">

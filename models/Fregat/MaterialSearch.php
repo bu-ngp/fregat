@@ -78,7 +78,7 @@ class MaterialSearch extends Material
             'sort' => ['defaultOrder' => ['material_name' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['idMatv', 'idIzmer','idSchetuchet']);
+        $query->joinWith(['idMatv', 'idIzmer', 'idSchetuchet']);
 
         $this->load($params);
 

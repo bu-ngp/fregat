@@ -1472,7 +1472,7 @@ class FregatImport
                                     }
                                     /* Манипуляции с данными каким Вам угодно способом, в PHPExcel их превеликое множество */
 
-                                    $row = $objWorksheet->rangeToArray('A' . $i . ':N' . $i, null, true, true, true);
+                                    $row = $objWorksheet->rangeToArray('A' . $i . ':M' . $i, null, true, true, true);
                                     $row = $row[key($row)];
 
                                     $material = new Material;
@@ -1542,7 +1542,6 @@ class FregatImport
 
                                                     // Применяем значения атрубутов, если материальная ценность списна
                                                     self::WriteOffDo($material, $matlog, $mattraffic, $traflog, $row);
-                                                    $a = '';
                                                 }
                                             }
                                         }
