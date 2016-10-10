@@ -396,5 +396,40 @@ class MattrafficSearch extends Mattraffic
         return $dataProvider;
     }
 
+    public function searchforspisosnovakt($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
+
+        $this->baseRelations($query);
+
+        $query->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3))')
+            ->andWhere(['in', 'mattraffic_tip', [1]])
+            ->andWhere([
+                'm2.mattraffic_date_m2' => NULL,
+                'idMaterial.material_writeoff' => 0,
+            ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
 }
                                         

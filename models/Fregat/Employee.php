@@ -22,6 +22,8 @@ use app\models\Config\Authuser;
  * @property Mattraffic[] $mattraffics
  * @property Osmotrakt[] $osmotrakts
  * @property Osmotrakt[] $osmotrakts0
+ * @property Spisosnovakt[] $spisosnovaktsmol
+ * @property Spisosnovakt[] $spisosnovaktsemp
  */
 class Employee extends \yii\db\ActiveRecord
 {
@@ -153,6 +155,22 @@ class Employee extends \yii\db\ActiveRecord
     public function getRemoveakts()
     {
         return $this->hasMany(Removeakt::className(), ['id_remover' => 'employee_id'])->from(['removeakts' => Removeakt::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpisosnovaktsmol()
+    {
+        return $this->hasMany(Spisosnovakt::className(), ['id_mol' => 'employee_id'])->from(['spisosnovaktsmol' => Spisosnovakt::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpisosnovaktsemp()
+    {
+        return $this->hasMany(Spisosnovakt::className(), ['id_employee' => 'employee_id'])->from(['spisosnovaktsemp' => Spisosnovakt::tableName()]);
     }
 
     public function beforeValidate()

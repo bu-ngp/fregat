@@ -72,6 +72,10 @@ $("#mb_recovery_j").click(function () {
     window.location.href = "?r=Fregat%2Frecoverysendakt%2Findex";
 });
 
+$("#mb_spisosnov_j").click(function () {
+    window.location.href = "?r=Fregat%2Fspisosnovakt%2Findex";
+});
+
 $("#mb_prihod_new").click(function () {
     window.location.href = "?r=Fregat%2Fmaterial%2Fcreate";
 });
@@ -118,6 +122,10 @@ $("#mb_sp_organ").click(function () {
 
 $("#mb_sp_reason").click(function () {
     window.location.href = "?r=Fregat%2Freason%2Findex";
+});
+
+$("#mb_sp_schetuchet").click(function () {
+    window.location.href = "?r=Fregat%2Fschetuchet%2Findex";
 });
 
 $("#mb_sp_employee").click(function () {

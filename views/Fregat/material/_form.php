@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Schetuchet;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use app\models\Fregat\Matvid;
@@ -140,6 +141,22 @@ use yii\helpers\Url;
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'disabled' => true,
                 ]);
+            ?>
+
+            <?=
+            $form->field($model, 'id_schetuchet')->widget(Select2::classname(), Proc::DGselect2([
+                'model' => $model,
+                'resultmodel' => new Schetuchet,
+                'fields' => [
+                    'keyfield' => 'id_schetuchet',
+                    'resultfield' => 'schetuchet_kod',
+                ],
+                'placeholder' => 'Выберете счет учета',
+                'resultrequest' => 'Fregat/schetuchet/selectinput',
+                'thisroute' => $this->context->module->requestedRoute,
+                'fromgridroute' => 'Fregat/schetuchet/index',
+                'methodquery' => 'selectinput',
+            ]));
             ?>
 
             <?=

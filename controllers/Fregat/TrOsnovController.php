@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use Yii;
 use app\models\Fregat\TrOsnov;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
