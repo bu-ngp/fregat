@@ -1,5 +1,6 @@
 <?php
 
+use kartik\file\FileInput;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\dynagrid\DynaGrid;
@@ -12,6 +13,7 @@ use app\models\Fregat\Build;
 use app\models\Fregat\TrOsnov;
 use app\models\Config\Authuser;
 use app\models\Fregat\Reason;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoveryrecieveakt */
@@ -22,7 +24,7 @@ use app\models\Fregat\Reason;
 
     <?php
     $form = ActiveForm::begin([
-                'id' => 'Recoveryrecieveaktform',
+        'id' => 'Recoveryrecieveaktform',
     ]);
     ?>
 
@@ -73,19 +75,80 @@ use app\models\Fregat\Reason;
     $form->field($model, 'recoveryrecieveakt_date')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
         'options' => [
-            'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
         ],
     ])
     ?>
 
     <?php ActiveForm::end(); ?>
 
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode('Прикрепить файл') ?></div>
+        <div class="panel-body">
+
+            <?php
+            $form2 = ActiveForm::begin([
+                'id' => 'UploadDocform',
+            ]);
+            ?>
+
+            <?php
+            echo $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
+                'pluginOptions' => [
+                    'uploadUrl' => Url::to(['Fregat/rra-docfiles/create']),
+                    'uploadExtraData' => [
+                        'id_recoveryrecieveakt' => $_GET['id'],
+                    ],
+                    'dropZoneEnabled' => false,
+                    'previewZoomSettings' => [
+                        'image' => [
+                            'width' => 'auto',
+                            'height' => '100%',
+                        ],
+                    ],
+                ],
+                'pluginEvents' => [
+                    "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("rraDocfilesgrid", event, data); }'
+                ]
+            ]);
+            ?>
+
+            <?php ActiveForm::end(); ?>
+
+            <?=
+            DynaGrid::widget(Proc::DGopts([
+                'options' => ['id' => 'rraDocfilesgrid'],
+                'columns' => Proc::DGcols([
+                    'columns' => [
+                        'idDocfiles.docfiles_ext',
+                        'idDocfiles.docfiles_name',
+                        [
+                            'attribute' => 'idDocfiles.docfiles_hash',
+                            'visible' => false,
+                        ],
+                    ],
+                    'buttons' => array_merge(Yii::$app->user->can('DocfilesEdit') ? [
+                        'deleteajax' => ['Fregat/rra-docfiles/delete'],
+                    ] : []
+                    ),
+                ]),
+                'gridOptions' => [
+                    'dataProvider' => $dataProviderrra,
+                    'filterModel' => $searchModelrra,
+                    'panel' => [
+                        'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
+                    ],
+                ]
+            ])); ?>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Recoveryrecieveaktform']) ?>
             </div>
-        </div> 
+        </div>
     </div>
 </div>

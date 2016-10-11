@@ -31,10 +31,14 @@ class Docfiles extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['docfiles_id', 'docfiles_name', 'docfiles_hash', 'docfiles_ext'], 'required'],
+            [['docfiles_name', 'docfiles_hash', 'docfiles_ext'], 'required'],
             [['docfiles_id'], 'integer'],
             [['docfiles_name', 'docfiles_hash'], 'string', 'max' => 255],
+          //  [['docfiles_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['docfiles_ext'], 'string', 'max' => 10],
+            [['docfiles_ext'], 'filter', 'filter' => function ($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
         ];
     }
 
@@ -56,7 +60,7 @@ class Docfiles extends \yii\db\ActiveRecord
      */
     public function getRraDocfiles()
     {
-        return $this->hasMany(RraDocfiles::className(), ['id_docfiles' => 'docfiles_id']);
+        return $this->hasMany(RraDocfiles::className(), ['id_docfiles' => 'docfiles_id'])->from(['rraDocfiles' => RraDocfiles::tableName()]);
     }
 
     /**
@@ -64,6 +68,6 @@ class Docfiles extends \yii\db\ActiveRecord
      */
     public function getRramatDocfiles()
     {
-        return $this->hasMany(RramatDocfiles::className(), ['id_docfiles' => 'docfiles_id']);
+        return $this->hasMany(RramatDocfiles::className(), ['id_docfiles' => 'docfiles_id'])->from(['rramatDocfiles' => RramatDocfiles::tableName()]);
     }
 }

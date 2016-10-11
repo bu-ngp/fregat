@@ -3,13 +3,16 @@
 namespace app\controllers\Fregat;
 
 use app\func\Proc;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\Docfiles;
 use app\models\Fregat\DocfilesSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * DocfilesController implements the CRUD actions for Docfiles model.
@@ -54,10 +57,12 @@ class DocfilesController extends Controller
     {
         $searchModel = new DocfilesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $model = new UploadDocFile;
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model' => $model,
         ]);
     }
 
@@ -68,15 +73,33 @@ class DocfilesController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Docfiles();
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            $model = new UploadDocFile();
+            $model->docFile = UploadedFile::getInstance($model, 'docFile');
+            $UploadTrigger = $model->upload();
+            if ($UploadTrigger['success']) {
+                $Docfiles = new Docfiles;
+                $Docfiles->docfiles_hash = $UploadTrigger['savedhashfilename_utf8'];
+                $Docfiles->docfiles_name = $UploadTrigger['savedfilename'];
+                $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
+                if ($Docfiles->save())
+                    echo json_encode(['ok']);
+                else {
+                    $strerr = '';
+                    foreach ($Docfiles->getErrors() as $attr)
+                        foreach ($attr as $errmsg)
+                            $strerr .= $errmsg . ', ';
+                    if (!empty($strerr))
+                        $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+                    throw new HttpException(500, $strerr);
+                }
+
+
+            } else
+                throw new HttpException(500, 'Ошибка при загрузке файла');
+        } else
+            throw new HttpException(500, 'Ошибка запроса');
     }
 
     /**
@@ -87,8 +110,15 @@ class DocfilesController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $hash = Yii::$app->basePath . '/docs/' . $this->findModel($id)->docfiles_hash;
+            //$hash = str_replace(" ", "\ ", $hash);
+            $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+
+            if ($this->findModel($id)->delete())
+                if (file_exists($fileroot))
+                    unlink($fileroot);
+        }
     }
 
     /**

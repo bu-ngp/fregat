@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
+use app\models\Fregat\Docfiles;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
@@ -650,8 +651,15 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        $a = new \yii\web\Request;
-        var_dump($a->getUserIP());
+        $hash = Docfiles::find()->one();
+        var_dump($hash->docfiles_hash);
+        $file = Yii::$app->basePath . '/docs/' . $hash->docfiles_hash;
+        var_dump($file);
+        $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($file, 'Windows-1251', 'UTF-8');
+        var_dump($fileroot);
+        var_dump(file_exists($fileroot));
+        //$hash = str_replace(" ", "\ ", $hash);
+      //  $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'UTF-8', 'Windows-1251');
     }
 
 }

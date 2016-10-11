@@ -1,7 +1,8 @@
 <?php
 
-namespace app\models;
+namespace app\models\Fregat;
 
+use app\func\Proc;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -10,8 +11,18 @@ use app\models\Fregat\RraDocfiles;
 /**
  * FregatRraDocfilesSearch represents the model behind the search form about `app\models\Fregat\RraDocfiles`.
  */
-class FregatRraDocfilesSearch extends RraDocfiles
+class RraDocfilesSearch extends RraDocfiles
 {
+    public function attributes()
+    {
+        // add related fields to searchable attributes
+        return array_merge(parent::attributes(), [
+            'idDocfiles.docfiles_ext',
+            'idDocfiles.docfiles_name',
+            'idDocfiles.docfiles_hash',
+        ]);
+    }
+
     /**
      * @inheritdoc
      */
@@ -19,6 +30,11 @@ class FregatRraDocfilesSearch extends RraDocfiles
     {
         return [
             [['rra_docfiles_id', 'id_docfiles', 'id_recoveryrecieveakt'], 'integer'],
+            [[
+                'idDocfiles.docfiles_ext',
+                'idDocfiles.docfiles_name',
+                'idDocfiles.docfiles_hash',
+            ],'safe'],
         ];
     }
 
@@ -48,6 +64,8 @@ class FregatRraDocfilesSearch extends RraDocfiles
             'query' => $query,
         ]);
 
+        $query->joinWith('idDocfiles');
+
         $this->load($params);
 
         if (!$this->validate()) {
@@ -60,7 +78,17 @@ class FregatRraDocfilesSearch extends RraDocfiles
         $query->andFilterWhere([
             'rra_docfiles_id' => $this->rra_docfiles_id,
             'id_docfiles' => $this->id_docfiles,
-            'id_recoveryrecieveakt' => $this->id_recoveryrecieveakt,
+            'id_recoveryrecieveakt' => $params['id'],
+        ]);
+
+        $query->andFilterWhere(['LIKE', 'idDocfiles.docfiles_ext', $this->getAttribute('idDocfiles.docfiles_ext')]);
+        $query->andFilterWhere(['LIKE', 'idDocfiles.docfiles_name', $this->getAttribute('idDocfiles.docfiles_name')]);
+        $query->andFilterWhere(['LIKE', 'idDocfiles.docfiles_hash', $this->getAttribute('idDocfiles.docfiles_hash')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idDocfiles.docfiles_ext',
+            'idDocfiles.docfiles_name',
+            'idDocfiles.docfiles_hash',
         ]);
 
         return $dataProvider;

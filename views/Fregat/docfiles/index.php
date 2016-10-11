@@ -1,8 +1,12 @@
 <?php
+\Yii::$app->getView()->registerJsFile('js/docfiles.js');
 
 use app\func\Proc;
+use kartik\file\FileInput;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\DocfilesSearch */
@@ -12,6 +16,29 @@ $this->title = 'Загруженные файлы';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
 <div class="docfiles-index">
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <?=
+    $form->field($model, 'docFile')->widget(FileInput::classname(), [
+        'pluginOptions' => [
+            'uploadUrl' => Url::to(['Fregat/docfiles/create']),
+            'dropZoneEnabled' => false,
+            'previewZoomSettings' => [
+                'image' => [
+                    'width' => 'auto',
+                    'height' => '100%',
+                ],
+            ],
+        ],
+        'pluginEvents' => [
+            "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("docfilesgrid", event, data); }'
+        ]
+    ]);
+    ?>
+
+    <?php ActiveForm::end(); ?>
+
     <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
@@ -31,7 +58,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 empty($foreign) ? [] : [
                     'chooseajax' => ['Fregat/docfiles/assign-to-select2']
                 ], Yii::$app->user->can('DocfilesEdit') ? [
-                'update' => ['Fregat/docfiles/update'],
                 'deleteajax' => ['Fregat/docfiles/delete'],
             ] : []
             ),
@@ -41,7 +67,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             'filterModel' => $searchModel,
             'panel' => [
                 'heading' => '<i class="glyphicon glyphicon-file"></i> ' . $this->title,
-                'before' => Yii::$app->user->can('BuildEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
             ],
         ]
     ])); ?>

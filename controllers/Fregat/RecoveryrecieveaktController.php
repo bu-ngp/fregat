@@ -3,6 +3,9 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RecoveryrecieveaktReport;
+use app\models\Fregat\RraDocfiles;
+use app\models\Fregat\RraDocfilesSearch;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\Recoveryrecieveakt;
 use yii\web\Controller;
@@ -10,6 +13,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\func\Proc;
+use yii\web\UploadedFile;
 
 /**
  * RecoveryrecieveaktController implements the CRUD actions for Recoveryrecieveakt model.
@@ -50,12 +54,21 @@ class RecoveryrecieveaktController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $UploadFile = new UploadDocFile;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save())
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-        else {
+        } else {
+            $searchModelrra = new RraDocfilesSearch();
+            $dataProviderrra = $searchModelrra->search(Yii::$app->request->queryParams);
+
             return $this->render('update', [
                 'model' => $model,
+                'UploadFile' => $UploadFile,
+                'searchModelrra' => $searchModelrra,
+                'dataProviderrra' => $dataProviderrra,
             ]);
         }
     }

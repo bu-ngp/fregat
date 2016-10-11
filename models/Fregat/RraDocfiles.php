@@ -54,7 +54,7 @@ class RraDocfiles extends \yii\db\ActiveRecord
      */
     public function getIdDocfiles()
     {
-        return $this->hasOne(Docfiles::className(), ['docfiles_id' => 'id_docfiles']);
+        return $this->hasOne(Docfiles::className(), ['docfiles_id' => 'id_docfiles'])->from(['idDocfiles' => Docfiles::tableName()]);
     }
 
     /**
@@ -62,6 +62,6 @@ class RraDocfiles extends \yii\db\ActiveRecord
      */
     public function getIdRecoveryrecieveakt()
     {
-        return $this->hasOne(Recoveryrecieveakt::className(), ['recoveryrecieveakt_id' => 'id_recoveryrecieveakt']);
+        return $this->hasOne(Recoveryrecieveakt::className(), ['recoveryrecieveakt_id' => 'id_recoveryrecieveakt'])->from(['idRecoveryrecieveakt' => Recoveryrecieveakt::tableName()]);
     }
 }

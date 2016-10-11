@@ -2,12 +2,16 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Docfiles;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\RraDocfiles;
 use app\models\FregatRraDocfilesSearch;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * RraDocfilesController implements the CRUD actions for RraDocfiles model.
@@ -45,33 +49,55 @@ class RraDocfilesController extends Controller
     }
 
     /**
-     * Displays a single RraDocfiles model.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new RraDocfiles model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new RraDocfiles();
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            $UploadFile = new UploadDocFile();
+            $UploadFile->docFile = UploadedFile::getInstance($UploadFile, 'docFile');
+            $UploadTrigger = $UploadFile->upload();
+            if ($UploadTrigger['success']) {
+                $Docfiles = new Docfiles;
+                $Docfiles->docfiles_hash = $UploadTrigger['savedhashfilename_utf8'];
+                $Docfiles->docfiles_name = $UploadTrigger['savedfilename'];
+                $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
+                if ($Docfiles->save()) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->rra_docfiles_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+                    $RraDocfiles = new RraDocfiles;
+                    $RraDocfiles->id_docfiles = $Docfiles->primaryKey;
+                    $RraDocfiles->id_recoveryrecieveakt = $_POST['id_recoveryrecieveakt'];
+                    if ($RraDocfiles->save())
+                        echo json_encode(['ok']);
+                    else {
+                        $strerr = '';
+                        foreach ($RraDocfiles->getErrors() as $attr)
+                            foreach ($attr as $errmsg)
+                                $strerr .= $errmsg . ', ';
+                        if (!empty($strerr))
+                            $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
+
+                        throw new HttpException(500, $strerr);
+                    }
+                } else {
+                    $strerr = '';
+                    foreach ($Docfiles->getErrors() as $attr)
+                        foreach ($attr as $errmsg)
+                            $strerr .= $errmsg . ', ';
+                    if (!empty($strerr))
+                        $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
+
+                    throw new HttpException(500, $strerr);
+                }
+
+
+            } else
+                throw new HttpException(500, 'Ошибка при загрузке файла');
+        } else
+            throw new HttpException(500, 'Ошибка запроса');
+
     }
 
     /**
@@ -101,9 +127,8 @@ class RraDocfilesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax)
+            echo $this->findModel($id)->delete();
     }
 
     /**
