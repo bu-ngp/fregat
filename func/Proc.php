@@ -1790,9 +1790,13 @@ class Proc
         if (!empty($docfile_id)) {
             $existdb1 = RraDocfiles::find(['id_docfiles' => $docfile_id])->count();
             $existdb2 = RramatDocfiles::find(['id_docfiles' => $docfile_id])->count();
+            echo '$existdb1 = '.$existdb1;
+            echo ' $existdb2 = '.$existdb2;
             if (empty($existdb1) && empty($existdb2)) {
                 $Docfiles = Docfiles::findOne($docfile_id);
+                echo '[Docfiles]';
                 if (!empty($Docfiles)) {
+                    echo '[ok]';
                     $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
                     $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
 

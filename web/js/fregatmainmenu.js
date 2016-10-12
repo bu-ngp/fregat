@@ -167,7 +167,7 @@ $("#mb_fregatsprav").click(function () {
 });
 
 $("#mb_fregatconfig").click(function () {
-    window.location.href = "?r=Base%2Ffregat%2Fsettings";
+    window.location.href = "?r=Fregat%2Ffregat%2Fsettings";
 });
 
 /* Система "Фрегат" \ Настройки системы "Фрегат" \ Импорт данных */
