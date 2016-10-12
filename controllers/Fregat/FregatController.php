@@ -9,6 +9,7 @@ use app\models\Fregat\Employee;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Reason;
+use app\models\Fregat\RraDocfiles;
 use Exception;
 use Yii;
 use app\models\Fregat\Build;
@@ -651,15 +652,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        $hash = Docfiles::find()->one();
-        var_dump($hash->docfiles_hash);
-        $file = Yii::$app->basePath . '/docs/' . $hash->docfiles_hash;
-        var_dump($file);
-        $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($file, 'Windows-1251', 'UTF-8');
-        var_dump($fileroot);
-        var_dump(file_exists($fileroot));
-        //$hash = str_replace(" ", "\ ", $hash);
-      //  $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'UTF-8', 'Windows-1251');
+        //RraDocfiles::find(['id_docfiles' => $docfile_id])->count();
     }
 
 }
