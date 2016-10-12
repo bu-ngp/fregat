@@ -58,7 +58,7 @@ use app\func\Proc;
                 $form->field($model, 'mol_id_person')->widget(Select2::classname(), Proc::DGselect2([
                     'model' => $model,
                     'resultmodel' => new \app\models\Config\Authuser(),
-                    'placeholder' => 'Введите ФИО МОЛ',
+                    'placeholder' => 'Введите ФИО материально-ответственного лица',
                     'setsession' => false,
                     'fields' => [
                         'keyfield' => 'mol_id_person',
