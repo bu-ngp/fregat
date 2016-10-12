@@ -114,6 +114,20 @@ class RecoverysendaktSearch extends Recoverysendakt
                         ->andWhere(['recoveryrecieveakt_repaired' => NULL])
                         ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')],
                 ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('recoveryrecieveakts.id_recoverysendakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->leftJoin('osmotrakt idOsmotrakt', 'idOsmotrakt.osmotrakt_id = recoveryrecieveakts.id_osmotrakt')
+                    ->leftJoin('tr_osnov idTrosnov', 'idOsmotrakt.id_tr_osnov = idTrosnov.tr_osnov_id')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrosnov.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')
+            ]);
         }
     }
 

@@ -54,6 +54,21 @@ use app\func\Proc;
                 ]));
                 ?>
 
+                <?=
+                $form->field($model, 'mol_id_person')->widget(Select2::classname(), Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new \app\models\Config\Authuser(),
+                    'placeholder' => 'Введите ФИО МОЛ',
+                    'setsession' => false,
+                    'fields' => [
+                        'keyfield' => 'mol_id_person',
+                        'resultfield' => 'auth_user_fullname',
+                    ],
+                    'resultrequest' => 'Config/authuser/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                ]));
+                ?>
+
             </div>
         </div>
 
