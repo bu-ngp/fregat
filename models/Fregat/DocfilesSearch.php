@@ -2,8 +2,10 @@
 
 namespace app\models\Fregat;
 
+use app\func\Proc;
 use Yii;
 use yii\base\Model;
+use yii\bootstrap\Html;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Docfiles;
 

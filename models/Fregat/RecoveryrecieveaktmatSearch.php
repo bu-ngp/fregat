@@ -117,6 +117,30 @@ class RecoveryrecieveaktmatSearch extends Recoveryrecieveaktmat
         ]);
     }
 
+    public function searchbase($params)
+    {
+        $query = Recoveryrecieveaktmat::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => false,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'recoveryrecieveaktmat_id' => $params['id'],
+        ]);
+
+        return $dataProvider;
+    }
+
     public function search($params)
     {
         $query = Recoveryrecieveaktmat::find();

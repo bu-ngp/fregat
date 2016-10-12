@@ -16,7 +16,7 @@ class UploadDocFile extends Model
     {
         Yii::$app->formatter->sizeFormatBase = 1000;
         return [
-            [['docFile'], 'file', 'skipOnEmpty' => false, 'extensions' => ['png', 'jpg', 'jpeg', 'tiff', 'pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt'], 'maxSize' => 30000000, 'tooBig' => 'Файл не может превышать ' . Yii::$app->formatter->asShortSize(30000000)],
+            [['docFile'], 'file', 'skipOnEmpty' => false, 'extensions' => ['png', 'jpg', 'jpeg', 'tiff', 'pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt'], 'maxSize' => 30000000, 'tooBig' => 'Файл не может превышать ' . Yii::$app->formatter->asShortSize(30000000), 'checkExtensionByMimeType' => false],
         ];
     }
 

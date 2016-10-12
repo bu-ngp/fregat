@@ -3,6 +3,8 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RecoveryrecieveaktReport;
+use app\models\Fregat\OsmotraktSearch;
+use app\models\Fregat\RecoveryrecieveaktSearch;
 use app\models\Fregat\RraDocfiles;
 use app\models\Fregat\RraDocfilesSearch;
 use app\models\Fregat\UploadDocFile;
@@ -57,16 +59,17 @@ class RecoveryrecieveaktController extends Controller
         $UploadFile = new UploadDocFile;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             $searchModelrra = new RraDocfilesSearch();
             $dataProviderrra = $searchModelrra->search(Yii::$app->request->queryParams);
+            $searchModel = new RecoveryrecieveaktSearch();
+            $dataProvider = $searchModel->searchbase(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                 'model' => $model,
                 'UploadFile' => $UploadFile,
+                'dataProvider' => $dataProvider,
                 'searchModelrra' => $searchModelrra,
                 'dataProviderrra' => $dataProviderrra,
             ]);

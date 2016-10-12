@@ -38,6 +38,11 @@ class DocfilesController extends Controller
                         'allow' => true,
                         'roles' => ['DocfilesEdit'],
                     ],
+                    [
+                        'actions' => ['download-file'],
+                        'allow' => true,
+                        'roles' => ['DocfilesEdit', 'RecoveryEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -84,20 +89,10 @@ class DocfilesController extends Controller
                 $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
                 if ($Docfiles->save())
                     echo json_encode(['ok']);
-                else {
-                    $strerr = '';
-                    foreach ($Docfiles->getErrors() as $attr)
-                        foreach ($attr as $errmsg)
-                            $strerr .= $errmsg . ', ';
-                    if (!empty($strerr))
-                        $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
-
-                    throw new HttpException(500, $strerr);
-                }
-
-
+                else
+                    throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));
             } else
-                throw new HttpException(500, 'Ошибка при загрузке файла');
+                throw new HttpException(500, Proc::ActiveRecordErrorsToString($UploadTrigger['errors']));
         } else
             throw new HttpException(500, 'Ошибка запроса');
     }
@@ -112,13 +107,22 @@ class DocfilesController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $hash = Yii::$app->basePath . '/docs/' . $this->findModel($id)->docfiles_hash;
-            //$hash = str_replace(" ", "\ ", $hash);
             $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
 
             if ($this->findModel($id)->delete())
                 if (file_exists($fileroot))
                     unlink($fileroot);
         }
+    }
+
+    public function actionDownloadFile($id)
+    {
+        $Docfiles = $this->findModel($id);
+
+        $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
+        $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+
+        return Yii::$app->response->sendFile($fileroot, $Docfiles->docfiles_name);
     }
 
     /**

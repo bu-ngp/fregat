@@ -27,6 +27,9 @@ AppAsset::register($this);
 
 <div class="wrap">
     <?php
+    use kartik\icons\Icon;
+    Icon::map($this);
+    
     NavBar::begin([
         'brandLabel' => 'БУ "Нижневартовская городская поликлиника"',
         'brandUrl' => Yii::$app->homeUrl,

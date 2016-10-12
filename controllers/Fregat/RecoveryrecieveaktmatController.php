@@ -3,6 +3,10 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RecoveryrecieveaktmatReport;
+use app\models\Fregat\RecoveryrecieveaktmatSearch;
+use app\models\Fregat\RramatDocfilesSearch;
+use app\models\Fregat\TrMatOsmotrSearch;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\Recoveryrecieveaktmat;
 use yii\web\Controller;
@@ -14,12 +18,14 @@ use yii\filters\AccessControl;
 /**
  * RecoveryrecieveaktmatController implements the CRUD actions for Recoveryrecieveaktmat model.
  */
-class RecoveryrecieveaktmatController extends Controller {
+class RecoveryrecieveaktmatController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -45,20 +51,32 @@ class RecoveryrecieveaktmatController extends Controller {
         ];
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
+        $UploadFile = new UploadDocFile;
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else {
+            $searchModelrramat = new RramatDocfilesSearch();
+            $dataProviderrramat = $searchModelrramat->search(Yii::$app->request->queryParams);
+            $searchModel = new RecoveryrecieveaktmatSearch();
+            $dataProvider = $searchModel->searchbase(Yii::$app->request->queryParams);
+
             return $this->render('update', [
-                        'model' => $model,
+                'model' => $model,
+                'UploadFile' => $UploadFile,
+                'dataProvider' => $dataProvider,
+                'searchModelrramat' => $searchModelrramat,
+                'dataProviderrramat' => $dataProviderrramat,
             ]);
         }
     }
 
     // Печать акта получения материалов у сторонней организации
-    public function actionRecoveryrecieveaktmatReport() {
+    public function actionRecoveryrecieveaktmatReport()
+    {
         $Report = new RecoveryrecieveaktmatReport();
         echo $Report->Execute();
     }
@@ -69,7 +87,8 @@ class RecoveryrecieveaktmatController extends Controller {
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -81,7 +100,8 @@ class RecoveryrecieveaktmatController extends Controller {
      * @return Recoveryrecieveaktmat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Recoveryrecieveaktmat::findOne($id)) !== null) {
             return $model;
         } else {

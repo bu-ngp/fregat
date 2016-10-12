@@ -115,6 +115,32 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
         ]);
     }
 
+    public function searchbase($params)
+    {
+        $query = Recoveryrecieveakt::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => false,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'recoveryrecieveakt_id' => $params['id'],
+        ]);
+
+        return $dataProvider;
+    }
+
     /**
      * Creates data provider instance with search query applied
      *

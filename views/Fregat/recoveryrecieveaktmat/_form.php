@@ -1,5 +1,6 @@
 <?php
 
+use kartik\file\FileInput;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\dynagrid\DynaGrid;
@@ -14,6 +15,7 @@ use app\models\Fregat\TrOsnov;
 use app\models\Config\Authuser;
 use app\models\Fregat\Reason;
 use app\models\Fregat\TrMatOsmotr;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoveryrecieveaktmat */
@@ -22,37 +24,43 @@ use app\models\Fregat\TrMatOsmotr;
 
 <div class="recoveryrecieveaktmat-form">
 
+    <?=
+    DynaGrid::widget(Proc::DGopts([
+        'options' => ['id' => 'osmotrakt_rramat_grid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                'idTrMatOsmotr.tr_mat_osmotr_number',
+                [
+                    'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
+                    'label' => 'ФИО материально-ответственного лица',
+                ],
+                [
+                    'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
+                    'label' => 'Должность материально-ответственного лица',
+                ],
+                'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idbuild.build_name',
+                'idTrMatOsmotr.idReason.reason_text',
+                'idTrMatOsmotr.tr_mat_osmotr_comment',
+                'idTrMatOsmotr.idOsmotraktmat.idMaster.idperson.auth_user_fullname',
+                'idTrMatOsmotr.idOsmotraktmat.idMaster.iddolzh.dolzh_name',
+            ],
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProvider,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-file"></i> Акт осмотра материала',
+            ],
+        ]
+    ])); ?>
+
     <?php
     $form = ActiveForm::begin([
         'id' => 'Recoveryrecieveaktmatform',
     ]);
     ?>
-
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Акт осмотра материала') ?></div>
-        <div class="panel-body">
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idOsmotraktmat', new Osmotraktmat), 'osmotraktmat_id', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr', new TrMatOsmotr), 'tr_mat_osmotr_number', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('ФИО материально-ответственонго лица') ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Должность материально-ответственного лица') ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Материальная ценность, в которую укомплектовано') ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idTrMat.idParent.idMaterial', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Инвентарный номер материальной ценности, в которую укомплектовано') ?>
-            <?=
-            $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr', new TrMatOsmotr), 'tr_mat_osmotr_comment', ['enableClientValidation' => false])->textarea([
-                'class' => 'form-control',
-                'maxlength' => 512,
-                'rows' => 10,
-                'disabled' => true,
-                'style' => 'resize: none',
-            ])
-            ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idReason', new Reason), 'reason_text', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idOsmotraktmat.idMaster.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Составитель акта осмотра материала') ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idTrMatOsmotr.idOsmotraktmat.idMaster.iddolzh', new Dolzh), 'dolzh_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Должность составителя акта осмотра материала') ?>
-        </div>
-    </div>
 
     <?=
     $form->field($model, 'recoveryrecieveaktmat_result')->textarea([
@@ -86,10 +94,75 @@ use app\models\Fregat\TrMatOsmotr;
 
     <?php ActiveForm::end(); ?>
 
+    <?=
+    DynaGrid::widget(Proc::DGopts([
+        'options' => ['id' => 'rramatDocfilesgrid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                [
+                    'attribute' => 'idDocfiles.docfiles_ext',
+                    'format' => 'raw',
+                    'value' => 'idDocfiles.docfiles_iconshow',
+                    'contentOptions' => ['style' => 'width: 40px; text-align: center;'], // <-- right here
+                    'filter' => false,
+                ],
+                [
+                    'attribute' => 'idDocfiles.docfiles_name',
+                    'format' => 'raw',
+                    'value' => 'idDocfiles.docfiles_name_html',
+                ],
+                [
+                    'attribute' => 'idDocfiles.docfiles_hash',
+                    'visible' => false,
+                ],
+            ],
+            'buttons' => array_merge(Yii::$app->user->can('DocfilesEdit') ? [
+                'deleteajax' => ['Fregat/rramat-docfiles/delete', 'rramat_docfiles_id', 'rramatDocfilesgrid'],
+            ] : []
+            ),
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProviderrramat,
+            'filterModel' => $searchModelrramat,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
+            ],
+        ]
+    ])); ?>
+
+    <?php
+    $form2 = ActiveForm::begin([
+        'id' => 'UploadDocform',
+    ]);
+    ?>
+
+    <?php
+    echo $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
+        'pluginOptions' => [
+            'uploadUrl' => Url::to(['Fregat/rramat-docfiles/create']),
+            'uploadExtraData' => [
+                'id_recoveryrecieveaktmat' => $_GET['id'],
+            ],
+            'dropZoneEnabled' => false,
+            'previewZoomSettings' => [
+                'image' => [
+                    'width' => 'auto',
+                    'height' => '100%',
+                ],
+            ],
+        ],
+        'pluginEvents' => [
+            "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("rramatDocfilesgrid", event, data); }'
+        ],
+    ]);
+    ?>
+
+    <?php ActiveForm::end(); ?>
+
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Recoveryrecieveaktmatform']) ?>
             </div>
         </div>

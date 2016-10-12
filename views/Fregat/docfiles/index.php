@@ -47,8 +47,18 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         'options' => ['id' => 'docfilesgrid'],
         'columns' => Proc::DGcols([
             'columns' => [
-                'docfiles_ext',
-                'docfiles_name',
+                [
+                    'attribute' => 'docfiles_ext',
+                    'format' => 'raw',
+                    'value' => 'docfiles_iconshow',
+                    'contentOptions' => ['style' => 'width: 40px; text-align: center;'], // <-- right here
+                    'filter' => false,
+                ],
+                [
+                    'attribute' => 'docfiles_name',
+                    'format' => 'raw',
+                    'value' => 'docfiles_name_html',
+                ],
                 [
                     'attribute' => 'docfiles_hash',
                     'visible' => false,

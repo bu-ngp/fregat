@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile('js/docfiles.js');
 
 use yii\helpers\Html;
 use app\func\Proc;
@@ -18,6 +19,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             <?=
             $this->render('_form', [
                 'model' => $model,
+                'UploadFile' => $UploadFile,
+                'dataProvider' => $dataProvider,
+                'searchModelrramat' => $searchModelrramat,
+                'dataProviderrramat' => $dataProviderrramat,
             ])
             ?>
         </div>

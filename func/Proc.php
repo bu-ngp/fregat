@@ -5,8 +5,11 @@ namespace app\func;
 use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportsTemplate\RecoverysendaktReport;
 use app\models\Config\Authuser;
+use app\models\Fregat\Docfiles;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Recoverysendakt;
+use app\models\Fregat\RraDocfiles;
+use app\models\Fregat\RramatDocfiles;
 use Yii;
 use yii\base\View;
 use yii\data\ActiveDataProvider;
@@ -1735,7 +1738,7 @@ class Proc
                             else {
                                 $ExistsSubQuery->andWhere($WhereStatement);
                                 $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
-                                $a='';
+                                $a = '';
                             }
                         break;
                     case Proc::Mark:
@@ -1780,5 +1783,55 @@ class Proc
                 }
         }
 
+    }
+
+    public static function DeleteDocFile($docfile_id)
+    {
+        if (!empty($docfile_id)) {
+            $existdb1 = RraDocfiles::find(['id_docfiles' => $docfile_id])->count();
+            $existdb2 = RramatDocfiles::find(['id_docfiles' => $docfile_id])->count();
+            if (empty($existdb1) && empty($existdb2)) {
+                $Docfiles = Docfiles::findOne($docfile_id);
+                if (!empty($Docfiles)) {
+                    $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
+                    $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+
+                    if ($Docfiles->delete() && file_exists($fileroot))
+                        return unlink($fileroot);
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function ActiveRecordErrorsToString($ActiveRecord)
+    {
+        if ($ActiveRecord instanceof ActiveRecord) {
+            $strerr = '';
+            foreach ($ActiveRecord->getErrors() as $attr)
+                foreach ($attr as $errmsg)
+                    $strerr .= $errmsg . ', ';
+            if (!empty($strerr))
+                $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
+
+            return $strerr;
+        } elseif (is_array($ActiveRecord)) {
+            $strerr = '';
+            foreach ($ActiveRecord as $attr)
+                foreach ($attr as $errmsg)
+                    $strerr .= $errmsg . ', ';
+            if (!empty($strerr))
+                $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
+
+            return $strerr;
+        }
+
+        return false;
+    }
+
+    public static function file_exists_utf8($FileNameUTF8)
+    {
+        $FileRoot = (DIRECTORY_SEPARATOR === '/') ? $FileNameUTF8 : mb_convert_encoding($FileNameUTF8, 'Windows-1251', 'UTF-8');
+        return file_exists($FileRoot);
     }
 }

@@ -22,33 +22,43 @@ use yii\helpers\Url;
 
 <div class="recoveryrecieveakt-form">
 
+    <?=
+    DynaGrid::widget(Proc::DGopts([
+        'options' => ['id' => 'osmotrakt_rra_grid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                'idOsmotrakt.osmotrakt_id',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
+                'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
+                [
+                    'attribute' => 'idOsmotrakt.idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname',
+                    'label' => 'ФИО материально-ответственного лица',
+                ],
+                [
+                    'attribute' => 'idOsmotrakt.idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name',
+                    'label' => 'Должность материально-ответственного лица',
+                ],
+                'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
+                'idOsmotrakt.idTrosnov.tr_osnov_kab',
+                'idOsmotrakt.idReason.reason_text',
+                'idOsmotrakt.osmotrakt_comment',
+                'idOsmotrakt.idMaster.idperson.auth_user_fullname',
+                'idOsmotrakt.idMaster.iddolzh.dolzh_name',
+            ],
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProvider,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-file"></i> Акт осмотра материальной ценности',
+            ],
+        ]
+    ])); ?>
+
     <?php
     $form = ActiveForm::begin([
         'id' => 'Recoveryrecieveaktform',
     ]);
     ?>
-
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Акт осмотра материальной ценности') ?></div>
-        <div class="panel-body">
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt', new Osmotrakt), 'osmotrakt_id', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idTrosnov.idMattraffic.idMaterial', new Material), 'material_inv', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idTrosnov.idMattraffic.idMaterial', new Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idTrosnov', new TrOsnov), 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?=
-            $form->field(Proc::RelatModelValue($model, 'idOsmotrakt', new Osmotrakt), 'osmotrakt_comment', ['enableClientValidation' => false])->textarea([
-                'class' => 'form-control',
-                'maxlength' => 512,
-                'rows' => 10,
-                'disabled' => true,
-                'style' => 'resize: none',
-            ])
-            ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idReason', new Reason), 'reason_text', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
-            <?= $form->field(Proc::RelatModelValue($model, 'idOsmotrakt.idMaster.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true])->label('Составитель акта осмотра') ?>
-        </div>
-    </div>
 
     <?=
     $form->field($model, 'recoveryrecieveakt_result')->textarea([
@@ -82,66 +92,70 @@ use yii\helpers\Url;
 
     <?php ActiveForm::end(); ?>
 
-    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-        <div class="panel-heading"><?= Html::encode('Прикрепить файл') ?></div>
-        <div class="panel-body">
-
-            <?php
-            $form2 = ActiveForm::begin([
-                'id' => 'UploadDocform',
-            ]);
-            ?>
-
-            <?php
-            echo $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
-                'pluginOptions' => [
-                    'uploadUrl' => Url::to(['Fregat/rra-docfiles/create']),
-                    'uploadExtraData' => [
-                        'id_recoveryrecieveakt' => $_GET['id'],
-                    ],
-                    'dropZoneEnabled' => false,
-                    'previewZoomSettings' => [
-                        'image' => [
-                            'width' => 'auto',
-                            'height' => '100%',
-                        ],
-                    ],
+    <?=
+    DynaGrid::widget(Proc::DGopts([
+        'options' => ['id' => 'rraDocfilesgrid'],
+        'columns' => Proc::DGcols([
+            'columns' => [
+                [
+                    'attribute' => 'idDocfiles.docfiles_ext',
+                    'format' => 'raw',
+                    'value' => 'idDocfiles.docfiles_iconshow',
+                    'contentOptions' => ['style' => 'width: 40px; text-align: center;'], // <-- right here
+                    'filter' => false,
                 ],
-                'pluginEvents' => [
-                    "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("rraDocfilesgrid", event, data); }'
-                ]
-            ]);
-            ?>
+                [
+                    'attribute' => 'idDocfiles.docfiles_name',
+                    'format' => 'raw',
+                    'value' => 'idDocfiles.docfiles_name_html',
+                ],
+                [
+                    'attribute' => 'idDocfiles.docfiles_hash',
+                    'visible' => false,
+                ],
+            ],
+            'buttons' => array_merge(Yii::$app->user->can('DocfilesEdit') ? [
+                'deleteajax' => ['Fregat/rra-docfiles/delete', 'rra_docfiles_id', 'rraDocfilesgrid'],
+            ] : []
+            ),
+        ]),
+        'gridOptions' => [
+            'dataProvider' => $dataProviderrra,
+            'filterModel' => $searchModelrra,
+            'panel' => [
+                'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
+            ],
+        ]
+    ])); ?>
 
-            <?php ActiveForm::end(); ?>
+    <?php
+    $form2 = ActiveForm::begin([
+        'id' => 'UploadDocform',
+    ]);
+    ?>
 
-            <?=
-            DynaGrid::widget(Proc::DGopts([
-                'options' => ['id' => 'rraDocfilesgrid'],
-                'columns' => Proc::DGcols([
-                    'columns' => [
-                        'idDocfiles.docfiles_ext',
-                        'idDocfiles.docfiles_name',
-                        [
-                            'attribute' => 'idDocfiles.docfiles_hash',
-                            'visible' => false,
-                        ],
-                    ],
-                    'buttons' => array_merge(Yii::$app->user->can('DocfilesEdit') ? [
-                        'deleteajax' => ['Fregat/rra-docfiles/delete'],
-                    ] : []
-                    ),
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProviderrra,
-                    'filterModel' => $searchModelrra,
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
-                    ],
-                ]
-            ])); ?>
-        </div>
-    </div>
+    <?php
+    echo $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
+        'pluginOptions' => [
+            'uploadUrl' => Url::to(['Fregat/rra-docfiles/create']),
+            'uploadExtraData' => [
+                'id_recoveryrecieveakt' => $_GET['id'],
+            ],
+            'dropZoneEnabled' => false,
+            'previewZoomSettings' => [
+                'image' => [
+                    'width' => 'auto',
+                    'height' => '100%',
+                ],
+            ],
+        ],
+        'pluginEvents' => [
+            "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("rraDocfilesgrid", event, data); }'
+        ],
+    ]);
+    ?>
+
+    <?php ActiveForm::end(); ?>
 
     <div class="form-group">
         <div class="panel panel-default">

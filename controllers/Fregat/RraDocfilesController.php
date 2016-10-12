@@ -2,11 +2,13 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\Proc;
 use app\models\Fregat\Docfiles;
 use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\RraDocfiles;
-use app\models\FregatRraDocfilesSearch;
+use app\models\RraDocfilesSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -24,6 +26,16 @@ class RraDocfilesController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['create', 'delete'],
+                        'allow' => true,
+                        'roles' => ['RecoveryEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -31,21 +43,6 @@ class RraDocfilesController extends Controller
                 ],
             ],
         ];
-    }
-
-    /**
-     * Lists all RraDocfiles models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new FregatRraDocfilesSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -65,59 +62,21 @@ class RraDocfilesController extends Controller
                 $Docfiles->docfiles_name = $UploadTrigger['savedfilename'];
                 $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
                 if ($Docfiles->save()) {
-
                     $RraDocfiles = new RraDocfiles;
                     $RraDocfiles->id_docfiles = $Docfiles->primaryKey;
                     $RraDocfiles->id_recoveryrecieveakt = $_POST['id_recoveryrecieveakt'];
                     if ($RraDocfiles->save())
                         echo json_encode(['ok']);
-                    else {
-                        $strerr = '';
-                        foreach ($RraDocfiles->getErrors() as $attr)
-                            foreach ($attr as $errmsg)
-                                $strerr .= $errmsg . ', ';
-                        if (!empty($strerr))
-                            $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
-
-                        throw new HttpException(500, $strerr);
-                    }
-                } else {
-                    $strerr = '';
-                    foreach ($Docfiles->getErrors() as $attr)
-                        foreach ($attr as $errmsg)
-                            $strerr .= $errmsg . ', ';
-                    if (!empty($strerr))
-                        $strerr = mb_substr($strerr, 0, mb_strlen($strerr, 'UTF-8') - 2, 'UTF-8');
-
-                    throw new HttpException(500, $strerr);
-                }
-
-
+                    else
+                        throw new HttpException(500, Proc::ActiveRecordErrorsToString($RraDocfiles));
+                } else
+                    throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));
             } else
                 throw new HttpException(500, 'Ошибка при загрузке файла');
         } else
             throw new HttpException(500, 'Ошибка запроса');
-
     }
 
-    /**
-     * Updates an existing RraDocfiles model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->rra_docfiles_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
 
     /**
      * Deletes an existing RraDocfiles model.
@@ -127,8 +86,12 @@ class RraDocfilesController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $ar = $this->findModel($id);
+            $id_docfiles = $ar->id_docfiles;
+            if ($ar->delete())
+                Proc::DeleteDocFile($id_docfiles);
+        }
     }
 
     /**

@@ -2,12 +2,18 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\Proc;
+use app\models\Fregat\Docfiles;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\RramatDocfiles;
 use app\models\Fregat\RramatDocfilesSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * RramatDocfilesController implements the CRUD actions for RramatDocfiles model.
@@ -20,6 +26,16 @@ class RramatDocfilesController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['create', 'delete'],
+                        'allow' => true,
+                        'roles' => ['RecoveryEdit'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -30,67 +46,35 @@ class RramatDocfilesController extends Controller
     }
 
     /**
-     * Lists all RramatDocfiles models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new RramatDocfilesSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single RramatDocfiles model.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new RramatDocfiles model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new RramatDocfiles();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->rramat_docfiles_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing RramatDocfiles model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->rramat_docfiles_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            $UploadFile = new UploadDocFile();
+            $UploadFile->docFile = UploadedFile::getInstance($UploadFile, 'docFile');
+            $UploadTrigger = $UploadFile->upload();
+            if ($UploadTrigger['success']) {
+                $Docfiles = new Docfiles;
+                $Docfiles->docfiles_hash = $UploadTrigger['savedhashfilename_utf8'];
+                $Docfiles->docfiles_name = $UploadTrigger['savedfilename'];
+                $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
+                if ($Docfiles->save()) {
+                    $RramatDocfiles = new RramatDocfiles;
+                    $RramatDocfiles->id_docfiles = $Docfiles->primaryKey;
+                    $RramatDocfiles->id_recoveryrecieveaktmat = $_POST['id_recoveryrecieveaktmat'];
+                    if ($RramatDocfiles->save())
+                        echo json_encode(['ok']);
+                    else
+                        throw new HttpException(500, Proc::ActiveRecordErrorsToString($RramatDocfiles));
+                } else
+                    throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));
+            } else
+                throw new HttpException(500, 'Ошибка при загрузке файла');
+        } else
+            throw new HttpException(500, 'Ошибка запроса');
     }
 
     /**
@@ -101,9 +85,12 @@ class RramatDocfilesController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if (Yii::$app->request->isAjax) {
+            $ar = $this->findModel($id);
+            $id_docfiles = $ar->id_docfiles;
+            if ($ar->delete())
+                Proc::DeleteDocFile($id_docfiles);
+        }
     }
 
     /**
