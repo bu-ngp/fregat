@@ -25,6 +25,7 @@ use yii\helpers\Url;
     <?=
     DynaGrid::widget(Proc::DGopts([
         'options' => ['id' => 'osmotrakt_rra_grid'],
+        'showPersonalize' => false,
         'columns' => Proc::DGcols([
             'columns' => [
                 'idOsmotrakt.osmotrakt_id',

@@ -97,6 +97,7 @@ use yii\helpers\Url;
     <?=
     DynaGrid::widget(Proc::DGopts([
         'options' => ['id' => 'rramatDocfilesgrid'],
+        'showPersonalize' => false,
         'columns' => Proc::DGcols([
             'columns' => [
                 [

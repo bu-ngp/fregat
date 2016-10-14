@@ -108,6 +108,11 @@ class RecoverysendaktSearch extends Recoverysendakt
             if ($filter[$attr] === '1')
                 Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
                     'Attribute' => $attr,
+                /*    'WhereStatement' => ['not exists', (new Query())
+                        ->select('recoveryrecieveakts.id_recoverysendakt')
+                        ->from('recoveryrecieveakt recoveryrecieveakts')
+                        ->andWhere(['recoveryrecieveakt_repaired' => NULL])
+                        ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')],*/
                     'WhereStatement' => ['not exists', (new Query())
                         ->select('recoveryrecieveakts.id_recoverysendakt')
                         ->from('recoveryrecieveakt recoveryrecieveakts')
