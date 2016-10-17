@@ -31,6 +31,20 @@ use app\func\Proc;
 
                 <?= $form->field($model, 'recoverysendakt_closed_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
+                <?= $form->field($model, 'recoverysendakt_opened_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?=
+                $form->field($model, 'recoveryrecieveakt_repaired')->widget(Select2::classname(), [
+                    'hideSearch' => true,
+                    'data' => $model::VariablesValues('recoveryrecieveakt_repaired'),
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                    'options' => ['placeholder' => 'Выберете статус восстановления', 'class' => 'form-control setsession'],
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                ]);
+                ?>
+
             </div>
         </div>
 
@@ -72,6 +86,44 @@ use app\func\Proc;
             </div>
         </div>
 
+
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
+            <div class="panel-heading"><?= Html::encode('Материал') ?></div>
+            <div class="panel-body">
+
+                <?=
+                $form->field($model, 'mat_id_material_mat')->widget(Select2::classname(), Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new Material,
+                    'placeholder' => 'Введите инвентарный номер',
+                    'setsession' => false,
+                    'fields' => [
+                        'keyfield' => 'mat_id_material_mat',
+                        'resultfield' => 'material_inv',
+                    ],
+                    'resultrequest' => 'Fregat/material/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'methodquery' => 'selectinput'
+                ]));
+                ?>
+
+                <?=
+                $form->field($model, 'mol_id_person_mat')->widget(Select2::classname(), Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new \app\models\Config\Authuser(),
+                    'placeholder' => 'Введите ФИО материально-ответственного лица',
+                    'setsession' => false,
+                    'fields' => [
+                        'keyfield' => 'mol_id_person_mat',
+                        'resultfield' => 'auth_user_fullname',
+                    ],
+                    'resultrequest' => 'Config/authuser/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                ]));
+                ?>
+
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <div class="panel panel-default">

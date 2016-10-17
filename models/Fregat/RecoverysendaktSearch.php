@@ -108,17 +108,41 @@ class RecoverysendaktSearch extends Recoverysendakt
             if ($filter[$attr] === '1')
                 Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
                     'Attribute' => $attr,
-                /*    'WhereStatement' => ['not exists', (new Query())
-                        ->select('recoveryrecieveakts.id_recoverysendakt')
-                        ->from('recoveryrecieveakt recoveryrecieveakts')
-                        ->andWhere(['recoveryrecieveakt_repaired' => NULL])
-                        ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')],*/
                     'WhereStatement' => ['not exists', (new Query())
-                        ->select('recoveryrecieveakts.id_recoverysendakt')
-                        ->from('recoveryrecieveakt recoveryrecieveakts')
-                        ->andWhere(['recoveryrecieveakt_repaired' => NULL])
-                        ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')],
+                        ->select('rsa.recoverysendakt_id')
+                        ->from('recoverysendakt rsa')
+                        ->leftJoin('recoveryrecieveakt rra', 'rsa.recoverysendakt_id = rra.id_recoverysendakt')
+                        ->leftJoin('recoveryrecieveaktmat rramat', 'rsa.recoverysendakt_id = rramat.id_recoverysendakt')
+                        ->andWhere(['rra.recoveryrecieveakt_repaired' => NULL])
+                        ->andWhere(['rramat.recoveryrecieveaktmat_repaired' => NULL])
+                        ->andWhere('rsa.recoverysendakt_id = recoverysendakt.recoverysendakt_id')],
                 ]);
+
+            $attr = 'recoverysendakt_opened_mark';
+            if ($filter[$attr] === '1')
+                Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
+                    'Attribute' => $attr,
+                    'WhereStatement' => ['exists', (new Query())
+                        ->select('rsa.recoverysendakt_id')
+                        ->from('recoverysendakt rsa')
+                        ->leftJoin('recoveryrecieveakt rra', 'rsa.recoverysendakt_id = rra.id_recoverysendakt')
+                        ->leftJoin('recoveryrecieveaktmat rramat', 'rsa.recoverysendakt_id = rramat.id_recoverysendakt')
+                        ->andWhere(['rra.recoveryrecieveakt_repaired' => NULL])
+                        ->andWhere(['rramat.recoveryrecieveaktmat_repaired' => NULL])
+                        ->andWhere('rsa.recoverysendakt_id = recoverysendakt.recoverysendakt_id')],
+                ]);
+
+            $attr = 'recoveryrecieveakt_repaired';
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('rsa.recoverysendakt_id')
+                    ->from('recoverysendakt rsa')
+                    ->leftJoin('recoveryrecieveakt rra', 'rsa.recoverysendakt_id = rra.id_recoverysendakt')
+                    ->leftJoin('recoveryrecieveaktmat rramat', 'rsa.recoverysendakt_id = rramat.id_recoverysendakt')
+                    ->andWhere(['or', ['rra.recoveryrecieveakt_repaired' => $filter[$attr]], ['rramat.recoveryrecieveaktmat_repaired' => $filter[$attr]]])
+                    ->andWhere('rsa.recoverysendakt_id = recoverysendakt.recoverysendakt_id')],
+            ]);
 
             $attr = 'mol_id_person';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
@@ -132,6 +156,33 @@ class RecoverysendaktSearch extends Recoverysendakt
                     ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrosnov.id_mattraffic')
                     ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
                     ->andWhere('recoveryrecieveakts.id_recoverysendakt = recoverysendakt.recoverysendakt_id')
+            ]);
+
+            $attr = 'mat_id_material_mat';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('recoveryrecieveaktmats.id_recoverysendakt')
+                    ->from('recoveryrecieveaktmat recoveryrecieveaktmats')
+                    ->leftJoin('tr_mat_osmotr idTrMatOsmotr', 'idTrMatOsmotr.tr_mat_osmotr_id = recoveryrecieveaktmats.id_tr_mat_osmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = idTrMatOsmotr.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrMat.id_mattraffic')
+                    ->andWhere('recoveryrecieveaktmats.id_recoverysendakt = recoverysendakt.recoverysendakt_id')
+            ]);
+
+            $attr = 'mol_id_person_mat';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('recoveryrecieveaktmats.id_recoverysendakt')
+                    ->from('recoveryrecieveaktmat recoveryrecieveaktmats')
+                    ->leftJoin('tr_mat_osmotr idTrMatOsmotr', 'idTrMatOsmotr.tr_mat_osmotr_id = recoveryrecieveaktmats.id_tr_mat_osmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = idTrMatOsmotr.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrMat.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('recoveryrecieveaktmats.id_recoverysendakt = recoverysendakt.recoverysendakt_id')
             ]);
         }
     }
