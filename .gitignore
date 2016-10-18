@@ -28,3 +28,5 @@ phpunit.phar
 
 /config/db
 #/web/index.php
+
+tests/_output/*
