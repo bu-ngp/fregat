@@ -18,6 +18,8 @@ use Yii;
  */
 class DeleteOldReports
 {
+    private static $instance;
+
     /**
      * @var integer Максимальное количество отчетов импорта из 1С, настройка из базы данных.
      */
@@ -36,7 +38,7 @@ class DeleteOldReports
     /**
      * DeleteOldReports constructor.
      */
-    public function __construct()
+    private function __construct()
     {
         if (!$this->setMaxReportsFiles())
             throw new Exception('Не удалось взять значение из БД');
@@ -96,7 +98,10 @@ class DeleteOldReports
      */
     public static function Init()
     {
-        return new DeleteOldReports();
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**

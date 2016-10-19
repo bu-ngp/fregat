@@ -14,6 +14,12 @@ use Yii;
  * @property integer $logreport_additions
  * @property string $logreport_amount
  * @property integer $logreport_missed
+ * @property string $logreport_executetime
+ * @property string $logreport_employeelastdate
+ * @property string $logreport_oslastdate
+ * @property string $logreport_matlastdate
+ * @property string $logreport_gulastdate
+ * @property string $logreport_memoryused
  *
  * @property Employeelog[] $employeelogs
  * @property Matlog[] $matlogs

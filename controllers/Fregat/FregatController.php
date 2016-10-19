@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ImportData\ImportData;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Docfiles;
@@ -55,7 +56,7 @@ class FregatController extends Controller
                         'roles' => ['FregatConfig'],
                     ],
                     [
-                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont', 'update-profiles'],
+                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont', 'update-profiles', 'import-do2'],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
                     ],
@@ -648,6 +649,11 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
             }
         } else
             echo 'User ID = 1 Not Found<br>';
+    }
+
+    public function actionImportDo2()
+    {
+        ImportData::init()->execute();
     }
 
     public function actionTest()
