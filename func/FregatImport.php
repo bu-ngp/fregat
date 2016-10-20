@@ -954,6 +954,12 @@ class FregatImport
     // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
     static private function SpisatMaterial($MaterialID, $MOLID)
     {
+
+        var_dump('MaterialID');
+        var_dump($MaterialID);
+        var_dump('MOLID');
+        var_dump($MOLID);
+
         $return = false;
 
         $Typemat = self::IsFileType(self::mat) ? 2 : 3;
@@ -963,14 +969,20 @@ class FregatImport
             ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date and m1.mattraffic_tip in (1,2) and m2.mattraffic_tip in (1,2)')
             ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
             ->andWhere(['in', 'material_tip', [$Typemat]])
-            ->andWhere(['in', 'm1.mattraffic_tip', [1,2]])
+            ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
             ->andWhere(['m1.mattraffic_tip' => 1])
             ->andWhere(['m2.mattraffic_date' => NULL])
             ->andWhere(['m1.id_material' => $MaterialID])
             ->count();
 
+        var_dump('result');
+        var_dump($result);
+
         if (!empty($result)) {
             $Material = Material::findOne($MaterialID);
+
+            var_dump('$Material->material_name');
+            var_dump($Material->material_name);
 
             $matmol = Mattraffic::find()
                 ->from(['m1' => 'mattraffic'])
@@ -978,11 +990,14 @@ class FregatImport
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date and m1.mattraffic_tip in (1,2) and m2.mattraffic_tip in (1,2)')
                 ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
                 ->andWhere(['in', 'material_tip', [$Typemat]])
-                ->andWhere(['in', 'm1.mattraffic_tip', [1,2]])
+                ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
                 ->andWhere(['m1.mattraffic_tip' => 1])
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
                 ->one();
+
+            var_dump('$matmol');
+            var_dump($matmol);
 
             // Если материл не найден у мола в файле импорта, то вычитаем общее количество материала
             if (!empty($matmol))
@@ -996,6 +1011,10 @@ class FregatImport
             if (!empty($matmol) || $Material->material_number == 0)
                 $Material->save(false);
         }
+
+        var_dump('$Material->material_number');
+        var_dump($Material->material_number);
+
         return $return;
     }
 
@@ -1012,10 +1031,13 @@ class FregatImport
                 ->join('LEFT JOIN', 'mattraffic m2', 'm1.id_material = m2.id_material and m1.id_mol = m2.id_mol and m1.mattraffic_date < m2.mattraffic_date and m1.mattraffic_tip in (1,2) and m2.mattraffic_tip in (1,2)')
                 ->andWhere(['m1.mattraffic_forimport' => NULL, 'material_writeoff' => 0])
                 ->andWhere(['in', 'material_tip', [$Typemat]])
-                ->andWhere(['in', 'm1.mattraffic_tip', [1,2]])
+                ->andWhere(['in', 'm1.mattraffic_tip', [1, 2]])
                 ->andWhere(['m1.mattraffic_tip' => 1])
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->all();
+
+            var_dump('SP');
+            var_dump($SP);
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
