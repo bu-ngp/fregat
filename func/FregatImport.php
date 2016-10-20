@@ -812,6 +812,15 @@ class FregatImport
         if (self::IsFileType(self::mat) || self::IsFileType(self::gu))
             $Mattraffic->mattraffic_forimport = 1;
 
+        var_dump('employee_id');
+        var_dump($employee_id);
+        var_dump('$Mattraffic->recordapply');
+        var_dump($Mattraffic->recordapply);
+        var_dump('$Mattraffic->diff_number');
+        var_dump($Mattraffic->diff_number);
+        var_dump('!$Mattraffic->isNewRecord');
+        var_dump(!$Mattraffic->isNewRecord);
+
         if (!$Mattraffic->isNewRecord && $Mattraffic->recordapply && ((self::IsFileType(self::mat) || self::IsFileType(self::gu)) && $Mattraffic->diff_number != '0' || self::IsFileType(self::os))) { // Если у материальной ценности найден сотрудник и запись актуальна
             // Разница в количестве (Количество из Excel - количество из БД)
             $diff_number = $Mattraffic->diff_number;
