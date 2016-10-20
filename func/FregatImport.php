@@ -762,6 +762,11 @@ class FregatImport
 
             $Material->material_number = $Diff ? $Material->material_number - $Number : $Number;
 
+            var_dump('$Material->material_name');
+            var_dump($Material->material_name);
+            var_dump('$Material->material_number');
+            var_dump($Material->material_number);
+
             if (floatval($Material->material_number) < 0)
                 $Traflog->traflog_message = 'Ошибка при изменении количества [Количество материальной ценности](' . $Material->material_number . ') плюс [Количество задействованное в операции](' . $Number . ') меньше 0. ';
         }
@@ -954,12 +959,6 @@ class FregatImport
     // Проверка, списан ли весь материал у матер. ответсв. лиц, если да, то сделат признак списания в таблице материальнных ценностей
     static private function SpisatMaterial($MaterialID, $MOLID)
     {
-
-        var_dump('MaterialID');
-        var_dump($MaterialID);
-        var_dump('MOLID');
-        var_dump($MOLID);
-
         $return = false;
 
         $Typemat = self::IsFileType(self::mat) ? 2 : 3;
@@ -974,9 +973,6 @@ class FregatImport
             ->andWhere(['m2.mattraffic_date' => NULL])
             ->andWhere(['m1.id_material' => $MaterialID])
             ->count();
-
-        var_dump('result');
-        var_dump($result);
 
         if (!empty($result)) {
             $Material = Material::findOne($MaterialID);
@@ -996,9 +992,6 @@ class FregatImport
                 ->andWhere(['m1.id_material' => $MaterialID, 'm1.id_mol' => $MOLID])
                 ->one();
 
-            var_dump('$matmol');
-            var_dump($matmol);
-
             // Если материл не найден у мола в файле импорта, то вычитаем общее количество материала
             if (!empty($matmol))
                 $Material->material_number -= $matmol->mattraffic_number;
@@ -1011,9 +1004,6 @@ class FregatImport
             if (!empty($matmol) || $Material->material_number == 0)
                 $Material->save(false);
         }
-
-        var_dump('$Material->material_number');
-        var_dump($Material->material_number);
 
         return $return;
     }
@@ -1035,9 +1025,6 @@ class FregatImport
                 ->andWhere(['m1.mattraffic_tip' => 1])
                 ->andWhere(['m2.mattraffic_date' => NULL])
                 ->all();
-
-            var_dump('SP');
-            var_dump($SP);
 
             if (!empty($SP))
                 foreach ($SP as $i => $ar) {
