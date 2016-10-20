@@ -841,9 +841,6 @@ class FregatImport
             // Количество материальной ценности у разных сотрудников
             $mat_number = self::GetCountMaterialByID($Material->material_id);
 
-            var_dump('$mat_number');
-            var_dump($mat_number);
-
             if ($mat_number == '-1') // Если новая материальная ценность
                 $mat_number = self::$material_number_xls;
             else
