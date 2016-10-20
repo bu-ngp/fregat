@@ -2,30 +2,26 @@
 
 namespace app\func;
 
-use app\models\Config\Profile;
-use app\models\Fregat\Schetuchet;
-use PDOException;
-use Yii;
 use app\models\Config\Authuser;
-use app\models\Fregat\Import\Importconfig;
-use app\models\Fregat\Import\Employeelog;
-use app\models\Fregat\Import\Logreport;
-use app\models\Fregat\Import\Matlog;
-use app\models\Fregat\Import\Traflog;
-use app\models\Fregat\Impemployee;
+use app\models\Config\Profile;
 use app\models\Fregat\Build;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
-use app\models\Fregat\Importemployee;
-use app\models\Fregat\Importmaterial;
+use app\models\Fregat\Import\Employeelog;
+use app\models\Fregat\Import\Importconfig;
+use app\models\Fregat\Import\Logreport;
+use app\models\Fregat\Import\Matlog;
+use app\models\Fregat\Import\Traflog;
 use app\models\Fregat\Izmer;
 use app\models\Fregat\Material;
 use app\models\Fregat\Mattraffic;
-use app\models\Fregat\Matvid;
 use app\models\Fregat\Podraz;
+use app\models\Fregat\Schetuchet;
 use app\models\Fregat\Writeoffakt;
-use yii\base\Exception;
 use PDO;
+use PDOException;
+use Yii;
+use yii\base\Exception;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -976,9 +972,6 @@ class FregatImport
         if (!empty($result)) {
             $Material = Material::findOne($MaterialID);
 
-            var_dump('$Material->material_name');
-            var_dump($Material->material_name);
-
             $matmol = Mattraffic::find()
                 ->from(['m1' => 'mattraffic'])
                 ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
@@ -1348,8 +1341,8 @@ class FregatImport
                                                         $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                         $Employee->save(false);
 
-                                                     /*   if ($newEmployee && !self::$Debug)
-                                                            self::Mishanya($Authuser, $Employee, $matches);*/
+                                                        if ($newEmployee && !self::$Debug)
+                                                            self::Mishanya($Authuser, $Employee, $matches);
                                                     } else {
                                                         $Employeelog->employeelog_type = 3;
                                                         $Employeelog->employeelog_message = 'Ошибка при добавлении записи: ';
