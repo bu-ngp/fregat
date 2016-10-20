@@ -483,15 +483,19 @@ class FregatImport
     // Выводит актуальное количество материала у сотрудника
     private static function GetCountMaterialByID($MaterialID)
     {
-        $dataReader = self::GetRowsPDO('select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material', [
-            'materialID' => $MaterialID
-        ]);
-        /*  $sql = 'select sum(mattraffic_number) as material_number from (select * from (select * from mattraffic m1 order by m1.mattraffic_date desc) temp group by id_material, id_mol) temp2 where id_material = :materialID group by id_material';
-          $dataReader = Yii::$app->db->createCommand($sql, [':materialID' => $materialID])->queryOne(); */
-        if (empty($dataReader))
+        $SumMaterial = Mattraffic::find()
+            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->andWhere([
+                'id_material' => $MaterialID,
+            ])
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->sum('mattraffic_number');
+
+        if (empty($SumMaterial))
             return '-1';
         else
-            return $dataReader['material_number'];
+            return $SumMaterial;
     }
 
     // Выводи последнюю дату изменения загруженных файлов
@@ -762,11 +766,6 @@ class FregatImport
 
             $Material->material_number = $Diff ? $Material->material_number - $Number : $Number;
 
-            var_dump('$Material->material_name');
-            var_dump($Material->material_name);
-            var_dump('$Material->material_number');
-            var_dump($Material->material_number);
-
             if (floatval($Material->material_number) < 0)
                 $Traflog->traflog_message = 'Ошибка при изменении количества [Количество материальной ценности](' . $Material->material_number . ') плюс [Количество задействованное в операции](' . $Number . ') меньше 0. ';
         }
@@ -842,12 +841,8 @@ class FregatImport
             // Количество материальной ценности у разных сотрудников
             $mat_number = self::GetCountMaterialByID($Material->material_id);
 
-            var_dump('employee_id');
-            var_dump($employee_id);
             var_dump('$mat_number');
             var_dump($mat_number);
-            var_dump('self::$material_number_xls');
-            var_dump(self::$material_number_xls);
 
             if ($mat_number == '-1') // Если новая материальная ценность
                 $mat_number = self::$material_number_xls;
