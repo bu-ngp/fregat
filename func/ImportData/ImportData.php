@@ -9,6 +9,7 @@
 namespace app\func\ImportData;
 
 
+use app\func\ImportData\Exec\DolzhFilter;
 use app\func\ImportData\Exec\Employees;
 use app\func\ImportData\Proc\DataFilter;
 use app\models\Fregat\Build;
@@ -57,7 +58,7 @@ class ImportData
         }
 
         $importEmployee = new Employees($this->_importConfig, 'emp_filename', $this->_logReport);
-        $importEmployee->setFilterDolzh(new DataFilter('dolzh_name', new Dolzh));
+        $importEmployee->setFilterDolzh(new DolzhFilter('dolzh_name', new Dolzh));
         $importEmployee->setFilterPodraz(new DataFilter('podraz_name', new Podraz));
         $importEmployee->setFilterBuild(new DataFilter('build_name', new Build));
         $importEmployee->iterate();

@@ -14,6 +14,7 @@ use Yii;
 
 abstract class ImportFromTextFile extends ImportFile
 {
+    protected $row;
 
     public function iterate()
     {
@@ -24,7 +25,7 @@ abstract class ImportFromTextFile extends ImportFile
 
             $this->logReport->save();
 
-            $i = 0;
+            $this->row = 0;
             $handle = @fopen($this->fileName, "r");
 
             if ($handle) {
@@ -36,7 +37,7 @@ abstract class ImportFromTextFile extends ImportFile
                     }
 
                     $transaction = Yii::$app->db->beginTransaction();
-                    $i++;
+                    $this->row++;
                     try {
                         $this->ProcessItem($subject);
 
@@ -45,7 +46,7 @@ abstract class ImportFromTextFile extends ImportFile
                         $this->afterIterateItem();
                     } catch (Exception $e) {
                         $transaction->rollBack();
-                        throw new Exception($e->getMessage() . ' $i = ' . $i . '; $filename = ' . $this->fileName);
+                        throw new Exception($e->getMessage() . ' $i = ' . $this->row . '; $filename = ' . $this->fileName);
                     }
                 }
                 fclose($handle);
@@ -53,7 +54,7 @@ abstract class ImportFromTextFile extends ImportFile
                 $this->afterIterateAll();
             }
 
-            $this->logReport->logreport_amount += $i;
+            $this->logReport->logreport_amount += $this->row;
             $this->endTime = microtime(true);
             $this->logReport->logreport_executetime = gmdate('H:i:s', $this->endTime - $this->startTime);
             $this->logReport->logreport_memoryused = memory_get_usage(true);
@@ -61,7 +62,8 @@ abstract class ImportFromTextFile extends ImportFile
 
             echo 'ImportDo success<BR>';
             echo 'Использовано памяти: ' . Yii::$app->formatter->asShortSize(memory_get_usage(true)) . '; Время выполнения: ' . gmdate('H:i:s', $this->endTime - $this->startTime);
-        }
+        } else
+            echo 'Файл не изменялся. ' . $this->fileName . '<BR>';
     }
 
     public function removeUTF8BOM($String)

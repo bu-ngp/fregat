@@ -17,6 +17,8 @@ class DataFilter
     private $_ID;
     private $_fieldName;
     private $_activeRecord;
+    private $_fieldNameValue;
+
 
     public function __construct($fieldName, ActiveRecord $activeRecord)
     {
@@ -29,8 +31,12 @@ class DataFilter
 
     public function installValue($fieldValue)
     {
+        $this->_ID = NULL;
+        $this->_fieldNameValue = NULL;
         if (!empty($fieldValue) && !is_string($fieldValue))
             throw new Exception('Пустое значение параметра $fieldValue');
+
+        $fieldValue = $this->beforeProcess($fieldValue);
 
         $activeRecord = $this->_activeRecord;
 
@@ -39,14 +45,30 @@ class DataFilter
         if (empty($currentAR)) {
             $AR = new $this->_activeRecord;
             $AR->{$this->_fieldName} = $fieldValue;
-            $this->_ID = $AR->Save() ? $AR->primaryKey : NULL;
-        } else
+            if ($AR->Save()) {
+                $this->_ID = $AR->primaryKey;
+                $this->_fieldNameValue = $AR->{$this->_fieldName};
+            }
+        } else {
             $this->_ID = $currentAR->primaryKey;
+            $this->_fieldNameValue = $currentAR->{$this->_fieldName};
+        }
+
     }
 
     public function getID()
     {
         return $this->_ID;
+    }
+
+    public function getValue()
+    {
+        return $this->_fieldNameValue;
+    }
+
+    protected function beforeProcess($Value)
+    {
+        return $Value;
     }
 
 }

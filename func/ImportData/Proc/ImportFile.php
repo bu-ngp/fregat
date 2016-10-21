@@ -33,7 +33,7 @@ abstract class ImportFile
         $this->importConfig = $importConfig;
         $fileName = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $this->importConfig[$fieldNameDB] . '.' . $this->typeFile;
 
-        if (file_exists($fileName))
+        if (!file_exists($fileName))
             throw new Exception('Файл не существует. ' . $fileName);
 
         $this->fileName = $fileName;
@@ -77,6 +77,9 @@ abstract class ImportFile
 
         if (!$Field)
             return false;
+
+        if (empty(Logreport::find()->count()) || YII_DEBUG)
+            return true;
 
         $fileLastDateFromDB = Logreport::find()->max($Field);
 

@@ -658,7 +658,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        //RraDocfiles::find(['id_docfiles' => $docfile_id])->count();
+        var_dump($aa);
     }
 
 }
