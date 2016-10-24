@@ -10,81 +10,37 @@
 namespace app\func\ImportData\Exec;
 
 use app\func\ImportData\Proc\DataFilter;
+use app\func\ImportData\Proc\EmployeeParseFactory;
+use app\func\ImportData\Proc\EmployeeParseObject;
 use app\func\ImportData\Proc\ImportFromTextFile;
+use app\func\ImportData\Proc\ImportLog;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Import\Employeelog;
 use Exception;
+use SplObserver;
 use Yii;
 
-class Employees extends ImportFromTextFile
+class Employees extends ImportFromTextFile implements \SplSubject
 {
     const Pattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
 
+    private $observers = array();
     private $_employeeFio;
-    private $_filterDolzh;
-    private $_filterPodraz;
-    private $_filterBuild;
     private $_employee;
     private $_newAuthuser;
     private $_authUser;
     private $_employeeLog;
     private $_rowChanged;
+    private $_employeeObj;
+    private $_errors;
 
     /**
      * @var Profile
      */
     private $_profile;
     private $_mishanya;
-
-    /**
-     * @return mixed
-     */
-    public function getFilterPodraz()
-    {
-        return $this->_filterPodraz;
-    }
-
-    /**
-     * @param mixed $filterPodraz
-     */
-    public function setFilterPodraz(DataFilter $filterPodraz)
-    {
-        $this->_filterPodraz = $filterPodraz;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFilterDolzh()
-    {
-        return $this->_filterDolzh;
-    }
-
-    /**
-     * @param mixed $filterDolzh
-     */
-    public function setFilterDolzh(DataFilter $filterDolzh)
-    {
-        $this->_filterDolzh = $filterDolzh;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFilterBuild()
-    {
-        return $this->_filterBuild;
-    }
-
-    /**
-     * @param mixed $filterBuild
-     */
-    public function setFilterBuild(DataFilter $filterBuild)
-    {
-        $this->_filterBuild = $filterBuild;
-    }
 
     protected function getItem()
     {
@@ -140,14 +96,24 @@ class Employees extends ImportFromTextFile
             $this->inactiveEmployee();
     }
 
+    private function getObserverByFieldName($FieldName)
+    {
+        foreach ($this->observers as $observer) {
+            if ($observer->getFieldName === $FieldName)
+                return $observer;
+        }
+
+        return false;
+    }
+
     private function getEmployee()
     {
         $Result = Employee::find()
             ->joinWith('idperson')
             ->where(array_merge([
-                'id_dolzh' => $this->getFilterDolzh()->getID(),
-                'id_podraz' => $this->getFilterPodraz()->getID(),
-            ], empty($this->getFilterBuild()->getID()) ? [] : ['id_build' => $this->getFilterBuild()->getID()]))
+                'id_dolzh' => $this->getObserverByFieldName('dolzh_name')->getID(),
+                'id_podraz' => $this->getObserverByFieldName('podraz_name')->getID(),
+            ], empty($this->getObserverByFieldName('build_name')->getID()) ? [] : ['id_build' => $this->getObserverByFieldName('build_name')->getID()]))
             ->andFilterWhere(['like', 'auth_user_fullname', $this->_employeeFio, false])
             ->orderBy(['employee_id' => SORT_DESC])
             ->one();
@@ -165,28 +131,29 @@ class Employees extends ImportFromTextFile
 
     protected function createAuthuser()
     {
-        $AuthuserCount = Authuser::find()
-            ->where(['like', 'auth_user_fullname', $this->_employeeFio, false])
-            ->count();
+        if (empty($this->_errors)) {
+            $AuthuserCount = Authuser::find()
+                ->where(['like', 'auth_user_fullname', $this->_employeeFio, false])
+                ->count();
 
-        $this->_authUser = $AuthuserCount == 1 ? Authuser::find()
-            ->where(['like', 'auth_user_fullname', $this->_employeeFio, false])
-            ->one() : false;
+            $this->_authUser = $AuthuserCount == 1 ? Authuser::find()
+                ->where(['like', 'auth_user_fullname', $this->_employeeFio, false])
+                ->one() : false;
 
-        $this->_newAuthuser = false;
-        if (empty($this->_authUser) || $AuthuserCount > 1) {
-            $this->_newAuthuser = true;
-            $this->_authUser = $this->generateAuthuser();
+            $this->_newAuthuser = false;
+            if (empty($this->_authUser) || $AuthuserCount > 1) {
+                $this->_newAuthuser = true;
+                $this->_authUser = $this->generateAuthuser();
+            }
+
+            if (isset($this->_authUser->scenarios()['import1c']))
+                $this->_authUser->scenario = 'import1c';
+
+            if (!$this->_authUser->save()) {
+                $this->_errors = $this->_authUser->getErrors();
+            }
         }
-
-        if (isset($this->_authUser->scenarios()['import1c']))
-            $this->_authUser->scenario = 'import1c';
-
-        if ($this->_authUser->validate()) {
-            return $this->_authUser->save(false);
-        }
-
-        return false;
+        return $this;
     }
 
     protected function generateAuthuser()
@@ -198,42 +165,50 @@ class Employees extends ImportFromTextFile
         return $Authuser;
     }
 
-    protected function createProfile($Profile_dr, $Profile_pol, $Profile_inn, $Profile_snils, $Profile_address)
+    protected function createProfile(EmployeeParseObject $employeeParseObject)
     {
-        $this->_profile = Profile::findOne($this->_authUser->primaryKey);
-        if (!$this->_profile)
-            $this->_profile = new Profile();
+        if (empty($this->_errors)) {
+            $this->_profile = Profile::findOne($this->_authUser->primaryKey);
+            if (!$this->_profile)
+                $this->_profile = new Profile();
 
-        $this->_profile->profile_id = $this->_authUser->primaryKey;
-        $this->_profile->profile_dr = $Profile_dr;
-        $this->_profile->profile_pol = $Profile_pol;
-        $this->_profile->profile_inn = $Profile_inn;
-        $this->_profile->profile_snils = $Profile_snils;
-        $this->_profile->profile_address = $Profile_address;
+            $this->_profile->profile_id = $this->_authUser->primaryKey;
+            $this->_profile->profile_dr = $employeeParseObject->profile_dr;
+            $this->_profile->profile_pol = $employeeParseObject->profile_pol;
+            $this->_profile->profile_inn = $employeeParseObject->profile_inn;
+            $this->_profile->profile_snils = $employeeParseObject->profile_snils;
+            $this->_profile->profile_address = $employeeParseObject->profile_address;
 
-        return $this->_profile->save();
+            if (!$this->_profile->save())
+                $this->_errors = $this->_profile->getErrors();
+        }
+
+        return $this;
     }
 
     protected function createEmployee()
     {
-        $this->_employee = new Employee;
-        $this->_employee->attributes = [
-            'id_dolzh' => $this->getFilterDolzh()->getID(),
-            'id_podraz' => $this->getFilterPodraz()->getID(),
-            'id_build' => $this->getFilterBuild()->getID(),
-            'employee_forinactive' => 1,
-        ];
+        if (empty($this->_errors)) {
+            $this->_employee = new Employee;
+            $this->_employee->attributes = [
+                'id_dolzh' => $this->getObserverByFieldName('dolzh_name')->getID(),
+                'id_podraz' => $this->getObserverByFieldName('podraz_name')->getID(),
+                'id_build' => $this->getObserverByFieldName('build_name')->getID(),
+                'employee_forinactive' => 1,
+            ];
 
-        if (isset($this->_employee->scenarios()['import1c']))
-            $this->_employee->scenario = 'import1c';
+            if (isset($this->_employee->scenarios()['import1c']))
+                $this->_employee->scenario = 'import1c';
 
 
-        $this->_employee->id_person = $this->_authUser->getPrimaryKey();
-        if ($this->_employee->validate()) {
-            $this->_newAuthuser ? $this->logReport->logreport_additions++ : $this->logReport->logreport_updates++;
-            return $this->_employee->save(false);
+            $this->_employee->id_person = $this->_authUser->primaryKey;
+            if ($this->_employee->save()) {
+                $this->_newAuthuser ? $this->logReport->logreport_additions++ : $this->logReport->logreport_updates++;
+            } else
+                $this->_errors = $this->_employee->getErrors();
         }
-        return false;
+
+        return $this;
     }
 
     protected function mishanya()
@@ -282,9 +257,9 @@ class Employees extends ImportFromTextFile
                     'fio' => $this->_authUser->auth_user_fullname,
                     'dr' => $dr,
                     'vozrast' => $diff->y,
-                    'dolzh' => $this->getFilterDolzh()->getValue(),
-                    'podraz' => $this->getFilterPodraz()->getValue(),
-                    'build' => $this->getFilterBuild()->getValue(),
+                    'dolzh' => $this->getObserverByFieldName('dolzh_name')->getValue(),
+                    'podraz' => $this->getObserverByFieldName('podraz_name')->getValue(),
+                    'build' => $this->getObserverByFieldName('build_name')->getValue(),
                     'address' => $this->_profile->profile_address,
                 ])
                     ->setFrom('portal@mugp-nv.ru')
@@ -396,121 +371,93 @@ class Employees extends ImportFromTextFile
             ->count() == $countEmployee;
     }
 
-    private function initEmployeeLog()
+    private function getErrors()
     {
-        $this->_employeeLog = new Employeelog;
-        $this->_employeeLog->id_logreport = $this->logReport->primaryKey;
-        $this->_employeeLog->employeelog_type = 1;
-        $this->_employeeLog->employeelog_filename = $this->fileName;
-        $this->_employeeLog->employeelog_filelastdate = $this->fileLastDate;
-        $this->_employeeLog->employeelog_rownum = $this->row;
-        $this->_employeeLog->employeelog_message = 'Запись добавлена.';
+        return $this->_errors;
     }
-
 
     protected function ProcessItem($String)
     {
         preg_match(self::Pattern, $String, $Matches);
 
         if ($Matches[0] !== NULL) {
-            $this->initEmployeeLog();
-            $this->_rowChanged = false;
 
-            $Pattern = '/(^Поликлиника №)\s?([1,2,3])\s?$/ui';
-            $Matches[2] = preg_replace($Pattern, 'Взрослая $1$2', mb_strtolower($Matches[2], 'UTF-8'));
+            $ImportLog = ImportLog::begin($this, new Employeelog);
 
-            if ($Matches[3] === 'Поликлиника профилактических осмотров')
-                $Matches[2] = $Matches[3];
+            $this->_employeeObj = EmployeeParseFactory::employee($String)->create();
 
-            $Pattern = '/^(.+) БУ "Нижневартовская городская поликлиника"$/ui';
-            $Matches[3] = preg_replace($Pattern, '$1', $Matches[3]);
+            $this->_employeeFio = $this->_employeeObj->auth_user_fullname;
 
-            $this->_employeeFio = $Matches[1];
-
-            if (empty($this->_filterDolzh))
-                throw new Exception('Не установлен фильтр filterDolzh');
-            if (empty($this->_filterPodraz))
-                throw new Exception('Не установлен фильтр filterPodraz');
-            if (empty($this->_filterBuild))
-                throw new Exception('Не установлен фильтр filterBuild');
-
-            $this->_filterDolzh->installValue(trim($Matches[4]));
-            $this->_filterPodraz->installValue(trim($Matches[3]));
-            $this->_filterBuild->installValue(trim($Matches[2]));
+            $this->notify();
 
             if ($this->getEmployee()) {
                 $this->_authUser = Authuser::findOne($this->_employee->id_person);
                 if ($this->_employee->employee_importdo === 1) {
+
                     if ($this->hasEmployeeInactiveByPerson()) {
-
-                        $this->_employeeLog->employeelog_type = 2;
-                        $this->_employeeLog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($this->_employee->employee_dateinactive) . '"';
-                        $this->_employeeLog->employee_fio = $this->_authUser->auth_user_fullname;
-                        $this->_employeeLog->dolzh_name = $this->getFilterDolzh()->getValue();
-                        $this->_employeeLog->podraz_name = $this->getFilterPodraz()->getValue();
-                        $this->_employeeLog->build_name = $this->getFilterBuild()->getValue();
-
+                        $ImportLog->setup(ImportLog::CHANGE, NULL, 'Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($this->_employee->employee_dateinactive) . '"');
                         $this->_employee->employee_dateinactive = null;
-                        $this->logReport->logreport_updates++;
-                        $this->_rowChanged = true;
                     }
 
                     $this->_employee->employee_forinactive = 1;
                     $this->_employee->save(false);
 
-                    if (!$this->createProfile($Matches[16], $Matches[15], $Matches[11], $Matches[12], $Matches[10])) {
-                        $this->_employeeLog->employeelog_type = 3;
-                        $this->_employeeLog->employeelog_message = 'Запись добавлена. Ошибка при добавлении записи профиля пользователя: ';
-                        foreach ($this->_profile->getErrors() as $fields)
-                            $this->_employeeLog->employeelog_message .= implode(' ', $fields) . ' ';
-                        $this->logReport->logreport_errors++;
-                        $this->_rowChanged = true;
-                    }
+                    $ImportLog->setup(ImportLog::ADD_ERROR, $this->createProfile($this->_employeeObj), 'Ошибка при добавлении записи профиля пользователя');
                 }
             } else {
-                if ($this->createAuthuser()) {
-                    if ($this->createProfile($Matches[16], $Matches[15], $Matches[11], $Matches[12], $Matches[10])) {
-                        if ($this->createEmployee()) {
-                            if ($this->_newAuthuser && !YII_DEBUG)
-                                $this->mishanya();
-                        } else {
-                            $this->_employeeLog->employeelog_type = 3;
-                            $this->_employeeLog->employeelog_message = 'Ошибка при добавлении записи: ';
-                            foreach ($this->_employee->getErrors() as $fields)
-                                $this->_employeeLog->employeelog_message .= implode(' ', $fields) . ' ';
-                            $this->logReport->logreport_errors++;
-                        }
-                    } else {
-                        $this->_employeeLog->employeelog_type = 3;
-                        $this->_employeeLog->employeelog_message = 'Запись добавлена. Ошибка при добавлении записи профиля пользователя: ';
-                        foreach ($this->_profile->getErrors() as $fields)
-                            $this->_employeeLog->employeelog_message .= implode(' ', $fields) . ' ';
-                        $this->logReport->logreport_errors++;
-                    }
-                } else {
-                    $this->_employeeLog->employeelog_type = 3;
-                    $this->_employeeLog->employeelog_message = 'Ошибка при добавлении записи: ';
-                    foreach ($this->_authUser->getErrors() as $fields)
-                        $this->_employeeLog->employeelog_message .= implode(' ', $fields) . ' ';
-                    $this->logReport->logreport_errors++;
-                }
-                $this->_rowChanged = true;
+                $AR_Errors = $this->createAuthuser()->createProfile($this->_employeeObj)->createEmployee()->getErrors();
+
+                if (!$AR_Errors && $this->_newAuthuser && !YII_DEBUG)
+                    $this->mishanya();
+                else
+                    $ImportLog->setup(ImportLog::ADD_ERROR, $AR_Errors);
             }
 
-            $this->saveLog();
+            $ImportLog->end();
         }
     }
 
-    private function saveLog()
+    /**
+     * Attach an SplObserver
+     * @link http://php.net/manual/en/splsubject.attach.php
+     * @param SplObserver $observer <p>
+     * The <b>SplObserver</b> to attach.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function attach(SplObserver $observer)
     {
-        if ($this->_rowChanged) {
-            $this->_employeeLog->employee_fio = $this->_authUser->auth_user_fullname;
-            $this->_employeeLog->dolzh_name = $this->getFilterDolzh()->getValue();
-            $this->_employeeLog->podraz_name = $this->getFilterPodraz()->getValue();
-            $this->_employeeLog->build_name = $this->getFilterBuild()->getValue();
+        $this->observers[] = $observer;
+    }
 
-            return $this->_employeeLog->save();
+    /**
+     * Detach an observer
+     * @link http://php.net/manual/en/splsubject.detach.php
+     * @param SplObserver $observer <p>
+     * The <b>SplObserver</b> to detach.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function detach(SplObserver $observer)
+    {
+        $key = array_search($observer, $this->observers, true);
+        if (false !== $key) {
+            unset($this->observers[$key]);
         }
-        return false;
+    }
+
+    /**
+     * Notify an observer
+     * @link http://php.net/manual/en/splsubject.notify.php
+     * @return void
+     * @since 5.1.0
+     */
+    public function notify()
+    {
+        foreach ($this->observers as $value) {
+            $value->update($this);
+        }
     }
 }

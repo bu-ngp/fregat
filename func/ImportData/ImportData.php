@@ -58,9 +58,12 @@ class ImportData
         }
 
         $importEmployee = new Employees($this->_importConfig, 'emp_filename', $this->_logReport);
-        $importEmployee->setFilterDolzh(new DolzhFilter('dolzh_name', new Dolzh));
+        $importEmployee->attach(new DolzhFilter('dolzh_name', new Dolzh));
+        $importEmployee->attach(new DataFilter('podraz_name', new Podraz));
+        $importEmployee->attach(new DataFilter('build_name', new Build));
+      /*  $importEmployee->setFilterDolzh(new DolzhFilter('dolzh_name', new Dolzh));
         $importEmployee->setFilterPodraz(new DataFilter('podraz_name', new Podraz));
-        $importEmployee->setFilterBuild(new DataFilter('build_name', new Build));
+        $importEmployee->setFilterBuild(new DataFilter('build_name', new Build));*/
         $importEmployee->iterate();
 
     }

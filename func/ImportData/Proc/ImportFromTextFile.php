@@ -14,7 +14,6 @@ use Yii;
 
 abstract class ImportFromTextFile extends ImportFile
 {
-    protected $row;
 
     public function iterate()
     {

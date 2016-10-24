@@ -16,14 +16,15 @@ use Exception;
 abstract class ImportFile
 {
     protected $importConfig;
-    protected $fileName;
-    protected $fileLastDate;
+    public $fileName;
+    public $fileLastDate;
     protected $fieldNameDB;
     protected $typeFile;
     protected $importFileLastDateFieldDB;
-    protected $logReport;
+    public $logReport;
     protected $startTime;
     protected $endTime;
+    public $row;
 
     public function __construct(Importconfig $importConfig, $fieldNameDB, Logreport $logReport)
     {
