@@ -63,7 +63,7 @@ class DataFilter implements \SplObserver
     {
         $this->_ID = NULL;
         $this->_fieldNameValue = NULL;
-        $fieldValue = $subject->_employeeObj->prop($this->_fieldName);
+        $fieldValue = $subject->getEmployeeParseObject()->prop($this->_fieldName);
         if (!empty($fieldValue) && !is_string($fieldValue))
             throw new Exception('Пустое значение параметра $fieldValue');
 

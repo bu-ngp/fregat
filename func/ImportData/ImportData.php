@@ -23,49 +23,94 @@ class ImportData
     private static $_instance;
     private $_importConfig;
     private $_logReport;
-    private $_newEmployeeCount;
-    private $_Debug;
+    private $_debug;
 
     private function __construct()
     {
-        $this->_importConfig = Importconfig::findOne(1);
-        if (empty($this->_importConfig)) {
+        $this->setImportConfig(Importconfig::findOne(1));
+        if (empty($this->getImportConfig())) {
             echo 'Не найдена конфигурация в БД';
             return false;
         }
 
-        $this->_logReport = new Logreport();
-        $this->_logReport->logreport_date = date('Y-m-d');
-        $this->_newEmployeeCount = 0;
-        $this->_Debug = YII_DEBUG;
+        $this->setLogReport(new Logreport());
+        $this->getLogReport()->logreport_date = date('Y-m-d');
+        $this->setDebug(YII_DEBUG);
 
         DeleteOldReports::Init()->Execute();
     }
 
+
+    /**
+     * @return Importconfig
+     */
+    public function getImportConfig()
+    {
+        return $this->_importConfig;
+    }
+
+    /**
+     * @param Importconfig $importConfig
+     */
+    private function setImportConfig(Importconfig $importConfig)
+    {
+        $this->_importConfig = $importConfig;
+    }
+
+
+    /**
+     * @return Logreport
+     */
+    public function getLogReport()
+    {
+        return $this->_logReport;
+    }
+
+    /**
+     * @param Logreport $logReport
+     */
+    private function setLogReport(Logreport $logReport)
+    {
+        $this->_logReport = $logReport;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDebug()
+    {
+        return $this->_debug;
+    }
+
+    /**
+     * @param mixed $debug
+     */
+    private function setDebug($debug)
+    {
+        $this->_debug = $debug;
+    }
+
     public static function init()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
-        }
+        self::$_instance = new self();
+
         return self::$_instance;
     }
 
     public function execute()
     {
-        if (!$this->_importConfig->importconfig_do) {
+        if (!$this->getImportConfig()->importconfig_do) {
             echo 'Импорт отключен';
             return false;
         }
 
-        $importEmployee = new Employees($this->_importConfig, 'emp_filename', $this->_logReport);
+        $importEmployee = new Employees($this->getImportConfig(), 'emp_filename', $this->getLogReport());
         $importEmployee->attach(new DolzhFilter('dolzh_name', new Dolzh));
         $importEmployee->attach(new DataFilter('podraz_name', new Podraz));
         $importEmployee->attach(new DataFilter('build_name', new Build));
-      /*  $importEmployee->setFilterDolzh(new DolzhFilter('dolzh_name', new Dolzh));
-        $importEmployee->setFilterPodraz(new DataFilter('podraz_name', new Podraz));
-        $importEmployee->setFilterBuild(new DataFilter('build_name', new Build));*/
         $importEmployee->iterate();
 
     }
+
 
 }

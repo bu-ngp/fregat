@@ -54,9 +54,7 @@ class ImportLog
 
     public static function begin(ImportFile $ImportFile, ActiveRecord $activeRecordLog)
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self($ImportFile, $activeRecordLog);
-        }
+        self::$_instance = new self($ImportFile, $activeRecordLog);
         return self::$_instance;
     }
 
@@ -95,7 +93,7 @@ class ImportLog
         }
     }
 
-    public function setup($TypeLog, ActiveRecord $activeRecordErrors = NULL, $Message = '')
+    public function setup($TypeLog, array $activeRecordErrors = [], $Message = '')
     {
         $this->_typeLog = $TypeLog;
         $this->_activeRecordLog->{$this->_cType} = $TypeLog;
@@ -107,10 +105,23 @@ class ImportLog
         $this->_saveDo = true;
     }
 
-    public function end()
+    private function ApplyValuesLog(array $ApplyValues = [])
+    {
+        if (!empty($ApplyValues) && is_array($ApplyValues) && $this->_saveDo) {
+            foreach ($ApplyValues as $FieldNameARLog => $Value) {
+                $this->_activeRecordLog->$FieldNameARLog = $Value;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function end(array $ApplyValuesLog)
     {
         if ($this->_saveDo) {
             $this->counter();
+            if (!empty($ApplyValuesLog) && is_array($ApplyValuesLog))
+                $this->ApplyValuesLog($ApplyValuesLog);
             return $this->_activeRecordLog->save();
         }
 

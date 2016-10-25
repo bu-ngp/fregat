@@ -28,9 +28,8 @@ class EmployeeParseFactory
         if (empty($StringEmployee) || !is_string($StringEmployee))
             throw new \Exception('$StringEmployee должен быть строкой');
 
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self($StringEmployee);
-        }
+        self::$_instance = new self($StringEmployee);
+
         return self::$_instance;
     }
 

@@ -38,11 +38,15 @@ abstract class ImportFromTextFile extends ImportFile
                     $transaction = Yii::$app->db->beginTransaction();
                     $this->row++;
                     try {
+
+                        $this->beforeIterateItem();
+
                         $this->ProcessItem($subject);
+
+                        $this->afterIterateItem();
 
                         $transaction->commit();
 
-                        $this->afterIterateItem();
                     } catch (Exception $e) {
                         $transaction->rollBack();
                         throw new Exception($e->getMessage() . ' $i = ' . $this->row . '; $filename = ' . $this->fileName);
@@ -70,11 +74,11 @@ abstract class ImportFromTextFile extends ImportFile
         return str_replace("\xEF\xBB\xBF", '', $String);
     }
 
-    abstract protected function getItem();
+    abstract protected function beforeIterateItem();
 
     abstract protected function afterIterateItem();
 
     abstract protected function afterIterateAll();
 
-    abstract protected function ProcessItem($String);
+    abstract protected function processItem($String);
 }

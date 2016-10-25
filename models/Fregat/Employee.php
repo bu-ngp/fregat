@@ -13,17 +13,26 @@ use app\models\Config\Authuser;
  * @property integer $id_podraz
  * @property integer $id_build
  * @property integer $id_person
+ * @property string $employee_username
+ * @property string $employee_lastchange
+ * @property string $employee_dateinactive
+ * @property integer $employee_forinactive
+ * @property integer $employee_importdo
  *
+ * @property AuthUser $idPerson
  * @property Build $idBuild
  * @property Dolzh $idDolzh
  * @property Podraz $idPodraz
+ * @property Glaukuchet[] $glaukuchets
  * @property Impemployee[] $impemployees
  * @property Installakt[] $installakts
  * @property Mattraffic[] $mattraffics
  * @property Osmotrakt[] $osmotrakts
  * @property Osmotrakt[] $osmotrakts0
- * @property Spisosnovakt[] $spisosnovaktsmol
- * @property Spisosnovakt[] $spisosnovaktsemp
+ * @property Osmotraktmat[] $osmotraktmats
+ * @property Removeakt[] $removeakts
+ * @property Spisosnovakt[] $spisosnovakts
+ * @property Spisosnovakt[] $spisosnovakts0
  */
 class Employee extends \yii\db\ActiveRecord
 {
