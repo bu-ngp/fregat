@@ -8,19 +8,39 @@
 
 namespace app\func\ImportData\Proc;
 
-
 use Exception;
 use SplSubject;
 use yii\db\ActiveRecord;
 
-class DataFilter implements \SplObserver
+/**
+ * Class DataFilter
+ * @package app\func\ImportData\Proc
+ */
+class DataFilter implements iDataFilter
 {
+    /**
+     * @var integer
+     */
     private $_ID;
+    /**
+     * @var string
+     */
     private $_fieldName;
+    /**
+     * @var ActiveRecord
+     */
     private $_activeRecord;
+    /**
+     * @var mixed
+     */
     private $_fieldNameValue;
 
-
+    /**
+     * DataFilter constructor.
+     * @param $fieldName
+     * @param ActiveRecord $activeRecord
+     * @throws Exception
+     */
     public function __construct($fieldName, ActiveRecord $activeRecord)
     {
         if (!empty($fieldName) && !is_string($fieldName))
@@ -30,21 +50,78 @@ class DataFilter implements \SplObserver
         $this->_activeRecord = $activeRecord;
     }
 
+    /* Getters/Setters */
+
+    /**
+     * @return integer
+     */
     public function getID()
     {
         return $this->_ID;
     }
 
+    /**
+     * @return mixed
+     */
     public function getValue()
     {
         return $this->_fieldNameValue;
     }
 
+    /**
+     * @param mixed $Value
+     */
+    public function setValue($Value)
+    {
+        $this->_fieldNameValue = $Value;
+    }
+
+    /**
+     * @return string
+     */
     public function getFieldName()
     {
         return $this->_fieldName;
     }
 
+    /**
+     * @return ActiveRecord
+     */
+    private function getActiveRecord()
+    {
+        return $this->_activeRecord;
+    }
+
+    /**
+     * @param integer $ID
+     */
+    private function setID($ID)
+    {
+        $this->_ID = $ID;
+    }
+
+    /* Вспомагательные */
+
+    /**
+     * @return ActiveRecord
+     */
+    private function newActiveRecord()
+    {
+        return new $this->_activeRecord;
+    }
+
+    /**
+     *
+     */
+    private function reset()
+    {
+        $this->_ID = NULL;
+    }
+
+    /**
+     * @param mixed $Value
+     * @return mixed
+     */
     protected function beforeProcess($Value)
     {
         return $Value;
@@ -61,29 +138,25 @@ class DataFilter implements \SplObserver
      */
     public function update(SplSubject $subject)
     {
-        $this->_ID = NULL;
-        $this->_fieldNameValue = NULL;
-        $fieldValue = $subject->getEmployeeParseObject()->prop($this->_fieldName);
-        if (!empty($fieldValue) && !is_string($fieldValue))
-            throw new Exception('Пустое значение параметра $fieldValue');
+        $this->reset();
 
-        $fieldValue = $this->beforeProcess($fieldValue);
+        if (empty($this->getValue()))
+            return;
 
-        $activeRecord = $this->_activeRecord;
+        $fieldValue = $this->beforeProcess($this->getValue());
 
-        $currentAR = $activeRecord::find()->andWhere(['like', $this->_fieldName, $fieldValue, false])->one();
+        $activeRecord = $this->getActiveRecord();
+
+        $currentAR = $activeRecord::find()->andWhere(['like', $this->getFieldName(), $fieldValue, false])->one();
 
         if (empty($currentAR)) {
-            $AR = new $this->_activeRecord;
-            $AR->{$this->_fieldName} = $fieldValue;
+            $AR = $this->newActiveRecord();
+            $AR->{$this->getFieldName()} = $fieldValue;
             if ($AR->Save()) {
-                $this->_ID = $AR->primaryKey;
-                $this->_fieldNameValue = $AR->{$this->_fieldName};
+                $this->setID($AR->primaryKey);
             }
         } else {
-            $this->_ID = $currentAR->primaryKey;
-            $this->_fieldNameValue = $currentAR->{$this->_fieldName};
+            $this->setID($currentAR->primaryKey);
         }
-
     }
 }

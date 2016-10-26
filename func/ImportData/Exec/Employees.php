@@ -9,10 +9,15 @@
 
 namespace app\func\ImportData\Exec;
 
+use app\func\ImportData\Proc\DataFilter;
 use app\func\ImportData\Proc\EmployeeParseFactory;
 use app\func\ImportData\Proc\EmployeeParseObject;
+use app\func\ImportData\Proc\iDataFilter;
 use app\func\ImportData\Proc\ImportFromTextFile;
+use app\func\ImportData\Proc\iImportLog;
 use app\func\ImportData\Proc\ImportLog;
+use app\func\ImportData\Proc\iParseObject;
+use app\func\ImportData\Proc\ParseObject;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Employee;
@@ -22,27 +27,58 @@ use SplObserver;
 use Yii;
 use yii\db\ActiveRecord;
 
-final class Employees extends ImportFromTextFile implements \SplSubject
+/**
+ * Class Employees
+ * @package app\func\ImportData\Exec
+ */
+final class Employees extends ImportFromTextFile implements iEmployees
 {
+    /**
+     *
+     */
     const Pattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
 
+    /**
+     * @var array
+     */
     private $observers = array();
+    /**
+     * @var Authuser
+     */
     private $_authUser;
+    /**
+     * @var bool
+     */
     private $_newAuthuser;
     /**
      * @var Profile
      */
     private $_profile;
+    /**
+     * @var Employee
+     */
     private $_employee;
+    /**
+     * @var EmployeeParseObject
+     */
     private $_employeeObj;
+    /**
+     * @var array
+     */
     private $_errors = [];
+    /**
+     * @var Employeelog
+     */
     private $_importLog;
+    /**
+     * @var integer
+     */
     private $_mishanya;
 
     /* Getters/Setters */
 
     /**
-     * @return ImportLog
+     * @return iImportLog
      */
     private function getImportLog()
     {
@@ -50,9 +86,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @param mixed $importLog
+     * @param iImportLog $importLog
      */
-    private function setImportLog(ImportLog $importLog)
+    private function setImportLog(iImportLog $importLog)
     {
         $this->_importLog = $importLog;
     }
@@ -66,7 +102,7 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @param mixed $employee
+     * @param Employee|ActiveRecord $employee
      */
     private function setEmployee($employee)
     {
@@ -74,7 +110,15 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @return mixed
+     *
+     */
+    private function resetEmployee()
+    {
+        $this->_employee = null;
+    }
+
+    /**
+     * @return Authuser
      */
     private function getAuthUser()
     {
@@ -82,13 +126,20 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @param mixed $authUser
+     * @param Authuser|ActiveRecord $authUser
      */
     private function setAuthUser(Authuser $authUser)
     {
         $this->_authUser = $authUser;
     }
 
+    /**
+     *
+     */
+    private function resetAuthUser()
+    {
+        $this->_authUser = null;
+    }
 
     /**
      * @return Profile
@@ -99,36 +150,48 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @param Profile $profile
+     * @param Profile|ActiveRecord $profile
      */
     private function setProfile($profile)
     {
         $this->_profile = $profile;
     }
 
+    /**
+     *
+     */
+    private function resetProfile()
+    {
+        $this->_profile = null;
+    }
+
+    /**
+     * @return EmployeeParseObject
+     */
     public function getEmployeeParseObject()
     {
         return $this->_employeeObj;
     }
 
-    private function setEmployeeParseObject(EmployeeParseObject $employeeParseObject)
-    {
-        $this->_employeeObj = $employeeParseObject;
-    }
-
+    /**
+     * @return array
+     */
     private function getErrors()
     {
         return $this->_errors;
     }
 
 
+    /**
+     * @param array $activeRecordErrors
+     */
     private function setErrors(array $activeRecordErrors)
     {
         $this->_errors = $activeRecordErrors;
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     private function getMishanya()
     {
@@ -136,7 +199,7 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @param mixed $mishanya
+     * @param integer $mishanya
      */
     private function setMishanya($mishanya)
     {
@@ -146,20 +209,29 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     /* Вспомогательные */
 
 
+    /**
+     *
+     */
     private function clearErrors()
     {
         $this->_errors = [];
     }
 
+    /**
+     * @return bool
+     */
     private function hasErrors()
     {
         return !empty($this->_errors);
     }
 
+    /**
+     * @return array
+     */
     private function applyValuesLog()
     {
         return [
-            'employee_fio' => $this->_employeeObj->auth_user_fullname,
+            'employee_fio' => $this->getEmployeeParseObject()->auth_user_fullname,
             'dolzh_name' => $this->getObserverByFieldName('dolzh_name')->getValue(),
             'podraz_name' => $this->getObserverByFieldName('podraz_name')->getValue(),
             'build_name' => $this->getObserverByFieldName('build_name')->getValue(),
@@ -167,23 +239,34 @@ final class Employees extends ImportFromTextFile implements \SplSubject
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     private function isNewAuthuser()
     {
         return $this->_newAuthuser;
     }
 
+    /**
+     *
+     */
     private function notNewAuthuser()
     {
         $this->_newAuthuser = false;
     }
 
+    /**
+     *
+     */
     private function newAuthuser()
     {
         $this->_newAuthuser = true;
     }
 
+    /**
+     * @param ActiveRecord $activeRecord
+     * @param string $ScenarioName
+     * @return bool
+     */
     private function hasScenario(ActiveRecord $activeRecord, $ScenarioName)
     {
         $Scenarios = $activeRecord->scenarios();
@@ -192,12 +275,18 @@ final class Employees extends ImportFromTextFile implements \SplSubject
 
     /* inactiveEmployee() */
 
+    /**
+     * @return bool
+     */
     private function inactiveCreate()
     {
         return Yii::$app->db->createCommand('UPDATE employee AS a INNER JOIN ( SELECT y2.employee_id FROM employee y2 WHERE y2.employee_dateinactive IS NULL and employee_importdo = 1 GROUP BY y2.id_person HAVING count(y2.employee_forinactive) = 0 ) AS b ON a.employee_id = b.employee_id  SET employee_dateinactive = DATE(NOW()), employee_forinactive = 2')
             ->execute() > 0;
     }
 
+    /**
+     * @return bool
+     */
     private function inactiveLog()
     {
         $Forlog = Employee::find()
@@ -211,10 +300,10 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         else
             foreach ($Forlog as $i => $ar) {
                 $Employeelog = new Employeelog;
-                $Employeelog->id_logreport = $this->logReport->primaryKey;
+                $Employeelog->id_logreport = $this->getLogReport()->primaryKey;
                 $Employeelog->employeelog_type = 2;
-                $Employeelog->employeelog_filename = $this->fileName;
-                $Employeelog->employeelog_filelastdate = $this->fileLastDate;
+                $Employeelog->employeelog_filename = $this->getFileName();
+                $Employeelog->employeelog_filelastdate = $this->getFileLastDate();
                 $Employeelog->employeelog_rownum = 0;
                 $Employeelog->employeelog_message = 'Запись изменена. Специальность сотрудника неактивна с "' . Yii::$app->formatter->asDate($ar->employee_dateinactive) . '"';
                 $Employeelog->employee_fio = $ar->idperson->auth_user_fullname;
@@ -227,11 +316,18 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return true;
     }
 
+    /**
+     * @return bool
+     */
     private function resetEmployeeForInactive()
     {
         return Employee::updateAll(['employee_forinactive' => NULL], ['in', 'employee_forinactive', [1, 2]]) > 0;
     }
 
+    /**
+     * @throws Exception
+     * @throws \yii\db\Exception
+     */
     private function inactiveEmployee()
     {
         $transaction = Yii::$app->db->beginTransaction();
@@ -246,7 +342,7 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         } catch (Exception $e) {
             $transaction->rollBack();
             $this->resetEmployeeForInactive();
-            throw new Exception($e->getMessage() . ' InactiveEmployee(), $filename = ' . $this->fileName);
+            throw new Exception($e->getMessage() . ' InactiveEmployee(), $filename = ' . $this->getFileName());
         }
     }
 
@@ -299,9 +395,14 @@ final class Employees extends ImportFromTextFile implements \SplSubject
             "ї" => "yi", "Ї" => "yi",
             "є" => "e", "Є" => "e"
         );
+
         return $str = iconv("UTF-8", "UTF-8//IGNORE", strtr($string, $replace));
     }
 
+    /**
+     * @param string $FieldName
+     * @return bool|iDataFilter
+     */
     private function getObserverByFieldName($FieldName)
     {
         foreach ($this->observers as $observer) {
@@ -312,6 +413,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return false;
     }
 
+    /**
+     * @return bool
+     */
     private function existsEmployee()
     {
         $Result = Employee::find()
@@ -336,6 +440,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return true;
     }
 
+    /**
+     * @return Employees
+     */
     private function createAuthuser()
     {
         if (!$this->hasErrors()) {
@@ -364,6 +471,10 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return $this;
     }
 
+    /**
+     * @return Authuser
+     * @throws \yii\base\Exception
+     */
     private function generateAuthuser()
     {
         $Authuser = new Authuser;
@@ -377,7 +488,7 @@ final class Employees extends ImportFromTextFile implements \SplSubject
      * Фукния создает Логин пользователя на основе полного ФИО.
      * Например, $Fullname = 'Иванов Петр Сергеевич' выведет 'IvanovPS'.
      * Если логин 'IvanovPS' существует, то метод добавит количество совпадающих логинов в конце результата, т.е. IvanovPS1, IvanovPS2, и т.д.
-     * @param $Fullname ФИО пользователя полностью.
+     * @param string $Fullname ФИО пользователя полностью.
      * @return string Преобразованный логин.
      */
     private function createLogin($Fullname)
@@ -399,6 +510,10 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return $count > 0 ? $result . $count : $result;
     }
 
+    /**
+     * @param EmployeeParseObject $employeeParseObject
+     * @return Employees
+     */
     private function createProfile(EmployeeParseObject $employeeParseObject)
     {
         if (!$this->hasErrors()) {
@@ -420,6 +535,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return $this;
     }
 
+    /**
+     * @return Employees
+     */
     private function createEmployee()
     {
         if (!$this->hasErrors()) {
@@ -443,6 +561,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         return $this;
     }
 
+    /**
+     *
+     */
     private function mishanya()
     {
         if ($this->getMishanya() < 3) {
@@ -510,6 +631,9 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         }
     }
 
+    /**
+     * @return null|Employee|ActiveRecord
+     */
     private function hasEmployeeInactiveByPerson()
     {
         return Employee::find()
@@ -522,21 +646,27 @@ final class Employees extends ImportFromTextFile implements \SplSubject
 
     /* processItem() */
 
+    /**
+     *
+     */
     private function reset()
     {
-        $this->_authUser = null;
-        $this->_profile = null;
-        $this->_employee = null;
+        $this->resetAuthUser();
+        $this->resetProfile();
+        $this->resetEmployee();
     }
 
-    private function changeExistEmployee(ImportLog $importLog)
+    /**
+     * @param iImportLog $importLog
+     */
+    private function changeExistEmployee(iImportLog $importLog)
     {
         $this->setAuthUser(Authuser::findOne($this->getEmployee()->id_person));
 
         if ($this->getEmployee()->employee_importdo === 1) {
 
             if ($this->hasEmployeeInactiveByPerson()) {
-                $importLog->setup(ImportLog::CHANGE, [], 'Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($this->getEmployee()->employee_dateinactive) . '"');
+                $importLog->setup(iImportLog::CHANGE, [], 'Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($this->getEmployee()->employee_dateinactive) . '"');
                 $this->getEmployee()->employee_dateinactive = null;
             }
 
@@ -545,24 +675,30 @@ final class Employees extends ImportFromTextFile implements \SplSubject
 
             $AR_Errors = $this->createProfile($this->getEmployeeParseObject())->getErrors();
             if ($AR_Errors)
-                $importLog->setup(ImportLog::ADD_ERROR, $AR_Errors);
+                $importLog->setup(iImportLog::ADD_ERROR, $AR_Errors);
         }
     }
 
-    private function addNewEmployee(ImportLog $importLog)
+    /**
+     * @param iImportLog $importLog
+     */
+    private function addNewEmployee(iImportLog $importLog)
     {
         $AR_Errors = $this->createAuthuser()
             ->createProfile($this->getEmployeeParseObject())
             ->createEmployee()
             ->getErrors();
 
-        $importLog->setup($AR_Errors ? ImportLog::ADD_ERROR : ImportLog::ADD, $AR_Errors);
+        $importLog->setup($AR_Errors ? iImportLog::ADD_ERROR : iImportLog::ADD, $AR_Errors);
 
-        if (!$AR_Errors && $this->isNewAuthuser() && !YII_DEBUG) {
+        if (!$AR_Errors && $this->isNewAuthuser() && !$this->getDebug()) {
             $this->mishanya();
         }
     }
 
+    /**
+     *
+     */
     protected function beforeIterateItem()
     {
         $this->notNewAuthuser();
@@ -574,33 +710,61 @@ final class Employees extends ImportFromTextFile implements \SplSubject
         $this->setImportLog(ImportLog::begin($this, new Employeelog));
     }
 
+    /**
+     * @param string $String
+     * @throws Exception
+     */
     protected function processItem($String)
     {
-        preg_match(self::Pattern, $String, $Matches);
+        if (!empty($String) && is_string($String)) {
 
-        if ($Matches[0] !== NULL) {
+            $EmployeeObj = EmployeeParseFactory::employee($String)->create();
 
-            $this->setEmployeeParseObject(EmployeeParseFactory::employee($String)->create());
+            if ($EmployeeObj) {
 
-            $this->notify();
+                $this->installParseObject($EmployeeObj);
 
-            $this->existsEmployee() ? $this->changeExistEmployee($this->getImportLog()) : $this->addNewEmployee($this->getImportLog());
+                $this->notify();
 
-        }
+                $this->existsEmployee() ? $this->changeExistEmployee($this->getImportLog()) : $this->addNewEmployee($this->getImportLog());
+
+            } else
+                $this->getImportLog()->setup(iImportLog::ADD_ERROR, [], 'Неверный формат строки');
+
+        } else
+            $this->getImportLog()->setup(iImportLog::ADD_ERROR, [], 'Строка пуста.');
     }
 
+    /**
+     *
+     */
     protected function afterIterateItem()
     {
         $this->getImportLog()->end($this->applyValuesLog());
     }
 
+    /**
+     * @throws Exception
+     */
     protected function afterIterateAll()
     {
-        if (!YII_DEBUG)
+        if (!$this->getDebug())
             $this->inactiveEmployee();
     }
 
     /* Реализация интерфейса SplObserver Наблюдателя */
+
+    /**
+     * @param EmployeeParseObject $ParseObject
+     */
+    public function installParseObject(EmployeeParseObject $ParseObject)
+    {
+        $this->_employeeObj = $ParseObject;
+
+        foreach ($this->observers as $value) {
+            $value->setValue($ParseObject->prop($value->getFieldName()));
+        }
+    }
 
     /**
      * Attach an SplObserver

@@ -6,26 +6,38 @@
  * Time: 10:34
  */
 
-namespace app\func\ImportData;
+namespace app\func\ImportData\Proc;
 
-
-use app\func\ImportData\Exec\DolzhFilter;
-use app\func\ImportData\Exec\Employees;
-use app\func\ImportData\Proc\DataFilter;
-use app\models\Fregat\Build;
-use app\models\Fregat\Dolzh;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Import\Logreport;
-use app\models\Fregat\Podraz;
 
-class ImportData
+/**
+ * Class ImportData
+ * @package app\func\ImportData\Proc
+ */
+abstract class ImportData implements iImportData
 {
-    private static $_instance;
+    /**
+     * @var static
+     */
+    protected static $_instance;
+    /**
+     * @var Importconfig
+     */
     private $_importConfig;
+    /**
+     * @var Logreport
+     */
     private $_logReport;
+    /**
+     * @var bool
+     */
     private $_debug;
 
-    private function __construct()
+    /**
+     * ImportData constructor.
+     */
+    public function __construct()
     {
         $this->setImportConfig(Importconfig::findOne(1));
         if (empty($this->getImportConfig())) {
@@ -40,6 +52,15 @@ class ImportData
         DeleteOldReports::Init()->Execute();
     }
 
+    /**
+     * @return static
+     */
+    public static function init()
+    {
+        self::$_instance = new static();
+
+        return self::$_instance;
+    }
 
     /**
      * @return Importconfig
@@ -56,7 +77,6 @@ class ImportData
     {
         $this->_importConfig = $importConfig;
     }
-
 
     /**
      * @return Logreport
@@ -75,7 +95,7 @@ class ImportData
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getDebug()
     {
@@ -83,34 +103,16 @@ class ImportData
     }
 
     /**
-     * @param mixed $debug
+     * @param bool $debug
      */
     private function setDebug($debug)
     {
         $this->_debug = $debug;
     }
 
-    public static function init()
-    {
-        self::$_instance = new self();
-
-        return self::$_instance;
-    }
-
-    public function execute()
-    {
-        if (!$this->getImportConfig()->importconfig_do) {
-            echo 'Импорт отключен';
-            return false;
-        }
-
-        $importEmployee = new Employees($this->getImportConfig(), 'emp_filename', $this->getLogReport());
-        $importEmployee->attach(new DolzhFilter('dolzh_name', new Dolzh));
-        $importEmployee->attach(new DataFilter('podraz_name', new Podraz));
-        $importEmployee->attach(new DataFilter('build_name', new Build));
-        $importEmployee->iterate();
-
-    }
-
+    /**
+     * @return bool
+     */
+    abstract public function execute();
 
 }

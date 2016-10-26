@@ -12,9 +12,26 @@ namespace app\func\ImportData\Proc;
 use Exception;
 use Yii;
 
+/**
+ * Class ImportFromTextFile
+ * @package app\func\ImportData\Proc
+ */
 abstract class ImportFromTextFile extends ImportFile
 {
 
+    /**
+     * @param string $String
+     * @return string
+     */
+    private function removeUTF8BOM($String)
+    {
+        return str_replace("\xEF\xBB\xBF", '', $String);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \yii\db\Exception
+     */
     public function iterate()
     {
         if ($this->isChanged()) {
@@ -22,10 +39,10 @@ abstract class ImportFromTextFile extends ImportFile
             ini_set('memory_limit', $this->importConfig->memory_limit); // 1Gbyte Max Memory
             $this->startTime = microtime(true);
 
-            $this->logReport->save();
+            $this->getLogReport()->save();
 
-            $this->row = 0;
-            $handle = @fopen($this->fileName, "r");
+            $this->setRow(0);
+            $handle = @fopen($this->getFileName(), "r");
 
             if ($handle) {
                 $firstRow = true;
@@ -36,12 +53,12 @@ abstract class ImportFromTextFile extends ImportFile
                     }
 
                     $transaction = Yii::$app->db->beginTransaction();
-                    $this->row++;
+                    $this->setRow($this->getRow() + 1);
                     try {
 
                         $this->beforeIterateItem();
 
-                        $this->ProcessItem($subject);
+                        $this->processItem($subject);
 
                         $this->afterIterateItem();
 
@@ -49,7 +66,7 @@ abstract class ImportFromTextFile extends ImportFile
 
                     } catch (Exception $e) {
                         $transaction->rollBack();
-                        throw new Exception($e->getMessage() . ' $i = ' . $this->row . '; $filename = ' . $this->fileName);
+                        throw new Exception($e->getMessage() . ' $i = ' . $this->getRow() . '; $filename = ' . $this->getFileName());
                     }
                 }
                 fclose($handle);
@@ -57,28 +74,35 @@ abstract class ImportFromTextFile extends ImportFile
                 $this->afterIterateAll();
             }
 
-            $this->logReport->logreport_amount += $this->row;
+            $this->getLogReport()->logreport_amount += $this->getRow();
             $this->endTime = microtime(true);
-            $this->logReport->logreport_executetime = gmdate('H:i:s', $this->endTime - $this->startTime);
-            $this->logReport->logreport_memoryused = memory_get_usage(true);
-            $this->logReport->save();
+            $this->getLogReport()->logreport_executetime = gmdate('H:i:s', $this->endTime - $this->startTime);
+            $this->getLogReport()->logreport_memoryused = memory_get_usage(true);
+            $this->getLogReport()->save();
 
             echo 'ImportDo success<BR>';
             echo 'Использовано памяти: ' . Yii::$app->formatter->asShortSize(memory_get_usage(true)) . '; Время выполнения: ' . gmdate('H:i:s', $this->endTime - $this->startTime);
         } else
-            echo 'Файл не изменялся. ' . $this->fileName . '<BR>';
+            echo 'Файл не изменялся. ' . $this->getFileName() . '<BR>';
     }
 
-    public function removeUTF8BOM($String)
-    {
-        return str_replace("\xEF\xBB\xBF", '', $String);
-    }
-
+    /**
+     * 
+     */
     abstract protected function beforeIterateItem();
 
+    /**
+     *
+     */
     abstract protected function afterIterateItem();
 
+    /**
+     *
+     */
     abstract protected function afterIterateAll();
 
+    /**
+     * @param string $String
+     */
     abstract protected function processItem($String);
 }

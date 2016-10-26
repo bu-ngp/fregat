@@ -9,24 +9,46 @@
 namespace app\func\ImportData\Proc;
 
 
-class EmployeeParseObject
+/**
+ * Class EmployeeParseObject
+ * @package app\func\ImportData\Proc
+ */
+class EmployeeParseObject extends ParseObject
 {
+    /**
+     * @var string
+     */
     public $auth_user_fullname;
+    /**
+     * @var string
+     */
     public $dolzh_name;
+    /**
+     * @var string
+     */
     public $podraz_name;
+    /**
+     * @var string
+     */
     public $build_name;
+    /**
+     * @var string
+     */
     public $profile_dr;
+    /**
+     * @var integer
+     */
     public $profile_pol;
+    /**
+     * @var string
+     */
     public $profile_inn;
+    /**
+     * @var string
+     */
     public $profile_snils;
+    /**
+     * @var string
+     */
     public $profile_address;
-
-    public function prop($name)
-    {
-        if (property_exists(self::class, $name))
-            return $this->$name;
-        else
-            throw  new \Exception('Свойство ' . $name . ' не существует');
-    }
-
 }

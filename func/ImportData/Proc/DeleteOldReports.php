@@ -1,6 +1,6 @@
 <?php
 
-namespace app\func\ImportData;
+namespace app\func\ImportData\Proc;
 
 use app\models\Fregat\Import\Employeelog;
 use app\models\Fregat\Import\Importconfig;
@@ -16,8 +16,11 @@ use Yii;
  * Date: 01.10.2016
  * Time: 17:15
  */
-class DeleteOldReports
+class DeleteOldReports implements iDeleteOldReports
 {
+    /**
+     * @var static
+     */
     private static $instance;
 
     /**
@@ -50,6 +53,14 @@ class DeleteOldReports
     }
 
     /**
+     * @return int
+     */
+    public function getMaxReportsFiles()
+    {
+        return $this->_maxReportsFiles;
+    }
+
+    /**
      * Сеттер для максимального количества отчетов импорта из 1С, настройка из базы данных.
      * @return bool True, если присвоение успешно.
      */
@@ -61,6 +72,14 @@ class DeleteOldReports
 
         $this->_maxReportsFiles = $config->logreport_reportcount;
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCountReportsFiles()
+    {
+        return $this->_countReportsFiles;
     }
 
     /**
@@ -79,15 +98,23 @@ class DeleteOldReports
     }
 
     /**
+     * @return array
+     */
+    public function getNeedDeleteReports()
+    {
+        return $this->_needDeleteReports;
+    }
+
+    /**
      * Сеттер для списока ID отчетов, подлежащих удалению из базы данных и файловой системы.
      */
     private function setNeedDeleteReports()
     {
-        if ($this->_countReportsFiles > $this->_maxReportsFiles)
+        if ($this->getCountReportsFiles() > $this->getMaxReportsFiles())
             $this->_needDeleteReports = Logreport::find()
                 ->select(['logreport_id'])
                 ->orderBy(['logreport_id' => SORT_ASC])
-                ->limit($this->_countReportsFiles - $this->_maxReportsFiles)
+                ->limit($this->getCountReportsFiles() - $this->getMaxReportsFiles())
                 ->asArray()
                 ->all();
     }
@@ -110,7 +137,7 @@ class DeleteOldReports
      */
     public function Execute()
     {
-        foreach ($this->_needDeleteReports as $Row) {
+        foreach ($this->getNeedDeleteReports() as $Row) {
             $Transaction = Yii::$app->db->beginTransaction();
             try {
                 Traflog::deleteAll(['id_logreport' => $Row['logreport_id']]);

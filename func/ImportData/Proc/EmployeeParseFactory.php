@@ -9,20 +9,64 @@
 namespace app\func\ImportData\Proc;
 
 
+/**
+ * Class EmployeeParseFactory
+ * @package app\func\ImportData\Proc
+ */
 class EmployeeParseFactory
 {
+    /**
+     *
+     */
     const BasePattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
+    /**
+     *
+     */
     const BuildPattern = '/(^Поликлиника №)\s?([1,2,3])\s?$/ui';
+    /**
+     *
+     */
     const PodrazPattern = '/^(.+) БУ "Нижневартовская городская поликлиника"$/ui';
 
+    /**
+     * @var static
+     */
     private static $_instance;
+    /**
+     * @var string
+     */
     private $_stringEmployee;
 
+    /**
+     * EmployeeParseFactory constructor.
+     * @param string $StringEmployee
+     */
     private function __construct($StringEmployee)
     {
-        $this->_stringEmployee = $StringEmployee;
+        $this->setStringEmployee($StringEmployee);
     }
 
+    /**
+     * @return string
+     */
+    private function getStringEmployee()
+    {
+        return $this->_stringEmployee;
+    }
+
+    /**
+     * @param string $stringEmployee
+     */
+    private function setStringEmployee($stringEmployee)
+    {
+        $this->_stringEmployee = $stringEmployee;
+    }
+
+    /**
+     * @param string $StringEmployee
+     * @return EmployeeParseFactory
+     * @throws \Exception
+     */
     public static function employee($StringEmployee)
     {
         if (empty($StringEmployee) || !is_string($StringEmployee))
@@ -33,15 +77,19 @@ class EmployeeParseFactory
         return self::$_instance;
     }
 
+    /**
+     * @return EmployeeParseObject|bool
+     * @throws \Exception
+     */
     public function create()
     {
         if (is_null(self::$_instance))
             throw new \Exception('Сотрудник не инициализирован');
 
-        preg_match(self::BasePattern, $this->_stringEmployee, $Matches);
+        preg_match(self::BasePattern, $this->getStringEmployee(), $Matches);
 
         if ($Matches[0] === NULL)
-            throw new \Exception('Неверный формат строки');
+            return false;
 
         $EmployeeObj = new EmployeeParseObject();
 

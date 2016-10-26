@@ -8,11 +8,18 @@
 
 namespace app\func\ImportData\Exec;
 
-
 use app\func\ImportData\Proc\DataFilter;
 
+/**
+ * Class DolzhFilter
+ * @package app\func\ImportData\Exec
+ */
 class DolzhFilter extends DataFilter
 {
+    /**
+     * @param string $Value
+     * @return string
+     */
     public function dolzhConvert($Value)
     {
         switch ($Value) {
@@ -39,6 +46,10 @@ class DolzhFilter extends DataFilter
         }
     }
 
+    /**
+     * @param string $Value
+     * @return string
+     */
     public function beforeProcess($Value)
     {
         return $this->dolzhConvert($Value);
