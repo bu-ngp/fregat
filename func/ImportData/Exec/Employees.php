@@ -39,10 +39,6 @@ final class Employees extends ImportFromTextFile implements iEmployees
     const Pattern = '/^(.*?)\|(Поликлиника №\s?[1,2,3] )?(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|/ui';
 
     /**
-     * @var array
-     */
-    private $observers = array();
-    /**
      * @var Authuser
      */
     private $_authUser;
@@ -405,7 +401,7 @@ final class Employees extends ImportFromTextFile implements iEmployees
      */
     private function getObserverByFieldName($FieldName)
     {
-        foreach ($this->observers as $observer) {
+        foreach ($this->getObservers() as $observer) {
             if ($observer->getFieldName() === $FieldName)
                 return $observer;
         }
@@ -761,53 +757,10 @@ final class Employees extends ImportFromTextFile implements iEmployees
     {
         $this->_employeeObj = $ParseObject;
 
-        foreach ($this->observers as $value) {
+        foreach ($this->getObservers() as $value) {
             $value->setValue($ParseObject->prop($value->getFieldName()));
         }
     }
 
-    /**
-     * Attach an SplObserver
-     * @link http://php.net/manual/en/splsubject.attach.php
-     * @param SplObserver $observer <p>
-     * The <b>SplObserver</b> to attach.
-     * </p>
-     * @return void
-     * @since 5.1.0
-     */
-    public function attach(SplObserver $observer)
-    {
-        $this->observers[] = $observer;
-    }
-
-    /**
-     * Detach an observer
-     * @link http://php.net/manual/en/splsubject.detach.php
-     * @param SplObserver $observer <p>
-     * The <b>SplObserver</b> to detach.
-     * </p>
-     * @return void
-     * @since 5.1.0
-     */
-    public function detach(SplObserver $observer)
-    {
-        $key = array_search($observer, $this->observers, true);
-        if (false !== $key) {
-            unset($this->observers[$key]);
-        }
-    }
-
-    /**
-     * Notify an observer
-     * @link http://php.net/manual/en/splsubject.notify.php
-     * @return void
-     * @since 5.1.0
-     */
-    public function notify()
-    {
-        foreach ($this->observers as $value) {
-            $value->update($this);
-        }
-    }
 
 }

@@ -15,7 +15,7 @@ use SplSubject;
  * Interface iDataFilter
  * @package app\func\ImportData\Proc
  */
-interface iDataFilter extends \SplObserver
+interface iFilterObserver extends \SplObserver
 {
     /**
      * @return integer

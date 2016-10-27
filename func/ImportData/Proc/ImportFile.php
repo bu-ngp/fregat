@@ -12,6 +12,7 @@ namespace app\func\ImportData\Proc;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Import\Logreport;
 use Exception;
+use SplObserver;
 
 /**
  * Class ImportFile
@@ -19,6 +20,10 @@ use Exception;
  */
 abstract class ImportFile implements iImportFile
 {
+    /**
+     * @var array
+     */
+    private $observers = array();
     /**
      * @var bool
      */
@@ -231,6 +236,56 @@ abstract class ImportFile implements iImportFile
     protected function setLastDateImportFileToDB()
     {
         $this->getLogReport()->{$this->importFileLastDateFieldDB} = $this->fileLastDate;
+    }
+
+
+    /**
+     * Attach an SplObserver
+     * @link http://php.net/manual/en/splsubject.attach.php
+     * @param SplObserver $observer <p>
+     * The <b>SplObserver</b> to attach.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function attach(SplObserver $observer)
+    {
+        $this->observers[] = $observer;
+    }
+
+    /**
+     * Detach an observer
+     * @link http://php.net/manual/en/splsubject.detach.php
+     * @param SplObserver $observer <p>
+     * The <b>SplObserver</b> to detach.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function detach(SplObserver $observer)
+    {
+        $key = array_search($observer, $this->observers, true);
+        if (false !== $key) {
+            unset($this->observers[$key]);
+        }
+    }
+
+    public function getObservers()
+    {
+        return $this->observers;
+    }
+
+    /**
+     * Notify an observer
+     * @link http://php.net/manual/en/splsubject.notify.php
+     * @return void
+     * @since 5.1.0
+     */
+    public function notify()
+    {
+        foreach ($this->observers as $value) {
+            $value->update($this);
+        }
     }
 
     /**

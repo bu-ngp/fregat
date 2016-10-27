@@ -11,7 +11,7 @@ namespace app\func\ImportData\Exec;
 
 use app\func\ImportData\Proc\EmployeeParseObject;
 
-interface iEmployees extends \SplSubject
+interface iEmployees
 {
     /**
      * @return EmployeeParseObject

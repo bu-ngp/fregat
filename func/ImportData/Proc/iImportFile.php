@@ -15,7 +15,7 @@ use app\models\Fregat\Import\Logreport;
  * Interface iImportFile
  * @package app\func\ImportData\Proc
  */
-interface iImportFile
+interface iImportFile extends \SplSubject
 {
     /**
      * @return Logreport
