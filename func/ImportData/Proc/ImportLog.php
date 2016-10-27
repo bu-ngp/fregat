@@ -17,10 +17,6 @@ use yii\db\ActiveRecord;
 class ImportLog implements iImportLog
 {
     /**
-     * @var static
-     */
-    private static $_instance;
-    /**
      * @var ActiveRecord
      */
     private $_activeRecordLog;
@@ -64,7 +60,7 @@ class ImportLog implements iImportLog
      * @param ActiveRecord $activeRecordLog
      * @throws \Exception
      */
-    private function __construct(iImportFile $ImportFile, ActiveRecord $activeRecordLog)
+    public function __construct(iImportFile $ImportFile, ActiveRecord $activeRecordLog)
     {
         $formName = strtolower($activeRecordLog->formName());
         $this->setType($formName . '_type');
@@ -189,7 +185,7 @@ class ImportLog implements iImportLog
     /**
      * @return ActiveRecord
      */
-    private function getActiveRecordLog()
+    public function getActiveRecordLog()
     {
         return $this->_activeRecordLog;
     }
@@ -290,17 +286,6 @@ class ImportLog implements iImportLog
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param iImportFile $ImportFile
-     * @param ActiveRecord $activeRecordLog
-     * @return ImportLog
-     */
-    public static function begin(iImportFile $ImportFile, ActiveRecord $activeRecordLog)
-    {
-        self::$_instance = new self($ImportFile, $activeRecordLog);
-        return self::$_instance;
     }
 
     /**

@@ -75,6 +75,8 @@ abstract class ImportData implements iImportData
      */
     private function setImportConfig(Importconfig $importConfig)
     {
+        ini_set('max_execution_time', $importConfig->max_execution_time);  // 1000 seconds
+        ini_set('memory_limit', $importConfig->memory_limit); // 1Gbyte Max Memory
         $this->_importConfig = $importConfig;
     }
 

@@ -13,6 +13,7 @@ use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Import\Logreport;
 use Exception;
 use SplObserver;
+use yii\db\ActiveRecord;
 
 /**
  * Class ImportFile
@@ -44,6 +45,10 @@ abstract class ImportFile implements iImportFile
      * @var integer
      */
     private $row;
+    /**
+     * @var array
+     */
+    private $_importLogs;
     /**
      * @var string
      */
@@ -170,6 +175,35 @@ abstract class ImportFile implements iImportFile
     public function setDebug($debug)
     {
         $this->_debug = $debug;
+    }
+
+    /**
+     * @param string $formNameLog
+     * @return ImportLog
+     * @throws Exception
+     */
+    public function getImportLog($formNameLog)
+    {
+        if (isset($this->_importLogs[$formNameLog]))
+            return $this->_importLogs[$formNameLog];
+        else
+            throw new Exception('Отсутствует ActiveRecord лога ' . $formNameLog);
+    }
+
+    /**
+     * @param ImportLog $importLog
+     */
+    public function setImportLog($importLog)
+    {
+        $this->_importLogs[$importLog->getActiveRecordLog()->formName()] = $importLog;
+    }
+
+    public function removeImportLog($formNameLog)
+    {
+        if (isset($this->_importLogs[$formNameLog]))
+            unset($this->_importLogs[$formNameLog]);
+        else
+            throw new Exception('Отсутствует ActiveRecord лога ' . $formNameLog);
     }
 
     /**

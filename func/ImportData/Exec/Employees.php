@@ -9,21 +9,16 @@
 
 namespace app\func\ImportData\Exec;
 
-use app\func\ImportData\Proc\DataFilter;
 use app\func\ImportData\Proc\EmployeeParseFactory;
 use app\func\ImportData\Proc\EmployeeParseObject;
-use app\func\ImportData\Proc\iDataFilter;
 use app\func\ImportData\Proc\ImportFromTextFile;
 use app\func\ImportData\Proc\iImportLog;
 use app\func\ImportData\Proc\ImportLog;
-use app\func\ImportData\Proc\iParseObject;
-use app\func\ImportData\Proc\ParseObject;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Import\Employeelog;
 use Exception;
-use SplObserver;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -63,31 +58,11 @@ final class Employees extends ImportFromTextFile implements iEmployees
      */
     private $_errors = [];
     /**
-     * @var Employeelog
-     */
-    private $_importLog;
-    /**
      * @var integer
      */
     private $_mishanya;
 
     /* Getters/Setters */
-
-    /**
-     * @return iImportLog
-     */
-    private function getImportLog()
-    {
-        return $this->_importLog;
-    }
-
-    /**
-     * @param iImportLog $importLog
-     */
-    private function setImportLog(iImportLog $importLog)
-    {
-        $this->_importLog = $importLog;
-    }
 
     /**
      * @return Employee
@@ -703,7 +678,7 @@ final class Employees extends ImportFromTextFile implements iEmployees
 
         $this->reset();
 
-        $this->setImportLog(ImportLog::begin($this, new Employeelog));
+        $this->setImportLog(new ImportLog($this, new Employeelog));
     }
 
     /**
@@ -722,13 +697,13 @@ final class Employees extends ImportFromTextFile implements iEmployees
 
                 $this->notify();
 
-                $this->existsEmployee() ? $this->changeExistEmployee($this->getImportLog()) : $this->addNewEmployee($this->getImportLog());
+                $this->existsEmployee() ? $this->changeExistEmployee($this->getImportLog('Employeelog')) : $this->addNewEmployee($this->getImportLog('Employeelog'));
 
             } else
-                $this->getImportLog()->setup(iImportLog::ADD_ERROR, [], 'Неверный формат строки');
+                $this->getImportLog('Employeelog')->setup(iImportLog::ADD_ERROR, [], 'Неверный формат строки');
 
         } else
-            $this->getImportLog()->setup(iImportLog::ADD_ERROR, [], 'Строка пуста.');
+            $this->getImportLog('Employeelog')->setup(iImportLog::ADD_ERROR, [], 'Строка пуста.');
     }
 
     /**
@@ -736,7 +711,7 @@ final class Employees extends ImportFromTextFile implements iEmployees
      */
     protected function afterIterateItem()
     {
-        $this->getImportLog()->end($this->applyValuesLog());
+        $this->getImportLog('Employeelog')->end($this->applyValuesLog());
     }
 
     /**

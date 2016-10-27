@@ -35,13 +35,6 @@ interface iImportLog
     const CHANGE_ERROR = 4;
 
     /**
-     * @param iImportFile $ImportFile
-     * @param ActiveRecord $activeRecordLog
-     * @return ImportLog
-     */
-    public static function begin(iImportFile $ImportFile, ActiveRecord $activeRecordLog);
-
-    /**
      * @param $TypeLog
      * @param array $activeRecordErrors
      * @param string $Message

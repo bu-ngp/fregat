@@ -35,8 +35,6 @@ abstract class ImportFromTextFile extends ImportFile
     public function iterate()
     {
         if ($this->isChanged()) {
-            ini_set('max_execution_time', $this->importConfig->max_execution_time);  // 1000 seconds
-            ini_set('memory_limit', $this->importConfig->memory_limit); // 1Gbyte Max Memory
             $this->startTime = microtime(true);
 
             $this->getLogReport()->save();
@@ -51,9 +49,9 @@ abstract class ImportFromTextFile extends ImportFile
                         $subject = $this->removeUTF8BOM($subject);
                         $firstRow = false;
                     }
-
-                    $transaction = Yii::$app->db->beginTransaction();
+                    
                     $this->setRow($this->getRow() + 1);
+                    $transaction = Yii::$app->db->beginTransaction();
                     try {
 
                         $this->beforeIterateItem();
@@ -87,7 +85,7 @@ abstract class ImportFromTextFile extends ImportFile
     }
 
     /**
-     * 
+     *
      */
     abstract protected function beforeIterateItem();
 
