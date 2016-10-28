@@ -6,8 +6,7 @@
  * Time: 10:27
  */
 
-namespace app\func\ImportData\Proc;
-
+namespace app\func\ImportData\Exec;
 
 /**
  * Class EmployeeParseFactory

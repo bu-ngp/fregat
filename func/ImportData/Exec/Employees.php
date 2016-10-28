@@ -9,8 +9,8 @@
 
 namespace app\func\ImportData\Exec;
 
-use app\func\ImportData\Proc\EmployeeParseFactory;
-use app\func\ImportData\Proc\EmployeeParseObject;
+use app\func\ImportData\Exec\EmployeeParseFactory;
+use app\func\ImportData\Exec\EmployeeParseObject;
 use app\func\ImportData\Proc\ImportFromTextFile;
 use app\func\ImportData\Proc\iImportLog;
 use app\func\ImportData\Proc\ImportLog;
@@ -370,19 +370,6 @@ final class Employees extends ImportFromTextFile implements iEmployees
         return $str = iconv("UTF-8", "UTF-8//IGNORE", strtr($string, $replace));
     }
 
-    /**
-     * @param string $FieldName
-     * @return bool|iDataFilter
-     */
-    private function getObserverByFieldName($FieldName)
-    {
-        foreach ($this->getObservers() as $observer) {
-            if ($observer->getFieldName() === $FieldName)
-                return $observer;
-        }
-
-        return false;
-    }
 
     /**
      * @return bool
@@ -736,6 +723,5 @@ final class Employees extends ImportFromTextFile implements iEmployees
             $value->setValue($ParseObject->prop($value->getFieldName()));
         }
     }
-
 
 }

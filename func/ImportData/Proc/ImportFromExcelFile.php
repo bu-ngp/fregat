@@ -142,9 +142,9 @@ abstract class ImportFromExcelFile extends ImportFile
     abstract protected function afterIterateAll();
 
     /**
-     * @param string $String
+     * @param array $rowExcel
      */
-    abstract protected function processItem($String);
+    abstract protected function processItem($rowExcel);
 
 
 }

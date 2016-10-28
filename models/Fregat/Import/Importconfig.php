@@ -11,6 +11,7 @@ use Yii;
  * @property string $os_filename
  * @property integer $os_startrow
  * @property string $os_material_1c
+ * @property string $os_mattraffic_date
  * @property string $os_material_inv
  * @property string $os_material_name1c
  * @property string $os_material_price
@@ -37,7 +38,7 @@ use Yii;
  * @property string $mat_material_schetuchet_kod
  * @property string $mat_material_schetuchet_name
  * @property integer $logreport_reportcount
- * @property string $emp_filname
+ * @property string $emp_filename
  * @property integer $max_execution_time
  * @property string $memory_limit
  * @property string $gu_material_1c

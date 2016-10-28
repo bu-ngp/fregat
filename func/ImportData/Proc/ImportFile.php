@@ -72,7 +72,7 @@ abstract class ImportFile implements iImportFile
     /**
      * @var Importconfig
      */
-    protected $importConfig;
+    private $_importConfig;
 
     /**
      * ImportFile constructor.
@@ -87,14 +87,30 @@ abstract class ImportFile implements iImportFile
         $this->logReport = $logReport;
         $this->fieldNameDB = $fieldNameDB;
         $this->setTypeFile();
-        $this->importConfig = $importConfig;
-        $fileName = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $this->importConfig[$fieldNameDB] . '.' . $this->typeFile;
+        $this->setImportConfig($importConfig);
+        $fileName = dirname($_SERVER['SCRIPT_FILENAME']) . '/imp/' . $this->getImportConfig()->$fieldNameDB . '.' . $this->typeFile;
 
         if (!file_exists($fileName))
             throw new Exception('Файл не существует. ' . $fileName);
 
         $this->fileName = $fileName;
         $this->fileLastDate = date("Y-m-d H:i:s", filemtime($this->fileName));
+    }
+
+    /**
+     * @return Importconfig
+     */
+    public function getImportConfig()
+    {
+        return $this->_importConfig;
+    }
+
+    /**
+     * @param Importconfig $importConfig
+     */
+    private function setImportConfig($importConfig)
+    {
+        $this->_importConfig = $importConfig;
     }
 
     /**
@@ -307,6 +323,21 @@ abstract class ImportFile implements iImportFile
     public function getObservers()
     {
         return $this->observers;
+    }
+
+
+    /**
+     * @param string $FieldName
+     * @return bool|iFilterObserver
+     */
+    public function getObserverByFieldName($FieldName)
+    {
+        foreach ($this->getObservers() as $observer) {
+            if ($observer->getFieldName() === $FieldName)
+                return $observer;
+        }
+
+        return false;
     }
 
     /**

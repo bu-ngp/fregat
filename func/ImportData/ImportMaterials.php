@@ -10,6 +10,7 @@ namespace app\func\ImportData;
 
 use app\func\ImportData\Exec\DolzhFilter;
 use app\func\ImportData\Exec\Employees;
+use app\func\ImportData\Exec\OsnovMaterial;
 use app\func\ImportData\Proc\DataFilter;
 use app\func\ImportData\Proc\ImportData;
 use app\models\Fregat\Build;
@@ -37,10 +38,16 @@ class ImportMaterials extends ImportData
         $importEmployee->attach(new DolzhFilter('dolzh_name', new Dolzh));
         $importEmployee->attach(new DataFilter('podraz_name', new Podraz));
         $importEmployee->attach(new DataFilter('build_name', new Build));
-
         $importEmployee->setDebug($this->getDebug());
-
         $importEmployee->iterate();
+
+        $importOsnov = new OsnovMaterial($this->getImportConfig(), 'os_filename', $this->getLogReport());
+        $importOsnov->attach(new DolzhFilter('dolzh_name', new Dolzh));
+        $importOsnov->attach(new DataFilter('podraz_name', new Podraz));
+        $importOsnov->attach(new DataFilter('build_name', new Build));
+        $importOsnov->setDebug($this->getDebug());
+        $importOsnov->iterate();
+
 
         return true;
     }

@@ -6,7 +6,8 @@
  * Time: 10:27
  */
 
-namespace app\func\ImportData\Proc;
+namespace app\func\ImportData\Exec;
+use app\func\ImportData\Proc\ParseObject;
 
 
 /**
