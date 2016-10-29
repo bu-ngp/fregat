@@ -2,8 +2,7 @@
 
 namespace app\controllers\Fregat;
 
-use app\func\ImportData\ImportData;
-use app\func\ImportData\ImportMaterials;
+use app\func\ImportData\ImportEmployees;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Docfiles;
@@ -654,7 +653,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionImportDo2()
     {
-        ImportMaterials::init()->execute();
+        ImportEmployees::init()->execute();
     }
 
     public function actionTest()

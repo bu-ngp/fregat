@@ -21,7 +21,7 @@ use app\models\Fregat\Podraz;
  * Class ImportMaterials
  * @package app\func\ImportData
  */
-class ImportMaterials extends ImportData
+class ImportEmployees extends ImportData
 {
     /**
      * @return bool
@@ -40,14 +40,6 @@ class ImportMaterials extends ImportData
         $importEmployee->attach(new DataFilter('build_name', new Build));
         $importEmployee->setDebug($this->getDebug());
         $importEmployee->iterate();
-
-        $importOsnov = new OsnovMaterial($this->getImportConfig(), 'os_filename', $this->getLogReport());
-        $importOsnov->attach(new DolzhFilter('dolzh_name', new Dolzh));
-        $importOsnov->attach(new DataFilter('podraz_name', new Podraz));
-        $importOsnov->attach(new DataFilter('build_name', new Build));
-        $importOsnov->setDebug($this->getDebug());
-        $importOsnov->iterate();
-
 
         return true;
     }
