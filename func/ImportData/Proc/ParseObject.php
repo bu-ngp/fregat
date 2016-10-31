@@ -22,7 +22,7 @@ class ParseObject implements iParseObject
      */
     public function prop($name)
     {
-        if (property_exists(static::class, $name))
+        if (property_exists(get_called_class(), $name))
             return $this->$name;
         else
             throw  new \Exception('Свойство ' . $name . ' не существует');
