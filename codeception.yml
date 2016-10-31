@@ -3,8 +3,7 @@ paths:
     tests: tests
     log: tests/_output
     data: tests/_data
-    support: tests/_support
-    envs: tests/_envs
+    helpers: tests/_support
 settings:
     bootstrap: _bootstrap.php
     colors: false
@@ -14,8 +13,5 @@ extensions:
         - Codeception\Extension\RunFailed
 modules:
     config:
-        Db:
-            dsn: 'mysql:host=127.0.0.1;dbname=baseportal;charset=UTF8'
-            user: 'root'
-            password: '265463'
-            dump: tests/_data/dump.sql
+        Yii2:
+            configFile: 'config/test.php'
