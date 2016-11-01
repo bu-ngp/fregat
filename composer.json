@@ -1,7 +1,7 @@
 {
     "name": "vovancho/karpovportal",
     "description": "Yii 2 Karpov Portal",
-    "keywords": ["yii2", "framework", "basic", "project template, Karpov Portal"],
+    "keywords": ["yii2", "framework", "basic", "project template", "Karpov Portal"],
     "type": "project",
     "license": "BSD-3-Clause",
     "support": {
