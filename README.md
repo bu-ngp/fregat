@@ -2,13 +2,11 @@ Yii 2 Karpov Portal
 ============================
 
 [![Latest Stable Version](https://poser.pugx.org/vovancho/karpovportal/v/stable)](https://packagist.org/packages/vovancho/karpovportal)
----
+###
 MASTER
----
 [![Build Status](https://travis-ci.org/vovancho/karpovportal.svg?branch=master)](https://travis-ci.org/vovancho/karpovportal)
----
+###
 DEV
----
 [![Build Status dev](https://travis-ci.org/vovancho/karpovportal.svg?branch=dev)](https://travis-ci.org/vovancho/karpovportal)
 
 DIRECTORY STRUCTURE

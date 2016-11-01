@@ -30,3 +30,7 @@ script:
     composer exec codecept run
 services:
       - mysql
+notifications:
+  slack:
+    on_success: never
+    on_failure: never
