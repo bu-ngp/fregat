@@ -38,6 +38,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ],
                 'idMatv.matvid_name',
                 'material_name',
+                [
+                    'attribute' => 'material_name1c',
+                    'visible' => false,
+                ],
+                [
+                    'attribute' => 'material_1c',
+                    'visible' => false,
+                ],
                 'material_inv',
                 'material_number',
                 'idIzmer.izmer_name',
