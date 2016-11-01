@@ -2,9 +2,13 @@ Yii 2 Karpov Portal
 ============================
 
 [![Latest Stable Version](https://poser.pugx.org/vovancho/karpovportal/v/stable)](https://packagist.org/packages/vovancho/karpovportal)
+---
 MASTER
+---
 [![Build Status](https://travis-ci.org/vovancho/karpovportal.svg?branch=master)](https://travis-ci.org/vovancho/karpovportal)
+---
 DEV
+---
 [![Build Status dev](https://travis-ci.org/vovancho/karpovportal.svg?branch=dev)](https://travis-ci.org/vovancho/karpovportal)
 
 DIRECTORY STRUCTURE
@@ -39,6 +43,5 @@ at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
 You can then install this project template using the following command:
 
 ~~~
-php composer.phar global require "fxp/composer-asset-plugin:~1.0.0"
-php composer.phar create-project --prefer-dist --stability=dev yiisoft/yii2-app-basic basic
+composer require vovancho/karpovportal
 ~~~
