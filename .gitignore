@@ -27,7 +27,7 @@ phpunit.phar
 /phpunit.xml
 
 /config/db
-#/web/index.php
+/web/index.php
 
 tests/_output/*
 tests/_output/*
