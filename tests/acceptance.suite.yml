@@ -1,0 +1,22 @@
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver
+        - Yii2
+        - Db
+    config:
+        WebDriver:
+            url: 'http://172.19.17.81:44444/'
+            browser: chrome
+            restart: false
+            window_size: 1280x1024
+            port: 13246
+        Yii2:
+            part: orm
+            entryScript: index.php
+            cleanup: false
+        Db:
+            dsn: mysql:host=127.0.0.1;dbname=baseportal
+            user: root
+            password: 265463
+            dump: tests/_data/db.sql
