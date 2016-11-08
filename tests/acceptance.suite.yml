@@ -11,7 +11,7 @@ modules:
 #            window_size: 1280x1024
             clear_cookies: false
 #            port: 13246
-            url: http://mysite.com
+#            url: http://mysite.com
             host: 'vovanchoRus:73875a55-4ac8-4534-bfe5-93e5e308250b@ondemand.saucelabs.com'
             port: 80
             browser: chrome
@@ -22,9 +22,9 @@ modules:
             entryScript: index.php
             cleanup: false
         Db:
-            dsn: mysql:host=localhost;dbname=baseportal
-            user: 'root'
+            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
+            user: 'travis'
             password: ''
-            dump: tests/_data/db.sql
+            dump: 'tests/_data/db.sql'
             cleanup: false
             populate: true
