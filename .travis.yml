@@ -23,7 +23,7 @@ install:
   - |
     sed -i "s/'cookieValidationKey' => ''/'cookieValidationKey' => 'testkey'/" config/web.php
 before_script:
-      - mysql -e 'create database IF NOT EXISTS baseportal character set utf8 collate utf8_general_ci;'
+      - mysql -uroot -h 127.0.0.1 -e 'create database IF NOT EXISTS baseportal character set utf8 collate utf8_general_ci;'
 script:
   - |
     php -S localhost:8080 -t web > /dev/null 2>&1 &
