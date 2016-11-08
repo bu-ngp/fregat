@@ -14,7 +14,6 @@ modules:
       - Db
     config:
         Yii2:
-            part: orm
             entryScript: index.php
             cleanup: false
         Db:
@@ -22,3 +21,6 @@ modules:
             user: root
             password: 265463
        #     dump: tests/_data/db.sql
+            cleanup: false
+        PhpBrowser:
+            url: 'http://172.19.17.81:44444/'
