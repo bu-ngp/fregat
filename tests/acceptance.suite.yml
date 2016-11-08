@@ -21,9 +21,9 @@ modules:
             entryScript: index.php
             cleanup: false
         Db:
-            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
-            user: 'travis'
+            dsn: mysql:host=127.0.0.1;dbname=baseportal
+            user: root
             password: ''
-            dump: 'tests/_data/db.sql'
+            dump: tests/_data/db.sql
             cleanup: false
             populate: true
