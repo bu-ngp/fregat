@@ -11,7 +11,7 @@ return [
    // 'dsn' => 'mysql:host=127.0.0.1;dbname='.$dbname.';charset=UTF8',
   //  'username' => $dbuser,
   //  'password' => $dbpassword,
-    'username' => 'root',
+    'username' => 'travis',
     'password' => '',
     'charset' => 'utf8',
     'enableSchemaCache' => true, // php C:\www\yii2test_ps\yii cache/flush-schema db
