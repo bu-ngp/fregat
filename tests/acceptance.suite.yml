@@ -7,14 +7,13 @@ modules:
     config:
         WebDriver:
 #            url: 'http://172.19.17.81:44444/'
-#            browser: chrome
-#            window_size: 1280x1024
-            clear_cookies: false
 #            port: 13246
-#            url: http://mysite.com
+            browser: chrome
+            window_size: 1280x1024
+            clear_cookies: false
+            url: http://mysite.com
             host: 'vovanchoRus:73875a55-4ac8-4534-bfe5-93e5e308250b@ondemand.saucelabs.com'
             port: 80
-            browser: chrome
             capabilities:
                 platform: 'Windows 7'
         Yii2:
