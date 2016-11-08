@@ -11,7 +11,7 @@ modules:
             browser: chrome
             window_size: 1280x1024
             clear_cookies: false
-            url: 'http://localhost:8080/'
+            url: 'http://127.0.0.1:8080/'
             host: 'vovanchoRus:73875a55-4ac8-4534-bfe5-93e5e308250b@ondemand.saucelabs.com'
             port: 80
             capabilities:
