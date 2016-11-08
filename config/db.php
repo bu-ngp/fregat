@@ -12,7 +12,7 @@ return [
   //  'username' => $dbuser,
   //  'password' => $dbpassword,
     'username' => 'root',
-    'password' => '',
+    'password' => '265463',
     'charset' => 'utf8',
     'enableSchemaCache' => true, // php C:\www\yii2test_ps\yii cache/flush-schema db
 ];
