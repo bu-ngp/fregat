@@ -15,12 +15,12 @@ modules:
     config:
         Yii2:
             configFile: 'config/test.php'
-            entryScript: index-test.php
+            entryScript: index-travis.php
             cleanup: false
         Db:
             dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
             user: 'root'
-            password: '265463'
+            password: ''
             dump: tests/_data/db.sql
             cleanup: false
             populate: true

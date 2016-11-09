@@ -14,13 +14,15 @@ modules:
       - Db
     config:
         Yii2:
-            entryScript: index.php
+            entryScript: index-test.php
             cleanup: false
-        Db:
-            dsn: mysql:host=127.0.0.1;dbname=baseportal
-            user: root
-            password: 265463
-       #     dump: tests/_data/db.sql
-            cleanup: false
+#            part: orm
         PhpBrowser:
             url: 'http://172.19.17.81:44444/'
+        Db:
+#            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
+#            user: 'root'
+#            password: '265463'
+#            dump: tests/_data/db.sql
+#            cleanup: false
+#            populate: true
