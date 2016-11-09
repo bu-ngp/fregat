@@ -15,7 +15,7 @@ modules:
     config:
         Yii2:
             configFile: 'config/test.php'
-            entryScript: index.php
+            entryScript: index-test.php
             cleanup: false
         Db:
             dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
