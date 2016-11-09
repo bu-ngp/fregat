@@ -17,8 +17,8 @@ modules:
             entryScript: index-test.php
             cleanup: false
 #            part: orm
-        PhpBrowser:
-            url: 'http://172.19.17.81:44444/'
+#        PhpBrowser:
+#            url: 'http://172.19.17.81:44444/'
         Db:
 #            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
 #            user: 'root'

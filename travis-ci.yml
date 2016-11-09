@@ -14,7 +14,7 @@ extensions:
 modules:
     config:
         Yii2:
-            configFile: 'config/test-travis.php'
+            configFile: 'config/test_travis.php'
             entryScript: index-travis.php
             cleanup: false
         Db:
