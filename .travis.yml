@@ -20,8 +20,8 @@ install:
   - travis_retry composer global require "fxp/composer-asset-plugin:~1.1.1"
   - travis_retry composer update --dev --prefer-dist --no-interaction
 # setup application:
-  - |
-    sed -i "s/'cookieValidationKey' => ''/'cookieValidationKey' => 'testkey'/" config/web.php
+#  - |
+#    sed -i "s/'cookieValidationKey' => ''/'cookieValidationKey' => 'testkey'/" config/web.php
 before_script:
       - mysql -uroot -h 127.0.0.1 -e 'create database IF NOT EXISTS baseportal character set utf8 collate utf8_general_ci;'
       #- sudo apt-get update
@@ -45,7 +45,7 @@ notifications:
   slack:
     on_success: never
     on_failure: never
-addons:
-  sauce_connect:
-    username: "vovanchoRus"
-    access_key: "73875a55-4ac8-4534-bfe5-93e5e308250b"
+#addons:
+#  sauce_connect:
+#    username: "vovanchoRus"
+#    access_key: "73875a55-4ac8-4534-bfe5-93e5e308250b"
