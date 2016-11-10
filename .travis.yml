@@ -38,14 +38,14 @@ before_script:
 script:
   - |
     php -S localhost:8080 -t web > /dev/null 2>&1 &
-    composer exec "codecept run -c travis-ci.yml functional"
+    composer exec "codecept run -c travis-ci.yml acceptance"
 services:
       - mysql
 notifications:
   slack:
     on_success: never
     on_failure: never
-#addons:
-#  sauce_connect:
+addons:
+  sauce_connect: true
 #    username: "vovanchoRus"
 #    access_key: "73875a55-4ac8-4534-bfe5-93e5e308250b"

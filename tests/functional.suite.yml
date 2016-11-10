@@ -12,6 +12,7 @@ modules:
       - Filesystem
       - Yii2
       - Db
+      - Asserts
     config:
         Yii2:
             entryScript: index-test.php

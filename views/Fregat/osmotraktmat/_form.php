@@ -60,7 +60,12 @@ use \yii\helpers\Url;
                     'idTrMat.idMattraffic.idMaterial.idMatv.matvid_name',
                     'idTrMat.idMattraffic.idMaterial.material_name',
                     'idTrMat.idMattraffic.idMaterial.material_inv',
-                    'idTrMat.idMattraffic.mattraffic_number',
+                    [
+                        'attribute' => 'idTrMat.idMattraffic.mattraffic_number',
+                        'label' => 'Всего количество у материально-ответственного лица',
+                        'visible' => false,
+                    ],
+                    'tr_mat_osmotr_number',
                     [
                         'attribute' => 'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
                         'label' => 'ФИО материально-ответственного лица',
