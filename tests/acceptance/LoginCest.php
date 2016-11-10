@@ -5,6 +5,11 @@ use yii\helpers\Url;
 
 class LoginCest
 {
+    public function getScriptName()
+    {
+        return basename($_SERVER["SCRIPT_FILENAME"]);
+    }
+
     public function _before(AcceptanceTester $I)
     {
     }
@@ -13,8 +18,7 @@ class LoginCest
     {
     }
 
-    // tests
-    public function loginTest(AcceptanceTester $I)
+    public function login(AcceptanceTester $I)
     {
         $I->amOnPage(Url::toRoute('/site/login'));
         $I->see('Введите логин и пароль для входа в систему:');
@@ -25,7 +29,7 @@ class LoginCest
         $I->see('Главное меню');
     }
 
-    public function openFregatTest(AcceptanceTester $I)
+/*   public function openFregat(AcceptanceTester $I)
     {
         $I->see('Система "Фрегат"');
         $I->click('//div[contains(text(), "Фрегат")]');
@@ -41,7 +45,7 @@ class LoginCest
         $I->see('Справочники');
     }
 
-    public function openJurnalMatCenTest(AcceptanceTester $I)
+    public function openJurnalMatCen(AcceptanceTester $I)
     {
         $I->see('Журнал материальных ценностей');
         $I->click('//div[contains(text(), "Журнал материальных ценностей")]');
@@ -50,7 +54,7 @@ class LoginCest
         $I->see('Ничего не найдено.');
     }
 
-    public function openNewMatcenTest(AcceptanceTester $I)
+    public function openNewMatcen(AcceptanceTester $I)
     {
         $I->see('Составить акт прихода материальнной ценности');
         $I->click(['link' => 'Составить акт прихода материальнной ценности']);
@@ -58,18 +62,18 @@ class LoginCest
         $I->seeElement(['id' => 'Materialform']);
     }
 
-    public function openMatvidTest(AcceptanceTester $I)
+    public function openMatvid(AcceptanceTester $I)
     {
         $I->see('Вид');
-        $I->SeeElement('span', ['aria-labelledby' => 'select2-material-id_matvid-container']);
-        $I->SeeElement(['css' => 'div.input-group-btn>a[href="/index.php?r=Fregat%2Fmatvid%2Findex&foreignmodel=Material&url=Fregat%2Fmaterial%2Fcreate&field=id_matvid"]']);
-        $I->click(['css' => 'div.input-group-btn>a[href="/index.php?r=Fregat%2Fmatvid%2Findex&foreignmodel=Material&url=Fregat%2Fmaterial%2Fcreate&field=id_matvid"]']);
+        $I->seeElement('span', ['aria-labelledby' => 'select2-material-id_matvid-container']);
+        $I->seeElement(['css' => 'div.input-group-btn>a[href="/' . $this->getScriptName() . '?r=Fregat%2Fmatvid%2Findex&foreignmodel=Material&url=Fregat%2Fmaterial%2Fcreate&field=id_matvid"]']);
+        $I->click(['css' => 'div.input-group-btn>a[href="/' . $this->getScriptName() . '?r=Fregat%2Fmatvid%2Findex&foreignmodel=Material&url=Fregat%2Fmaterial%2Fcreate&field=id_matvid"]']);
         $I->wait(2);
         $I->seeElement(['id' => 'matvidgrid_gw']);
         $I->see('Ничего не найдено.');
     }
 
-    public function openNewMatvidTest(AcceptanceTester $I)
+    public function openNewMatvid(AcceptanceTester $I)
     {
         $I->seeLink('Добавить');
         $I->click(['link' => 'Добавить']);
@@ -97,5 +101,5 @@ class LoginCest
         $I->click(['css' => 'button[title="Выбрать"]']);
         $I->wait(2);
         $I->selectOption('Material[id_matvid]', 'Монитор');
-    }
+    }*/
 }

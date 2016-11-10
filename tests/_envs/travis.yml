@@ -1,0 +1,9 @@
+modules:
+    config:
+        Yii2:
+            configFile: 'config/test_travis.php'
+            entryScript: index-travis.php
+        Db:
+            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
+            user: 'root'
+            password: ''

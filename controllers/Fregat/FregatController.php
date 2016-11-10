@@ -658,7 +658,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        var_dump($aa);
+        var_dump(basename($_SERVER["SCRIPT_FILENAME"]));
     }
 
 }

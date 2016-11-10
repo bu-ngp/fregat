@@ -4,6 +4,7 @@ paths:
     log: tests/_output
     data: tests/_data
     helpers: tests/_support
+    envs: tests/_envs
 settings:
     bootstrap: _bootstrap.php
     colors: false
@@ -23,4 +24,4 @@ modules:
             password: '265463'
             dump: tests/_data/db.sql
             cleanup: false
-            populate: true
+            populate: false
