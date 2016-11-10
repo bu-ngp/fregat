@@ -11,9 +11,10 @@ modules:
             browser: chrome
             window_size: 1280x1024
             clear_cookies: false
-            url: 'vovanchoRus:73875a55-4ac8-4534-bfe5-93e5e308250b@ondemand.saucelabs.com/wd/hub'
+            url: 'http://localhost:8080/'
             host: 'vovanchoRus:73875a55-4ac8-4534-bfe5-93e5e308250b@ondemand.saucelabs.com'
             port: 80
+            wait: 5
             capabilities:
                 platform: 'Windows 7'
         Yii2:

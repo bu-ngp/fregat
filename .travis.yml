@@ -47,5 +47,3 @@ notifications:
     on_failure: never
 addons:
   sauce_connect: true
-#    username: "vovanchoRus"
-#    access_key: "73875a55-4ac8-4534-bfe5-93e5e308250b"
