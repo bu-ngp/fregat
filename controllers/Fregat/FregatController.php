@@ -16,6 +16,7 @@ use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
 use yii\base\Request;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -658,7 +659,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        var_dump(basename($_SERVER["SCRIPT_FILENAME"]));
+        var_dump(Url::toRoute('Fregat/fregat/test'));
     }
 
 }

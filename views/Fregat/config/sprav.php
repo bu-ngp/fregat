@@ -17,29 +17,22 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 <?php if (Yii::$app->user->can('FregatUserPermission')): ?>
                     <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_matvid">
                         <span class="hoverspan"></span>
-                        <div class="menubutton_cn">Виды материальных
-                            ценностей
-                        </div>
+                        <div class="menubutton_cn">Виды материальных ценностей</div>
                         <i class="glyphicon glyphicon-credit-card"></i>
                     </div>
                     <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_grupa">
                         <span class="hoverspan"></span>
-                        <div class="menubutton_cn">Группы материальных
-                            ценностей
-                        </div>
+                        <div class="menubutton_cn">Группы материальных ценностей</div>
                         <i class="glyphicon glyphicon-duplicate"></i>
                     </div>
                     <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_organ">
                         <span class="hoverspan"></span>
-                        <div class="menubutton_cn">Организации
-                        </div>
+                        <div class="menubutton_cn">Организации</div>
                         <i class="glyphicon glyphicon-object-align-bottom"></i>
                     </div>
                     <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_reason">
                         <span class="hoverspan"></span>
-                        <div class="menubutton_cn">Шаблоны актов осмотра
-                            материальной ценности
-                        </div>
+                        <div class="menubutton_cn">Шаблоны актов осмотра материальной ценности</div>
                         <i class="glyphicon glyphicon-book"></i>
                     </div>
                     <div class="menubutton menubutton_activeanim mb_gray" id="mb_sp_schetuchet">

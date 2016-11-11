@@ -3,7 +3,8 @@
 
 class LoginCest
 {
-    private $cookie = null;
+    private $cookie_identity = null;
+    private $cookie_session = null;
 
     public function _before(\FunctionalTester $I)
     {
@@ -45,8 +46,10 @@ class LoginCest
         $I->see('Настройки портала');
         $I->see('Сменить пароль');
         $I->dontSeeElement('form#login-form');
-     /*   $I->canSeeCookie('test');
-        $this->cookie = $I->grabCookie('test');*/
+        $I->canSeeCookie('_identity');
+        $I->canSeeCookie('PHPSESSID');
+        $this->cookie_identity = $I->grabCookie('_identity');
+        $this->cookie_session = $I->grabCookie('PHPSESSID');
     }
 
     /**
@@ -54,11 +57,14 @@ class LoginCest
      */
     public function openFregat(\FunctionalTester $I)
     {
-       // $I->setCookie('test', $this->cookie);
+        $I->setCookie('_identity', $this->cookie_identity);
+        $I->setCookie('PHPSESSID', $this->cookie_session);
 
         //  $I->click('Fregat/fregat/mainmenu');
         $I->amOnRoute('site/index');
         $I->see('Система "Фрегат"');
+        $I->amOnRoute('Fregat/fregat/mainmenu');
+        $I->see('Справочники');
         /* $I->click('//div[contains(text(), "Фрегат")]');
          $I->see('Журнал материальных ценностей');
          $I->see('Журнал перемещений материальных ценностей');
