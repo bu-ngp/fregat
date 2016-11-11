@@ -19,7 +19,7 @@ modules:
             #    platform: 'Windows 7'
         Yii2:
             part: init
-        Db:
+#        Db:
 #            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
 #            user: 'root'
 #            password: '265463'
