@@ -8,7 +8,7 @@ modules:
         WebDriver:
             url: 'http://127.0.0.1:44444/'
             port: 13246
-            browser: firefox
+            browser: chrome
             window_size: 1280x1024
             clear_cookies: false
             #url: 'http://127.0.0.1:8080/'
