@@ -20,7 +20,7 @@ modules:
 #            part: orm
 #        PhpBrowser:
 #            url: 'http://172.19.17.81:44444/'
-        Db:
+#        Db:
 #            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
 #            user: 'root'
 #            password: '265463'
