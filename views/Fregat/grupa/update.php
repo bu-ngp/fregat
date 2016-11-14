@@ -8,7 +8,7 @@ use app\func\Proc;
 
 $this->title = 'Обновить группу материальных ценностей';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Grupavid],
+            'model' => [$model],
         ]);
 ?>
 <div class="grupa-update">

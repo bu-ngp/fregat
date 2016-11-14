@@ -31,6 +31,9 @@ class Grupa extends \yii\db\ActiveRecord
             [['grupa_name'], 'required'],
             [['grupa_name'], 'string', 'max' => 255],
             [['grupa_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
+            [['grupa_name'], 'filter', 'filter' => function ($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
         ];
     }
 

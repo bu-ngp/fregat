@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use Exception;
 use Yii;
 use app\models\Fregat\Grupa;
 use app\models\Fregat\GrupaSearch;
@@ -88,23 +89,19 @@ class GrupaController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
-            $Grupavid = new Grupavid;
-            $Grupavid->load(Yii::$app->request->get(), 'Grupavid');
-
-            $count = Grupavid::find(['id_grupa' => $model->primaryKey])->count();
-
-            $Grupavid->id_grupa = $model->primaryKey;
-            $Grupavid->grupavid_main = $count > 0 ? 0 : 1;
-
-            if ($Grupavid->validate())
-                $Grupavid->save(false);
+            if (Grupavid::find()->andWhere(['id_grupa' => $model->primaryKey])->count() == 1) {
+                $Grupavid = Grupavid::find()->andWhere(['id_grupa' => $model->primaryKey])->one();
+                if ($Grupavid->grupavid_main == 0) {
+                    $Grupavid->grupavid_main = 1;
+                    $Grupavid->save(false);
+                }
+            }
 
             $searchModel = new GrupavidSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('update', [
                 'model' => $model,
-                'Grupavid' => $Grupavid,
                 'searchModel' => $searchModel,
                 'dataProvider' => $dataProvider,
             ]);
