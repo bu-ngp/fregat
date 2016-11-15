@@ -44,7 +44,7 @@ use app\func\Proc;
                                 $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/grupavid/createmain', 'grupavid_id' => $model->grupavid_id, 'id_grupa' => $model->id_grupa]);
                                 return Html::button('<i class="glyphicon glyphicon-magnet"></i>', [
                                             'type' => 'button',
-                                            'title' => 'Удалить',
+                                            'title' => 'Сделать главной',
                                             'class' => 'btn btn-xs btn-info',
                                             'onclick' => 'ConfirmDeleteDialogToAjax("Сделать вид материальной ценности основным?", "' . $customurl . '")'
                                 ]);

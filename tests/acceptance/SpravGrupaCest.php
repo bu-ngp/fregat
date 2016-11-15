@@ -1,6 +1,9 @@
 <?php
 
 
+use app\models\Fregat\Grupa;
+use app\models\Fregat\Grupavid;
+use app\models\Fregat\Matvid;
 use yii\helpers\Url;
 
 /**
@@ -15,7 +18,6 @@ class SpravGrupaCest
     public function _after(AcceptanceTester $I)
     {
     }
-
 
     /**
      * @depends LoginCest:login
@@ -73,54 +75,177 @@ class SpravGrupaCest
         $I->wait(2);
         $I->seeElement(['id' => 'grupavidgrid_gw']);
         $I->seeInField('Grupa[grupa_name]', 'МЕБЕЛЬ');
-        $I->seeElement('a', ['title' => 'Обновить']);
+        $I->seeElement('//button[contains(text(), "Обновить")]');
     }
 
     /**
      * @depends saveCreateGrupa
      */
-    public function openCreateMatvid(AcceptanceTester $I)
+    public function loadData()
+    {
+        $matvid = new Matvid;
+        $matvid->matvid_name = 'Шкаф';
+        $matvid->save();
+        $matvid = new Matvid;
+        $matvid->matvid_name = 'Стол';
+        $matvid->save();
+    }
+
+    /**
+     * @depends loadData
+     */
+    public function openCreateGrupavidOne(AcceptanceTester $I)
     {
         $I->seeLink('Добавить вид материальной ценности');
         $I->click(['link' => 'Добавить вид материальной ценности']);
         $I->wait(2);
         $I->seeElement(['id' => 'matvidgrid_gw']);
+        $I->see('Шкаф');
+        $I->see('Стол');
+
+        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->wait(2);
+        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
+    }
+
+    /**
+     * @depends openCreateGrupavidOne
+     */
+    public function openCreateGrupavidTwo(AcceptanceTester $I)
+    {
+        $I->seeLink('Добавить вид материальной ценности');
+        $I->click(['link' => 'Добавить вид материальной ценности']);
+        $I->wait(2);
+        $I->seeElement(['id' => 'matvidgrid_gw']);
+        $I->see('Шкаф');
+        $I->see('Стол');
+
+        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->wait(2);
+        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
+        $I->see('Нет', '//td[text()="Шкаф"]/following-sibling::td');
+    }
+
+    /**
+     * @depends openCreateGrupavidTwo
+     */
+    public function changeMainGrupavid(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Сделать главной"]');
+        $I->wait(2);
+        $I->see('Сделать вид материальной ценности основным?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->see('Нет', '//td[text()="Стол"]/following-sibling::td');
+        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+    }
+
+    /**
+     * @depends changeMainGrupavid
+     */
+    public function deleteMainGrupavid(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->see('Ошибка удаления. Данный вид материальной ценности является основным в группе.');
+        $I->click('button[data-bb-handler="ok"]');
+        $I->wait(2);
+        $I->see('Нет', '//td[text()="Стол"]/following-sibling::td');
+        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+    }
+
+    /**
+     * @depends deleteMainGrupavid
+     */
+    public function deleteNotMainGrupavid(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->dontSee('Стол');
+        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+    }
+
+    /**
+     * @depends deleteNotMainGrupavid
+     */
+    public function deleteLastSingleGrupavid(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->dontSee('Стол');
+        $I->dontSee('Шкаф');
         $I->see('Ничего не найдено');
     }
 
     /**
-     * @depends openCreateMatvid
+     * @depends deleteLastSingleGrupavid
      */
-    public function addMatvid(AcceptanceTester $I)
+    public function fillOneGrupavid(AcceptanceTester $I)
     {
-        $I->seeLink('Добавить');
-        $I->click(['link' => 'Добавить']);
-        $I->wait(2);
-        $I->seeElement(['class' => 'matvid-form']);
-        $I->see('Создать');
-        $I->fillField('Matvid[matvid_name]', 'Шкаф');
-        $I->click('//button[contains(text(), "Создать")]');
+        $I->seeLink('Добавить вид материальной ценности');
+        $I->click(['link' => 'Добавить вид материальной ценности']);
         $I->wait(2);
         $I->seeElement(['id' => 'matvidgrid_gw']);
         $I->see('Шкаф');
-
-        $I->seeLink('Добавить');
-        $I->click(['link' => 'Добавить']);
-        $I->wait(2);
-        $I->seeElement(['class' => 'matvid-form']);
-        $I->see('Создать');
-        $I->fillField('Matvid[matvid_name]', 'Стол');
-        $I->click('//button[contains(text(), "Создать")]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
         $I->see('Стол');
+
+        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->wait(2);
+        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
     }
 
     /**
-     * @depends addMatvid
+     * @depends fillOneGrupavid
      */
-    public function chooseMatvid(AcceptanceTester $I)
+    public function updateButtonGrupa(AcceptanceTester $I)
     {
-        $I->seeElement('button', ['title' => 'Выбрать']); /* ид */
+        $I->click('//button[contains(text(), "Обновить")]');
+        $I->wait(2);
+        $I->see('МЕБЕЛЬ');
+    }
+
+    /**
+     * @depends updateButtonGrupa
+     */
+    public function openUpdateGrupa(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="МЕБЕЛЬ"]/preceding-sibling::td/a[@title="Обновить"]');
+        $I->wait(2);
+        $I->see('Стол');
+        $I->click('//button[contains(text(), "Обновить")]');
+        $I->wait(2);
+        $I->see('МЕБЕЛЬ');
+    }
+
+    /**
+     * @depends openUpdateGrupa
+     */
+    public function deleteGrupa(AcceptanceTester $I)
+    {
+        $I->click('//td[text()="МЕБЕЛЬ"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->see('Ничего не найдено');
+    }
+
+    /**
+     * @depends loadData
+     */
+    public function destroyData()
+    {
+        Grupavid::deleteAll();
+        Grupa::deleteAll();
+        Matvid::deleteAll();
     }
 }

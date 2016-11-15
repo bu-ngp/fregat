@@ -32,8 +32,8 @@ class Schetuchet extends \yii\db\ActiveRecord
             [['schetuchet_kod', 'schetuchet_name'], 'required'],
             [['schetuchet_kod'], 'string', 'max' => 50],
             [['schetuchet_name'], 'string', 'max' => 255],
-            //  [['schetuchet_kod'], 'unique', 'targetAttribute' => ['schetuchet_kod', 'schetuchet_name'], 'message' => '{attribute} = {value} уже существует'],
-            [['schetuchet_name'], 'UniqueSchet'],
+            [['schetuchet_kod'], 'unique', 'targetAttribute' => ['schetuchet_kod', 'schetuchet_name'], 'message' => '{attribute} = {value} уже существует'],
+            //  [['schetuchet_name'], 'UniqueSchet'],
             [['schetuchet_kod', 'schetuchet_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
             [['schetuchet_kod', 'schetuchet_name'], 'filter', 'filter' => function ($value) {
                 return mb_strtoupper($value, 'UTF-8');
