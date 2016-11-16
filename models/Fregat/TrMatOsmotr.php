@@ -117,6 +117,7 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
                 'idTrMat.idMattraffic.idMol.iddolzh',])
             ->andWhere(['id_osmotraktmat' => $Osmotraktmat_id])
             ->andWhere(['idMattraffic.mattraffic_tip' => 4])
+            ->groupBy(['idMol.id_person', 'idMol.id_dolzh'])
             ->asArray()
             ->all();
     }
