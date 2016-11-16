@@ -3,6 +3,9 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\InstallaktReport;
+use app\models\Fregat\TrMat;
+use app\models\Fregat\TrOsnov;
+use Exception;
 use Yii;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\InstallaktSearch;
@@ -110,8 +113,18 @@ class InstallaktController extends Controller
 
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                TrOsnov::deleteAll(['id_installakt' => $id]);
+                TrMat::deleteAll(['id_installakt' => $id]);
+                echo $this->findModel($id)->delete();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage() . ' Удаление невозможно.');
+            }
+        }
     }
 
     /**

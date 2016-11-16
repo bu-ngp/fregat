@@ -125,15 +125,16 @@ class AuthuserController extends Controller
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     Profile::deleteAll(['profile_id' => $id]);
+                    Employee::deleteAll(['id_person' => $id]);
+                    $auth = Yii::$app->authManager;
+                    $auth->revokeAll($id);
                     echo $this->findModel($id)->delete();
                     $transaction->commit();
                 } catch (Exception $e) {
                     $transaction->rollBack();
                     throw new Exception($e->getMessage());
                 }
-
             }
-
     }
 
     public function actionChangepassword($id)

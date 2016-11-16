@@ -3,6 +3,8 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\OsmotraktmatReport;
+use app\models\Fregat\TrMatOsmotr;
+use Exception;
 use Yii;
 use app\models\Fregat\Osmotraktmat;
 use app\models\Fregat\OsmotraktmatSearch;
@@ -95,8 +97,18 @@ class OsmotraktmatController extends Controller
 
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                TrMatOsmotr::deleteAll(['id_osmotraktmat' => $id]);
+                echo $this->findModel($id)->delete();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage() . ' Удаление невозможно.');
+            }
+        }
+
     }
 
     // Печать акта осмотра материалов
