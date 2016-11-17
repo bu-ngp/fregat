@@ -81,7 +81,7 @@ class SpravGrupaCest
     /**
      * @depends saveCreateGrupa
      */
-    public function loadData()
+    public function loadData(AcceptanceTester $I)
     {
         $matvid = new Matvid;
         $matvid->matvid_name = 'Шкаф';

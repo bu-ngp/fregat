@@ -32,6 +32,9 @@ class Matvid extends \yii\db\ActiveRecord {
             [['matvid_name'], 'string', 'max' => 255],
             [['matvid_name'], 'unique', 'message' => '{attribute} = {value} уже существует'],
             [['matvid_name'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
+            [['matvid_name'], 'filter', 'filter' => function($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
         ];
     }
 

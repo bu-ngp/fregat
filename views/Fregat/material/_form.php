@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Fregat\Schetuchet;
+use yii\bootstrap\Tabs;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use app\models\Fregat\Matvid;
@@ -205,336 +206,78 @@ use yii\helpers\Url;
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
             <div class="panel-heading"><?= Html::encode('Движение материальной ценности') ?></div>
             <div class="panel-body">
-                <?php
-                $mattraffic_tip = Mattraffic::VariablesValues('mattraffic_tip');
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'mattraffic_karta_grid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            [
-                                'attribute' => 'mattraffic_id',
-                                'visible' => false,
-                            ],
-                            [
-                                'attribute' => 'mattraffic_date',
-                                'format' => 'date',
-                            ],
-                            [
-                                'attribute' => 'mattraffic_tip',
-                                'filter' => $mattraffic_tip,
-                                'value' => function ($model) use ($mattraffic_tip) {
-                                    return isset($mattraffic_tip[$model->mattraffic_tip]) ? $mattraffic_tip[$model->mattraffic_tip] : '';
-                                },
-                            ],
-                            'mattraffic_number',
-                            [
-                                'attribute' => 'idMol.idperson.auth_user_fullname',
-                                'label' => 'Материально-ответственное лицо',
-                            ],
-                            [
-                                'attribute' => 'idMol.iddolzh.dolzh_name',
-                                'label' => 'Должность материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'idMol.idbuild.build_name',
-                                'label' => 'Здание материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'mattraffic_username',
-                                'visible' => false,
-                            ],
-                            [
-                                'attribute' => 'mattraffic_lastchange',
-                                'format' => 'datetime',
-                                'visible' => false,
-                            ],
-                            [
-                                'attribute' => 'trOsnovs.tr_osnov_kab',
-                                'value' => function ($model) {
-                                    return $model->trOsnovs[0]->tr_osnov_kab;
-                                },
-                            ],
-                            [
-                                'attribute' => 'trMats.idParent.idMaterial.material_inv',
-                                'label' => 'Инвент-ый номер мат-ой цен-ти, в которую включен в состав',
-                                'value' => function ($model) {
-                                    return $model->trMats[0]->idParent->idMaterial->material_inv;
-                                },
-                            ],
-                        ],
-                        'buttons' => array_merge(['installaktreport' => function ($url, $model) {
-                            if ($model->mattraffic_tip == 3)
-                                $idinstallakt = $model->trOsnovs[0]->id_installakt;
-                            elseif ($model->mattraffic_tip == 4)
-                                $idinstallakt = $model->trMats[0]->id_installakt;
 
-                            if ($model->mattraffic_tip == 3 || $model->mattraffic_tip == 4)
-                                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Скачать акт перемещения матер-ой цен-ти',
-                                    'class' => 'btn btn-xs btn-default',
-                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $idinstallakt . '} )'
-                                ]);
-                            else
-                                return '';
-                        },
-                        ], Yii::$app->user->can('MaterialMolDelete') ? [
-                            'deletemol' => function ($url, $model) use ($params) {
-                                $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/mattraffic/delete', 'id' => $model->primaryKey]);
-                                return (in_array($model->mattraffic_tip, [1, 2])) ? Html::button('<i class="glyphicon glyphicon-trash"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Удалить',
-                                    'class' => 'btn btn-xs btn-danger',
-                                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_grid")'
-                                ]) : '';
-                            },
-                        ] : []),
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_mattraffic,
-                        'filterModel' => $searchModel_mattraffic,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-random"></i> Движение материальной ценности',
-                            'before' => Yii::$app->user->can('MolEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
-                                'id' => $model->primaryKey,
-                            ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                <?=
+                Tabs::widget([
+                    'items' => [
+                        [
+                            'label' => 'Движение',
+                            'content' => $this->render('_mattraffic_jurnal', [
+                                'dataProvider_mattraffic' => $dataProvider_mattraffic,
+                                'searchModel_mattraffic' => $searchModel_mattraffic,
+                                'model' => $model,
+                            ]),
                         ],
-                    ]
-                ]));
-
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'mattraffic_contain_grid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            'id_installakt',
-                            [
-                                'attribute' => 'idInstallakt.installakt_date',
-                                'format' => 'date',
-                            ],
-                            'idMattraffic.idMaterial.material_name',
-                            'idMattraffic.idMaterial.material_inv',
-                            'idMattraffic.mattraffic_number',
-                            [
-                                'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
-                                'label' => 'Материально-ответственное лицо',
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.idMol.iddolzh.dolzh_name',
-                                'label' => 'Должность материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.idMol.idbuild.build_name',
-                                'label' => 'Здание материально-ответственного лица',
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.mattraffic_username',
-                                'visible' => false,
-                            ],
-                            [
-                                'attribute' => 'idMattraffic.mattraffic_lastchange',
-                                'format' => 'datetime',
-                                'visible' => false,
-                            ],
+                        [
+                            'label' => 'Состав',
+                            'content' => $this->render('_material_contain', [
+                                'dataProvider_mattraffic_contain' => $dataProvider_mattraffic_contain,
+                                'searchModel_mattraffic_contain' => $searchModel_mattraffic_contain,
+                                'model' => $model,
+                            ]),
                         ],
-                        'buttons' => array_merge(['installaktmatreport' => function ($url, $model) {
-                            return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                'type' => 'button',
-                                'title' => 'Скачать акт перемещения матер-ой цен-ти',
-                                'class' => 'btn btn-xs btn-default',
-                                'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $model->id_installakt . '} )'
-                            ]);
-                        },
-                        ]),
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_mattraffic_contain,
-                        'filterModel' => $searchModel_mattraffic_contain,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-th-list"></i> Состав материальной ценности',
+                        [
+                            'label' => 'Осмотр',
+                            'items' => array_merge(
+                                [
+                                    [
+                                        'label' => 'Как основное средство',
+                                        'content' => $this->render('_osmotr_jurnal', [
+                                            'dataProvider_recovery' => $dataProvider_recovery,
+                                            'searchModel_recovery' => $searchModel_recovery,
+                                            'model' => $model,
+                                        ]),
+                                    ],
+                                ],
+                                $model->material_tip == 2 ?
+                                    [[
+                                        'label' => 'Как материал',
+                                        'content' => $this->render('_osmotrmat_jurnal', [
+                                            'dataProvider_recoverymat' => $dataProvider_recoverymat,
+                                            'searchModel_recoverymat' => $searchModel_recoverymat,
+                                            'model' => $model,
+                                        ]),
+                                    ]] : []
+                            ),
                         ],
-                    ]
-                ]));
+                        [
+                            'label' => 'Восстановление',
+                            'items' => array_merge(
+                                [
+                                    [
+                                        'label' => 'Как основное средство',
+                                        'content' => $this->render('_recovery_jurnal', [
+                                            'dataProvider_recoverysend' => $dataProvider_recoverysend,
+                                            'searchModel_recoverysend' => $searchModel_recoverysend,
+                                            'model' => $model,
+                                        ]),
+                                    ]
+                                ],
+                                $model->material_tip == 2 ?
+                                    [[
+                                        'label' => 'Как материал',
+                                        'content' => $this->render('_recoverymat_jurnal', [
+                                            'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
+                                            'searchModel_recoverysendmat' => $searchModel_recoverysendmat,
+                                            'model' => $model,
+                                        ]),
+                                    ]] : []
+                            ),
+                        ],
+                    ],
+                ]);
                 ?>
-            </div>
-        </div>
-        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
-            <div class="panel-heading"><?= Html::encode('Восстановление материальной ценности') ?></div>
-            <div class="panel-body">
-                <?php
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'recoverygrid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            'osmotrakt_id',
-                            [
-                                'attribute' => 'osmotrakt_date',
-                                'format' => 'date',
-                            ],
-                            'idReason.reason_text',
-                            'osmotrakt_comment',
-                            [
-                                'attribute' => 'idUser.idperson.auth_user_fullname',
-                                'label' => 'ФИО пользоателя',
-                            ],
-                            [
-                                'attribute' => 'idUser.iddolzh.dolzh_name',
-                                'label' => 'Должность пользоателя',
-                            ],
-                            [
-                                'attribute' => 'idUser.idbuild.build_name',
-                                'label' => 'Здание пользоателя',
-                            ],
-                            [
-                                'attribute' => 'idMaster.idperson.auth_user_fullname',
-                                'label' => 'ФИО мастера',
-                            ],
-                            [
-                                'attribute' => 'idMaster.iddolzh.dolzh_name',
-                                'label' => 'Должность мастера',
-                            ],
-                        ],
-                        'buttons' => [
-                            'osmotraktreport' => function ($url, $model) use ($params) {
-                                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Скачать акт осмотра матер-ой цен-ти',
-                                    'class' => 'btn btn-xs btn-default',
-                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotrakt/osmotrakt-report']) . '", null, {id: ' . $model->primaryKey . '} )'
-                                ]);
-                            },
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_recovery,
-                        'filterModel' => $searchModel_recovery,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-search"></i> Осмотр, как основная материальная ценность',
-                        ],
-                    ]
-                ]));
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'recoverymatgrid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            'idOsmotraktmat.osmotraktmat_id',
-                            [
-                                'attribute' => 'idOsmotraktmat.osmotraktmat_date',
-                                'format' => 'date',
-                            ],
-                            'tr_mat_osmotr_number',
-                            'idReason.reason_text',
-                            'tr_mat_osmotr_comment',
-                            'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
-                            'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
-                        ],
-                        'buttons' => [
-                            'osmotraktmatreport' => function ($url, $model) use ($params) {
-                                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Скачать акт осмотра материала',
-                                    'class' => 'btn btn-xs btn-default',
-                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotraktmat/osmotraktmat-report']) . '", null, {id: ' . $model->id_osmotraktmat . '} )'
-                                ]);
-                            },
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_recoverymat,
-                        'filterModel' => $searchModel_recoverymat,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-search"></i> Осмотр, как материал',
-                        ],
-                    ]
-                ]));
 
-                $recoveryrecieveakt_repaired = Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired');
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'recoverysend_grid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            'id_recoverysendakt',
-                            [
-                                'attribute' => 'idRecoverysendakt.recoverysendakt_date',
-                                'format' => 'date',
-                            ],
-                            [
-                                'attribute' => 'recoveryrecieveakt_date',
-                                'format' => 'date',
-                            ],
-                            'recoveryrecieveakt_result',
-                            [
-                                'attribute' => 'recoveryrecieveakt_repaired',
-                                'filter' => $recoveryrecieveakt_repaired,
-                                'value' => function ($model) use ($recoveryrecieveakt_repaired) {
-                                    return isset($recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired]) ? $recoveryrecieveakt_repaired[$model->recoveryrecieveakt_repaired] : '';
-                                },
-                            ],
-                            'id_osmotrakt',
-                        ],
-                        'buttons' => [
-                            'recoveryrecieveaktreport' => function ($url, $model) use ($params) {
-                                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Скачать акт получения матер-ных цен-тей от сторонней организации',
-                                    'class' => 'btn btn-xs btn-default',
-                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/recoveryrecieveakt/recoveryrecieveakt-report']) . '", null, {id: ' . $model->id_recoverysendakt . '} )'
-                                ]);
-                            },
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_recoverysend,
-                        'filterModel' => $searchModel_recoverysend,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-wrench"></i> Восстановление, как основная материальная ценность',
-                        ],
-                    ]
-                ]));
-
-                $recoveryrecieveaktmat_repaired = Recoveryrecieveaktmat::VariablesValues('recoveryrecieveaktmat_repaired');
-                echo DynaGrid::widget(Proc::DGopts([
-                    'options' => ['id' => 'recoverysendmat_grid'],
-                    'columns' => Proc::DGcols([
-                        'columns' => [
-                            'id_recoverysendakt',
-                            [
-                                'attribute' => 'idRecoverysendakt.recoverysendakt_date',
-                                'format' => 'date',
-                            ],
-                            [
-                                'attribute' => 'recoveryrecieveaktmat_date',
-                                'format' => 'date',
-                            ],
-                            'recoveryrecieveaktmat_result',
-                            [
-                                'attribute' => 'recoveryrecieveaktmat_repaired',
-                                'filter' => $recoveryrecieveaktmat_repaired,
-                                'value' => function ($model) use ($recoveryrecieveaktmat_repaired) {
-                                    return isset($recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired]) ? $recoveryrecieveaktmat_repaired[$model->recoveryrecieveaktmat_repaired] : '';
-                                },
-                            ],
-                            'idTrMatOsmotr.id_osmotraktmat',
-                        ],
-                        'buttons' => [
-                            'recoveryrecieveaktmatreport' => function ($url, $model) use ($params) {
-                                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                                    'type' => 'button',
-                                    'title' => 'Скачать акт получения материалов от сторонней организации',
-                                    'class' => 'btn btn-xs btn-default',
-                                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/recoveryrecieveaktmat/recoveryrecieveaktmat-report']) . '", null, {id: ' . $model->id_recoverysendakt . '} )'
-                                ]);
-                            },
-                        ],
-                    ]),
-                    'gridOptions' => [
-                        'dataProvider' => $dataProvider_recoverysendmat,
-                        'filterModel' => $searchModel_recoverysendmat,
-                        'panel' => [
-                            'heading' => '<i class="glyphicon glyphicon-wrench"></i> Восстановление, как материал',
-                        ],
-                    ]
-                ]));
-                ?>
             </div>
         </div>
 
@@ -543,7 +286,7 @@ use yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?php
                 if (Yii::$app->user->can('MaterialEdit'))
                     echo Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Materialform'])

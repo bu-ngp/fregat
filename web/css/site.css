@@ -175,14 +175,14 @@ label.applyfiltercolor, label.control-label.applyfiltercolor {
     color: white;
     font-size: 20px;
     position: fixed;
-    background-color: #fee0cb;
+    background-color: #803a39;
     border: white solid 5px;
     height: 90px;
     bottom: 50px;
     width: 90px;
     text-align: center;
     cursor: pointer;
-    transition: background-color 0.5s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
     /*Запретить выделение текста*/
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -207,12 +207,13 @@ a#backbutton:focus {
 
 a#backbutton:hover:focus {
     outline: none;
-    color: #fee0cb;
+    color: #803a39;
+    border-color: #ffeaea;
 }
 
 .buttonside:hover, .buttonside:hover {
     background-color: white;
-    color: #fee0cb;
+    color: #803a39;
 }
 
 .buttonside > span {
@@ -954,3 +955,53 @@ div.errordialog {
     padding: 10px 5px;
     margin-bottom: 10px;
 }
+
+.nav-tabs > li > a {
+    background-color: #ffebdd;
+    color: rgb(82, 14, 13);
+    border: 1px solid rgb(190, 144, 143);
+}
+
+.nav > li > a:hover, .nav > li > a:focus, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: rgb(128, 58, 57);
+    color: #fdf5ef;
+}
+
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background-color: rgb(128, 58, 57);
+    color: #fdf5ef;
+    border: 1px solid rgb(190, 144, 143);
+}
+
+ul.dropdown-menu {
+    background-color: #ffebdd;
+    color: rgb(82, 14, 13);
+    border: 1px solid rgb(190, 144, 143);
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus,
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-menu > .active > a:hover {
+    background-color: rgb(128, 58, 57);
+    color: #fdf5ef;
+    outline-color: transparent;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:focus {
+    background-color: rgb(157, 85, 84);
+    color: #fdf5ef;
+    outline-color: transparent;
+}
+
+div.tab-content {
+    padding: 5px;
+    background-color: #ffebdd;
+    border: 1px solid rgb(190, 144, 143);
+}
+
