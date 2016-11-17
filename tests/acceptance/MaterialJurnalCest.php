@@ -1,4 +1,13 @@
 <?php
+use app\models\Config\Authuser;
+use app\models\Fregat\Build;
+use app\models\Fregat\Dolzh;
+use app\models\Fregat\Employee;
+use app\models\Fregat\Material;
+use app\models\Fregat\Mattraffic;
+use app\models\Fregat\Matvid;
+use app\models\Fregat\Podraz;
+use app\models\Fregat\Schetuchet;
 use yii\helpers\Url;
 
 /**
@@ -54,8 +63,18 @@ class MaterialJurnalCest
         $I->loadDataFromSQLFile('material_jurnal.sql');
     }
 
-    public function destroyData(AcceptanceTester $I)
+
+
+    public function destroyData()
     {
-        //   $I->loadDataFromSQLFile('drop_material_jurnal.sql');
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll();
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
     }
 }
