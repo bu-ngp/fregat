@@ -283,7 +283,7 @@ function LoadingButtonHide(param) {
 
 /* Событие до выполнения ajax запроса, изменить состояние кнопки на ожидание */
 $(document).ajaxSend(function (event, xhr, settings) {
-    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+    if ((settings instanceof Object) && ("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
         var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
         if ($(buttonloadingid).length) {
             $(buttonloadingid)[0].label = $(buttonloadingid).html();
@@ -294,7 +294,7 @@ $(document).ajaxSend(function (event, xhr, settings) {
 
 /*  Событие после выполнения ajax запроса, изменить состояние кнопки из ожидания в обычное */
 $(document).ajaxComplete(function (event, xhr, settings) {
-    if (("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
+    if ((settings instanceof Object) && ("data" in settings) && Object.prototype.toString.call(settings.data) == '[object String]' && settings.data.indexOf('buttonloadingid') >= 0 && settings.data.match(/buttonloadingid=(\w+)(&|$)/i) !== null) {
         var buttonloadingid = "#" + settings.data.match(/buttonloadingid=(\w+)(&|$)/i)[1];
         if ($(buttonloadingid).length) {
             if ($(buttonloadingid).hasClass("wait_label_load_after_ajax"))

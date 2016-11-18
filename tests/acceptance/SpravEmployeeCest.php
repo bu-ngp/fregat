@@ -155,10 +155,7 @@ class SpravEmployeeCest
         $I->seeElement('//div[contains(@class, "field-employee-id_build has-success")]');
         $I->seeElement('//div[contains(@class, "field-employee-employee_importdo has-success")]');
 
-        $I->click('//input[@name="employee_dateinactive-employee-employee_dateinactive"]');
-        $I->seeElement('//div[contains(@class, "datepicker")]');
-        $I->seeElement('//th[contains(text(), "Вс")]');
-        $I->seeElement(['class' => 'kv-date-remove']);
+        $I->checkDatePicker('employee_dateinactive-employee-employee_dateinactive');
     }
 
     /**
