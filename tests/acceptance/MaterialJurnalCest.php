@@ -195,6 +195,96 @@ class MaterialJurnalCest
     }
 
     /**
+     * @depends addCreateMaterialFromGrids
+     */
+    public function applyFilter(AcceptanceTester $I)
+    {
+        $I->seeElement('//a[@title="Дополнительный фильтр"]');
+        $I->click('//a[@title="Дополнительный фильтр"]');
+        $I->wait(4);
+
+        $I->chooseValueFromSelect2('MaterialFilter[mol_fullname_material][]', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ива');
+        $I->chooseValueFromSelect2('MaterialFilter[material_writeoff]', 'Нет');
+        $I->fillField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
+        $I->fillField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
+        $I->fillField('MaterialFilter[mattraffic_username]', 'admin');
+        $I->wait(1);
+        $I->click(['id' => 'MaterialFilter_apply']);
+        $I->wait(2);
+
+        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С 21.11.2016 ПО 21.11.2016;']);
+        $I->checkDynagridData(['Нет', '15000.00', 'шт', '5.000', '1000002', 'Кухонный стол', 'СТОЛ', 'Материал']);
+        $I->checkDynagridData(['Нет', '1200.15', 'шт', '1.000', '1000001', 'Шкаф для одежды', 'ШКАФ', 'Основное средство']);
+
+        $I->click('//a[@title="Дополнительный фильтр"]');
+        $I->wait(4);
+
+        $I->seeElement('//select[@name="MaterialFilter[mol_fullname_material][]"]/following-sibling::span/span/span/ul/li[@title="ИВАНОВ ИВАН ИВАНОВИЧ"]');
+        $I->seeElement('//select[@name="MaterialFilter[material_writeoff]"]/following-sibling::span/span/span/span[@title="Нет"]');
+        $I->seeInField('MaterialFilter[mattraffic_username]', 'ADMIN');
+        $I->seeInField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
+        $I->seeInField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
+        $I->click(['id' => 'MaterialFilter_close']);
+        $I->wait(2);
+
+        $I->click(['id' => 'MaterialFilter_resetfilter']);
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите сбросить дополнительный фильтр?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->dontSeeElement('//div[@id="materialgrid_gw"]/div/div[@id="materialgrid_gw-container"]/div[@class="panel panel-warning"]');
+    }
+
+    /**
+     * @depends applyFilter
+     */
+    public function checkExcelExport(AcceptanceTester $I)
+    {
+        $I->click(['id' => 'Materialexcel']);
+        $I->wait(4);
+
+        $I->seeFileFound($I->convertOSFileName('Список материальных ценностей.xlsx'), 'web/files');
+        $I->checkExcelFile($I->convertOSFileName('Список материальных ценностей.xlsx'), [
+            ['A', 2, 'Дата: ' . date('d.m.Y')],
+            ['A', 5, '№'],
+            ['B', 5, 'Тип'],
+            ['C', 5, 'Вид материальной ценности'],
+            ['D', 5, 'Наименование'],
+            ['E', 5, 'Инвентарный номер'],
+            ['F', 5, 'Количество'],
+            ['G', 5, 'Единица измерения'],
+            ['H', 5, 'Стоимость'],
+            ['I', 5, 'Списан'],
+
+            ['A', 6, '1'],
+            ['B', 6, 'Материал'],
+            ['C', 6, 'СТОЛ'],
+            ['D', 6, 'Кухонный стол'],
+            ['E', 6, '1000002'],
+            ['F', 6, '5'],
+            ['G', 6, 'шт'],
+            ['H', 6, '15000'],
+            ['I', 6, 'Нет'],
+
+            ['A', 7, '2'],
+            ['B', 7, 'Основное средство'],
+            ['C', 7, 'ШКАФ'],
+            ['D', 7, 'Шкаф для одежды'],
+            ['E', 7, '1000001'],
+            ['F', 7, '1'],
+            ['G', 7, 'шт'],
+            ['H', 7, '1200.15'],
+            ['I', 7, 'Нет'],
+        ]);
+    }
+
+    public function deleteExcelFile(AcceptanceTester $I)
+    {
+        if (file_exists($I->convertOSFileName('web/files/' . 'Список материальных ценностей.xlsx')))
+            $I->deleteFile($I->convertOSFileName('web/files/' . 'Список материальных ценностей.xlsx'));
+    }
+
+    /**
      * @depends loadData
      */
     public function destroyData()

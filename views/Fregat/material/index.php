@@ -157,7 +157,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         'type' => 'button',
                         'title' => 'Экспорт в Excel',
                         'class' => 'btn btn-default button_export',
-                        'onclick' => 'ExportExcel("MaterialSearch","' . \yii\helpers\Url::toRoute('Fregat/material/toexcel') . '", $(this)[0].id);'
+                        'onclick' => 'ExportExcel("MaterialSearch","' . \yii\helpers\Url::toRoute('Fregat/material/toexcel') . '", $(this)[0].id, undefined, ' . (YII_ENV === 'test' ? 0 : 1) . ');'
                     ]) . '{export}{dynagrid}',
                 ],
             ],
@@ -165,7 +165,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
         ]
     ]));
     ?>
-
 
     <?php
     yii\bootstrap\Modal::begin([

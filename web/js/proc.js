@@ -108,12 +108,15 @@ var getUrlParameter = function getUrlParameter(sParam) {
 };
 
 // dopfields - Дополнительные поля таблицы (например те, что без фильтра)
-function ExportExcel(model, url, button, dopfields) {
+function ExportExcel(model, url, button, dopfields, removefile) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
     var inputdata = {};
     var labelvalues = {};
     if ($.type(button) === "undefined")
         button = "";
+
+    if ($.type(removefile) === "undefined")
+        removefile = true;
 
     if (inputarr.length) {
         inputarr.each(function () {
@@ -170,14 +173,15 @@ function ExportExcel(model, url, button, dopfields) {
                 window.location.href = "files/" + response;
                 /* Открываем файл */
                 /* Удаляем файл через 5 секунд*/
-                setTimeout(function () {
-                    $.ajax({
-                        url: "?r=site%2Fdelete-excel-file",
-                        type: "post",
-                        data: {filename: response},
-                        async: true
-                    });
-                }, 5000);
+                if (removefile)
+                    setTimeout(function () {
+                        $.ajax({
+                            url: "?r=site%2Fdelete-excel-file",
+                            type: "post",
+                            data: {filename: response},
+                            async: true
+                        });
+                    }, 5000);
             },
             error: function (data) {
                 console.error('Ошибка');

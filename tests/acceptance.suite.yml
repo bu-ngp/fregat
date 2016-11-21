@@ -4,6 +4,8 @@ modules:
         - WebDriver
         - Yii2
         - Db
+        - Filesystem
+        - Asserts
     config:
         WebDriver:
             url: 'http://127.0.0.1:44444/'

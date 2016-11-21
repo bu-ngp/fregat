@@ -69,7 +69,14 @@ class AcceptanceTester extends \Codeception\Actor
             $this->wait(1);
         }
         $this->click('//li[contains(text(),"' . $resultValue . '")]');
-        $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
+
+        try {
+            // single choose
+            $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
+        } catch (Exception $e) {
+            // multi chooses
+            $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/ul/li[@title="' . $resultValue . '"]');
+        }
     }
 
     public function chooseValueFromGrid($attributeName, $resultValue, $gridID, $chooseXPath = '')
@@ -80,6 +87,59 @@ class AcceptanceTester extends \Codeception\Actor
         $this->click(empty($chooseXPath) ? '//td[text()="' . $resultValue . '"]/preceding-sibling::td/button[@title="Выбрать"]' : $chooseXPath);
         $this->wait(2);
         $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
+    }
+
+    public function checkDynagridData($arrayData)
+    {
+        if (is_array($arrayData) && count($arrayData) > 0) {
+            $arrayData = array_reverse($arrayData);
+            $path = '//td[text()="' . $arrayData[0] . '"]';
+
+            unset($arrayData[0]);
+
+            foreach ($arrayData as $value)
+                $path .= '/following-sibling::td[text()="' . $value . '"]';
+
+            file_put_contents('ttt.txt', $path);
+
+            $this->seeElement($path);
+        }
+    }
+
+    public function existsInFilterTab($gridID, $arrayData)
+    {
+        if (is_string($gridID) && !empty($gridID) && is_array($arrayData) && count($arrayData) > 0) {
+            $path = '//div[@id="' . $gridID . '"]/div/div[@id="' . $gridID . '-container"]/div[@class="panel panel-warning"]/div[contains(text(),"' . $arrayData[0] . '")';
+
+            unset($arrayData[0]);
+
+            foreach ($arrayData as $value)
+                $path .= ' and contains(text(),"' . $value . '")';
+
+            $path .= ']';
+
+            $this->seeElement($path);
+        }
+    }
+
+    public function convertOSFileName($FileName)
+    {
+        return DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+    }
+
+    public function checkExcelFile($fileName, $dataArray)
+    {
+        $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
+        $objPHPExcel = \PHPExcel_IOFactory::load(Yii::$app->basePath . '/web/files/' . $fileName);
+
+        if (is_string($fileName) && !empty($fileName) && is_array($dataArray) && count($dataArray) > 0) {
+            foreach ($dataArray as $cell) {
+                $cellValue = $objPHPExcel->getActiveSheet()->getCell($cell[0] . $cell[1])->getValue();
+                if ($cellValue != $cell[2]) {
+                    $this->fail('Значение в файле "' . $fileNameOutput . '" не совпадает с заданным: ячейка "' . $cell[0] . $cell[1] . '", "' . $cellValue . '" <> "' . $cell[2] . '"');
+                }
+            }
+        }
     }
 
 }
