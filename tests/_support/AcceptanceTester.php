@@ -89,20 +89,32 @@ class AcceptanceTester extends \Codeception\Actor
         $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
     }
 
-    public function checkDynagridData($arrayData)
+    public function checkDynagridData($arrayData, $dynaGridID = '', $arrayButtons = [])
     {
         if (is_array($arrayData) && count($arrayData) > 0) {
-            $arrayData = array_reverse($arrayData);
-            $path = '//td[text()="' . $arrayData[0] . '"]';
+
+            $strbegin = empty($dynaGridID) ? '//' : '//div[@id="' . $dynaGridID . '"]/div/div/table/tbody/tr/';
+
+            $path = $strbegin . 'td[text()="' . $arrayData[0] . '"]';
+
+            $firstElement = $arrayData[0];
 
             unset($arrayData[0]);
 
             foreach ($arrayData as $value)
                 $path .= '/following-sibling::td[text()="' . $value . '"]';
 
-            file_put_contents('ttt.txt', $path);
-
             $this->seeElement($path);
+
+            if (is_array($arrayButtons) && count($arrayButtons) > 0) {
+                foreach ($arrayButtons as $button) {
+                    if (is_string($button)) {
+                        //file_put_contents('ttt.txt',$strbegin . 'td/' . $button . '/following-sibling::td[text()="' . $firstElement . '"]');
+                        $this->seeElement($strbegin . 'td/' . $button . '/../following-sibling::td[text()="' . $firstElement . '"]');
+                    }
+
+                }
+            }
         }
     }
 
