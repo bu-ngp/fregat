@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use Exception;
 use Yii;
 use app\models\Fregat\Grupavid;
 use yii\web\Controller;

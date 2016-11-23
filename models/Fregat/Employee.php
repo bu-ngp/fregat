@@ -33,6 +33,8 @@ use app\models\Config\Authuser;
  * @property Removeakt[] $removeakts
  * @property Spisosnovakt[] $spisosnovakts
  * @property Spisosnovakt[] $spisosnovakts0
+ * @property Naklad[] $gotNaklads
+ * @property Naklad[] $releaseNaklads
  */
 class Employee extends \yii\db\ActiveRecord
 {
@@ -177,6 +179,22 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getReleaseNaklads()
+    {
+        return $this->hasMany(Naklad::className(), ['id_mol_release' => 'employee_id'])->from(['releaseNaklads' => Naklad::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGotNaklads()
+    {
+        return $this->hasMany(Naklad::className(), ['id_mol_got' => 'employee_id'])->from(['gotNaklads' => Naklad::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSpisosnovaktsemp()
     {
         return $this->hasMany(Spisosnovakt::className(), ['id_employee' => 'employee_id'])->from(['spisosnovaktsemp' => Spisosnovakt::tableName()]);
@@ -206,6 +224,24 @@ class Employee extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
             ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
             ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
+            ->orderBy('idperson.auth_user_fullname')
+            ->limit(20)
+            ->asArray()
+            ->$method();
+
+        return $query;
+    }
+
+    public function selectinputwithmaterials($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $query = self::find()
+            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
+            ->innerJoinWith('mattraffics')
+            ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
+            ->groupBy('employee_id')
             ->orderBy('idperson.auth_user_fullname')
             ->limit(20)
             ->asArray()

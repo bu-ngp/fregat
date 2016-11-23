@@ -76,6 +76,10 @@ $("#mb_spisosnov_j").click(function () {
     window.location.href = "?r=Fregat%2Fspisosnovakt%2Findex";
 });
 
+$("#mb_naklad_j").click(function () {
+    window.location.href = "?r=Fregat%2Fnaklad%2Findex";
+});
+
 $("#mb_prihod_new").click(function () {
     window.location.href = "?r=Fregat%2Fmaterial%2Fcreate";
 });

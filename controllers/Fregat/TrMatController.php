@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\models\Fregat\TrMatOsmotr;
+use Exception;
 use Yii;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrMatSearch;

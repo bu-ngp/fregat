@@ -660,32 +660,9 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        $res = [];
-        $arr = explode(';', Yii::$app->db->dsn);
-        array_walk($arr, function ($val) use (&$res) {
-            $m = explode('=', $val);
-            $res[$m[0]] = $m[1];
-        });
-        var_dump($res);
-
-        $sqlFileName = dirname(dirname(__DIR__)) . '/tests/_data/test.sql';
-
-        $command = 'mysql -u' . Yii::$app->db->username . ' -p' . Yii::$app->db->password . ' '
-            . '-h ' . $res['mysql:host'] . ' -D ' . $res['dbname'] . ' < ' . $sqlFileName;
-
-        var_dump($command);
-
-        var_dump(passthru($command, $a));
-        var_dump($a);
-        
-        $handle = @fopen($sqlFileName, "r");
-        if ($handle) {
-            while (($subject = fgets($handle, 4096)) !== false) {
-                $dbh = new PDO(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
-                var_dump($dbh->exec($subject));
-            }
-            fclose($handle);
-        }
+        var_dump(date('d',strtotime('2016-11-05')));
+        var_dump(Yii::$app->formatter->asDate(date('M',strtotime('2016-11-05')),'php:F') );
+        var_dump(date('y',strtotime('2016-11-05')));
     }
 
 }

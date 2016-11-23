@@ -46,6 +46,11 @@ class MattrafficController extends Controller
                         'allow' => true,
                         'roles' => ['SpisosnovaktEdit'],
                     ],
+                    [
+                        'actions' => ['fornaklad'],
+                        'allow' => true,
+                        'roles' => ['NakladEdit'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -177,6 +182,17 @@ class MattrafficController extends Controller
     function actionAssignToSelect2()
     {
         Proc::AssignToModelFromGrid();
+    }
+
+    public function actionFornaklad()
+    {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchfornaklad(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     public

@@ -19,7 +19,7 @@ class IzmerSearch extends Izmer
     {
         return [
             [['izmer_id'], 'integer'],
-            [['izmer_name'], 'safe'],
+            [['izmer_name', 'izmer_kod_okei'], 'safe'],
         ];
     }
 
@@ -61,6 +61,7 @@ class IzmerSearch extends Izmer
         ]);
 
         $query->andFilterWhere(['like', 'izmer_name', $this->izmer_name]);
+        $query->andFilterWhere(['like', 'izmer_kod_okei', $this->izmer_kod_okei]);
 
         return $dataProvider;
     }

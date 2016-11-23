@@ -30,7 +30,7 @@ class EmployeeController extends Controller
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
                     [
-                        'actions' => ['selectinputemloyee', 'forimportemployee'],
+                        'actions' => ['selectinputemloyee', 'forimportemployee', 'selectinputwithmaterials'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -49,6 +49,11 @@ class EmployeeController extends Controller
                         'allow' => true,
                         'roles' => ['EmployeeSpecEdit'],
                     ],
+                    [
+                        'actions' => ['fornaklad'],
+                        'allow' => true,
+                        'roles' => ['NakladEdit'],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -102,6 +107,14 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function actionSelectinputwithmaterials($q = null) {
+        return Proc::ResultSelect2([
+            'model' => new Employee,
+            'q' => $q,
+            'methodquery' => 'selectinputwithmaterials',
+        ]);
+    }
+
     public function actionCreate($iduser)
     {
         $model = new Employee();
@@ -139,6 +152,17 @@ class EmployeeController extends Controller
             ]);
     }
 
+    public function actionFornaklad()
+    {
+        $searchModel = new EmployeeSearch();
+        $dataProvider = $searchModel->searchfornaklad(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
     public function actionDelete($id)
     {
         if (Yii::$app->request->isAjax)

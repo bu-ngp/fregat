@@ -15,13 +15,15 @@ use app\func\Proc;
 
     <?= $form->field($model, 'izmer_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true]) ?>
 
+    <?= $form->field($model, 'izmer_kod_okei')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
             </div>
-        </div> 
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

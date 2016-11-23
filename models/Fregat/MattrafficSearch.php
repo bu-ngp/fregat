@@ -431,5 +431,38 @@ class MattrafficSearch extends Mattraffic
         return $dataProvider;
     }
 
+    public function searchfornaklad($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
+
+        $this->baseRelations($query);
+
+        $idMol = Naklad::findOne($params['idnaklad']);
+
+        $query->andWhere(['mattraffic.id_mol' => $idMol ? $idMol->id_mol_release : -1, 'm2.mattraffic_date_m2' => NULL]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
 }
                                         
