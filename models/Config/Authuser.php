@@ -100,6 +100,11 @@ class Authuser extends \yii\db\ActiveRecord
             return $query->auth_user_fullname;
     }
 
+    public function getShortName()
+    {
+        return preg_replace('/^(\w+)\s(\w)(\w+)?(\s(\w)(\w+)?)?/iu', '$1 $2. $5.', $this->auth_user_fullname);
+    }
+
     public function save($runValidation = true, $attributeNames = null, $Profile = null)
     {
 

@@ -13,6 +13,7 @@ use app\models\Fregat\Nakladmaterials;
  */
 class NakladmaterialsSearch extends Nakladmaterials
 {
+    public $nakladmaterials_sum; // Для работы фильтра
 
     public function attributes()
     {
@@ -35,6 +36,7 @@ class NakladmaterialsSearch extends Nakladmaterials
             [['nakladmaterials_id', 'id_naklad', 'id_mattraffic'], 'integer'],
             [['nakladmaterials_number'], 'number'],
             [[
+                'nakladmaterials_sum',
                 'idMattraffic.idMaterial.material_name',
                 'idMattraffic.idMaterial.material_inv',
                 'idMattraffic.idMaterial.idIzmer.izmer_name',
@@ -95,6 +97,7 @@ class NakladmaterialsSearch extends Nakladmaterials
         $query->andFilterWhere(['LIKE', 'idIzmer.izmer_name', $this->getAttribute('idMattraffic.idMaterial.idIzmer.izmer_name')]);
         $query->andFilterWhere(['LIKE', 'idIzmer.izmer_kod_okei', $this->getAttribute('idMattraffic.idMaterial.idIzmer.izmer_kod_okei')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_price', $this->getAttribute('idMattraffic.idMaterial.material_price')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'nakladmaterials_sum', 0, '`idMaterial`.`material_price` * `nakladmaterials_number`'));
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
@@ -103,6 +106,11 @@ class NakladmaterialsSearch extends Nakladmaterials
             'idMattraffic.idMaterial.idIzmer.izmer_kod_okei',
             'idMattraffic.idMaterial.material_price',
         ]);
+
+        $dataProvider->sort->attributes['nakladmaterials_sum'] = [
+            'asc' => ['`idMaterial`.`material_price` * `nakladmaterials_number`' => SORT_ASC],
+            'desc' => ['`idMaterial`.`material_price` * `nakladmaterials_number`' => SORT_DESC],
+        ];
 
         return $dataProvider;
     }

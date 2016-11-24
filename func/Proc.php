@@ -149,15 +149,11 @@ class Proc
                             'dopparams' => [$model->formName() => $model->attributes],
                         ]);
                     } else {
-                        end($result);
-
-                        if (count($result) > 0 && $id !== key($result))
-                            prev($result);
-
                         // Массовое присваивание не походит, нужно пройти по всем атрибутам
                         foreach ($model->attributes as $attr => $value)
-                            $model->$attr = $result[key($result)]['dopparams'][$model->formName()][$attr];
+                            $model->$attr = $result[$id]['dopparams'][$model->formName()][$attr];
                     }
+
                 }
 
                 end($result);
@@ -175,11 +171,11 @@ class Proc
 
             $session['breadcrumbs'] = $result;
 
-            /*     echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-                 $s1 = $_SESSION;
-                 unset($s1['__flash']);
-                 print_r($s1);
-                 echo '</pre>';*/
+            /* echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+             $s1 = $_SESSION;
+             unset($s1['__flash']);
+             print_r($s1);
+             echo '</pre>';*/
 
             $session->close();
 
@@ -784,9 +780,10 @@ class Proc
      * @param ActiveRecord $ModelSearch Модель, для который создаем конструкцию Where().
      * @param string $Field Атрибут модели, по которому осуществляем поиск, фильтрацию.
      * @param integer $Type Тип значения в атрибуте модели (Proc::Time, Proc::Date, Proc::DateTime).
+     * @param string $SQLField SQL выражение вместо имени поля, для вычисляемых полей. По умолчанию пусто.
      * @return array Массив конструкции Where().
      */
-    static function WhereConstruct($ModelSearch, $Field, $Type = 0)
+    static function WhereConstruct($ModelSearch, $Field, $Type = 0, $SQLField = '')
     {
         $AttributeModelValue = $ModelSearch->getAttribute($Field);
         $AttributeValue = empty($AttributeModelValue) ? $ModelSearch->$Field : $ModelSearch->getAttribute($Field);
@@ -807,6 +804,8 @@ class Proc
                     $Value = date("Y-m-d H:i:s", strtotime($Value));
                     break;
             }
+
+        $Field = $SQLField ?: $Field;
 
         return [empty($Operator) ? '=' : $Operator, $Field, $Value];
     }

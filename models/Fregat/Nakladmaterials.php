@@ -58,6 +58,7 @@ class Nakladmaterials extends \yii\db\ActiveRecord
             'id_naklad' => 'Требование-накладная',
             'id_mattraffic' => 'Материальная ценность',
             'nakladmaterials_number' => 'Количество',
+            'nakladmaterials_sum' => 'Сумма',
         ];
     }
 
@@ -75,5 +76,10 @@ class Nakladmaterials extends \yii\db\ActiveRecord
     public function getIdNaklad()
     {
         return $this->hasOne(Naklad::className(), ['naklad_id' => 'id_naklad'])->from(['idNaklad' => Naklad::tableName()]);
+    }
+
+    public function getNakladmaterials_sum()
+    {
+        return !empty($this->idMattraffic->idMaterial->material_price * $this->nakladmaterials_number) ? $this->idMattraffic->idMaterial->material_price * $this->nakladmaterials_number : '';
     }
 }

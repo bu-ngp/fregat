@@ -80,10 +80,9 @@ use yii\widgets\ActiveForm;
                     'idMattraffic.idMaterial.idIzmer.izmer_kod_okei',
                     'idMattraffic.idMaterial.material_price',
                     'nakladmaterials_number',
-                    //  'material_price_sum',
+                    'nakladmaterials_sum',
                 ],
                 'buttons' => [
-                   // 'update' => ['Fregat/nakladmaterials/update'],
                     'customupdate' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/nakladmaterials/update', 'id' => $model->primaryKey, 'idnaklad' => (string)filter_input(INPUT_GET, 'id')]);
                         return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
