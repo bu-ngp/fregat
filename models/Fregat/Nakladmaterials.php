@@ -87,6 +87,7 @@ class Nakladmaterials extends \yii\db\ActiveRecord
 
     public function getNakladmaterials_sum()
     {
-        return !empty($this->idMattraffic->idMaterial->material_price * $this->nakladmaterials_number) ? $this->idMattraffic->idMaterial->material_price * $this->nakladmaterials_number : '';
+        $mult = $this->idMattraffic->idMaterial->material_price * $this->nakladmaterials_number;
+        return !empty($mult) ? $mult : '';
     }
 }
