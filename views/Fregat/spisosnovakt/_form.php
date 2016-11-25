@@ -48,6 +48,7 @@ use yii\widgets\ActiveForm;
         'thisroute' => $this->context->module->requestedRoute,
         'fromgridroute' => 'Fregat/schetuchet/index',
         'methodquery' => 'selectinput',
+        'disabled' => !$model->isNewRecord,
     ]));
     ?>
 
@@ -64,6 +65,7 @@ use yii\widgets\ActiveForm;
         'resultrequest' => 'Fregat/employee/selectinputemloyee',
         'thisroute' => $this->context->module->requestedRoute,
         'methodquery' => 'selectinput',
+        'disabled' => !$model->isNewRecord,
     ]));
     ?>
 

@@ -24,6 +24,7 @@ use Yii;
  * @property string $material_tip
  * @property string $material_writeoff
  * @property string $izmer_name
+ * @property string $izmer_kod_okei
  * @property string $matvid_name
  * @property string $schetuchet_kod
  * @property string $schetuchet_name
@@ -31,23 +32,26 @@ use Yii;
  * @property Logreport $idLogreport
  * @property Traflog[] $traflogs
  */
-class Matlog extends \yii\db\ActiveRecord {
+class Matlog extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'matlog';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['id_logreport', 'matlog_filename', 'matlog_rownum', 'matlog_type', 'matlog_message', 'matlog_filelastdate'], 'required'],
             [['id_logreport', 'matlog_rownum', 'matlog_type'], 'integer'],
-            [['matlog_filename', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'material_writeoff', 'izmer_name', 'matvid_name', 'schetuchet_kod', 'schetuchet_name'], 'string', 'max' => 255],
+            [['matlog_filename', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'material_writeoff', 'izmer_name', 'matvid_name', 'schetuchet_kod', 'schetuchet_name', 'izmer_kod_okei'], 'string', 'max' => 255],
             [['matlog_message'], 'string', 'max' => 1000],
             [['material_name1c'], 'string', 'max' => 400],
             [['id_logreport'], 'exist', 'skipOnError' => true, 'targetClass' => Logreport::className(), 'targetAttribute' => ['id_logreport' => 'logreport_id']],
@@ -57,7 +61,8 @@ class Matlog extends \yii\db\ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'matlog_id' => 'Matlog ID',
             'id_logreport' => 'Id Logreport',
@@ -76,6 +81,7 @@ class Matlog extends \yii\db\ActiveRecord {
             'material_tip' => 'Тип',
             'material_writeoff' => 'Статус списания',
             'izmer_name' => 'Единица измерения',
+            'izmer_kod_okei' => 'Код ОКЕИ единицы измерения',
             'matvid_name' => 'Вид',
             'schetuchet_kod' => 'Код счета учета',
             'schetuchet_name' => 'Наименование счета учета',
@@ -85,14 +91,16 @@ class Matlog extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdlogreport() {
+    public function getIdlogreport()
+    {
         return $this->hasOne(Logreport::className(), ['logreport_id' => 'id_logreport'])->from(['idlogreport' => Logreport::tableName()]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTraflogs() {
+    public function getTraflogs()
+    {
         return $this->hasMany(Traflog::className(), ['id_matlog' => 'matlog_id'])->from(['traflogs' => Traflog::tableName()]);
     }
 

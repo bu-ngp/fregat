@@ -28,10 +28,10 @@ use yii\helpers\Html;
         'resultrequest' => 'Fregat/nakladmaterials/selectinputfornakladmaterials',
         'thisroute' => $this->context->module->requestedRoute,
         'methodquery' => 'selectinputfornakladmaterials',
-        'methodparams' => ['idnaklad' => (string)filter_input(INPUT_GET, 'idnaklad')],
-        'dopparams' => [
+      //  'methodparams' => ['idnaklad' => (string)filter_input(INPUT_GET, 'idnaklad')],
+      /*  'dopparams' => [
             'idnaklad' => (string)filter_input(INPUT_GET, 'idnaklad'),
-        ],
+        ],*/
     ]), [
         'pluginEvents' => [
             "select2:select" => "function() { SetMaxNumberByMaterial(); }",

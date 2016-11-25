@@ -153,7 +153,7 @@ class MattrafficController extends Controller
         $searchModel = new MattrafficSearch();
         $dataProvider = $searchModel->searchforspisosnovakt(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        return $this->render('index_spisosnovakt', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

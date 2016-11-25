@@ -42,6 +42,7 @@ class MattrafficSearch extends Mattraffic
             'idMol.employee_importdo',
             'trOsnovs.tr_osnov_kab',
             'trMats.idParent.idMaterial.material_inv',
+            'idMaterial.idSchetuchet.schetuchet_kod',
         ]);
     }
 
@@ -76,6 +77,7 @@ class MattrafficSearch extends Mattraffic
                 'mattraffic_number',
                 'idMaterial.material_number',
                 'idMaterial.material_price',
+                'idMaterial.idSchetuchet.schetuchet_kod',
             ], 'safe'],
         ];
     }
@@ -409,6 +411,8 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
+        $query->joinWith('idMaterial.idSchetuchet');
+
         $query->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3))')
             ->andWhere(['in', 'mattraffic_tip', [1]])
             ->andWhere([
@@ -425,8 +429,13 @@ class MattrafficSearch extends Mattraffic
         }
 
         $this->baseFilter($query);
+        $query->andFilterWhere(['LIKE', 'idSchetuchet.schetuchet_kod', $this->getAttribute('idMaterial.idSchetuchet.schetuchet_kod')]);
 
         $this->baseSort($dataProvider);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idMaterial.idSchetuchet.schetuchet_kod',
+        ]);
 
         return $dataProvider;
     }

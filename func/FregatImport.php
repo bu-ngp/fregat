@@ -106,6 +106,7 @@ class FregatImport
             'material_number' => self::IsFileType(self::mat) ? $Importconfig['mat_material_number'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_number'] : ''),
             'material_price' => self::IsFileType(self::os) ? $Importconfig['os_material_price'] : (self::IsFileType(self::gu) ? $Importconfig['gu_material_price'] : $Importconfig['mat_material_price']),
             'izmer_name' => self::IsFileType(self::mat) ? $Importconfig['mat_izmer_name'] : '',
+            'izmer_kod_okei' => self::IsFileType(self::mat) ? $Importconfig['mat_material_izmer_kod_okei'] : '',
             'employee_fio' => self::IsFileType(self::os) ? $Importconfig['os_employee_fio'] : (self::IsFileType(self::gu) ? $Importconfig['gu_employee_fio'] : $Importconfig['mat_employee_fio']),
             'dolzh_name' => self::IsFileType(self::os) ? $Importconfig['os_dolzh_name'] : (self::IsFileType(self::gu) ? $Importconfig['gu_dolzh_name'] : $Importconfig['mat_dolzh_name']),
             'podraz_name' => self::IsFileType(self::os) ? $Importconfig['os_podraz_name'] : (self::IsFileType(self::gu) ? $Importconfig['gu_podraz_name'] : $Importconfig['mat_podraz_name']),
@@ -182,19 +183,23 @@ class FregatImport
 
     // Определяем Единицу измерения
     // Если единица измерения не найдена в справочнике, она добавляется.
-    private static function AssignIzmer($value)
+    private static function AssignIzmer($value, $kod_okei = '')
     {
-        $izmer_id = self::GetRowsPDO('select izmer_id, izmer_name from izmer where izmer_name like :izmer_name', ['izmer_name' => $value]);
+        $Izmer = Izmer::find()->andWhere(['izmer_name' => $value])->one();
 
-        if (empty($izmer_id)) {
+        if (empty($Izmer)) {
             $Izmer = new Izmer;
             $Izmer->izmer_name = $value;
-            if ($Izmer->Save())
-                $izmer_id = $Izmer->izmer_id;
-            unset($Izmer);
-        } else
-            $izmer_id = $izmer_id['izmer_id'];
-        return $izmer_id;
+            $Izmer->izmer_kod_okei = $kod_okei;
+            $Izmer->Save();
+        } else {
+            if (empty($Izmer->izmer_kod_okei) && !empty($kod_okei)) {
+                $Izmer->izmer_kod_okei = $kod_okei;
+                $Izmer->Save();
+            }
+        }
+
+        return $Izmer->primaryKey;
     }
 
     // Определяем Счет учета
@@ -395,7 +400,7 @@ class FregatImport
             'material_price' => $material_price,
             'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3), // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал, 3 - Групповой учет основных средств)
             'id_matvid' => self::AssignMatvid(trim($row[self::xls('material_name1c')])), // Определяем Вид материальной ценности согласно таблицы соответствий importmaterial, если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
-            'id_izmer' => (self::IsFileType(self::os) || self::IsFileType(self::gu)) ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')])), // Определяем Единицу измерения
+            'id_izmer' => (self::IsFileType(self::os) || self::IsFileType(self::gu)) ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')]), trim($row[self::xls('izmer_kod_okei')])), // Определяем Единицу измерения
             'id_schetuchet' => self::AssignSchetuchet(trim($row[self::xls('schetuchet_kod')]), trim($row[self::xls('schetuchet_name')])), // Определяем Единицу измерения
             'material_tip_nomenklaturi' => self::IsFileType(self::mat) ? trim($row[self::xls('material_tip_nomenklaturi')]) : '', // Колонка "ТипНоменклатуры" в файле Материалов
         ];
@@ -612,6 +617,7 @@ class FregatImport
 
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                $Matlog->izmer_kod_okei = self::GetNameByID('izmer', 'izmer_kod_okei', $Material->id_izmer);
                 $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
                 $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
 
@@ -628,6 +634,7 @@ class FregatImport
                 $Matlog->attributes = $Material->attributes;
                 $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                 $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                $Matlog->izmer_kod_okei = self::GetNameByID('izmer', 'izmer_kod_okei', $Material->id_izmer);
                 $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
                 $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
                 $Matlog->material_writeoff = $Material->material_writeoff === '1' ? 'Да' : 'Нет';
@@ -1047,6 +1054,7 @@ class FregatImport
                     $Matlog->matlog_message = $spismat ? 'Материал списан. ' : 'Запись не изменялась. ';
                     $Matlog->matvid_name = self::GetNameByID('matvid', 'matvid_name', $Material->id_matvid);
                     $Matlog->izmer_name = self::GetNameByID('izmer', 'izmer_name', $Material->id_izmer);
+                    $Matlog->izmer_kod_okei = self::GetNameByID('izmer', 'izmer_kod_okei', $Material->id_izmer);
                     $Matlog->schetuchet_kod = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_kod;
                     $Matlog->schetuchet_name = Schetuchet::findOne($Material->id_schetuchet)->schetuchet_name;
                     $Matlog->material_writeoff = $Material->material_writeoff === 1 ? 'Да' : 'Нет';
@@ -1780,7 +1788,7 @@ class FregatImport
 
         //      ----------------  Материальные ценности ------------------------------------------
         $rows = Matlog::find()
-            ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'matvid_name', 'schetuchet_kod', 'schetuchet_name'])
+            ->select(['matlog_filename', 'matlog_filelastdate', 'matlog_rownum', 'matlog_message', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_number', 'material_price', 'material_tip', 'izmer_name', 'izmer_kod_okei', 'matvid_name', 'schetuchet_kod', 'schetuchet_name'])
             ->where(['id_logreport' => $logreport['logreport_id']])
             ->asArray()
             ->all();
