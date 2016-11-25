@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\func\Proc;
 use app\func\ReportsTemplate\NakladReport;
+use app\models\Fregat\NakladFilter;
 use app\models\Fregat\Nakladmaterials;
 use app\models\Fregat\NakladmaterialsSearch;
 use Exception;
@@ -30,7 +31,7 @@ class NakladController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'naklad-report'],
+                        'actions' => ['index', 'naklad-report', 'nakladfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -57,11 +58,13 @@ class NakladController extends Controller
     public function actionIndex()
     {
         $searchModel = new NakladSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new NakladFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -114,7 +117,20 @@ class NakladController extends Controller
     public function actionNakladReport()
     {
         $Report = new NakladReport();
-        echo $Report->Execute();
+        echo $Report->Execute(false);
+    }
+
+    public function actionNakladfilter()
+    {
+        $model = new NakladFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('NakladSearch', $model);
+
+            return $this->renderAjax('_nakladfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

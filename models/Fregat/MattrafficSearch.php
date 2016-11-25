@@ -445,9 +445,7 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
-        $idMol = Naklad::findOne($params['idnaklad']);
-
-        $query->andWhere(['mattraffic.id_mol' => $idMol ? $idMol->id_mol_release : -1, 'm2.mattraffic_date_m2' => NULL]);
+        $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
 
         $this->load($params);
 

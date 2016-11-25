@@ -348,14 +348,13 @@ class Mattraffic extends \yii\db\ActiveRecord
     public function selectinputfornakladmaterials($params)
     {
         $method = isset($params['init']) ? 'one' : 'all';
-        $idMol = Naklad::findOne($params['idnaklad']);
 
         $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, material_name) AS text']))
+            ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idbuild.build_name, material_name) AS text']))
             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->joinWith(['idMaterial'])
+            ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idbuild', 'idMaterial'])
             ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
-            ->andWhere(['mattraffic.id_mol' => $idMol ? $idMol->id_mol_release : -1, 'm2.mattraffic_date_m2' => NULL])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
             ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
             ->orderBy(['idMaterial.material_inv' => SORT_ASC])
             ->limit(20)

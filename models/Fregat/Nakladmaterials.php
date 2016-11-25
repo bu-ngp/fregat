@@ -38,6 +38,7 @@ class Nakladmaterials extends \yii\db\ActiveRecord
             [['id_naklad'], 'exist', 'skipOnError' => true, 'targetClass' => Naklad::className(), 'targetAttribute' => ['id_naklad' => 'naklad_id']],
             [['id_mattraffic'], 'unique', 'targetAttribute' => ['id_naklad', 'id_mattraffic'], 'message' => 'Данная материальная ценность уже имеется в требовании-накладной.'],
             ['nakladmaterials_number', 'MaxNumberMaterial'],
+            ['id_mattraffic', 'AccessAddMaterial'],
         ];
     }
 
@@ -46,6 +47,12 @@ class Nakladmaterials extends \yii\db\ActiveRecord
     {
         if ($this->nakladmaterials_number > Mattraffic::findOne($this->id_mattraffic)->mattraffic_number)
             $this->addError($attribute, 'Максимально допустимое количество у этого МОЛ равно ' . Mattraffic::findOne($this->id_mattraffic)->mattraffic_number);
+    }
+
+    public function AccessAddMaterial($attribute)
+    {
+        if ($this->idNaklad->id_mol_release != $this->idMattraffic->id_mol)
+            $this->addError($attribute, 'Материальная ценность не соответствует МОЛ требования-накладной: ' . $this->idNaklad->idMolRelease->idperson->shortName . ', ' . $this->idNaklad->idMolRelease->iddolzh->dolzh_name . ', ' . $this->idNaklad->idMolRelease->idpodraz->podraz_name . ', ' . $this->idNaklad->idMolRelease->idbuild->build_name);
     }
 
     /**

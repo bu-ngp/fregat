@@ -86,7 +86,7 @@ class NakladmaterialsSearch extends Nakladmaterials
         // grid filtering conditions
         $query->andFilterWhere([
             'nakladmaterials_id' => $this->nakladmaterials_id,
-            'id_naklad' => $this->id_naklad,
+            'id_naklad' => $_GET['id'] ?: -1,
             'id_mattraffic' => $this->id_mattraffic,
             'nakladmaterials_number' => $this->nakladmaterials_number,
         ]);

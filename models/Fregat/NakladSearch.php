@@ -6,6 +6,7 @@ use app\func\Proc;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
 
 /**
  * NakladSearch represents the model behind the search form about `app\models\Fregat\Naklad`.
@@ -113,6 +114,40 @@ class NakladSearch extends Naklad
             'idMolRelease.idpodraz.podraz_name' => 'idmolreleasepodraz',
         ]);
 
+        $this->nakladDopFilter($query);
+
         return $dataProvider;
+    }
+
+    private function nakladDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'NakladFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('nakladmaterials.id_naklad')
+                    ->from('nakladmaterials nakladmaterials')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = nakladmaterials.id_mattraffic')
+                    ->andWhere('nakladmaterials.id_naklad = naklad.naklad_id')
+            ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('nakladmaterials.id_naklad')
+                    ->from('nakladmaterials nakladmaterials')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = nakladmaterials.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('nakladmaterials.id_naklad = naklad.naklad_id')
+            ]);
+
+        }
     }
 }
