@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\InstallaktReport;
+use app\models\Fregat\InstallaktFilter;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrOsnov;
 use Exception;
@@ -34,7 +35,7 @@ class InstallaktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'installakt-report'],
+                        'actions' => ['index', 'installakt-report', 'installaktfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -57,11 +58,13 @@ class InstallaktController extends Controller
     public function actionIndex()
     {
         $searchModel = new InstallaktSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new InstallaktFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -109,6 +112,19 @@ class InstallaktController extends Controller
     {
         $Report = new InstallaktReport();
         echo $Report->Execute();
+    }
+
+    public function actionInstallaktfilter()
+    {
+        $model = new InstallaktFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('InstallaktSearch', $model);
+
+            return $this->renderAjax('_installaktfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     public function actionDelete($id)

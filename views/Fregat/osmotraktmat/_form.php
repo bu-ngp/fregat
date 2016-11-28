@@ -83,7 +83,11 @@ use \yii\helpers\Url;
                         'label' => 'Инвентарный номер материальной ценности в которую укомплектовано',
                     ],
                     'idReason.reason_text',
-                    'tr_mat_osmotr_comment'
+                    'tr_mat_osmotr_comment',
+                    [
+                        'attribute' => 'idTrMat.idInstallakt.installakt_id',
+                        'visible' => false,
+                    ],
                 ],
                 'buttons' => [
                     'update' => ['Fregat/tr-mat-osmotr/update'],
@@ -110,7 +114,7 @@ use \yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Osmotraktmatform']) ?>
                 <?php
                 if (!$model->isNewRecord)

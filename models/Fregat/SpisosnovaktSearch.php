@@ -7,6 +7,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Spisosnovakt;
+use yii\db\Query;
 
 /**
  * SpisosnovaktSearch represents the model behind the search form about `app\models\Fregat\Spisosnovakt`.
@@ -117,7 +118,40 @@ class SpisosnovaktSearch extends Spisosnovakt
             'idSchetuchet.schetuchet_name',
         ]);
 
+        $this->spisosnovaktDopFilter($query);
 
         return $dataProvider;
+    }
+
+    private function spisosnovaktDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'SpisosnovaktFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('spisosnovmaterials.id_spisosnovakt')
+                    ->from('spisosnovmaterials spisosnovmaterials')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = spisosnovmaterials.id_mattraffic')
+                    ->andWhere('spisosnovmaterials.id_spisosnovakt = spisosnovakt.spisosnovakt_id')
+            ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('spisosnovmaterials.id_spisosnovakt')
+                    ->from('spisosnovmaterials spisosnovmaterials')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = spisosnovmaterials.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('spisosnovmaterials.id_spisosnovakt = spisosnovakt.spisosnovakt_id')
+            ]);
+
+        }
     }
 }

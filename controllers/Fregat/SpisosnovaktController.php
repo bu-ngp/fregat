@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\func\Proc;
+use app\models\Fregat\SpisosnovaktFilter;
 use app\func\ReportsTemplate\SpisosnovaktReport;
 use app\models\Fregat\Spisosnovmaterials;
 use app\models\Fregat\SpisosnovmaterialsSearch;
@@ -30,7 +31,7 @@ class SpisosnovaktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'spisosnovakt-report'],
+                        'actions' => ['index', 'spisosnovakt-report', 'spisosnovaktfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -57,11 +58,13 @@ class SpisosnovaktController extends Controller
     public function actionIndex()
     {
         $searchModel = new SpisosnovaktSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new SpisosnovaktFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -136,6 +139,19 @@ class SpisosnovaktController extends Controller
     {
         $Report = new SpisosnovaktReport;
         echo $Report->Execute();
+    }
+
+    public function actionSpisosnovaktfilter()
+    {
+        $model = new SpisosnovaktFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('SpisosnovaktSearch', $model);
+
+            return $this->renderAjax('_spisosnovaktfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

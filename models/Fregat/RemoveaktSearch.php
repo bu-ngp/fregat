@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Removeakt;
 use app\func\Proc;
+use yii\db\Query;
 
 /**
  * RemoveaktSearch represents the model behind the search form about `app\models\Fregat\Removeakt`.
@@ -80,7 +81,55 @@ class RemoveaktSearch extends Removeakt
 
         Proc::AssignRelatedAttributes($dataProvider, ['idRemover.idperson.auth_user_fullname', 'idRemover.iddolzh.dolzh_name']);
 
+        $this->removeaktDopFilter($query);
+
         return $dataProvider;
     }
 
+    private function removeaktDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'RemoveaktFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trRmMat.id_removeakt')
+                    ->from('tr_rm_mat trRmMat')
+                    ->leftJoin('tr_mat trMat', 'trMat.tr_mat_id = trRmMat.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->andWhere('trRmMat.id_removeakt = removeakt.removeakt_id')
+            ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trRmMat.id_removeakt')
+                    ->from('tr_rm_mat trRmMat')
+                    ->leftJoin('tr_mat trMat', 'trMat.tr_mat_id = trRmMat.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('trRmMat.id_removeakt = removeakt.removeakt_id')
+            ]);
+
+            $attr = 'id_parent';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idParent.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trRmMat.id_removeakt')
+                    ->from('tr_rm_mat trRmMat')
+                    ->leftJoin('tr_mat trMat', 'trMat.tr_mat_id = trRmMat.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->leftJoin('mattraffic idParent', 'idParent.mattraffic_id = trMat.id_parent')
+                    ->andWhere('trRmMat.id_removeakt = removeakt.removeakt_id')
+            ]);
+
+        }
+    }
 }

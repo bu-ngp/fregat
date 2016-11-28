@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Osmotraktmat;
 use app\func\Proc;
+use yii\db\Query;
 
 /**
  * OsmotraktmatSearch represents the model behind the search form about `app\models\Fregat\Osmotraktmat`.
@@ -95,8 +96,87 @@ class OsmotraktmatSearch extends Osmotraktmat
             'desc' => ['count(osmotraktmat_id)' => SORT_DESC],
         ];
 
+        $this->osmotraktmatDopFilter($query);
+
         return $dataProvider;
     }
 
+
+    private function osmotraktmatDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'OsmotraktmatFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = trMatOsmotr.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrMat.id_mattraffic')
+                    ->andWhere('trMatOsmotr.id_osmotraktmat = osmotraktmat.osmotraktmat_id')
+            ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = trMatOsmotr.id_tr_mat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrMat.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('trMatOsmotr.id_osmotraktmat = osmotraktmat.osmotraktmat_id')
+            ]);
+
+
+            $attr = 'reason_text';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'trMatOsmotr.id_reason',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->andWhere('trMatOsmotr.id_osmotraktmat = osmotraktmat.osmotraktmat_id')
+            ]);
+
+            $attr = 'tr_mat_osmotr_comment';
+            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'trMatOsmotr.tr_mat_osmotr_comment',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->andWhere('trMatOsmotr.id_osmotraktmat = osmotraktmat.osmotraktmat_id')
+            ]);
+
+            $attr = 'id_parent';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idParent.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = trMatOsmotr.id_tr_mat')
+                    ->leftJoin('mattraffic idParent', 'idParent.mattraffic_id = idTrMat.id_parent')
+            ]);
+
+            $attr = 'installakt_id';
+            Proc::Filter_Compare(Proc::Number, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idInstallakt.installakt_id',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMatOsmotr.id_osmotraktmat')
+                    ->from('tr_mat_osmotr trMatOsmotr')
+                    ->leftJoin('tr_mat idTrMat', 'idTrMat.tr_mat_id = trMatOsmotr.id_tr_mat')
+                    ->leftJoin('installakt idInstallakt', 'idInstallakt.installakt_id = idTrMat.id_installakt')
+            ]);
+
+        }
+    }
 }
                 

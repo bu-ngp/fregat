@@ -345,6 +345,38 @@ class Mattraffic extends \yii\db\ActiveRecord
         return $query;
     }
 
+    public function selectinputforspisosnovaktFast($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
+
+        $Spisosnovakt = Spisosnovakt::findOne($params['spisosnovakt_id']);
+
+        if (!empty($Spisosnovakt)) {
+            $query = self::find()
+                ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
+                ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                ->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3))')
+                ->andWhere(['in', 'mattraffic_tip', [1]])
+                ->andWhere([
+                    'm2.mattraffic_date_m2' => NULL,
+                    'idMaterial.material_writeoff' => 0,
+                ])
+                ->andWhere(['id_mol' => $Spisosnovakt->id_mol])
+                ->andWhere(['idMaterial.id_schetuchet' => $Spisosnovakt->id_schetuchet])
+                ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
+                ->limit(20)
+                ->asArray()
+                ->$method();
+
+            return $query;
+        }
+
+        return [];
+
+    }
+
     public function selectinputfornakladmaterials($params)
     {
         $method = isset($params['init']) ? 'one' : 'all';

@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/removeaktfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
@@ -47,7 +48,26 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'heading' => '<i class="glyphicon glyphicon-paste"></i> ' . $this->title,
                 'before' => Yii::$app->user->can('RemoveaktEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
             ],
+            'toolbar' => [
+                'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['removeaktfilter'], [
+                        'title' => 'Дополнительный фильтр',
+                        'class' => 'btn btn-default filter_button'
+                    ]) . '{export}{dynagrid}',
+                ],
+            ],
+            'afterHeader' => $filter,
         ]
     ]));
     ?>
 </div>
+<?php
+yii\bootstrap\Modal::begin([
+    'header' => 'Дополнительный фильтр',
+    'id' => 'RemoveaktFilter',
+    'options' => [
+        'class' => 'modal_filter',
+        'tabindex' => false, // чтобы работал select2 в модальном окне
+    ],
+]);
+yii\bootstrap\Modal::end();
+?>

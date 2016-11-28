@@ -32,6 +32,7 @@ class OsmotraktSearch extends Osmotrakt
             'idReason.reason_text',
             'idMaster.idperson.auth_user_fullname',
             'idMaster.iddolzh.dolzh_name',
+            'idTrosnov.idInstallakt.installakt_id',
         ]);
     }
 
@@ -58,6 +59,7 @@ class OsmotraktSearch extends Osmotrakt
                 'idReason.reason_text',
                 'idMaster.idperson.auth_user_fullname',
                 'idMaster.iddolzh.dolzh_name',
+                'idTrosnov.idInstallakt.installakt_id',
             ], 'safe'],
         ];
     }
@@ -73,6 +75,7 @@ class OsmotraktSearch extends Osmotrakt
 
     private function baseRelations(&$query)
     {
+        $query->joinWith(['idTrosnov.idInstallakt']);
         $query->joinWith(['idTrosnov.idMattraffic.idMaterial.idMatv']);
         $query->joinWith(['idTrosnov.idMattraffic.idMol.idperson']);
         $query->joinWith(['idTrosnov.idMattraffic.idMol.iddolzh']);
@@ -109,6 +112,7 @@ class OsmotraktSearch extends Osmotrakt
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
         $query->andFilterWhere(['LIKE', 'idmasterperson.auth_user_fullname', $this->getAttribute('idMaster.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'idmasterdolzh.dolzh_name', $this->getAttribute('idMaster.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrosnov.idInstallakt.installakt_id'));
     }
 
     private function baseSort(&$dataProvider)
@@ -127,6 +131,7 @@ class OsmotraktSearch extends Osmotrakt
             'idUser.iddolzh.dolzh_name' => 'iduserdolzh',
             'idMaster.idperson.auth_user_fullname' => 'idmasterperson',
             'idMaster.iddolzh.dolzh_name' => 'idmasterdolzh',
+            'idTrosnov.idInstallakt.installakt_id',
         ]);
     }
 

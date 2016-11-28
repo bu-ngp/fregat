@@ -96,9 +96,9 @@ use yii\widgets\ActiveForm;
                 'allowClear' => true,
                 'minimumInputLength' => 3,
                 'ajax' => [
-                    'url' => Url::to(['Fregat/mattraffic/selectinputforspisosnovakt']),
+                    'url' => Url::to(['Fregat/mattraffic/selectinputforspisosnovakt-fast']),
                     'dataType' => 'json',
-                    'data' => new JsExpression('function(params) { return {q:params.term} }'),
+                    'data' => new JsExpression('function(params) { return {q:params.term, spisosnovakt_id: ' . $_GET['id'] . '} }'),
                 ],
                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
             ],

@@ -32,6 +32,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
             'idOsmotraktmat.osmotraktmat_date',
             'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
             'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
+            'idTrMat.idInstallakt.installakt_id',
         ]);
     }
 
@@ -58,6 +59,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
                 'idOsmotraktmat.osmotraktmat_date',
                 'idOsmotraktmat.idMaster.idperson.auth_user_fullname',
                 'idOsmotraktmat.idMaster.iddolzh.dolzh_name',
+                'idTrMat.idInstallakt.installakt_id',
             ], 'safe'],
         ];
     }
@@ -83,6 +85,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
         $query = TrMatOsmotr::find();
 
         $query->joinWith([
+            'idTrMat.idInstallakt',
             'idTrMat.idMattraffic.idMaterial.idMatv',
             'idTrMat.idMattraffic.idMol.idperson',
             'idTrMat.idMattraffic.idMol.iddolzh',
@@ -128,6 +131,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idReason.reason_text')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idTrMat.idParent.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idTrMat.idParent.idMaterial.material_inv')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMat.idInstallakt.installakt_id'));
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idTrMat.idMattraffic.idMaterial.idMatv.matvid_name',
@@ -139,6 +143,7 @@ class TrMatOsmotrSearch extends TrMatOsmotr
             'idTrMat.idParent.idMaterial.material_name' => 'matparent',
             'idTrMat.idParent.idMaterial.material_inv' => 'matparent',
             'idReason.reason_text',
+            'idTrMat.idInstallakt.installakt_id',
         ]);
 
         return $dataProvider;

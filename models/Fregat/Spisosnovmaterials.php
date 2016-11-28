@@ -37,6 +37,7 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
             [['id_spisosnovakt'], 'exist', 'skipOnError' => true, 'targetClass' => Spisosnovakt::className(), 'targetAttribute' => ['id_spisosnovakt' => 'spisosnovakt_id']],
             [['spisosnovmaterials_number'], 'MaxNumberSpis'],
+            ['id_mattraffic', 'CheckAccessForAddMaterial'],
         ];
     }
 
@@ -71,6 +72,19 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
             if (!empty($query) && $this->spisosnovmaterials_number > $query->mattraffic_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $query->mattraffic_number);
         }
+    }
+
+    public function CheckAccessForAddMaterial($attribute)
+    {
+        $errorMes = '';
+        if ($this->idSpisosnovakt->id_schetuchet != $this->idMattraffic->idMaterial->id_schetuchet)
+            $errorMes .= 'Материальная ценность не соответствует счету учета, заявки на списание: ' . $this->idSpisosnovakt->idSchetuchet->schetuchet_kod;
+
+        if ($this->idSpisosnovakt->id_mol != $this->idMattraffic->id_mol)
+            $errorMes .= (empty($errorMes) ? '' : '. ') . 'Материальная ценность не соответствует МОЛ\'у, заявки на списание: ' . $this->idSpisosnovakt->idMol->employeeName;
+
+        if (!empty($errorMes))
+            $this->addError($attribute, $errorMes);
     }
 
     /**

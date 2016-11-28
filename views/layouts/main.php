@@ -28,8 +28,9 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     use kartik\icons\Icon;
+
     Icon::map($this);
-    
+
     NavBar::begin([
         'brandLabel' => 'БУ "Нижневартовская городская поликлиника"',
         'brandUrl' => Yii::$app->homeUrl,
@@ -102,9 +103,15 @@ AppAsset::register($this);
         <span>ВВЕРХ</span>
     </div>
 
-    <a class="buttonside" id="backbutton" href="<?= Proc::GetPreviousURLBreadcrumbsFromSession() === Yii::$app->homeUrl ? '#' : Proc::GetPreviousURLBreadcrumbsFromSession() ?>" style="display: none;">
+    <a class="buttonside" id="backbutton"
+       href="<?= Proc::GetPreviousURLBreadcrumbsFromSession() === Yii::$app->homeUrl ? '#' : Proc::GetPreviousURLBreadcrumbsFromSession() ?>"
+       style="display: none;">
         <span>НАЗАД</span>
     </a>
+
+    <div style="position: fixed; top: 100px; left: 10px; font-size: 35px; width: 150px; color: red;">
+        <?= Yii::$app->db->dsn === "mysql:host=127.0.0.1;dbname=baseportal;charset=UTF8" ? "Тестовая база!" : "" ?>
+    </div>
 </div>
 
 <footer class="footer">

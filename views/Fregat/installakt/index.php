@@ -1,4 +1,5 @@
 <?php
+\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/installaktfilter.js');
 
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
@@ -14,58 +15,60 @@ use yii\bootstrap\ButtonGroup;
 $this->title = 'Журнал перемещений материальных ценностей';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
-<div class="installakt-index">
-    <?=
-    DynaGrid::widget(Proc::DGopts([
-                'options' => ['id' => 'installaktgrid'],
-                'columns' => Proc::DGcols([                    
-                    'columns' => [
-                        'installakt_id',
-                        [
-                            'attribute' => 'installakt_date',
-                            'format' => 'date',
+    <div class="installakt-index">
+        <?=
+        DynaGrid::widget(Proc::DGopts([
+            'options' => ['id' => 'installaktgrid'],
+            'columns' => Proc::DGcols([
+                'columns' => [
+                    'installakt_id',
+                    [
+                        'attribute' => 'installakt_date',
+                        'format' => 'date',
                         //   'visible' => false,
-                        ],
-                        [
-                            'attribute' => 'idInstaller.idperson.auth_user_fullname',
-                            'label' => 'ФИО мастера',
-                        ],
-                        [
-                            'attribute' => 'idInstaller.iddolzh.dolzh_name',
-                            'label' => 'Должность мастера',
-                        ],
                     ],
-                    'buttons' => array_merge(Yii::$app->user->can('InstallEdit') ? [
-                                'update' => ['Fregat/installakt/update', 'installakt_id'],
-                                'deleteajax' => ['Fregat/installakt/delete', 'installakt_id'],
-                                    ] : []
-                    ),
-                ]),
-                'gridOptions' => [
-                    'dataProvider' => $dataProvider,
-                    'filterModel' => $searchModel,
-                    'panel' => [
-                        'heading' => '<i class="glyphicon glyphicon-random"></i> ' . $this->title,
-                        'before' => Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                    /* ButtonGroup::widget([
-                      'buttons' => [
-                      Yii::$app->user->can('EmployeeEdit')  ?
-                      ButtonDropdown::widget([
-                      'label' => '<i class="glyphicon glyphicon-plus"></i> Составить акт',
-                      'encodeLabel' => false,
-                      'dropdown' => [
-                      'encodeLabels' => false,
-                      'items' => [
-                      ['label' => 'Составить акт перемещения материальных ценностей в помещении', 'url' => ['Fregat/installakt/createosnov'], 'linkOptions' => ['data-pjax' => '0']],
-                      ['label' => 'Составить акт установки материальных ценностей в другую материальную ценность', 'url' => ['Fregat/installakt/createmat'], 'linkOptions' => ['data-pjax' => '0']],
-                      ],
-                      ],
-                      'options' => ['class' => 'btn btn-success']
-                      ]) : [],
-                      ],
-                      ]), */
+                    [
+                        'attribute' => 'idInstaller.idperson.auth_user_fullname',
+                        'label' => 'ФИО мастера',
                     ],
-                ]
-    ]));
-    ?>
-</div>
+                    [
+                        'attribute' => 'idInstaller.iddolzh.dolzh_name',
+                        'label' => 'Должность мастера',
+                    ],
+                ],
+                'buttons' => array_merge(Yii::$app->user->can('InstallEdit') ? [
+                    'update' => ['Fregat/installakt/update', 'installakt_id'],
+                    'deleteajax' => ['Fregat/installakt/delete', 'installakt_id'],
+                ] : []
+                ),
+            ]),
+            'gridOptions' => [
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'panel' => [
+                    'heading' => '<i class="glyphicon glyphicon-random"></i> ' . $this->title,
+                    'before' => Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                ],
+                'toolbar' => [
+                    'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['installaktfilter'], [
+                            'title' => 'Дополнительный фильтр',
+                            'class' => 'btn btn-default filter_button'
+                        ]) . '{export}{dynagrid}',
+                    ],
+                ],
+                'afterHeader' => $filter,
+            ]
+        ]));
+        ?>
+    </div>
+<?php
+yii\bootstrap\Modal::begin([
+    'header' => 'Дополнительный фильтр',
+    'id' => 'InstallaktFilter',
+    'options' => [
+        'class' => 'modal_filter',
+        'tabindex' => false, // чтобы работал select2 в модальном окне
+    ],
+]);
+yii\bootstrap\Modal::end();
+?>

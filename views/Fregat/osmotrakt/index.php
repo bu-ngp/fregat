@@ -71,6 +71,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                     'label' => 'Должность составителя акта',
                 ],
+                [
+                    'attribute' => 'idTrosnov.idInstallakt.installakt_id',
+                    'visible' => false,
+                ],
             ],
             'buttons' => array_merge(
                 [

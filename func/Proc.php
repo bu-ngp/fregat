@@ -805,6 +805,10 @@ class Proc
                     break;
             }
 
+        preg_match('/(.+\.)?((.+)\.(.+))$|(.+)/', $Field, $Matches);
+
+        $Field = empty($Matches[2]) ? $Field : $Matches[2];
+
         $Field = $SQLField ?: $Field;
 
         return [empty($Operator) ? '=' : $Operator, $Field, $Value];

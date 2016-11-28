@@ -192,6 +192,11 @@ class Employee extends \yii\db\ActiveRecord
         return $this->hasMany(Naklad::className(), ['id_mol_got' => 'employee_id'])->from(['gotNaklads' => Naklad::tableName()]);
     }
 
+    public function getEmployeeName()
+    {
+        return "{$this->idperson->auth_user_fullname}, {$this->iddolzh->dolzh_name}, {$this->idpodraz->podraz_name}" . (empty($this->id_build) ? '' : ", {$this->idbuild->build_name}");
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

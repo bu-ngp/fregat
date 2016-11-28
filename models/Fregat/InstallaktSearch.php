@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Installakt;
 use app\func\Proc;
+use yii\db\Query;
 
 /**
  * InstallaktSearch represents the model behind the search form about `app\models\Fregat\Installakt`.
@@ -80,8 +81,98 @@ class InstallaktSearch extends Installakt
 
         Proc::AssignRelatedAttributes($dataProvider, ['idInstaller.idperson.auth_user_fullname', 'idInstaller.iddolzh.dolzh_name']);
 
+        $this->installaktDopFilter($query);
+
         return $dataProvider;
     }
 
+    private function installaktDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'InstallaktFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'mat_id_material';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trOsnov.id_installakt')
+                    ->from('tr_osnov trOsnov')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnov.id_mattraffic')
+                    ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'mol_id_person';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trOsnov.id_installakt')
+                    ->from('tr_osnov trOsnov')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnov.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'tr_osnov_mol_id_build';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_build',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trOsnov.id_installakt')
+                    ->from('tr_osnov trOsnov')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnov.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'tr_osnov_kab';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'trOsnov.tr_osnov_kab',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trOsnov.id_installakt')
+                    ->from('tr_osnov trOsnov')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnov.id_mattraffic')
+                    ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'mat_id_material_trmat';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattraffic.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMat.id_installakt')
+                    ->from('tr_mat trMat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->andWhere('trMat.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'mol_id_person_trmat';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMol.id_person',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMat.id_installakt')
+                    ->from('tr_mat trMat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->leftJoin('employee idMol', 'idMattraffic.id_mol = idMol.employee_id')
+                    ->andWhere('trMat.id_installakt = installakt.installakt_id')
+            ]);
+
+            $attr = 'id_parent';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idParent.id_material',
+                'ExistsSubQuery' => (new Query())
+                    ->select('trMat.id_installakt')
+                    ->from('tr_mat trMat')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trMat.id_mattraffic')
+                    ->leftJoin('mattraffic idParent', 'idParent.mattraffic_id = trMat.id_parent')
+                    ->andWhere('trMat.id_installakt = installakt.installakt_id')
+            ]);
+        }
+    }
 }
                 

@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\OsmotraktmatReport;
+use app\models\Fregat\OsmotraktmatFilter;
 use app\models\Fregat\TrMatOsmotr;
 use Exception;
 use Yii;
@@ -31,7 +32,7 @@ class OsmotraktmatController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotraktmat-report'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-recoveryrecieveakt', 'selectinputforrecoverysendakt', 'osmotraktmat-report', 'osmotraktmatfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -54,11 +55,13 @@ class OsmotraktmatController extends Controller
     public function actionIndex()
     {
         $searchModel = new OsmotraktmatSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new OsmotraktmatFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -116,6 +119,19 @@ class OsmotraktmatController extends Controller
     {
         $Report = new OsmotraktmatReport();
         echo $Report->Execute();
+    }
+
+    public function actionOsmotraktmatfilter()
+    {
+        $model = new OsmotraktmatFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('OsmotraktmatSearch', $model);
+
+            return $this->renderAjax('_osmotraktmatfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     protected function findModel($id)

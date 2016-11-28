@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RemoveaktReport;
+use app\models\Fregat\RemoveaktFilter;
 use Yii;
 use app\models\Fregat\Removeakt;
 use app\models\Fregat\RemoveaktSearch;
@@ -16,18 +17,20 @@ use app\models\Fregat\TrRmMatSearch;
 /**
  * RemoveaktController implements the CRUD actions for Removeakt model.
  */
-class RemoveaktController extends Controller {
+class RemoveaktController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'removeakt-report'],
+                        'actions' => ['index', 'removeakt-report', 'removeaktfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -47,17 +50,21 @@ class RemoveaktController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new RemoveaktSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new RemoveaktFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Removeakt();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -67,12 +74,13 @@ class RemoveaktController extends Controller {
             $model->removeakt_date = empty($model->removeakt_date) ? date('Y-m-d') : $model->removeakt_date;
 
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -83,20 +91,35 @@ class RemoveaktController extends Controller {
             $dataProvider = $searchModel->search($Request);
 
             return $this->render('update', [
-                        'model' => $model,
-                        'searchModel' => $searchModel,
-                        'dataProvider' => $dataProvider,
+                'model' => $model,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
             ]);
         }
     }
 
     // Печать акта снятия комплектующих с материальных ценностей
-    public function actionRemoveaktReport() {
+    public function actionRemoveaktReport()
+    {
         $Report = new RemoveaktReport();
         echo $Report->Execute();
     }
 
-    public function actionDelete($id) {
+    public function actionRemoveaktfilter()
+    {
+        $model = new RemoveaktFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('RemoveaktSearch', $model);
+
+            return $this->renderAjax('_removeaktfilter', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
@@ -108,7 +131,8 @@ class RemoveaktController extends Controller {
      * @return Removeakt the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Removeakt::findOne($id)) !== null) {
             return $model;
         } else {

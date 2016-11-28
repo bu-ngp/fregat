@@ -12,33 +12,37 @@ use Yii;
  *
  * @property Osmotrakt[] $osmotrakts
  */
-class Reason extends \yii\db\ActiveRecord {
+class Reason extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'reason';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['reason_text'], 'required'],
             [['reason_text'], 'string', 'max' => 400],
             [['reason_text'], 'unique', 'message' => '{attribute} = {value} уже существует'],
-            [['reason_text'], 'filter', 'filter' => function($value) {
-            return mb_strtoupper($value, 'UTF-8');
-        }],
+            [['reason_text'], 'filter', 'filter' => function ($value) {
+                return mb_strtoupper($value, 'UTF-8');
+            }],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'reason_id' => 'Reason ID',
             'reason_text' => 'Причина поломки',
@@ -48,15 +52,24 @@ class Reason extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotrakts() {
+    public function getOsmotrakts()
+    {
         return $this->hasMany(Osmotrakt::className(), ['id_reason' => 'reason_id'])->from(['osmotrakts' => Osmotrakt::tableName()])->inverseOf('idReason');
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOsmotraktmats() {
+    public function getOsmotraktmats()
+    {
         return $this->hasMany(Osmotraktmat::className(), ['id_reason' => 'reason_id'])->from(['osmotraktmats' => Osmotraktmat::tableName()]);
+    }
+
+    public static function getReasonByID($Value)
+    {
+        $query = self::findOne($Value);
+        if (!empty($query))
+            return $query->reason_text;
     }
 
 }

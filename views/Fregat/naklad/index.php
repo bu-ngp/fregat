@@ -49,6 +49,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                 ],
                 'buttons' => array_merge(Yii::$app->user->can('NakladEdit') ? [
+                    'downloadreport' => ['Fregat/naklad/naklad-report'],
                     'update' => ['Fregat/naklad/update'],
                     'deleteajax' => ['Fregat/naklad/delete'],
                 ] : []

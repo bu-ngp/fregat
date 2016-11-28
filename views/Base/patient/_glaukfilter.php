@@ -34,7 +34,7 @@ use app\func\Proc;
 
                 <?= Proc::FilterFieldDate($form, $model, 'patient_dr') ?>
 
-                <?=
+                <?php
                 Proc::FilterFieldIntCondition($form, $model, 'patient_vozrast', [
                     'min' => 1,
                     'max' => 120,

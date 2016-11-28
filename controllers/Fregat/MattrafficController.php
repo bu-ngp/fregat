@@ -42,7 +42,7 @@ class MattrafficController extends Controller
                         'roles' => ['MaterialMolDelete'],
                     ],
                     [
-                        'actions' => ['selectinputforspisosnovakt', 'forspisosnovakt'],
+                        'actions' => ['selectinputforspisosnovakt', 'selectinputforspisosnovakt-fast', 'forspisosnovakt'],
                         'allow' => true,
                         'roles' => ['SpisosnovaktEdit'],
                     ],
@@ -175,6 +175,16 @@ class MattrafficController extends Controller
             'model' => new Mattraffic,
             'q' => $q,
             'methodquery' => 'selectinputforspisosnovakt',
+        ]);
+    }
+
+    public function actionSelectinputforspisosnovaktFast($q, $spisosnovakt_id)
+    {
+        return Proc::ResultSelect2([
+            'model' => new Mattraffic,
+            'q' => $q,
+            'methodquery' => 'selectinputforspisosnovaktFast',
+            'MethodParams' => ['spisosnovakt_id' => $spisosnovakt_id],
         ]);
     }
 
