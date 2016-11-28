@@ -53,7 +53,7 @@ class FregatController extends Controller
                         'roles' => ['FregatImport'],
                     ],
                     [
-                        'actions' => ['settings'],
+                        'actions' => ['settings', 'options'],
                         'allow' => true,
                         'roles' => ['FregatConfig'],
                     ],
@@ -110,6 +110,19 @@ class FregatController extends Controller
     public function actionSprav()
     {
         return $this->render('//Fregat/config/sprav');
+    }
+
+    public function actionOptions()
+    {
+        $model = Fregatsettings::findOne(1);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            return $this->render('//Fregat/config/update_fregat', [
+                'model' => $model,
+            ]);
+        }
     }
 
     public function actionImportDo()
@@ -661,9 +674,9 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
     public function actionTest()
     {
         setlocale(LC_ALL, 'ru_RU.UTF-8');
-        var_dump(date('d',strtotime('2016-11-05')));
-        var_dump(Yii::$app->formatter->asDate(date('M',strtotime('2016-11-05')),'php:F') );
-        var_dump(date('y',strtotime('2016-11-05')));
+        var_dump(date('d', strtotime('2016-11-05')));
+        var_dump(Yii::$app->formatter->asDate(date('M', strtotime('2016-11-05')), 'php:F'));
+        var_dump(date('y', strtotime('2016-11-05')));
     }
 
 }

@@ -30,8 +30,14 @@ class Fregatsettings extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['fregatsettings_glavvrach_name',
+                'fregatsettings_uchrezh_namesokr',
+                'fregatsettings_uchrezh_name',
+                'fregatsettings_recoverysend_emailtheme',
+                'fregatsettings_recoverysend_emailfrom',
+            ], 'required'],
             [['fregatsettings_recoverysend_emailtheme', 'fregatsettings_glavvrach_name', 'fregatsettings_uchrezh_namesokr', 'fregatsettings_uchrezh_name'], 'string', 'max' => 255],
-            [['fregatsettings_recoverysend_emailfrom'],'email'],
+            [['fregatsettings_recoverysend_emailfrom'], 'email'],
         ];
     }
 

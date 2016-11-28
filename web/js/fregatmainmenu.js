@@ -46,6 +46,10 @@ $("#mb_rolemanager").click(function () {
     window.location.href = "?r=Config%2Fauthitem%2Findex";
 });
 
+$("#mb_configuration").click(function () {
+    window.location.href = "?r=Config%2Fconfig%2Fconfiguration";
+});
+
 /* Система "Фрегат" */
 
 $("#mb_prihod_j").click(function () {
@@ -102,6 +106,11 @@ $("#mb_importdata").click(function () {
 
 $("#mb_sprav").click(function () {
     window.location.href = "?r=Fregat%2Ffregat%2Fsprav";
+});
+
+
+$("#mb_fregatoptions").click(function () {
+    window.location.href = "?r=Fregat%2Ffregat%2Foptions";
 });
 
 /* Регистр глаукомных пациентов \ Настройки регистра глаукомных пациентов */

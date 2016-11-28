@@ -35,6 +35,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                     <i class="glyphicon glyphicon-align-justify"></i>
                 </div>
             <?php endif; ?>
+            <?php if (Yii::$app->user->can('FregatConfig')): ?>
+                <div class="menubutton menubutton_activeanim mb_blue" id="mb_configuration">
+                    <span class="hoverspan"></span>
+                    <div class="menubutton_cn">Конфигурация</div>
+                    <i class="glyphicon glyphicon-tasks"></i>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
