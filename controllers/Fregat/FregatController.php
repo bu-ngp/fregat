@@ -3,20 +3,26 @@
 namespace app\controllers\Fregat;
 
 use app\func\ImportData\ImportEmployees;
+use app\func\ReportsTemplate\InstallaktReport;
 use app\models\Config\Authuser;
 use app\models\Config\Profile;
 use app\models\Fregat\Docfiles;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
+use app\models\Fregat\Installakt;
+use app\models\Fregat\Material;
+use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Reason;
 use app\models\Fregat\RraDocfiles;
+use app\models\Fregat\TrOsnov;
 use Exception;
 use PDO;
 use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
 use yii\base\Request;
+use yii\db\Expression;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -58,7 +64,18 @@ class FregatController extends Controller
                         'roles' => ['FregatConfig'],
                     ],
                     [
-                        'actions' => ['import-do', 'test', 'genpass', 'uppercaseemployee', 'removeinactiveemployee', 'import-glauk', 'import-remont', 'update-profiles', 'import-do2'],
+                        'actions' => [
+                            'import-do',
+                            'test',
+                            'genpass',
+                            'uppercaseemployee',
+                            'removeinactiveemployee',
+                            'import-glauk',
+                            'import-remont',
+                            'update-profiles',
+                            'import-do2',
+                            'installakt-fill',
+                        ],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
                     ],
@@ -673,10 +690,68 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
 
     public function actionTest()
     {
-        setlocale(LC_ALL, 'ru_RU.UTF-8');
-        var_dump(date('d', strtotime('2016-11-05')));
-        var_dump(Yii::$app->formatter->asDate(date('M', strtotime('2016-11-05')), 'php:F'));
-        var_dump(date('y', strtotime('2016-11-05')));
+        /*  setlocale(LC_ALL, 'ru_RU.UTF-8');
+          var_dump(date('d', strtotime('2016-11-05')));
+          var_dump(Yii::$app->formatter->asDate(date('M', strtotime('2016-11-05')), 'php:F'));
+          var_dump(date('y', strtotime('2016-11-05')));*/
+
+        var_dump(date('d.m.Y', mt_rand(strtotime('2016-01-01'), strtotime('2016-12-31'))));
+    }
+
+    public function actionInstallaktFill()
+    {
+        for ($i = 1; $i <= 1; $i++) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
+
+                $Mattraffic = Mattraffic::find()
+                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                    ->joinWith(['idMaterial', 'idMol'])
+                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'mattraffic_tip', [1]])
+                    ->andWhere([
+                        'm2.mattraffic_date_m2' => NULL,
+                    ])
+                    ->andWhere('not idMol.id_build is null')
+                    ->orderBy(new Expression('rand()'))
+                    ->limit(1)
+                    ->one();
+
+                $MattrafficMove = new Mattraffic;
+                $MattrafficMove->attributes = $Mattraffic->attributes;
+                $MattrafficMove->mattraffic_tip = 3;
+                if (!$MattrafficMove->save())
+                    throw new \yii\base\Exception('error');
+
+
+                $Master = Employee::find()->orderBy(new Expression('rand()'))->limit(1)->one();
+
+                $Installakt = new Installakt;
+                $Installakt->installakt_date = $datetmp;
+                $Installakt->id_installer = $Master->primaryKey;
+                if (!$Installakt->save())
+                    throw new \yii\base\Exception('error');
+
+                $trOsnov = new TrOsnov();
+                $trOsnov->id_installakt = $Installakt->primaryKey;
+                $trOsnov->id_mattraffic = $MattrafficMove->primaryKey;
+                $trOsnov->tr_osnov_kab = (string)rand(1, 799);
+                if (!$trOsnov->save())
+                    throw new \yii\base\Exception('error');
+               /* var_dump($Installakt->attributes);
+                var_dump($MattrafficMove->attributes);
+                var_dump($trOsnov->attributes);*/
+
+                $transaction->commit();
+            } catch (Exception $e) {
+                var_dump($Installakt->errors);
+                var_dump($MattrafficMove->errors);
+                var_dump($trOsnov->errors);
+                $transaction->rollBack();
+            }
+
+        }
     }
 
 }
