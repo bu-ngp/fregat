@@ -72,6 +72,7 @@ class SpisosnovaktSearch extends Spisosnovakt
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['spisosnovakt_id' => SORT_DESC]],
         ]);
 
         $query->joinWith([

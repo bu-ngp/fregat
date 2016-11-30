@@ -26,7 +26,7 @@ class SpisosnovaktReport extends BaseReportPortal
         $ID = $this->getDopparamID();
         $this->setReportName('Заявка на списание основных средств №' . $ID);
 
-        $Spisosnovakt = Spisosnovakt::find($ID)->joinWith(['idMol', 'idEmployee', 'idSchetuchet'])->one();
+        $Spisosnovakt = Spisosnovakt::find()->andWhere(['spisosnovakt_id' => $ID])->joinWith(['idMol', 'idEmployee', 'idSchetuchet'])->one();
         $Spisosnovmaterials = Spisosnovmaterials::findAll(['id_spisosnovakt' => $ID]);
 
         $objPHPExcel = $this->getObjPHPExcel();

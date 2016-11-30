@@ -61,6 +61,7 @@ class OsmotraktmatSearch extends Osmotraktmat
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['osmotraktmat_id' => SORT_DESC]],
         ]);
 
         $this->load($params);

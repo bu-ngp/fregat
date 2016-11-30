@@ -85,7 +85,7 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
         $query->andFilterWhere([
             'spisosnovmaterials_id' => $this->spisosnovmaterials_id,
             'id_mattraffic' => $this->id_mattraffic,
-            'id_spisosnovakt' => $this->id_spisosnovakt,
+            'id_spisosnovakt' => $_GET['id'] ?: -1,
         ]);
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'spisosnovmaterials_number'));
