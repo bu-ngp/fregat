@@ -8,6 +8,7 @@ use app\models\Config\AuthassignmentSearch;
 use app\models\Config\Authuser;
 use app\models\Config\AuthuserSearch;
 use app\models\Config\Profile;
+use app\models\COnfig\AuthuserFilter;
 use app\models\Fregat\Employee;
 use app\models\Fregat\EmployeeSearch;
 use Yii;
@@ -31,7 +32,7 @@ class AuthuserController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput'],
+                        'actions' => ['index', 'selectinput', 'authuserfilter'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -65,12 +66,14 @@ class AuthuserController extends Controller
     {
         $searchModel = new AuthuserSearch();
         $emp = (string)filter_input(INPUT_GET, 'emp');
+        $filter = Proc::SetFilter($searchModel->formName(), new AuthuserFilter);
         $dataProvider = $emp ? $searchModel->searchemployee(Yii::$app->request->queryParams) : $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'emp' => $emp,
+            'filter' => $filter,
         ]);
     }
 
@@ -188,6 +191,19 @@ class AuthuserController extends Controller
             'q' => $q,
             'order' => 'auth_user_fullname',
         ]);
+    }
+
+    public function actionAuthuserfilter()
+    {
+        $model = new AuthuserFilter;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('AuthuserSearch', $model);
+
+            return $this->renderAjax('_authuserfilter', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**

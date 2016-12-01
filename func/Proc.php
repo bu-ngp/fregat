@@ -7,6 +7,7 @@ use app\func\ReportsTemplate\RecoverysendaktReport;
 use app\models\Config\Authuser;
 use app\models\Fregat\Docfiles;
 use app\models\Fregat\Fregatsettings;
+use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RraDocfiles;
 use app\models\Fregat\RramatDocfiles;
@@ -1003,6 +1004,11 @@ class Proc
      */
     public static function Grid2Excel($dataProvider, $modelName, $reportName, $selectvalues = NULL, $ModelFilter = NULL, $LabelValues = NULL)
     {
+        $Importconfig = Importconfig::findOne(1);
+
+        ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+        ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
+
         $objPHPExcel = new \PHPExcel;
 
         /* Границы таблицы */

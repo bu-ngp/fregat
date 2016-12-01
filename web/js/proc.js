@@ -107,11 +107,11 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-// dopfields - Дополнительные поля таблицы (например те, что без фильтра)
-function ExportExcel(model, url, button, dopfields, removefile) {
+function ExcelDoExport(model, url, button, dopfields, removefile) {
     var inputarr = $('input[name^="' + model + '"], select[name^="' + model + '"]');
     var inputdata = {};
     var labelvalues = {};
+
     if ($.type(button) === "undefined")
         button = "";
 
@@ -169,10 +169,10 @@ function ExportExcel(model, url, button, dopfields, removefile) {
             data: {buttonloadingid: button}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
             async: true,
             success: function (response) {
-                /* response - Путь к новому файлу  */
+                /* response - Путь к новому файлу */
                 window.location.href = "files/" + response;
                 /* Открываем файл */
-                /* Удаляем файл через 5 секунд*/
+                /* Удаляем файл через 5 секунд */
                 if (removefile)
                     setTimeout(function () {
                         $.ajax({
@@ -187,9 +187,21 @@ function ExportExcel(model, url, button, dopfields, removefile) {
                 console.error('Ошибка');
             }
         });
-
-
     }
+
+}
+
+// dopfields - Дополнительные поля таблицы (например те, что без фильтра)
+function ExportExcel(model, url, button, dopfields, removefile) {
+    var summary = parseInt($("div.summary > b:nth-child(2)").html().replace(/&nbsp;/g, ''));
+
+    if (summary > 1000)
+        bootbox.confirm("Вы уверены, что хотите вывести в Excel " + summary + " записей? Это может занять длительное время.", function (result) {
+            if (result)
+                ExcelDoExport(model, url, button, dopfields, removefile)
+        });
+    else
+        ExcelDoExport(model, url, button, dopfields, removefile);
 }
 
 function DownloadReport(url, button, dopparams) {

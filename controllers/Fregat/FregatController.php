@@ -3,6 +3,7 @@
 namespace app\controllers\Fregat;
 
 use app\func\ImportData\ImportEmployees;
+use app\func\PopulateData;
 use app\func\ReportsTemplate\InstallaktReport;
 use app\models\Base\Patient;
 use app\models\Config\Authuser;
@@ -85,11 +86,8 @@ class FregatController extends Controller
                             'import-remont',
                             'update-profiles',
                             'import-do2',
-                            'installakt-fill',
-                            'osmotraktmat-fill',
-                            'spisosnovakt-fill',
-                            'naklad-fill',
-                            'glauk-fill',
+                            'populate-data',
+                            'rename-prog',
                         ],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
@@ -713,369 +711,30 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
         var_dump(date('d.m.Y', mt_rand(strtotime('2016-01-01'), strtotime('2016-12-31'))));
     }
 
-    public function actionInstallaktFill()
+    public function actionPopulateData()
     {
-        for ($i = 1; $i <= 100; $i++) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
+        $Importconfig = Importconfig::findOne(1);
 
-                $isOsn = rand(1, 2);
-
-                $Master = Employee::find()
-                    ->andWhere(['in', 'id_dolzh', [149, 151]])
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $Installakt = new Installakt;
-                $Installakt->installakt_date = $datetmp;
-                $Installakt->id_installer = $Master->primaryKey;
-                if (!$Installakt->save())
-                    throw new \yii\base\Exception('error');
-
-                $build_id = rand(1, 3);
-                $printers = [3, 63];
-
-                if ($isOsn == 1)
-                    for ($j = 1; $j <= rand(1, 5); $j++) {
-                        $Mattraffic = Mattraffic::find()
-                            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                            ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (1))')
-                            ->andWhere(['in', 'mattraffic_tip', [1]])
-                            ->andWhere([
-                                'm2.mattraffic_date_m2' => NULL,
-                            ])
-                            ->andWhere(['idMol.id_build' => $build_id])
-                            ->andWhere('not idMol.id_build is null')
-                            ->orderBy(new Expression('rand()'))
-                            ->limit(1)
-                            ->one();
-
-                        $MattrafficMove = new Mattraffic;
-                        $MattrafficMove->attributes = $Mattraffic->attributes;
-                        $MattrafficMove->mattraffic_tip = 3;
-                        if (!$MattrafficMove->save())
-                            throw new \yii\base\Exception('error');
-
-                        $trOsnov = new TrOsnov();
-                        $trOsnov->id_installakt = $Installakt->primaryKey;
-                        $trOsnov->id_mattraffic = $MattrafficMove->primaryKey;
-                        $trOsnov->tr_osnov_kab = (string)rand(1, 799);
-                        if (!$trOsnov->save())
-                            throw new \yii\base\Exception('error');
-                        /* var_dump($Installakt->attributes);
-                         var_dump($MattrafficMove->attributes);
-                         var_dump($trOsnov->attributes);*/
-
-                    }
-                else
-                    for ($j = 1; $j <= rand(1, 5); $j++) {
-                        $Mattraffic = Mattraffic::find()
-                            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                            ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (2))')
-                            ->andWhere(['in', 'mattraffic_tip', [1]])
-                            ->andWhere([
-                                'm2.mattraffic_date_m2' => NULL,
-                            ])
-                            ->andWhere(['idMol.id_build' => $build_id])
-                            ->andWhere('not idMol.id_build is null')
-                            ->andWhere(['idMaterial.id_matvid' => 76])
-                            ->orderBy(new Expression('rand()'))
-                            ->limit(1)
-                            ->one();
-
-                        $MattrafficParent = Mattraffic::find()
-                            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                            ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (1))')
-                            ->andWhere(['in', 'mattraffic_tip', [1]])
-                            ->andWhere([
-                                'm2.mattraffic_date_m2' => NULL,
-                            ])
-                            ->andWhere(['idMol.id_build' => $build_id])
-                            ->andWhere('not idMol.id_build is null')
-                            ->andWhere(['idMaterial.id_matvid' => $printers[rand(0, 1)]])
-                            ->orderBy(new Expression('rand()'))
-                            ->limit(1)
-                            ->one();
-
-                        $MattrafficMove = new Mattraffic;
-                        $MattrafficMove->attributes = $Mattraffic->attributes;
-                        $MattrafficMove->mattraffic_tip = 4;
-                        if (!$MattrafficMove->save())
-                            throw new \yii\base\Exception('error');
-
-                        $trMat = new TrMat;
-                        $trMat->id_installakt = $Installakt->primaryKey;
-                        $trMat->id_mattraffic = $MattrafficMove->primaryKey;
-                        $trMat->id_parent = $MattrafficParent->primaryKey;
-
-                        if (!$trMat->save())
-                            throw new \yii\base\Exception('error');
-                    }
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                var_dump($Installakt->errors);
-                var_dump($MattrafficMove->errors);
-                var_dump($trOsnov->errors);
-                $transaction->rollBack();
-            }
-
-        }
+        ini_set('max_execution_time', $Importconfig['max_execution_time']);  // 1000 seconds
+        ini_set('memory_limit', $Importconfig['memory_limit']); // 1Gbyte Max Memory
+        PopulateData::init()->installAkt(rand(349, 364));
+        PopulateData::init()->osmotrAktMat(rand(101, 109));
+        PopulateData::init()->spisOsnovAkt(rand(127, 134));
+        PopulateData::init()->naklad(rand(151, 169));
+        PopulateData::init()->removeAkt(rand(51, 69));
+        PopulateData::init()->osmotrakt(rand(101, 199));
+        PopulateData::init()->glauk(rand(10074, 10124));
     }
 
-    public function actionOsmotraktmatFill()
+    public function actionRenameProg()
     {
-        for ($i = 1; $i <= 100; $i++) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
-
-                $Master = Employee::find()
-                    ->andWhere(['in', 'id_dolzh', [149, 151]])
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $Osmotraktmat = new Osmotraktmat;
-                $Osmotraktmat->osmotraktmat_date = $datetmp;
-                $Osmotraktmat->id_master = $Master->primaryKey;
-                if (!$Osmotraktmat->save())
-                    throw new \yii\base\Exception('error');
-
-                for ($j = 1; $j <= rand(1, 5); $j++) {
-
-                    $TrMat = TrMat::find()
-                        ->orderBy(new Expression('rand()'))
-                        ->limit(1)
-                        ->one();
-
-                    $TrMatOsmotr = new TrMatOsmotr;
-                    $TrMatOsmotr->id_osmotraktmat = $Osmotraktmat->primaryKey;
-                    $TrMatOsmotr->id_tr_mat = $TrMat->primaryKey;
-                    $TrMatOsmotr->id_reason = 10;
-                    $TrMatOsmotr->tr_mat_osmotr_number = rand(1, $TrMat->idMattraffic->mattraffic_number);
-                    if (!$TrMatOsmotr->save())
-                        throw new \yii\base\Exception('error');
-                }
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                var_dump($Master->errors);
-                var_dump($TrMat->errors);
-                var_dump($Osmotraktmat->errors);
-
-                $transaction->rollBack();
-            }
-
-        }
-    }
-
-    public function actionSpisosnovaktFill()
-    {
-        for ($i = 1; $i <= 50; $i++) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
-
-                $MattrafficSchetuchet = Mattraffic::find()
-                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                    ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
-                    ->andWhere(['in', 'mattraffic_tip', [1]])
-                    ->andWhere([
-                        'm2.mattraffic_date_m2' => NULL,
-                    ])
-                    ->andWhere('not idMaterial.id_schetuchet is null')
-                    /* ->andWhere(['idMaterial.id_schetuchet' => $Schetuchet->primaryKey])
-                     ->andWhere(['id_mol' => $Mol->id_mol])*/
-                    //  ->andWhere('not idMol.id_build is null')
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $Employee = Employee::find()->orderBy(new Expression('rand()'))->limit(1)->one();
-
-                $Spisosnovakt = new Spisosnovakt;
-                $Spisosnovakt->spisosnovakt_date = $datetmp;
-                $Spisosnovakt->id_schetuchet = $MattrafficSchetuchet->idMaterial->id_schetuchet;
-                $Spisosnovakt->id_mol = $MattrafficSchetuchet->id_mol;
-                $Spisosnovakt->id_employee = rand(0, 1) == 1 ? $Employee->primaryKey : NULL;
-
-                // var_dump($MattrafficSchetuchet->idMaterial->idSchetuchet->schetuchet_kod);
-
-                if (!$Spisosnovakt->save())
-                    throw new \yii\base\Exception('error');
-
-                $Mattraffic = Mattraffic::find()
-                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                    ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
-                    ->andWhere(['in', 'mattraffic_tip', [1]])
-                    ->andWhere([
-                        'm2.mattraffic_date_m2' => NULL,
-                        'idMaterial.material_writeoff' => 0,
-                    ])
-                    ->andWhere(['idMaterial.id_schetuchet' => $MattrafficSchetuchet->idMaterial->id_schetuchet])
-                    ->andWhere(['id_mol' => $MattrafficSchetuchet->id_mol])
-                    //  ->andWhere('not idMol.id_build is null')
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(rand(1, 20))
-                    ->all();
-
-                if (empty($Mattraffic))
-                    throw new \yii\base\Exception('error');
-
-                foreach ($Mattraffic as $ar) {
-                    // var_dump($ar->idMaterial->idSchetuchet->schetuchet_kod);
-                    $Spisosnovmaterials = new Spisosnovmaterials;
-                    $Spisosnovmaterials->id_spisosnovakt = $Spisosnovakt->primaryKey;
-                    $Spisosnovmaterials->id_mattraffic = $ar->primaryKey;
-                    $Spisosnovmaterials->spisosnovmaterials_number = 1;
-                    if (!$Spisosnovmaterials->save())
-                        throw new \yii\base\Exception('error');
-                }
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                var_dump($Spisosnovakt->errors);
-                var_dump($Mattraffic);
-                var_dump($Spisosnovmaterials->errors);
-                $transaction->rollBack();
-            }
-
-        }
-    }
-
-    public function actionNakladFill()
-    {
-        for ($i = 1; $i <= 50; $i++) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
-
-                $MolRelease = Mattraffic::find()
-                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                    ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
-                    ->andWhere(['in', 'mattraffic_tip', [1]])
-                    ->andWhere([
-                        'm2.mattraffic_date_m2' => NULL,
-                    ])
-                    /* ->andWhere(['idMaterial.id_schetuchet' => $Schetuchet->primaryKey])
-                     ->andWhere(['id_mol' => $Mol->id_mol])*/
-                    //  ->andWhere('not idMol.id_build is null')
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $MolGot = Mattraffic::find()
-                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                    ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
-                    ->andWhere(['in', 'mattraffic_tip', [1]])
-                    ->andWhere([
-                        'm2.mattraffic_date_m2' => NULL,
-                    ])
-                    ->andWhere('id_mol <> ' . $MolRelease->id_mol)
-                    /* ->andWhere(['idMaterial.id_schetuchet' => $Schetuchet->primaryKey])
-                     ->andWhere(['id_mol' => $Mol->id_mol])*/
-                    //  ->andWhere('not idMol.id_build is null')
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $MattrafficRelease = Mattraffic::find()
-                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
-                    ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
-                    ->andWhere(['in', 'mattraffic_tip', [1]])
-                    ->andWhere([
-                        'm2.mattraffic_date_m2' => NULL,
-                        'idMaterial.material_writeoff' => 0,
-                    ])
-                    ->andWhere(['id_mol' => $MolRelease->id_mol])
-                    //  ->andWhere('not idMol.id_build is null')
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(rand(1, 20))
-                    ->all();
-
-                if (empty($MattrafficRelease))
-                    throw new \yii\base\Exception('error');
-
-                $Naklad = new Naklad;
-                $Naklad->naklad_date = $datetmp;
-                $Naklad->id_mol_release = $MolRelease->id_mol;
-                $Naklad->id_mol_got = $MolGot->id_mol;
-                if (!$Naklad->save())
-                    throw new \yii\base\Exception('error');
-
-                foreach ($MattrafficRelease as $ar) {
-                    $Nakladmaterials = new Nakladmaterials;
-                    $Nakladmaterials->id_naklad = $Naklad->primaryKey;
-                    $Nakladmaterials->id_mattraffic = $ar->primaryKey;
-                    $Nakladmaterials->nakladmaterials_number = 1;
-                    if (!$Nakladmaterials->save())
-                        throw new \yii\base\Exception('error');
-                }
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                echo $e->getMessage();
-                var_dump($Naklad->errors);
-                var_dump($Nakladmaterials->errors);
-                $transaction->rollBack();
-            }
-
-        }
-    }
-
-    public function actionGlaukFill()
-    {
-        for ($i = 1; $i <= 1; $i++) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $datetmp = date('Y-m-d', mt_rand(strtotime('2016-10-01'), strtotime(date('Y-m-d'))));
-
-                $patientFile = [
-                    dirname(dirname(__DIR__)) . '/tests/_data/patients_f.csv',
-                    dirname(dirname(__DIR__)) . '/tests/_data/patients_m.csv',
-                ];
-
-                $patient_pol = rand(0, 1);
-                $f_contents = file($patientFile[$patient_pol]);
-                $patientLine = $f_contents[rand(0, count($f_contents) - 1)];
-
-                $patientFio = explode(';', $patientLine);
-
-                $Fias = Fias::find()
-                    ->andWhere(['SHORTNAME' => 'ул'])
-                    ->orderBy(new Expression('rand()'))
-                    ->limit(1)
-                    ->one();
-
-                $Patient = new Patient;
-                $Patient->patient_fam = $patientFio[0];
-                $Patient->patient_im = $patientFio[1];
-                $Patient->patient_ot = $patientFio[2];
-                $Patient->patient_dr = date('Y-m-d', mt_rand(strtotime('1920-01-01'), strtotime('1990-12-31')));
-                $Patient->patient_pol = $patient_pol;
-                $Patient->id_fias = $Fias->AOGUID;
-                $Patient->patient_dom = (string)rand(1, 120);
-                $Patient->patient_kvartira = (string)rand(1, 199);
-
-
-                $transaction->commit();
-            } catch (Exception $e) {
-                echo $e->getMessage();
-                $transaction->rollBack();
-            }
-
-        }
+        Authuser::updateAll(['auth_user_fullname' => 'НАУМОВ АЛЕКСЕЙ ОЛЕГОВИЧ'], ['auth_user_id' => 984]);
+        Authuser::updateAll(['auth_user_fullname' => 'МЯГКОВ АНАТОЛИЙ НИКОЛАЕВИЧ]'], ['auth_user_id' => 985]);
+        Authuser::updateAll(['auth_user_fullname' => 'КИЛИМНИК АНДРЕЙ ПЕТРОВИЧ'], ['auth_user_id' => 986]);
+        Authuser::updateAll(['auth_user_fullname' => 'БРЫКИН ДМИТРИЙ ВИКТОРОВИЧ'], ['auth_user_id' => 987]);
+        Authuser::updateAll(['auth_user_fullname' => 'БАЙНАКОВ БУЛАТ МУРАЛЕЕВИЧ'], ['auth_user_id' => 988]);
+        Authuser::updateAll(['auth_user_fullname' => 'СТЕЦЮК АНДРЕЙ ЕВГЕНЬЕВИЧ'], ['auth_user_id' => 989]);
+        Authuser::updateAll(['auth_user_fullname' => 'СУВОРОВ ДМИТРИЙ АЛЕКСАНДРОВИЧ'], ['auth_user_id' => 1020]);
     }
 
 }

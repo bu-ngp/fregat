@@ -7,6 +7,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Config\Authuser;
+use yii\db\Query;
 
 /**
  * AuthuserSearch represents the model behind the search form about `app\models\Config\Authuser`.
@@ -110,6 +111,8 @@ class AuthuserSearch extends Authuser
             ]);
         }
 
+        $this->authuserDopFilter($query);
+
         return $dataProvider;
     }
 
@@ -161,7 +164,50 @@ class AuthuserSearch extends Authuser
             ]);
         }
 
+        $this->authuserDopFilter($query);
+
         return $dataProvider;
+    }
+
+    private function authuserDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'AuthuserFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'id_dolzh';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'employees.id_dolzh',
+                'ExistsSubQuery' => (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->leftJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere('employees.id_person = auth_user.auth_user_id')
+            ]);
+
+            $attr = 'id_podraz';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'employees.id_podraz',
+                'ExistsSubQuery' => (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->leftJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere('employees.id_person = auth_user.auth_user_id')
+            ]);
+
+            $attr = 'id_build';
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'employees.id_build',
+                'ExistsSubQuery' => (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->leftJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere('employees.id_person = auth_user.auth_user_id')
+            ]);
+        }
     }
 
 }
