@@ -17,19 +17,20 @@ use app\models\Base\Preparat;
 
     <?=
     $form->field($model, 'id_preparat')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Preparat,
-                'fields' => [
-                    'keyfield' => 'id_preparat',
-                    'resultfield' => 'preparat_name',
-                ],
-                'placeholder' => 'Выберете препарат',
-                'fromgridroute' => 'Base/preparat/index',
-                'resultrequest' => 'Base/preparat/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
-                'dopparams' => [
-                    'idglaukuchet' => $idglaukuchet,
-                ],
+        'model' => $model,
+        'resultmodel' => new Preparat,
+        'fields' => [
+            'keyfield' => 'id_preparat',
+            'resultfield' => 'preparat_name',
+        ],
+        'placeholder' => 'Выберете препарат',
+        'fromgridroute' => 'Base/preparat/index',
+        'resultrequest' => 'Base/preparat/selectinput',
+        'thisroute' => $this->context->module->requestedRoute,
+        'dopparams' => [
+            'idglaukuchet' => $idglaukuchet,
+        ],
+        'onlyAjax' => false,
     ]));
     ?>
 
@@ -49,10 +50,10 @@ use app\models\Base\Preparat;
         <div class="form-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    
+
                     <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 

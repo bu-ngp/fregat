@@ -45,6 +45,7 @@ use app\func\Proc;
                     ],
                     'resultrequest' => 'Fregat/dolzh/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
                 ]), [
                     'addon' => [
                         'prepend' => [
@@ -73,6 +74,7 @@ use app\func\Proc;
                     ],
                     'resultrequest' => 'Fregat/podraz/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
                 ]), [
                     'addon' => [
                         'prepend' => [
@@ -101,6 +103,7 @@ use app\func\Proc;
                     ],
                     'resultrequest' => 'Fregat/build/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
                 ]), [
                     'addon' => [
                         'prepend' => [

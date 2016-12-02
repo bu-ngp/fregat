@@ -198,6 +198,7 @@ use \yii\helpers\Url;
         'fromgridroute' => 'Fregat/reason/index',
         'resultrequest' => 'Fregat/reason/selectinput',
         'thisroute' => $this->context->module->requestedRoute,
+        'onlyAjax' => false,
     ]));
     ?>
 

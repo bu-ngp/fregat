@@ -2,6 +2,7 @@
 
 namespace app\models\Base;
 
+use app\models\Glauk\Glaukuchet;
 use Yii;
 use app\func\Proc;
 

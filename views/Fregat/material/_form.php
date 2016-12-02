@@ -65,6 +65,7 @@ use yii\helpers\Url;
                 'resultrequest' => 'Fregat/matvid/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
                 'disabled' => $disabled,
+                'onlyAjax' => false,
             ]));
             ?>
 
@@ -100,6 +101,7 @@ use yii\helpers\Url;
                 'resultrequest' => 'Fregat/izmer/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
                 'disabled' => $disabled,
+                'onlyAjax' => false,
             ]));
             ?>
 
@@ -151,12 +153,14 @@ use yii\helpers\Url;
                 'fields' => [
                     'keyfield' => 'id_schetuchet',
                     'resultfield' => 'schetuchet_kod',
+                    'showresultfields' => ['schetuchet_kod', 'schetuchet_name'],
                 ],
                 'placeholder' => 'Выберете счет учета',
                 'resultrequest' => 'Fregat/schetuchet/selectinput',
                 'thisroute' => $this->context->module->requestedRoute,
                 'fromgridroute' => 'Fregat/schetuchet/index',
                 'methodquery' => 'selectinput',
+                'onlyAjax' => false,
             ]));
             ?>
 

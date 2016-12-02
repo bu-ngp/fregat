@@ -83,6 +83,7 @@ use app\func\Proc;
                     ],
                     'resultrequest' => 'Fregat/reason/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
                 ]), [
                     'addon' => [
                         'prepend' => [

@@ -91,11 +91,12 @@ class MaterialJurnalCest
     public function addCreateMaterialFromSelect2(AcceptanceTester $I)
     {
         $I->executeJS('window.scrollTo(0,0);');
-        $I->chooseValueFromSelect2('Material[id_matvid]', 'ШКАФ', 'шка');
+        //$I->chooseValueFromSelect2('Material[id_matvid]', 'ШКАФ', 'шка'); ???? пустой список select
+        $I->chooseValueFromGrid('Material[id_matvid]', 'ШКАФ', 'matvidgrid_gw');
         $I->fillField('Material[material_name]', 'Шкаф для одежды');
         $I->fillField('Material[material_inv]', '1000001');
         $I->seeElement('//input[@name="Material[material_number]" and @disabled]');
-        $I->chooseValueFromGrid('Material[id_izmer]', 'шт', 'izmergrid_gw');
+        $I->chooseValueFromSelect2('Material[id_izmer]', 'шт', 'шт');
         $I->fillField('Material[material_price]', '1200.15');
         $I->fillField('Material[material_serial]', 'ABCD123');
         $I->fillField('material_release-material-material_release', '01.01.2005');
@@ -212,7 +213,7 @@ class MaterialJurnalCest
         $I->click(['id' => 'MaterialFilter_apply']);
         $I->wait(2);
 
-        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С 21.11.2016 ПО 21.11.2016;']);
+        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ' ПО ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ';']);
         $I->checkDynagridData(['Материал', 'СТОЛ', 'Кухонный стол', '1000002', '5.000', 'шт', '15000.00', 'Нет']);
         $I->checkDynagridData(['Основное средство', 'ШКАФ', 'Шкаф для одежды', '1000001', '1.000', 'шт', '1200.15', 'Нет']);
 

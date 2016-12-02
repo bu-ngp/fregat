@@ -36,6 +36,7 @@ use app\func\Proc;
                     'placeholder' => 'Выберете организацию',
                     'resultrequest' => 'Fregat/organ/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
                 ]));
                 ?>
 

@@ -18,20 +18,20 @@ use yii\helpers\Url;
 
     <?=
     $form->field($model, 'id_tr_mat')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new app\models\Fregat\TrMat,
-                'fields' => [
-                    'keyfield' => 'id_tr_mat',
-                ],
-                'placeholder' => 'Введите инвентарный номер или наименование материала',
-                'fromgridroute' => 'Fregat/tr-mat/fortrmatosmotr',
-                'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatosmotr',
-                'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinputfortrmatosmotr',
-                'methodparams' => ['idosmotraktmat' => (string) filter_input(INPUT_GET, 'id')],
-                'dopparams' => [
-                    'idosmotraktmat' => (string) filter_input(INPUT_GET, 'id'),
-                ],
+        'model' => $model,
+        'resultmodel' => new app\models\Fregat\TrMat,
+        'fields' => [
+            'keyfield' => 'id_tr_mat',
+        ],
+        'placeholder' => 'Введите инвентарный номер или наименование материала',
+        'fromgridroute' => 'Fregat/tr-mat/fortrmatosmotr',
+        'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatosmotr',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinputfortrmatosmotr',
+        'methodparams' => ['idosmotraktmat' => (string)filter_input(INPUT_GET, 'id')],
+        'dopparams' => [
+            'idosmotraktmat' => (string)filter_input(INPUT_GET, 'id'),
+        ],
     ]));
     ?>
 
@@ -47,20 +47,21 @@ use yii\helpers\Url;
             'forcestepdivisibility' => 'none',
         ]
     ]);
-    ?> 
+    ?>
 
     <?=
     $form->field($model, 'id_reason')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new app\models\Fregat\Reason,
-                'fields' => [
-                    'keyfield' => 'id_reason',
-                    'resultfield' => 'reason_text',
-                ],
-                'placeholder' => 'Выберете причину неисправности',
-                'fromgridroute' => 'Fregat/reason/index',
-                'resultrequest' => 'Fregat/reason/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
+        'model' => $model,
+        'resultmodel' => new app\models\Fregat\Reason,
+        'fields' => [
+            'keyfield' => 'id_reason',
+            'resultfield' => 'reason_text',
+        ],
+        'placeholder' => 'Выберете причину неисправности',
+        'fromgridroute' => 'Fregat/reason/index',
+        'resultrequest' => 'Fregat/reason/selectinput',
+        'thisroute' => $this->context->module->requestedRoute,
+        'onlyAjax' => false,
     ]));
     ?>
 
@@ -77,7 +78,7 @@ use yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
             </div>
         </div>

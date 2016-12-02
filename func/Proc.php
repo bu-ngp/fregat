@@ -360,6 +360,8 @@ class Proc
      * <br>         'MinimumInputLength' => 3 (integer) Минимальное количество символов введеных пользователем в Select2, чтобы вызвать Ajax запрос поиска.
      * <br>         'Form' => '' (string) Опция имени формы Select2.
      * <br>         'Options' => [] (array) Массив опций Select2.
+     * <br>         'onlyAjax' => true (bool) Использовать только Ajax для загрузки данных.
+     * <br>         'preloadDataAjaxCondition' => function() {} (Closure) Функция с условиями для Ajax для загрузки данных.
      * <br>         'SetSession' => True (boolean) Устанавливает класс setsession для элемента html со значением ключа select2. Позволяет сохранять значение элемента в сессии.
      * <br>         'Multiple' => [] (array) Массив параметров для мультивыбора значений из списка Select2.
      * <br>             'MultipleShowAll' => True (boolean) Показывает кнопку "Выбрать все" (При Ajax загрузке значений не актуально).
@@ -374,6 +376,7 @@ class Proc
             $Params = self::array_change_key_case_recursive($Params);
 
             $model = $Params['model'];
+            /** @var ActiveRecord $resultmodel */
             $resultmodel = $Params['resultmodel'];
             $resultrequest = $Params['resultrequest'];
             $placeholder = isset($Params['placeholder']) ? $Params['placeholder'] : 'Введите значение';
@@ -386,6 +389,10 @@ class Proc
             $minimumInputLength = isset($Params['minimuminputlength']) ? $Params['minimuminputlength'] : 3;
             $form = isset($Params['form']) ? $Params['form'] : '';
             $optionsselect2 = isset($Params['options']) ? $Params['options'] : [];
+            $onlyAjax = isset($Params['onlyajax']) ? $Params['onlyajax'] : true;
+            $preloadDataAjaxCondition = isset($Params['preloaddataajaxcondition']) ? $Params['preloaddataajaxcondition'] : function ($query) {
+                return $query;
+            };
 
             $setsession = isset($Params['setsession']) ? $Params['setsession'] : true;
             $multiple = isset($Params['multiple']) && is_array($Params['multiple']) ? $Params['multiple'] : [];
@@ -395,7 +402,7 @@ class Proc
             foreach ($methodparams as $key => $value)
                 $ajaxparamsString .= ',' . $key . ': ' . $value;
 
-            if (empty($fields['showresultfields']) && empty($methodquery))
+            if (empty($fields['showresultfields'])/* && empty($methodquery)*/)
                 $fields['showresultfields'] = [$fields['resultfield']];
 
             $errorstring = '';
@@ -445,22 +452,45 @@ class Proc
                     }
                     $initrecord = empty($multiple) ? ['text' => $initrecord_tmp[0]] : $initrecord_tmp;
                 }
+                $query = $resultmodel::find();
+                $query = $preloadDataAjaxCondition($query);
+                $countRecords = $onlyAjax ? 0 : $query->count();
 
-                return array_merge([
+                $needAjax = $countRecords > 100;
+
+                $query = $resultmodel::find();
+                $query = $preloadDataAjaxCondition($query);
+
+                $data = $onlyAjax || $needAjax ? [] : \yii\helpers\ArrayHelper::map($query
+                    ->select(array_merge([$resultmodel->primaryKey()[0]], ['CONCAT_WS(", ", ' . implode(',', $fields['showresultfields']) . ') AS text']))
+                    ->asArray()
+                    ->all(),
+                    $resultmodel->primaryKey()[0], 'text');
+
+                $a = '';
+
+                return array_merge(
+                    $onlyAjax || $needAjax ? [] : [
+                        'data' => $data,
+                    ], [
                     'initValueText' => !empty($multiple) ? '' : implode(', ', ['text' => $initrecord['text']]),
                     'options' => empty($optionsselect2) ? array_merge(['placeholder' => $placeholder, 'class' => 'form-control' . ($setsession ? ' setsession' : ''), 'disabled' => isset($Params['disabled']) && $Params['disabled'] === true], empty($form) ? [] : ['form' => $form], empty($multiple) ? [] : ['multiple' => true]) : $optionsselect2,
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'showToggleAll' => $showToggleAll,
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => $minimumInputLength,
-                        'ajax' => [
-                            'url' => Url::to([$resultrequest]),
-                            'dataType' => 'json',
-                            'data' => empty($methodquery) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . '' . $ajaxparamsString . ' } }') : new JsExpression('function(params) { return {q:params.term' . $ajaxparamsString . '} }'),
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    ]
+                    'pluginOptions' => array_merge(
+                        $onlyAjax || $needAjax ? [
+                            'minimumInputLength' => $minimumInputLength,
+                            'ajax' => [
+                                'url' => Url::to([$resultrequest]),
+                                'dataType' => 'json',
+                                'data' => empty($methodquery) ? new JsExpression('function(params) { return {q:params.term, field: "' . $fields['resultfield'] . '", showresultfields: ' . json_encode($fields['showresultfields']) . '' . $ajaxparamsString . ' } }') : new JsExpression('function(params) { return {q:params.term' . $ajaxparamsString . '} }'),
+                            ],
+                        ] : [],
+                        [
+                            'allowClear' => true,
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        ]
+                    ),
                 ], !empty($fromgridroute) && (empty($Params['disabled']) || $Params['disabled'] === false) ? [
                     'addon' => [
                         'append' => [
@@ -472,7 +502,7 @@ class Proc
                             ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
                             'asButton' => true
                         ]
-                    ]] : [], !empty($multiple) ? [
+                    ]] : [], !empty($multiple) && ($onlyAjax || $needAjax) ? [
                     'data' => $initrecord
                 ] : []
                 );

@@ -16,7 +16,7 @@ use app\func\Proc;
 
     <?php
     $form = ActiveForm::begin([
-                'id' => 'Patientform',
+        'id' => 'Patientform',
     ]);
 
     $formname = 'Patientform';
@@ -37,7 +37,7 @@ use app\func\Proc;
             $form->field($model, 'patient_dr')->widget(DateControl::classname(), [
                 'type' => DateControl::FORMAT_DATE,
                 'options' => [
-                    'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                    'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                 ],
                 'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
             ])
@@ -62,18 +62,18 @@ use app\func\Proc;
 
             <?=
             $form->field($Fias, 'AOGUID')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                'model' => $Fias,
-                                'resultmodel' => new \app\models\Base\Fias,
-                                'fields' => [
-                                    'keyfield' => 'AOGUID',
-                                ],
-                                'placeholder' => 'Введите населенный пункт',
-                                'resultrequest' => 'Base/fias/selectinputforcity',
-                                'thisroute' => $this->context->module->requestedRoute,
-                                'methodquery' => 'selectinputforcity',
-                                'form' => $formname,
-                                'disabled' => $dopparams['DisableElements'],
-                            ]), [
+                'model' => $Fias,
+                'resultmodel' => new \app\models\Base\Fias,
+                'fields' => [
+                    'keyfield' => 'AOGUID',
+                ],
+                'placeholder' => 'Введите населенный пункт',
+                'resultrequest' => 'Base/fias/selectinputforcity',
+                'thisroute' => $this->context->module->requestedRoute,
+                'methodquery' => 'selectinputforcity',
+                'form' => $formname,
+                'disabled' => $dopparams['DisableElements'],
+            ]), [
                 'pluginEvents' => [
                     "select2:select" => "function() { FillCity(); }",
                     "select2:unselect" => "function() { ClearCity(); }"
@@ -83,20 +83,20 @@ use app\func\Proc;
 
             <?=
             $form->field($model, 'id_fias')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                'model' => $model,
-                                'resultmodel' => new \app\models\Base\Fias,
-                                'fields' => [
-                                    'keyfield' => 'id_fias',
-                                ],
-                                'placeholder' => 'Введите улицу',
-                                'resultrequest' => 'Base/fias/selectinputforstreet',
-                                'thisroute' => $this->context->module->requestedRoute,
-                                'methodquery' => 'selectinputforstreet',
-                                'methodparams' => ['fias_city' => '$(\'select[name="Fias[AOGUID]"]\').val()'],
-                                'minimuminputlength' => 2,
-                                'form' => $formname,
-                                'disabled' => $dopparams['DisableElements'],
-                            ]), [
+                'model' => $model,
+                'resultmodel' => new \app\models\Base\Fias,
+                'fields' => [
+                    'keyfield' => 'id_fias',
+                ],
+                'placeholder' => 'Введите улицу',
+                'resultrequest' => 'Base/fias/selectinputforstreet',
+                'thisroute' => $this->context->module->requestedRoute,
+                'methodquery' => 'selectinputforstreet',
+                'methodparams' => ['fias_city' => '$(\'select[name="Fias[AOGUID]"]\').val()'],
+                'minimuminputlength' => 2,
+                'form' => $formname,
+                'disabled' => $dopparams['DisableElements'],
+            ]), [
             ]))
             ?>
 
@@ -116,7 +116,7 @@ use app\func\Proc;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_uchetbegin')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                        'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -126,7 +126,7 @@ use app\func\Proc;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_lastvisit')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                        'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -134,36 +134,45 @@ use app\func\Proc;
 
                 <?=
                 $form->field($dopparams['Glaukuchet'], 'id_employee')->widget(Select2::classname(), Proc::DGselect2(array_merge([
-                            'model' => $dopparams['Glaukuchet'],
-                            'resultmodel' => new \app\models\Fregat\Employee,
-                            'fields' => [
-                                'keyfield' => 'id_employee',
-                            ],
-                            'placeholder' => 'Введите врача',
-                            'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
-                            'thisroute' => $this->context->module->requestedRoute,
-                            'methodquery' => 'selectinputactive',
-                            'dopparams' => ['patienttype' => $patienttype],
-                            'form' => $formname,
-                            'disabled' => $dopparams['DisableElements'],
-                                        ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Fregat/employee/foractiveemployee'])));
+                    'model' => $dopparams['Glaukuchet'],
+                    'resultmodel' => new \app\models\Fregat\Employee,
+                    'fields' => [
+                        'keyfield' => 'id_employee',
+                    ],
+                    'placeholder' => 'Введите врача',
+                    'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'methodquery' => 'selectinputactive',
+                    'dopparams' => ['patienttype' => $patienttype],
+                    'form' => $formname,
+                    'disabled' => $dopparams['DisableElements'],
+                ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Fregat/employee/foractiveemployee'])));
                 ?>
 
                 <?=
                 $form->field($dopparams['Glaukuchet'], 'id_class_mkb')->widget(Select2::classname(), Proc::DGselect2(array_merge([
-                            'model' => $dopparams['Glaukuchet'],
-                            'resultmodel' => new app\models\Base\Classmkb,
-                            'fields' => [
-                                'keyfield' => 'id_class_mkb',
-                            ],
-                            'placeholder' => 'Введите диагноз',
-                            'resultrequest' => 'Base/classmkb/selectinputfordiag',
-                            'thisroute' => $this->context->module->requestedRoute,
-                            'methodquery' => 'selectinput',
-                            'dopparams' => ['patienttype' => $patienttype],
-                            'form' => $formname,
-                            'disabled' => $dopparams['DisableElements'],
-                                        ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Base/classmkb/indexglauk'])));
+                    'model' => $dopparams['Glaukuchet'],
+                    'resultmodel' => new app\models\Base\Classmkb,
+                    'fields' => [
+                        'keyfield' => 'id_class_mkb',
+                        'keyresult' => 'name',
+                        'showresultfields' => ['code', 'name'],
+                    ],
+                    'placeholder' => 'Введите диагноз',
+                    'resultrequest' => 'Base/classmkb/selectinputfordiag',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'methodquery' => 'selectinput',
+                    'dopparams' => ['patienttype' => $patienttype],
+                    'form' => $formname,
+                    'disabled' => $dopparams['DisableElements'],
+                    'onlyAjax' => false,
+                    'preloadDataAjaxCondition' => function ($query) {
+                        return $query
+                            ->andWhere(['node_count' => 0])
+                            ->andWhere(['or', ['like', 'code', 'H40%', false], ['like', 'code', 'Q15.0', false]]);
+
+                    },
+                ], $dopparams['DisableElements'] ? [] : ['fromgridroute' => 'Base/classmkb/indexglauk'])));
                 ?>
 
                 <?=
@@ -194,7 +203,7 @@ use app\func\Proc;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_operdate')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                        'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
@@ -216,14 +225,16 @@ use app\func\Proc;
                 $form->field($dopparams['Glaukuchet'], 'glaukuchet_lastmetabol')->widget(DateControl::classname(), [
                     'type' => DateControl::FORMAT_DATE,
                     'options' => [
-                        'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                        'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                     ],
                     'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                 ])
                 ?>
 
                 <?php if ($model->isNewRecord || $dopparams['Glaukuchet']->isNewRecord): ?>
-                    <div class="alert alert-warning" role="alert">Для назначения лекарственных препаратов сохраните карту пациента.</div>
+                    <div class="alert alert-warning" role="alert">Для назначения лекарственных препаратов сохраните
+                        карту пациента.
+                    </div>
                 <?php endif; ?>
 
                 <?php
@@ -231,32 +242,32 @@ use app\func\Proc;
                     $glprep_rlocat = app\models\Glauk\Glprep::VariablesValues('glprep_rlocat');
 
                     echo DynaGrid::widget(Proc::DGopts([
-                                'options' => ['id' => 'glprepgrid'],
-                                'columns' => Proc::DGcols([
-                                    'columns' => [
-                                        'idPreparat.preparat_name',
-                                        [
-                                            'attribute' => 'glprep_rlocat',
-                                            'filter' => $glprep_rlocat,
-                                            'value' => function ($model) use ($glprep_rlocat) {
-                                                return isset($glprep_rlocat[$model->glprep_rlocat]) ? $glprep_rlocat[$model->glprep_rlocat] : '';
-                                            },
-                                        ],
-                                    ],
-                                    'buttons' => array_merge(!$dopparams['DisableElements'] ? [
-                                                'deleteajax' => ['Glauk/glprep/delete', 'glprep_id'],
-                                                    ] : []),
-                                ]),
-                                'gridOptions' => [
-                                    'dataProvider' => $dopparams['dataProviderglprep'],
-                                    'filterModel' => $dopparams['searchModelglprep'],
-                                    'panel' => [
-                                        'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-tint"></i> Препараты</h3>',
-                                        'before' => !$dopparams['DisableElements'] ? Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Glauk/glprep/create',
-                                                    'idglaukuchet' => $model->glaukuchets->glaukuchet_id,
-                                                        ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
-                                    ],
-                                ]
+                        'options' => ['id' => 'glprepgrid'],
+                        'columns' => Proc::DGcols([
+                            'columns' => [
+                                'idPreparat.preparat_name',
+                                [
+                                    'attribute' => 'glprep_rlocat',
+                                    'filter' => $glprep_rlocat,
+                                    'value' => function ($model) use ($glprep_rlocat) {
+                                        return isset($glprep_rlocat[$model->glprep_rlocat]) ? $glprep_rlocat[$model->glprep_rlocat] : '';
+                                    },
+                                ],
+                            ],
+                            'buttons' => array_merge(!$dopparams['DisableElements'] ? [
+                                'deleteajax' => ['Glauk/glprep/delete', 'glprep_id'],
+                            ] : []),
+                        ]),
+                        'gridOptions' => [
+                            'dataProvider' => $dopparams['dataProviderglprep'],
+                            'filterModel' => $dopparams['searchModelglprep'],
+                            'panel' => [
+                                'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-tint"></i> Препараты</h3>',
+                                'before' => !$dopparams['DisableElements'] ? Html::a('<i class="glyphicon glyphicon-download"></i> Добавить препарат', ['Glauk/glprep/create',
+                                    'idglaukuchet' => $model->glaukuchets->glaukuchet_id,
+                                ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                            ],
+                        ]
                     ]));
                 }
                 ?>
@@ -268,7 +279,7 @@ use app\func\Proc;
                         $form->field($dopparams['Glaukuchet'], 'glaukuchet_deregdate')->widget(DateControl::classname(), [
                             'type' => DateControl::FORMAT_DATE,
                             'options' => [
-                                'options' => [ 'placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
+                                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control', 'disabled' => $dopparams['DisableElements']],
                             ],
                             'saveOptions' => ['class' => 'form-control setsession', 'form' => $formname],
                         ])
@@ -305,7 +316,7 @@ use app\func\Proc;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= $dopparams['DisableElements'] ? '' : Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => $formname]) ?>
             </div>
         </div>

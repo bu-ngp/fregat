@@ -645,6 +645,7 @@ DROP TABLE IF EXISTS `izmer`;
 CREATE TABLE `izmer` (
   `izmer_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `izmer_name` char(255) NOT NULL COMMENT 'Единица измерения',
+  `izmer_kod_okei` CHAR(10) NULL DEFAULT NULL COMMENT 'Код ОКЕИ', 
   PRIMARY KEY (`izmer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

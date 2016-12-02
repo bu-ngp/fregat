@@ -99,13 +99,12 @@ class SpravGrupaCest
         $I->seeLink('Добавить вид материальной ценности');
         $I->click(['link' => 'Добавить вид материальной ценности']);
         $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
-        $I->see('Шкаф');
-        $I->see('Стол');
+        $I->checkDynagridData(['ШКАФ'], 'matvidgrid_gw');
+        $I->checkDynagridData(['СТОЛ'], 'matvidgrid_gw');
 
-        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->click('//td[text()="СТОЛ"]/preceding-sibling::td/button[@title="Выбрать"]');
         $I->wait(2);
-        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
+        $I->see('Да', '//td[text()="СТОЛ"]/following-sibling::td');
     }
 
     /**
@@ -116,14 +115,13 @@ class SpravGrupaCest
         $I->seeLink('Добавить вид материальной ценности');
         $I->click(['link' => 'Добавить вид материальной ценности']);
         $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
-        $I->see('Шкаф');
-        $I->see('Стол');
+        $I->checkDynagridData(['ШКАФ'], 'matvidgrid_gw');
+        $I->checkDynagridData(['СТОЛ'], 'matvidgrid_gw');
 
-        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->click('//td[text()="ШКАФ"]/preceding-sibling::td/button[@title="Выбрать"]');
         $I->wait(2);
-        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
-        $I->see('Нет', '//td[text()="Шкаф"]/following-sibling::td');
+        $I->see('Да', '//td[text()="СТОЛ"]/following-sibling::td');
+        $I->see('Нет', '//td[text()="ШКАФ"]/following-sibling::td');
     }
 
     /**
@@ -131,13 +129,13 @@ class SpravGrupaCest
      */
     public function changeMainGrupavid(AcceptanceTester $I)
     {
-        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Сделать главной"]');
+        $I->click('//td[text()="ШКАФ"]/preceding-sibling::td/button[@title="Сделать главной"]');
         $I->wait(2);
         $I->see('Сделать вид материальной ценности основным?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->see('Нет', '//td[text()="Стол"]/following-sibling::td');
-        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+        $I->see('Нет', '//td[text()="СТОЛ"]/following-sibling::td');
+        $I->see('Да', '//td[text()="ШКАФ"]/following-sibling::td');
     }
 
     /**
@@ -145,7 +143,7 @@ class SpravGrupaCest
      */
     public function deleteMainGrupavid(AcceptanceTester $I)
     {
-        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->click('//td[text()="ШКАФ"]/preceding-sibling::td/button[@title="Удалить"]');
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
@@ -153,8 +151,8 @@ class SpravGrupaCest
         $I->see('Ошибка удаления. Данный вид материальной ценности является основным в группе.');
         $I->click('button[data-bb-handler="ok"]');
         $I->wait(2);
-        $I->see('Нет', '//td[text()="Стол"]/following-sibling::td');
-        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+        $I->see('Нет', '//td[text()="СТОЛ"]/following-sibling::td');
+        $I->see('Да', '//td[text()="ШКАФ"]/following-sibling::td');
     }
 
     /**
@@ -162,13 +160,13 @@ class SpravGrupaCest
      */
     public function deleteNotMainGrupavid(AcceptanceTester $I)
     {
-        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->click('//td[text()="СТОЛ"]/preceding-sibling::td/button[@title="Удалить"]');
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->dontSee('Стол');
-        $I->see('Да', '//td[text()="Шкаф"]/following-sibling::td');
+        $I->dontSee('СТОЛ');
+        $I->see('Да', '//td[text()="ШКАФ"]/following-sibling::td');
     }
 
     /**
@@ -176,13 +174,13 @@ class SpravGrupaCest
      */
     public function deleteLastSingleGrupavid(AcceptanceTester $I)
     {
-        $I->click('//td[text()="Шкаф"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->click('//td[text()="ШКАФ"]/preceding-sibling::td/button[@title="Удалить"]');
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->dontSee('Стол');
-        $I->dontSee('Шкаф');
+        $I->dontSee('СТОЛ');
+        $I->dontSee('ШКАФ');
         $I->see('Ничего не найдено');
     }
 
@@ -194,13 +192,12 @@ class SpravGrupaCest
         $I->seeLink('Добавить вид материальной ценности');
         $I->click(['link' => 'Добавить вид материальной ценности']);
         $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
-        $I->see('Шкаф');
-        $I->see('Стол');
+        $I->checkDynagridData(['ШКАФ'], 'matvidgrid_gw');
+        $I->checkDynagridData(['СТОЛ'], 'matvidgrid_gw');
 
-        $I->click('//td[text()="Стол"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->click('//td[text()="СТОЛ"]/preceding-sibling::td/button[@title="Выбрать"]');
         $I->wait(2);
-        $I->see('Да', '//td[text()="Стол"]/following-sibling::td');
+        $I->see('Да', '//td[text()="СТОЛ"]/following-sibling::td');
     }
 
     /**
@@ -220,7 +217,7 @@ class SpravGrupaCest
     {
         $I->click('//td[text()="МЕБЕЛЬ"]/preceding-sibling::td/a[@title="Обновить"]');
         $I->wait(2);
-        $I->see('Стол');
+        $I->see('СТОЛ');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
         $I->see('МЕБЕЛЬ');

@@ -49,6 +49,7 @@ use yii\bootstrap\ButtonDropdown;
         'resultrequest' => 'Fregat/organ/selectinput',
         'thisroute' => $this->context->module->requestedRoute,
         'fromgridroute' => 'Fregat/organ/index',
+        'onlyAjax' => false,
     ]));
     ?>
 

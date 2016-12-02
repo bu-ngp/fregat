@@ -49,6 +49,7 @@ use yii\helpers\Url;
                 'thisroute' => $this->context->module->requestedRoute,
                 'disabled' => true,
                 'setsession' => false,
+                'onlyAjax' => false,
             ]));
             ?>
 
@@ -73,6 +74,7 @@ use yii\helpers\Url;
                 'thisroute' => $this->context->module->requestedRoute,
                 'disabled' => true,
                 'setsession' => false,
+                'onlyAjax' => false,
             ]));
             ?>
 

@@ -8,7 +8,7 @@ $db = [
     'username' => 'root',
     'password' => '265463',
     'charset' => 'utf8',
-    'enableSchemaCache' => true, // php C:\www\yii2test_ps\yii cache/flush-schema db
+    // 'enableSchemaCache' => true, // php C:\www\yii2test_ps\yii cache/flush-schema db
 ];
 //$db['dsn'] = 'mysql:host=localhost;dbname=baseportal';
 

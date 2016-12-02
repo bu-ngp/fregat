@@ -19,23 +19,24 @@ use app\func\Proc;
 
     <?=
     $form->field($model, 'id_matvid')->widget(Select2::classname(), Proc::DGselect2([
-                'model' => $model,
-                'resultmodel' => new Matvid,
-                'fields' => [
-                    'keyfield' => 'id_matvid',
-                    'resultfield' => 'matvid_name',
-                ],
-                'placeholder' => 'Выберете вид материальной ценности',
-                'fromgridroute' => 'Fregat/matvid/index',
-                'resultrequest' => 'Fregat/matvid/selectinput',
-                'thisroute' => $this->context->module->requestedRoute,
+        'model' => $model,
+        'resultmodel' => new Matvid,
+        'fields' => [
+            'keyfield' => 'id_matvid',
+            'resultfield' => 'matvid_name',
+        ],
+        'placeholder' => 'Выберете вид материальной ценности',
+        'fromgridroute' => 'Fregat/matvid/index',
+        'resultrequest' => 'Fregat/matvid/selectinput',
+        'thisroute' => $this->context->module->requestedRoute,
+        'onlyAjax' => false,
     ]));
     ?>
 
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
             </div>
         </div>

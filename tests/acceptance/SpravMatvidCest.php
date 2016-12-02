@@ -70,9 +70,7 @@ class SpravMatvidCest
         $I->fillField('Matvid[matvid_name]', 'Монитор');
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
-        $I->see('Монитор');
-        $I->seeElement('a', ['title' => 'Обновить']);
+        $I->checkDynagridData(['МОНИТОР'], 'matvidgrid_gw', ['a[@title="Обновить"]']);
     }
 
     /**
@@ -91,13 +89,11 @@ class SpravMatvidCest
      */
     public function saveUpdateMatvid(AcceptanceTester $I)
     {
-        $I->seeInField(['name' => 'Matvid[matvid_name]'], 'Монитор');
+        $I->seeInField(['name' => 'Matvid[matvid_name]'], 'МОНИТОР');
         $I->fillField('Matvid[matvid_name]', 'Монитор ЖК');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
-        $I->seeElement(['id' => 'matvidgrid_gw']);
-        $I->see('Монитор ЖК');
-        $I->seeElement('button', ['title' => 'Удалить']);
+        $I->checkDynagridData(['МОНИТОР ЖК'], 'matvidgrid_gw', ['button[@title="Удалить"]']);
     }
 
     /**
