@@ -23,6 +23,16 @@ AppAsset::register($this);
     <?php $this->head() ?>
 </head>
 <body>
+<style>
+    img.brandlogo {
+        position: absolute;
+        margin-left: -90px;
+        margin-top: -10px;
+        -webkit-filter: drop-shadow(2px 2px 0 #59010b) drop-shadow(-2px 2px 0 #59010b);
+        filter: drop-shadow(2px 2px 0 #59010b) drop-shadow(-2px 2px 0 #59010b);
+        height: 80px;
+    }
+</style>
 <?php $this->beginBody() ?>
 
 <div class="wrap">
@@ -32,7 +42,7 @@ AppAsset::register($this);
     Icon::map($this);
 
     NavBar::begin([
-        'brandLabel' => 'БУ "Нижневартовская городская поликлиника"',
+        'brandLabel' => '<img class="brandlogo" src="/images/logo.png">' . 'БУ "Нижневартовская городская поликлиника"',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -54,7 +64,10 @@ AppAsset::register($this);
     ]);
     NavBar::end();
     ?>
-
+    <!--   <div style="position: fixed; z-index: 10000; top: 5px; left: 120px;">
+           <image src="/images/logo.png"
+                  style="filter: drop-shadow(4px 3px 0 #59010b) drop-shadow(-4px 3px 0 #59010b); height: 80px;"></image>
+       </div>-->
     <div class="container body-container">
         <?php
         /*   $controller = Yii::$app->controller;
