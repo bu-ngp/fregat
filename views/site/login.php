@@ -84,7 +84,7 @@ use yii\bootstrap\ActiveForm;
         }
 
         img.mainlogo {
-            filter: url(/images/drop-shadow.svg#drop-shadow);
+            filter: url(<?= Yii::$app->urlManager->baseUrl ?>/images/drop-shadow.svg#drop-shadow);
         }
 
         div.loginPlaceHolder {
@@ -99,7 +99,7 @@ use yii\bootstrap\ActiveForm;
 
     </style>
     <div class="row" style="text-align: center">
-        <img src="/images/logo.png" class="mainlogo">
+        <img src="<?= Yii::$app->urlManager->baseUrl ?>/images/logo.png" class="mainlogo">
     </div>
     <div class="row">
         <div class="col-sm-6 col-md-4 col-md-offset-4">

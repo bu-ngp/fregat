@@ -42,11 +42,11 @@ AppAsset::register($this);
     Icon::map($this);
 
     NavBar::begin([
-        'brandLabel' => '<img class="brandlogo" src="/images/logo.png">' . 'БУ "Нижневартовская городская поликлиника"',
+        'brandLabel' => '<img class="brandlogo" src="' . Yii::$app->urlManager->baseUrl . '/images/logo.png">' . 'БУ "Нижневартовская городская поликлиника"',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
-        ],
+        'class' => 'navbar-inverse navbar-fixed-top',
+    ],
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
