@@ -1,7 +1,7 @@
 function AddMattraffic(spisosnovakt_id) {
     if ($("#mattraffic-mattraffic_id").val() != "" && $("#mattraffic-mattraffic_id").val() != null) {
         $.ajax({
-            url: "?r=Fregat%2Fspisosnovmaterials%2Faddmattraffic",
+            url: baseUrl + "Fregat/spisosnovmaterials/addmattraffic",
             type: "post",
             data: {id_mattraffic: $("#mattraffic-mattraffic_id").val(), id_spisosnovakt: spisosnovakt_id},
             success: function (data) {

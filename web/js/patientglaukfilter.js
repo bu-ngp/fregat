@@ -5,7 +5,7 @@ var filtersearch = "PatientSearch";
 $(document).on('ready pjax:success', function () {
     $('.filter_button').click(function (e) {
         e.preventDefault(); //for prevent default behavior of <a> tag.
-        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
+        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
 
         $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
             InitAddress();
@@ -68,7 +68,7 @@ $(document).on("beforeFilter", filtergrid, function (event) {
 
 function InitAddress() {
     $.ajax({
-        url: "?r=Base%2Ffias%2Fcheckstreets",
+        url: baseUrl + "Base/fias/checkstreets",
         type: "post",
         data: {city_AOGUID: $('select[name="PatientFilter[fias_city]"]').val()},
         success: function (data) {

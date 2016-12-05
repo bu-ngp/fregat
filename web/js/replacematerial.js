@@ -1,7 +1,7 @@
 function FillTrOsnov() {
     if ($("#trosnov-id_mattraffic").val() != "") {
         $.ajax({
-            url: "?r=Fregat%2Ftr-osnov%2Ffilltrosnov",
+            url: baseUrl + "Fregat/tr-osnov/filltrosnov",
             type: "post",
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val()},
             success: function (data) {

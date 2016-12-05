@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/osmotraktform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/osmotraktform.js');
 
 use yii\helpers\Html;
 use app\func\Proc;

@@ -62,7 +62,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             'buttons' =>
                 [
                     'download' => function ($url, $model) {
-                        return Html::a('<i class="glyphicon glyphicon-download-alt"></i>', 'importreports/Отчет импорта в систему Фрегат N' . $model['logreport_id'] . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
+                        return Html::a('<i class="glyphicon glyphicon-download-alt"></i>', '@web/importreports/Отчет импорта в систему Фрегат N' . $model['logreport_id'] . '.xlsx', ['title' => 'Скачать отчет', 'class' => 'btn btn-xs btn-info', 'data-pjax' => '0']);
                     },
                     /*  'removeimport' => function ($url, $model) {
                           return Html::button('<i class="glyphicon glyphicon-remove"></i>', [

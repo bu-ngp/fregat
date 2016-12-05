@@ -3,7 +3,7 @@
 use app\func\Proc;
 use yii\helpers\Html;
 
-\Yii::$app->getView()->registerJsFile('js/nakladmaterialsform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/nakladmaterialsform.js');
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Nakladmaterials */

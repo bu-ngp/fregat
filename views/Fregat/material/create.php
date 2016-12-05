@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/materialform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/materialform.js');
 
 use yii\helpers\Html;
 use app\func\Proc;

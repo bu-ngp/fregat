@@ -1,7 +1,7 @@
 function InitAddress() {
     if (!$('select[name="Fias[AOGUID]"]').prop("disabled"))
         $.ajax({
-            url: "?r=Base%2Ffias%2Fcheckstreets",
+            url: baseUrl + "Base/fias/checkstreets",
             type: "post",
             data: {city_AOGUID: $('select[name="Fias[AOGUID]"]').val()},
             success: function (data) {

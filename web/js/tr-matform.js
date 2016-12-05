@@ -3,7 +3,7 @@ function SetMaxNumberByMaterial() {
         $("#mattraffic_number_max").text('');
     } else {
         $.ajax({
-            url: "?r=Fregat%2Ftr-mat%2Fmax-number-material-by-mol",
+            url: baseUrl + "Fregat/tr-mat/max-number-material-by-mol",
             type: "post",
             data: {mattraffic_id: $("#trmat-id_mattraffic").val()},
             success: function (data) {

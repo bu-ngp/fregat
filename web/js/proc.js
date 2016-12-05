@@ -1,5 +1,7 @@
 bootbox.setDefaults({locale: "ru"});
 
+var baseUrl = window.location.protocol + "//" + window.location.host + "/";
+
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split('&'),
@@ -46,7 +48,7 @@ function ChooseItemGrid(url, targetelement, fromgrid) {
 
 function SendSetSession(Field, Value) {
     $.ajax({
-        url: "?r=site%2Fsetsession",
+        url: baseUrl + "site/setsession",
         type: "post",
         data: {
             modelclass: Field.substring(0, Field.indexOf("[")),
@@ -75,7 +77,7 @@ function SetSession(thiselem) {
 
 function InitWindowGUID() {
     $.ajax({
-        url: "?r=site%2Fsetwindowguid",
+        url: baseUrl + "site/setwindowguid",
         type: "post",
         data: {guid: window.name, path: window.location.pathname, search: window.location.search},
         dataType: "json",
@@ -83,7 +85,7 @@ function InitWindowGUID() {
             window.name = obj.guid;
             if (obj.gohome)
                 $.ajax({
-                    url: "?r=site%2Fgohome",
+                    url: baseUrl + "site/gohome",
                 });
         },
         error: function (data) {
@@ -164,19 +166,19 @@ function ExcelDoExport(model, url, button, dopfields, removefile) {
         };
 
         $.ajax({
-            url: url + '&' + $.param(data),
+            url: baseUrl + url + '?' + $.param(data),
             type: "post",
             data: {buttonloadingid: button}, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
             async: true,
             success: function (response) {
                 /* response - Путь к новому файлу */
-                window.location.href = "files/" + response;
+                window.location.href = baseUrl + "files/" + response;
                 /* Открываем файл */
                 /* Удаляем файл через 5 секунд */
                 if (removefile)
                     setTimeout(function () {
                         $.ajax({
-                            url: "?r=site%2Fdelete-excel-file",
+                            url: baseUrl + "site/delete-excel-file",
                             type: "post",
                             data: {filename: response},
                             async: true
@@ -215,12 +217,12 @@ function DownloadReport(url, button, dopparams) {
         async: true,
         success: function (response) {
             /* response - Путь к новому файлу  */
-            window.location.href = "files/" + response;
+            window.location.href = baseUrl + "files/" + response;
             /* Открываем файл */
             /* Удаляем файл через 5 секунд*/
             setTimeout(function () {
                 $.ajax({
-                    url: "?r=site%2Fdelete-excel-file",
+                    url: baseUrl + "site/delete-excel-file",
                     type: "post",
                     data: {filename: response},
                     async: true
@@ -252,7 +254,7 @@ function SendReport(url, button, dopparams) {
                     success: function (response) {
                         setTimeout(function () {
                             $.ajax({
-                                url: "?r=site%2Fdelete-tmp-file",
+                                url: baseUrl + "site/delete-tmp-file",
                                 type: "post",
                                 data: {filename: response},
                                 async: true
@@ -279,7 +281,7 @@ function LoadingButtonShow(param) {
     if (typeof param !== "undefined" && ("buttonelem" in param)) {
         param.buttonelem.width(param.buttonelem.width());
         param.buttonelem.attr("disabled", true);
-        param.buttonelem.html('<img src="images/progress.svg">');
+        param.buttonelem.html('<img src="' + baseUrl + 'images/progress.svg">');
     }
 }
 
@@ -515,7 +517,7 @@ $(document).ready(function () {
     InitWindowGUID();
 
     /* scrollreturn page \/ \/ \/ */
-    if ($.inArray(window.location.search, ["", "?r=site%2Findex"]) >= 0) {
+    if ($.inArray(window.location.search, ["", "site/index"]) >= 0) {
         localStorage.removeItem('scroll');
         localStorage.removeItem('scrollfilter');
     } else {

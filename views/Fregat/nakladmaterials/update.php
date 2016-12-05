@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Nakladmaterials */
 
-\Yii::$app->getView()->registerJsFile('js/nakladmaterialsform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/nakladmaterialsform.js');
 
 $this->title = 'Обновить материальную ценность в требовании-накладной';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [

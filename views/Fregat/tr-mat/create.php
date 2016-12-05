@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/tr-matform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/tr-matform.js');
 use yii\helpers\Html;
 use app\func\Proc;
 

@@ -1,6 +1,6 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/freewall.js');
-\Yii::$app->getView()->registerJsFile('js/fregatmainmenu.js');
+\Yii::$app->getView()->registerJsFile('@web/js/freewall.js');
+\Yii::$app->getView()->registerJsFile('@web/js/fregatmainmenu.js');
 use yii\helpers\Html;
 use app\func\Proc;
 use yii\helpers\Url;

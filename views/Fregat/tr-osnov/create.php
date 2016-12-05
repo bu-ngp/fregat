@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/replacematerial.js');
+\Yii::$app->getView()->registerJsFile('@web/js/replacematerial.js');
 
 use yii\helpers\Html;
 use app\func\Proc;

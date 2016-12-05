@@ -1,5 +1,5 @@
 <?php
-\Yii::$app->getView()->registerJsFile('js/docfiles.js');
+\Yii::$app->getView()->registerJsFile('@web/js/docfiles.js');
 
 use yii\helpers\Html;
 use app\func\Proc;

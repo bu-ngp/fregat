@@ -4,7 +4,7 @@ $(document).ready(function () {
     $(document).on('ready pjax:success', function () {
         $('.osmotraktsend').click(function (e) {
             e.preventDefault(); //for prevent default behavior of <a> tag.
-            $(SendOsmotraktDialog).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
+            $(SendOsmotraktDialog).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
             $(SendOsmotraktDialog).modal('show').find('.modal-body').load($(this).attr('href'), function () {
                 SetStyleFilterBehavior();
                 GetScrollFilter("div.insideforms");
@@ -26,7 +26,7 @@ $(document).ready(function () {
         console.debug($("#organ-organ_id").val())
         if ($("#organ-organ_id").val() != "")
             $.ajax({
-                url: "?r=Fregat%2Fosmotrakt%2Fosmotrakt-send",
+                url: baseUrl + "Fregat/osmotrakt/osmotrakt-send",
                 type: "post",
                 data: {
                     osmotrakt_id: $("#osmotrakt-osmotrakt_id").val(),
