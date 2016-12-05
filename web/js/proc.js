@@ -1,9 +1,7 @@
 bootbox.setDefaults({locale: "ru"});
 
-var baseUrl = window.location.protocol + "//" + window.location.host + "/ver2/";
-
-console.debug(window.location);
-console.debug(document.location);
+var subdir = document.location.pathname.indexOf("/ver2/") == 0 ? "/ver2/" : "/";
+var baseUrl = window.location.protocol + "//" + window.location.host + subdir;
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
