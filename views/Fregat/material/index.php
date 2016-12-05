@@ -122,6 +122,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     },
                 ],
                 [
+                    'attribute' => 'currentMattraffic.mattraffic_date',
+                    'format' => 'date',
+                    'label' => 'Дата последнего изменения состояния',
+                    'visible' => false,
+                ],
+                [
                     'attribute' => 'idSchetuchet.schetuchet_kod',
                     'visible' => false,
                 ],

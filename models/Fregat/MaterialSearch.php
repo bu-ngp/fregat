@@ -27,6 +27,7 @@ class MaterialSearch extends Material
             'currentMattraffic.idMol.idperson.auth_user_fullname',
             'currentMattraffic.idMol.iddolzh.dolzh_name',
             'currentMattraffic.idMol.idbuild.build_name',
+            'currentMattraffic.mattraffic_date',
             'idSchetuchet.schetuchet_kod',
             'idSchetuchet.schetuchet_name',
         ]);
@@ -47,6 +48,7 @@ class MaterialSearch extends Material
                 'currentMattraffic.idMol.idperson.auth_user_fullname',
                 'currentMattraffic.idMol.iddolzh.dolzh_name',
                 'currentMattraffic.idMol.idbuild.build_name',
+                'currentMattraffic.mattraffic_date',
                 'idSchetuchet.schetuchet_kod',
                 'idSchetuchet.schetuchet_name',
             ], 'safe'],
@@ -130,13 +132,15 @@ class MaterialSearch extends Material
         $query->andFilterWhere(['LIKE', 'currentidperson.auth_user_fullname', $this->getAttribute('currentMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'currentiddolzh.dolzh_name', $this->getAttribute('currentMattraffic.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'currentidbuild.build_name', $this->getAttribute('currentMattraffic.idMol.idbuild.build_name')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'currentMattraffic.mattraffic_date', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'currentMattraffic.idMol.idperson.auth_user_fullname' => 'currentidperson',
             'currentMattraffic.idMol.iddolzh.dolzh_name' => 'currentiddolzh',
             'currentMattraffic.idMol.idbuild.build_name' => 'currentidbuild',
+            'currentMattraffic.mattraffic_date',
         ]);
-        
+
         $this->materialDopfilter($query);
 
         return $dataProvider;
