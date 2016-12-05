@@ -8,7 +8,7 @@ use app\models\Config\AuthassignmentSearch;
 use app\models\Config\Authuser;
 use app\models\Config\AuthuserSearch;
 use app\models\Config\Profile;
-use app\models\COnfig\AuthuserFilter;
+use app\models\Config\AuthuserFilter;
 use app\models\Fregat\Employee;
 use app\models\Fregat\EmployeeSearch;
 use Yii;
