@@ -2,6 +2,9 @@ bootbox.setDefaults({locale: "ru"});
 
 var baseUrl = window.location.protocol + "//" + window.location.host + "/";
 
+console.debug(window.location);
+console.debug(document.location);
+
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split('&'),
