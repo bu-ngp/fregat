@@ -1,6 +1,6 @@
 bootbox.setDefaults({locale: "ru"});
 
-var baseUrl = window.location.protocol + "//" + window.location.host + "/";
+var baseUrl = window.location.protocol + "//" + window.location.host + "/ver2/";
 
 console.debug(window.location);
 console.debug(document.location);
