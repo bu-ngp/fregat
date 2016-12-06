@@ -105,6 +105,10 @@ class Proc
             $session = new Session;
             $session->open();
 
+            // Костыль Ошибка html.sortable.min.js.map
+            if (preg_match('/html\.sortable\.min\.js\.map/', $View->context->module->requestedRoute))
+                return $session['breadcrumbs'];
+
             if (!isset($session['breadcrumbs']))
                 $session['breadcrumbs'] = [];
 

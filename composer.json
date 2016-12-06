@@ -13,7 +13,7 @@
         "yiisoft/yii2": ">=2.0.5",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "kartik-v/yii2-dynagrid": "@stable",
+        "kartik-v/yii2-dynagrid": "@dev",
         "phpoffice/phpexcel": "1.8.0",
         "kartik-v/yii2-widget-datepicker": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",
