@@ -454,6 +454,8 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseRelations($query);
 
+        $query->andWhere(['idMaterial.material_writeoff' => 0]);
+        $query->andWhere(['in', 'mattraffic_tip', [1]]);
         $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
 
         $this->load($params);

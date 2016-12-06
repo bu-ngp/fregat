@@ -1,12 +1,9 @@
 <?php
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/removeaktfilter.js');
-
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
-use yii\helpers\Url;
-use yii\bootstrap\ButtonDropdown;
-use yii\bootstrap\ButtonGroup;
+
+\Yii::$app->getView()->registerJsFile('@web/js/removeaktfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/removeaktfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\InstallaktSearch */

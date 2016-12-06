@@ -1,9 +1,8 @@
 <?php
-\Yii::$app->getView()->registerJsFile('@web/js/freewall.js');
-\Yii::$app->getView()->registerJsFile('@web/js/fregatmainmenu.js');
-
-use yii\helpers\Html;
 use app\func\Proc;
+
+\Yii::$app->getView()->registerJsFile('@web/js/freewall.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/freewall.js'));
+\Yii::$app->getView()->registerJsFile('@web/js/fregatmainmenu.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/fregatmainmenu.js'));
 
 $this->title = 'Справочники';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);

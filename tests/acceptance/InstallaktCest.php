@@ -139,6 +139,7 @@ class InstallaktCest
     {
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
+        $I->executeJS('window.scrollTo(0,0);');
 
         $I->seeInField('Material[material_name]', '');
 

@@ -1,10 +1,9 @@
 <?php
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/osmotraktmatfilter.js');
-
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
-use yii\helpers\Url;
+
+\Yii::$app->getView()->registerJsFile('@web/js/osmotraktmatfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktmatfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\OsmotraktmatSearch */

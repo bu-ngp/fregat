@@ -1,9 +1,8 @@
 <?php
-
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/spisosnovaktform.js');
-
 use app\func\Proc;
 use yii\helpers\Html;
+
+\Yii::$app->getView()->registerJsFile('@web/js/spisosnovaktform.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/spisosnovaktform.js'));
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Spisosnovakt */

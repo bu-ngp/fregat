@@ -1,12 +1,12 @@
 <?php
-\Yii::$app->getView()->registerJsFile('@web/js/replacematerial.js');
-
 use yii\helpers\Html;
 use app\func\Proc;
 use app\models\Fregat\Dolzh;
 use app\models\Config\Authuser;
 use app\models\Fregat\Podraz;
 use app\models\Fregat\Build;
+
+\Yii::$app->getView()->registerJsFile('@web/js/replacematerial.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/replacematerial.js'));
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrOsnov */

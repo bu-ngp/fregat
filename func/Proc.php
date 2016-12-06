@@ -105,7 +105,7 @@ class Proc
             $session = new Session;
             $session->open();
 
-            // Костыль Ошибка html.sortable.min.js.map
+            // Костыль Ошибка html.sortable.min.js.map (Kartik расширение)
             if (preg_match('/html\.sortable\.min\.js\.map/', $View->context->module->requestedRoute))
                 return $session['breadcrumbs'];
 
@@ -1876,5 +1876,14 @@ class Proc
     {
         $FileRoot = (DIRECTORY_SEPARATOR === '/') ? $FileNameUTF8 : mb_convert_encoding($FileNameUTF8, 'Windows-1251', 'UTF-8');
         return file_exists($FileRoot);
+    }
+
+    /** Применяет параметр к url с датой изменения файла в виде Timestamp
+     * @param $filePath string Путь к файлу
+     * @return string
+     */
+    public static function appendTimestampUrlParam($filePath)
+    {
+        return '?v=' . @filemtime($filePath);
     }
 }

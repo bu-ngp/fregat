@@ -1,12 +1,12 @@
 <?php
-\Yii::$app->getView()->registerJsFile('@web/js/docfiles.js');
 
 use app\func\Proc;
 use kartik\file\FileInput;
 use yii\bootstrap\ActiveForm;
-use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use yii\helpers\Url;
+
+\Yii::$app->getView()->registerJsFile('@web/js/docfiles.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/docfiles.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\DocfilesSearch */

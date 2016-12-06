@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/recoverysendaktform.js');
+\Yii::$app->getView()->registerJsFile('@web/js/recoverysendaktform.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/recoverysendaktform.js'));
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Recoveryrecieveakt */

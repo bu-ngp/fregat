@@ -87,13 +87,13 @@ class NakladmaterialsController extends Controller
         }
     }
 
-    public function actionSelectinputfornakladmaterials($q = null, $idnaklad)
+    public function actionSelectinputfornakladmaterials($q = null/*, $idnaklad*/)
     {
         return Proc::ResultSelect2([
             'model' => new Mattraffic,
             'q' => $q,
             'methodquery' => 'selectinputfornakladmaterials',
-            'MethodParams' => ['idnaklad' => $idnaklad],
+         //   'MethodParams' => ['idnaklad' => $idnaklad],
         ]);
     }
 

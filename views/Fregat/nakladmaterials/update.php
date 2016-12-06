@@ -3,10 +3,10 @@
 use app\func\Proc;
 use yii\helpers\Html;
 
+\Yii::$app->getView()->registerJsFile('@web/js/nakladmaterialsform.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/nakladmaterialsform.js'));
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Nakladmaterials */
-
-\Yii::$app->getView()->registerJsFile('@web/js/nakladmaterialsform.js');
 
 $this->title = 'Обновить материальную ценность в требовании-накладной';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [

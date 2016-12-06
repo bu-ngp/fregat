@@ -1,8 +1,8 @@
 <?php
-\Yii::$app->getView()->registerJsFile('@web/js/osmotraktform.js');
-
 use yii\helpers\Html;
 use app\func\Proc;
+
+\Yii::$app->getView()->registerJsFile('@web/js/osmotraktform.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktform.js'));
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Osmotrakt */

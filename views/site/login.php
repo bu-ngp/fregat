@@ -151,3 +151,4 @@ use yii\bootstrap\ActiveForm;
             </div>
         </div>
     </div>
+</div>

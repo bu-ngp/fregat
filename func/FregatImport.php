@@ -573,6 +573,9 @@ class FregatImport
                     $Material->material_writeoff = 0;
                 }
 
+                if ($Material->id_matvid != 1 && $xls_attributes_material['id_matvid'] == 1)
+                    $xls_attributes_material['id_matvid'] = $Material->id_matvid;
+
                 // Если в Excel отсутствует инвентарный номер, а в базе он есть, то сделать так, что бы импорт не видел изменения
                 if (empty($xls_attributes_material['material_inv']) && !empty($Material->material_inv))
                     $xls_attributes_material['material_inv'] = $Material->material_inv;
@@ -600,10 +603,18 @@ class FregatImport
                 if ($Material->material_name === '' || $Material->material_name === NULL)
                     $Material->material_name = $Material->material_name1c;
 
+                /*
+                // Если имя матценности сменили вручную, то меняем ее на оригинал из 1С
                 if (!$Material->isNewRecord && $Material->material_name !== $Material->material_name1c && $Material->material_importdo === 1) {
+                    $Material->material_name = $Material->material_name1c;
+                   $diff_attr['material_name'] = $Material->material_name1c;
+               }*/
+                
+                if (!$Material->isNewRecord && $Material->getOldAttribute('material_name') === $Material->getOldAttribute('material_name1c') && $xls_attributes_material['material_name1c'] != $Material->getOldAttribute('material_name1c') && $Material->material_importdo === 1) {
                     $Material->material_name = $Material->material_name1c;
                     $diff_attr['material_name'] = $Material->material_name1c;
                 }
+
 
                 if (!empty($Material->material_1c) && empty($Material->material_inv)) {
                     preg_match('/^(00-)?(.*)/ui', $Material->material_1c, $matches);

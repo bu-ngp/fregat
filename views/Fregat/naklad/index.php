@@ -1,9 +1,10 @@
 <?php
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/nakladfilter.js');
-
 use app\func\Proc;
 use kartik\dynagrid\DynaGrid;
 use yii\helpers\Html;
+use yii\helpers\Url;
+
+\Yii::$app->getView()->registerJsFile('@web/js/nakladfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/nakladfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\NakladSearch */
@@ -49,7 +50,15 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                 ],
                 'buttons' => array_merge(Yii::$app->user->can('NakladEdit') ? [
-                    'downloadreport' => ['Fregat/naklad/naklad-report'],
+                    'downloadreport_custom' => function ($url, $model) use ($Params) {
+                        /** @var $model \yii\db\ActiveRecord */
+                        return !$model->nakladmaterials ? false : Html::button('<i class="glyphicon glyphicon-list"></i>', [
+                            'type' => 'button',
+                            'title' => 'Скачать отчет',
+                            'class' => 'btn btn-xs btn-info',
+                            'onclick' => 'DownloadReport("' . Url::to(['Fregat/naklad/naklad-report']) . '", null, {id: ' . $model->primaryKey . '} )'
+                        ]);
+                    },
                     'update' => ['Fregat/naklad/update'],
                     'deleteajax' => ['Fregat/naklad/delete'],
                 ] : []

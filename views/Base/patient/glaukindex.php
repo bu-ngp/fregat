@@ -1,12 +1,12 @@
 <?php
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/patientglaukfilter.js');
-
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use yii\helpers\Url;
 use app\models\Base\Patient;
 use app\models\Glauk\Glaukuchet;
+
+\Yii::$app->getView()->registerJsFile('@web/js/patientglaukfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/patientglaukfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Patient\GlaukPatientSearch */

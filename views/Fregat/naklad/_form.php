@@ -109,7 +109,7 @@ use yii\widgets\ActiveForm;
             <div class="panel-heading">
                 <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Nakladform']) ?>
                 <?php
-                if (!$model->isNewRecord)
+                if (!$model->isNewRecord && $model->nakladmaterials)
                     echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать требование-накладную', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/naklad/naklad-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
                 ?>
             </div>

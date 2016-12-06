@@ -1,9 +1,9 @@
 <?php
-\Yii::$app->getView()->registerJsFile(Yii::$app->request->baseUrl . '/js/spisosnovaktfilter.js');
-
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
+
+\Yii::$app->getView()->registerJsFile('@web/js/spisosnovaktfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/spisosnovaktfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\SpisosnovaktSearch */
