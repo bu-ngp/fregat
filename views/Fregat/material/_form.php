@@ -165,6 +165,15 @@ use yii\helpers\Url;
             ?>
 
             <?=
+            $form->field($model, 'material_comment')->textarea([
+                'class' => 'form-control setsession',
+                'maxlength' => 512,
+                'rows' => 10,
+                'style' => 'resize: none',
+            ])
+            ?>
+
+            <?=
             $form->field($model, 'material_importdo')->checkbox(['disabled' => $disabled]);
             ?>
 

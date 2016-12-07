@@ -40,7 +40,7 @@ class MaterialSearch extends Material
     {
         return [
             [['material_id', 'material_tip', 'material_writeoff', 'id_matvid', 'id_izmer', 'material_importdo'], 'integer'],
-            [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_username', 'material_lastchange', 'idMatv.matvid_name', 'idIzmer.izmer_name'], 'safe'],
+            [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_serial', 'material_release', 'material_username', 'material_lastchange', 'idMatv.matvid_name', 'idIzmer.izmer_name', 'material_comment'], 'safe'],
             [['material_number', 'material_price'], 'safe'],
             [[
                 'mattraffics.mattraffic_lastchange',
@@ -115,6 +115,7 @@ class MaterialSearch extends Material
         $query->andFilterWhere(Proc::WhereConstruct($this, 'material_number'));
         $query->andFilterWhere(['LIKE', 'idSchetuchet.schetuchet_kod', $this->getAttribute('idSchetuchet.schetuchet_kod')]);
         $query->andFilterWhere(['LIKE', 'idSchetuchet.schetuchet_name', $this->getAttribute('idSchetuchet.schetuchet_name')]);
+        $query->andFilterWhere(['LIKE', 'material_comment', $this->getAttribute('material_comment')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMatv.matvid_name',

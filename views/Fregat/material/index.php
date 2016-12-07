@@ -132,6 +132,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'idSchetuchet.schetuchet_name',
                     'visible' => false,
                 ],
+                [
+                    'attribute' => 'material_comment',
+                    'visible' => false,
+                ],
             ],
             'buttons' => array_merge(
                 empty($foreign) ? [

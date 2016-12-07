@@ -23,6 +23,7 @@ use yii\db\Query;
  * @property integer $id_matvid
  * @property integer $id_izmer
  * @property integer $id_schetuchet
+ * @property string $material_comment
  *
  * @property Izmer $idIzmer
  * @property Matvid $idMatv
@@ -78,6 +79,7 @@ class Material extends \yii\db\ActiveRecord
             [['material_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность при импорте не изменяется, 1 - Материальная ценность может быть изменена при импорте
             [['material_number'], 'FoldDevision'],
+            [['material_comment'], 'string', 'max' => 512],
         ];
     }
 
@@ -110,6 +112,7 @@ class Material extends \yii\db\ActiveRecord
             'material_lastchange' => 'Дата изменения записи',
             'material_importdo' => 'Запись изменяема при импортировании из 1С',
             'id_schetuchet' => 'Счет учета',
+            'material_comment' => 'Заметка',
         ];
     }
 
@@ -175,7 +178,7 @@ class Material extends \yii\db\ActiveRecord
     {
         $method = isset($params['init']) ? 'one' : 'all';
 
-        $where = isset($params['init']) ? ['material_id' => $params['q']] : ['like','material_inv',$params['q']];
+        $where = isset($params['init']) ? ['material_id' => $params['q']] : ['like', 'material_inv', $params['q']];
         $query = self::find()
             ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
             ->andWhere($where)
@@ -188,7 +191,7 @@ class Material extends \yii\db\ActiveRecord
 
     public static function getMaterialByID($ID)
     {
-        return 'инв. '.self::findOne($ID)->material_inv . ', ' . self::findOne($ID)->material_name;
+        return 'инв. ' . self::findOne($ID)->material_inv . ', ' . self::findOne($ID)->material_name;
     }
 
     public static function VariablesValues($attribute)
