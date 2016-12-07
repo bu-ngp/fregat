@@ -36,16 +36,23 @@ echo DynaGrid::widget(Proc::DGopts([
                 'label' => 'Должность мастера',
             ],
         ],
-        'buttons' => [
-            'osmotraktreport' => function ($url, $model) use ($params) {
-                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                    'type' => 'button',
-                    'title' => 'Скачать акт осмотра матер-ой цен-ти',
-                    'class' => 'btn btn-xs btn-default',
-                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotrakt/osmotrakt-report']) . '", null, {id: ' . $model->primaryKey . '} )'
-                ]);
-            },
-        ],
+        'buttons' => array_merge(
+            [
+                'osmotraktreport' => function ($url, $model) use ($params) {
+                    return Html::button('<i class="glyphicon glyphicon-list"></i>', [
+                        'type' => 'button',
+                        'title' => 'Скачать акт осмотра матер-ой цен-ти',
+                        'class' => 'btn btn-xs btn-default',
+                        'onclick' => 'DownloadReport("' . Url::to(['Fregat/osmotrakt/osmotrakt-report']) . '", null, {id: ' . $model->primaryKey . '} )'
+                    ]);
+                }
+            ],
+            Yii::$app->user->can('OsmotraktEdit') ? [
+                'osmotraktview' => function ($url, $model) use ($params) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/osmotrakt/update', 'id' => $model->primaryKey]);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                },
+            ] : [])
     ]),
     'gridOptions' => [
         'dataProvider' => $dataProvider_recovery,

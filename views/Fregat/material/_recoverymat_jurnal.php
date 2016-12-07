@@ -29,7 +29,7 @@ echo DynaGrid::widget(Proc::DGopts([
             ],
             'idTrMatOsmotr.id_osmotraktmat',
         ],
-        'buttons' => [
+        'buttons' => array_merge([
             'recoveryrecieveaktmatreport' => function ($url, $model) use ($params) {
                 return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                     'type' => 'button',
@@ -39,6 +39,13 @@ echo DynaGrid::widget(Proc::DGopts([
                 ]);
             },
         ],
+            Yii::$app->user->can('RecoveryEdit') ? [
+                'recoverysendaktmatview' => function ($url, $model) use ($params) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/recoverysendakt/update', 'id' => $model->id_recoverysendakt]);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                },
+            ] : []
+        ),
     ]),
     'gridOptions' => [
         'dataProvider' => $dataProvider_recoverysendmat,

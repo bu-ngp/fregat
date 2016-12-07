@@ -50,7 +50,7 @@ echo DynaGrid::widget(Proc::DGopts([
             ],
             'nakladmaterials_number',
         ],
-        'buttons' => [
+        'buttons' => array_merge([
             'nakladreport' => function ($url, $model) use ($params) {
                 return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                     'type' => 'button',
@@ -59,7 +59,12 @@ echo DynaGrid::widget(Proc::DGopts([
                     'onclick' => 'DownloadReport("' . Url::to(['Fregat/naklad/naklad-report']) . '", null, {id: ' . $model->id_naklad . '} )'
                 ]);
             },
-        ],
+        ], Yii::$app->user->can('NakladEdit') ? [
+            'nakladview' => function ($url, $model) use ($params) {
+                $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/naklad/update', 'id' => $model->id_naklad]);
+                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+            },
+        ] : []),
     ]),
     'gridOptions' => [
         'dataProvider' => $dataProvider_naklad,

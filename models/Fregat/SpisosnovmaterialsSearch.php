@@ -28,6 +28,10 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
             'idSpisosnovakt.idMol.iddolzh.dolzh_name',
             'idSpisosnovakt.idMol.idpodraz.podraz_name',
             'idSpisosnovakt.idMol.idbuild.build_name',
+            'idSpisosnovakt.idEmployee.idperson.auth_user_fullname',
+            'idSpisosnovakt.idEmployee.iddolzh.dolzh_name',
+            'idSpisosnovakt.idEmployee.idpodraz.podraz_name',
+            'idSpisosnovakt.idEmployee.idbuild.build_name',
         ]);
     }
 
@@ -51,6 +55,10 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
                 'idSpisosnovakt.idMol.iddolzh.dolzh_name',
                 'idSpisosnovakt.idMol.idpodraz.podraz_name',
                 'idSpisosnovakt.idMol.idbuild.build_name',
+                'idSpisosnovakt.idEmployee.idperson.auth_user_fullname',
+                'idSpisosnovakt.idEmployee.iddolzh.dolzh_name',
+                'idSpisosnovakt.idEmployee.idpodraz.podraz_name',
+                'idSpisosnovakt.idEmployee.idbuild.build_name',
             ], 'safe'],
         ];
     }
@@ -136,6 +144,10 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
             'idSpisosnovakt.idMol.iddolzh',
             'idSpisosnovakt.idMol.idpodraz',
             'idSpisosnovakt.idMol.idbuild',
+            'idSpisosnovakt.idEmployee.idperson idpersonemp',
+            'idSpisosnovakt.idEmployee.iddolzh iddolzhemp',
+            'idSpisosnovakt.idEmployee.idpodraz idpodrazemp',
+            'idSpisosnovakt.idEmployee.idbuild idbuildemp',
         ]);
 
         $this->load($params);
@@ -159,6 +171,10 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idSpisosnovakt.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idSpisosnovakt.idMol.idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idSpisosnovakt.idMol.idbuild.build_name')]);
+        $query->andFilterWhere(['LIKE', 'idpersonemp.auth_user_fullname', $this->getAttribute('idSpisosnovakt.idEmployee.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'iddolzhemp.dolzh_name', $this->getAttribute('idSpisosnovakt.idEmployee.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idpodrazemp.podraz_name', $this->getAttribute('idSpisosnovakt.idEmployee.idpodraz.podraz_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuildemp.build_name', $this->getAttribute('idSpisosnovakt.idEmployee.idbuild.build_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idSpisosnovakt.spisosnovakt_id',
@@ -167,6 +183,10 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
             'idSpisosnovakt.idMol.iddolzh.dolzh_name',
             'idSpisosnovakt.idMol.idpodraz.podraz_name',
             'idSpisosnovakt.idMol.idbuild.build_name',
+            'idSpisosnovakt.idEmployee.idperson.auth_user_fullname' => 'idpersonemp',
+            'idSpisosnovakt.idEmployee.iddolzh.dolzh_name' => 'iddolzhemp',
+            'idSpisosnovakt.idEmployee.idpodraz.podraz_name' => 'idpodrazemp',
+            'idSpisosnovakt.idEmployee.idbuild.build_name' => 'idbuildemp',
         ]);
 
         return $dataProvider;

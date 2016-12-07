@@ -47,7 +47,13 @@ echo DynaGrid::widget(Proc::DGopts([
                 'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $model->id_installakt . '} )'
             ]);
         },
-        ]),
+        ],
+            Yii::$app->user->can('InstallEdit') ? [
+                'installaktview' => function ($url, $model) use ($params) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => $model->id_installakt]);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                },
+            ] : []),
     ]),
     'gridOptions' => [
         'dataProvider' => $dataProvider_mattraffic_contain,

@@ -61,33 +61,42 @@ echo DynaGrid::widget(Proc::DGopts([
                 },
             ],
         ],
-        'buttons' => array_merge(['installaktreport' => function ($url, $model) {
-            if ($model->mattraffic_tip == 3)
-                $idinstallakt = $model->trOsnovs[0]->id_installakt;
-            elseif ($model->mattraffic_tip == 4)
-                $idinstallakt = $model->trMats[0]->id_installakt;
+        'buttons' => array_merge([
+            'installaktreport' => function ($url, $model) {
+                if ($model->mattraffic_tip == 3)
+                    $idinstallakt = $model->trOsnovs[0]->id_installakt;
+                elseif ($model->mattraffic_tip == 4)
+                    $idinstallakt = $model->trMats[0]->id_installakt;
 
-            if ($model->mattraffic_tip == 3 || $model->mattraffic_tip == 4)
-                return Html::button('<i class="glyphicon glyphicon-list"></i>', [
-                    'type' => 'button',
-                    'title' => 'Скачать акт перемещения матер-ой цен-ти',
-                    'class' => 'btn btn-xs btn-default',
-                    'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $idinstallakt . '} )'
-                ]);
-            else
-                return '';
-        },
-        ], Yii::$app->user->can('MaterialMolDelete') ? [
-            'deletemol' => function ($url, $model) use ($params) {
-                $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/mattraffic/delete', 'id' => $model->primaryKey]);
-                return (in_array($model->mattraffic_tip, [1, 2])) ? Html::button('<i class="glyphicon glyphicon-trash"></i>', [
-                    'type' => 'button',
-                    'title' => 'Удалить',
-                    'class' => 'btn btn-xs btn-danger',
-                    'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_grid")'
-                ]) : '';
+                if ($model->mattraffic_tip == 3 || $model->mattraffic_tip == 4)
+                    return Html::button('<i class="glyphicon glyphicon-list"></i>', [
+                        'type' => 'button',
+                        'title' => 'Скачать акт перемещения матер-ой цен-ти',
+                        'class' => 'btn btn-xs btn-default',
+                        'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $idinstallakt . '} )'
+                    ]);
+                else
+                    return '';
+            }
+        ], Yii::$app->user->can('InstallEdit') ? [
+            'installaktview' => function ($url, $model) use ($params) {
+                if (in_array($model->mattraffic_tip, [3, 4])) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => $model->trOsnovs[0]->id_installakt]);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                }
             },
-        ] : []),
+        ] : [],
+            Yii::$app->user->can('MaterialMolDelete') ? [
+                'deletemol' => function ($url, $model) use ($params) {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/mattraffic/delete', 'id' => $model->primaryKey]);
+                    return (in_array($model->mattraffic_tip, [1, 2])) ? Html::button('<i class="glyphicon glyphicon-trash"></i>', [
+                        'type' => 'button',
+                        'title' => 'Удалить',
+                        'class' => 'btn btn-xs btn-danger',
+                        'onclick' => 'ConfirmDeleteDialogToAjax("Вы уверены, что хотите удалить запись?", "' . $customurl . '", "mattraffic_karta_grid")'
+                    ]) : '';
+                },
+            ] : []),
     ]),
     'gridOptions' => [
         'dataProvider' => $dataProvider_mattraffic,

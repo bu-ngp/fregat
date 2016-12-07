@@ -123,7 +123,10 @@ use yii\widgets\ActiveForm;
                     'idMattraffic.idMaterial.material_name',
                     'idMattraffic.idMaterial.material_inv',
                     'idMattraffic.idMaterial.material_serial',
-                    'idMattraffic.idMaterial.material_release',
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_release',
+                        'format' => 'date',
+                    ],
                     'spisosnovmaterials_number',
                     'idMattraffic.idMaterial.material_price',
                 ],
