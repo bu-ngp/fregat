@@ -107,39 +107,9 @@ class SpravEmployeeCest
     /**
      * @depends openCreateEmployee
      */
-    public function loadData()
+    public function loadData(AcceptanceTester $I)
     {
-        $dolzh = new Dolzh;
-        $dolzh->dolzh_name = 'Кардиолог';
-        $dolzh->save();
-
-        $dolzh = new Dolzh;
-        $dolzh->dolzh_name = 'Медсестра';
-        $dolzh->save();
-
-        $dolzh = new Dolzh;
-        $dolzh->dolzh_name = 'Невролог';
-        $dolzh->save();
-
-        $podraz = new Podraz;
-        $podraz->podraz_name = 'Терапевтическое';
-        $podraz->save();
-
-        $podraz = new Podraz;
-        $podraz->podraz_name = 'Общеполиклиническое';
-        $podraz->save();
-
-        $build = new Build;
-        $build->build_name = 'Поликлиника 1';
-        $build->save();
-
-        $build = new Build;
-        $build->build_name = 'Поликлиника 2';
-        $build->save();
-
-        $build = new Build;
-        $build->build_name = 'Поликлиника 3';
-        $build->save();
+        $I->loadDataFromSQLFile('employee.sql');
     }
 
     /**
@@ -342,10 +312,10 @@ class SpravEmployeeCest
      */
     public function destroyData()
     {
-        Employee::deleteAll();
+       /* Employee::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
         Dolzh::deleteAll();
         Podraz::deleteAll();
-        Build::deleteAll();
+        Build::deleteAll();*/
     }
 }
