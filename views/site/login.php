@@ -50,7 +50,7 @@ use yii\bootstrap\ActiveForm;
         .account-wall {
             margin-top: 20px;
             padding: 20px 0px 20px 0px;
-            background-color: #f7f7f7;
+            background-color: #fff6f0;
             -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
             -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
             box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
