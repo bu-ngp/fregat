@@ -141,7 +141,7 @@ class MaterialSearch extends Material
             'currentMattraffic.mattraffic_date',
         ]);
 
-        $this->materialDopfilter($query);
+        $this->materialDopFilter($query);
 
         return $dataProvider;
     }
@@ -232,6 +232,44 @@ class MaterialSearch extends Material
                     ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2')
                     ->andWhere(['m2.mattraffic_date_m2' => NULL])
                     ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
+
+            $attr = 'material_working_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('osmotrakt osmotrakts', 'osmotrakts.id_tr_osnov = trOsnovs.tr_osnov_id')
+                    ->leftJoin('recoveryrecieveakt recoveryrecieveakts', 'recoveryrecieveakts.id_osmotrakt = osmotrakts.osmotrakt_id')
+                    ->andWhere(['recoveryrecieveakts.recoveryrecieveakt_repaired' => 1])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'material_recovery_attachfiles_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['or', ['exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('osmotrakt osmotrakts', 'osmotrakts.id_tr_osnov = trOsnovs.tr_osnov_id')
+                    ->leftJoin('recoveryrecieveakt recoveryrecieveakts', 'recoveryrecieveakts.id_osmotrakt = osmotrakts.osmotrakt_id')
+                    ->leftJoin('rra_docfiles rraDocfiles', 'rraDocfiles.id_recoveryrecieveakt = recoveryrecieveakts.recoveryrecieveakt_id')
+                    ->andWhere(['not', ['rraDocfiles.rra_docfiles_id' => NULL]])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ], ['exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('tr_mat trMats', 'trMats.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('tr_mat_osmotr trMatOsmotrs', 'trMatOsmotrs.id_tr_mat = trMats.tr_mat_id')
+                    ->leftJoin('recoveryrecieveaktmat recoveryrecieveaktmats', 'recoveryrecieveaktmats.id_tr_mat_osmotr = trMatOsmotrs.tr_mat_osmotr_id')
+                    ->leftJoin('rramat_docfiles rramatDocfiles', 'rramatDocfiles.id_recoveryrecieveaktmat = recoveryrecieveaktmats.recoveryrecieveaktmat_id')
+                    ->andWhere(['not', ['rramatDocfiles.rramat_docfiles_id' => NULL]])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ]],
             ]);
         }
     }

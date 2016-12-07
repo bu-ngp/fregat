@@ -20,6 +20,8 @@ class MaterialFilter extends Model
     public $mattraffic_username;
     public $mattraffic_lastchange_beg;
     public $mattraffic_lastchange_end;
+    public $material_working_mark;
+    public $material_recovery_attachfiles_mark;
 
     public function rules()
     {
@@ -31,6 +33,8 @@ class MaterialFilter extends Model
                 'mat_id_grupa_not',
                 'mattraffic_username',
                 'tr_osnov_kab',
+                'material_working_mark',
+                'material_recovery_attachfiles_mark',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
@@ -54,6 +58,8 @@ class MaterialFilter extends Model
             'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
+            'material_working_mark' => 'Материальные ценности в рабочем состоянии',
+            'material_recovery_attachfiles_mark' => 'В актах восстановления прикреплены файлы',
         ];
     }
 
