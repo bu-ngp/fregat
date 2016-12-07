@@ -2,6 +2,10 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Nakladmaterials;
+use app\models\Fregat\NakladmaterialsSearch;
+use app\models\Fregat\Spisosnovmaterials;
+use app\models\Fregat\SpisosnovmaterialsSearch;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrMatSearch;
 use Yii;
@@ -34,7 +38,7 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel','selectinput'],
+                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel', 'selectinput'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -138,6 +142,12 @@ class MaterialController extends Controller
         $searchModel_mattraffic_contain = new TrMatSearch();
         $dataProvider_mattraffic_contain = $searchModel_mattraffic_contain->searchformaterialcontain(Yii::$app->request->queryParams);
 
+        $searchModel_spisosnovakt = new SpisosnovmaterialsSearch();
+        $dataProvider_spisosnovakt = $searchModel_spisosnovakt->searchformaterialspisosnovakt(Yii::$app->request->queryParams);
+
+        $searchModel_naklad = new NakladmaterialsSearch();
+        $dataProvider_naklad = $searchModel_naklad->searchformaterialnaklad(Yii::$app->request->queryParams);
+
         if (Yii::$app->user->can('MaterialEdit') && $model->load(Yii::$app->request->post()) && $model->save() && $Mattraffic->load(Yii::$app->request->post()) && $Mattraffic->save())
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         else
@@ -156,6 +166,10 @@ class MaterialController extends Controller
                 'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
                 'searchModel_mattraffic_contain' => $searchModel_mattraffic_contain,
                 'dataProvider_mattraffic_contain' => $dataProvider_mattraffic_contain,
+                'searchModel_spisosnovakt' => $searchModel_spisosnovakt,
+                'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
+                'searchModel_naklad' => $searchModel_naklad,
+                'dataProvider_naklad' => $dataProvider_naklad,
             ]);
     }
 

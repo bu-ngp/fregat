@@ -31,6 +31,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 'dataProvider_recoverysendmat' => $dataProvider_recoverysendmat,
                 'searchModel_mattraffic_contain' => $searchModel_mattraffic_contain,
                 'dataProvider_mattraffic_contain' => $dataProvider_mattraffic_contain,
+                'searchModel_spisosnovakt' => $searchModel_spisosnovakt,
+                'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
+                'searchModel_naklad' => $searchModel_naklad,
+                'dataProvider_naklad' => $dataProvider_naklad,
             ])
             ?>
         </div>

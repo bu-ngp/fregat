@@ -278,6 +278,29 @@ use yii\helpers\Url;
                                     ]] : []
                             ),
                         ],
+                        [
+                            'label' => 'Списание',
+                            'items' => array_merge(
+                                [
+                                    [
+                                        'label' => 'Как основное средство',
+                                        'content' => $this->render('_spisosnovakt', [
+                                            'searchModel_spisosnovakt' => $searchModel_spisosnovakt,
+                                            'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
+                                            'model' => $model,
+                                        ]),
+                                    ]
+                                ]
+                            ),
+                        ],
+                        [
+                            'label' => 'Требования-накладные',
+                            'content' => $this->render('_material_naklad', [
+                                'searchModel_naklad' => $searchModel_naklad,
+                                'dataProvider_naklad' => $dataProvider_naklad,
+                                'model' => $model,
+                            ]),
+                        ],
                     ],
                 ]);
                 ?>

@@ -22,6 +22,12 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
             'idMattraffic.idMaterial.material_serial',
             'idMattraffic.idMaterial.material_release',
             'idMattraffic.idMaterial.material_price',
+            'idSpisosnovakt.spisosnovakt_id',
+            'idSpisosnovakt.spisosnovakt_date',
+            'idSpisosnovakt.idMol.idperson.auth_user_fullname',
+            'idSpisosnovakt.idMol.iddolzh.dolzh_name',
+            'idSpisosnovakt.idMol.idpodraz.podraz_name',
+            'idSpisosnovakt.idMol.idbuild.build_name',
         ]);
     }
 
@@ -39,6 +45,12 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
                 'idMattraffic.idMaterial.material_serial',
                 'idMattraffic.idMaterial.material_release',
                 'idMattraffic.idMaterial.material_price',
+                'idSpisosnovakt.spisosnovakt_id',
+                'idSpisosnovakt.spisosnovakt_date',
+                'idSpisosnovakt.idMol.idperson.auth_user_fullname',
+                'idSpisosnovakt.idMol.iddolzh.dolzh_name',
+                'idSpisosnovakt.idMol.idpodraz.podraz_name',
+                'idSpisosnovakt.idMol.idbuild.build_name',
             ], 'safe'],
         ];
     }
@@ -67,6 +79,7 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['spisosnovmaterials_id' => SORT_DESC]],
         ]);
 
         $query->joinWith([
@@ -101,6 +114,59 @@ class SpisosnovmaterialsSearch extends Spisosnovmaterials
             'idMattraffic.idMaterial.material_serial',
             'idMattraffic.idMaterial.material_release',
             'idMattraffic.idMaterial.material_price',
+        ]);
+
+        return $dataProvider;
+    }
+
+    public function searchformaterialspisosnovakt($params)
+    {
+        $query = Spisosnovmaterials::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['spisosnovmaterials_id' => SORT_DESC]],
+        ]);
+
+        $query->joinWith([
+            'idMattraffic',
+            'idSpisosnovakt.idMol.idperson',
+            'idSpisosnovakt.idMol.iddolzh',
+            'idSpisosnovakt.idMol.idpodraz',
+            'idSpisosnovakt.idMol.idbuild',
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idMattraffic.id_material' => $_GET['id'] ?: -1,
+        ]);
+
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'spisosnovmaterials_number'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idSpisosnovakt.spisosnovakt_id'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idSpisosnovakt.spisosnovakt_date', Proc::Date));
+
+        $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idSpisosnovakt.idMol.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idSpisosnovakt.idMol.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idSpisosnovakt.idMol.idpodraz.podraz_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idSpisosnovakt.idMol.idbuild.build_name')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idSpisosnovakt.spisosnovakt_id',
+            'idSpisosnovakt.spisosnovakt_date',
+            'idSpisosnovakt.idMol.idperson.auth_user_fullname',
+            'idSpisosnovakt.idMol.iddolzh.dolzh_name',
+            'idSpisosnovakt.idMol.idpodraz.podraz_name',
+            'idSpisosnovakt.idMol.idbuild.build_name',
         ]);
 
         return $dataProvider;

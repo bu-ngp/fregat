@@ -24,6 +24,16 @@ class NakladmaterialsSearch extends Nakladmaterials
             'idMattraffic.idMaterial.idIzmer.izmer_name',
             'idMattraffic.idMaterial.idIzmer.izmer_kod_okei',
             'idMattraffic.idMaterial.material_price',
+            'idNaklad.naklad_id',
+            'idNaklad.naklad_date',
+            'idNaklad.idMolRelease.idperson.auth_user_fullname',
+            'idNaklad.idMolRelease.iddolzh.dolzh_name',
+            'idNaklad.idMolRelease.idpodraz.podraz_name',
+            'idNaklad.idMolRelease.idbuild.build_name',
+            'idNaklad.idMolGot.idperson.auth_user_fullname',
+            'idNaklad.idMolGot.iddolzh.dolzh_name',
+            'idNaklad.idMolGot.idpodraz.podraz_name',
+            'idNaklad.idMolGot.idbuild.build_name',
         ]);
     }
 
@@ -42,6 +52,16 @@ class NakladmaterialsSearch extends Nakladmaterials
                 'idMattraffic.idMaterial.idIzmer.izmer_name',
                 'idMattraffic.idMaterial.idIzmer.izmer_kod_okei',
                 'idMattraffic.idMaterial.material_price',
+                'idNaklad.naklad_id',
+                'idNaklad.naklad_date',
+                'idNaklad.idMolRelease.idperson.auth_user_fullname',
+                'idNaklad.idMolRelease.iddolzh.dolzh_name',
+                'idNaklad.idMolRelease.idpodraz.podraz_name',
+                'idNaklad.idMolRelease.idbuild.build_name',
+                'idNaklad.idMolGot.idperson.auth_user_fullname',
+                'idNaklad.idMolGot.iddolzh.dolzh_name',
+                'idNaklad.idMolGot.idpodraz.podraz_name',
+                'idNaklad.idMolGot.idbuild.build_name',
             ], 'safe']
         ];
     }
@@ -88,7 +108,6 @@ class NakladmaterialsSearch extends Nakladmaterials
             'nakladmaterials_id' => $this->nakladmaterials_id,
             'id_naklad' => $_GET['id'] ?: -1,
             'id_mattraffic' => $this->id_mattraffic,
-            'nakladmaterials_number' => $this->nakladmaterials_number,
         ]);
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'nakladmaterials_number'));
@@ -111,6 +130,70 @@ class NakladmaterialsSearch extends Nakladmaterials
             'asc' => ['`idMaterial`.`material_price` * `nakladmaterials_number`' => SORT_ASC],
             'desc' => ['`idMaterial`.`material_price` * `nakladmaterials_number`' => SORT_DESC],
         ];
+
+        return $dataProvider;
+    }
+
+    public function searchformaterialnaklad($params)
+    {
+        $query = Nakladmaterials::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['nakladmaterials_id' => SORT_DESC]],
+        ]);
+
+        $query->joinWith([
+            'idMattraffic',
+            'idNaklad.idMolRelease.idperson idpersonrelease',
+            'idNaklad.idMolRelease.iddolzh iddolzhrelease',
+            'idNaklad.idMolRelease.idpodraz idpodrazrelease',
+            'idNaklad.idMolRelease.idbuild idbuildrelease',
+            'idNaklad.idMolGot.idperson idpersongot',
+            'idNaklad.idMolGot.iddolzh iddolzhgot',
+            'idNaklad.idMolGot.idpodraz idpodrazgot',
+            'idNaklad.idMolGot.idbuild idbuildgot',
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idMattraffic.id_material' => $_GET['id'] ?: -1,
+        ]);
+
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'nakladmaterials_number'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idNaklad.naklad_id'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idNaklad.naklad_date', Proc::Date));
+        $query->andFilterWhere(['LIKE', 'idpersonrelease.auth_user_fullname', $this->getAttribute('idNaklad.idMolRelease.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'iddolzhrelease.dolzh_name', $this->getAttribute('idNaklad.idMolRelease.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idpodrazrelease.podraz_name', $this->getAttribute('idNaklad.idMolRelease.idpodraz.podraz_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuildrelease.build_name', $this->getAttribute('idNaklad.idMolRelease.idbuild.build_name')]);
+        $query->andFilterWhere(['LIKE', 'idpersongot.auth_user_fullname', $this->getAttribute('idNaklad.idMolGot.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'iddolzhgot.dolzh_name', $this->getAttribute('idNaklad.idMolGot.iddolzh.dolzh_name')]);
+        $query->andFilterWhere(['LIKE', 'idpodrazgot.podraz_name', $this->getAttribute('idNaklad.idMolGot.idpodraz.podraz_name')]);
+        $query->andFilterWhere(['LIKE', 'idbuildgot.build_name', $this->getAttribute('idNaklad.idMolGot.idbuild.build_name')]);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'idNaklad.naklad_id',
+            'idNaklad.naklad_date',
+            'idNaklad.idMolRelease.idperson.auth_user_fullname' => 'idpersonrelease',
+            'idNaklad.idMolRelease.iddolzh.dolzh_name' => 'iddolzhrelease',
+            'idNaklad.idMolRelease.idpodraz.podraz_name' => 'idpodrazrelease',
+            'idNaklad.idMolRelease.idbuild.build_name' => 'idbuildrelease',
+            'idNaklad.idMolGot.idperson.auth_user_fullname' => 'idpersongot',
+            'idNaklad.idMolGot.iddolzh.dolzh_name' => 'iddolzhgot',
+            'idNaklad.idMolGot.idpodraz.podraz_name' => 'idpodrazgot',
+            'idNaklad.idMolGot.idbuild.build_name' => 'idbuildgot',
+        ]);
 
         return $dataProvider;
     }
