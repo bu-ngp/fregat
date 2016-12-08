@@ -4,6 +4,8 @@ namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\RemoveaktReport;
 use app\models\Fregat\RemoveaktFilter;
+use app\models\Fregat\TrRmMat;
+use Exception;
 use Yii;
 use app\models\Fregat\Removeakt;
 use app\models\Fregat\RemoveaktSearch;
@@ -120,8 +122,17 @@ class RemoveaktController extends Controller
 
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                TrRmMat::deleteAll(['id_removeakt' => $id]);
+                echo $this->findModel($id)->delete();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage() . ' Удаление невозможно.');
+            }
+        }
     }
 
     /**

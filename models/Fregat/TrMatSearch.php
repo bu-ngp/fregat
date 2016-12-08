@@ -177,8 +177,8 @@ class TrMatSearch extends TrMat
 
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_name', $this->getAttribute('idParent.idMaterial.material_name')]);
-        $query->andFilterWhere(['LIKE', 'idParent.material_inv', $this->getAttribute('idParent.idMaterial.material_inv')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);

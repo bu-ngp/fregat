@@ -91,6 +91,22 @@ class AcceptanceTester extends \Codeception\Actor
         $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
     }
 
+    public function clickChooseButtonFromGrid($arrayData, $gridID)
+    {
+        $this->seeElement(['id' => $gridID]);
+
+        $path = '/';
+
+        foreach ($arrayData as $value)
+            $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
+
+        $path .= '/preceding-sibling::td/button[@title="Выбрать"]';
+            file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
+        $this->click($path);
+
+        $this->wait(2);
+    }
+
     public function checkDynagridData($arrayData, $dynaGridID = '', $arrayButtons = [])
     {
         if (is_array($arrayData) && count($arrayData) > 0) {
@@ -106,17 +122,35 @@ class AcceptanceTester extends \Codeception\Actor
             foreach ($arrayData as $value)
                 $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
 
+            //file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
             $this->seeElement($path);
 
             if (is_array($arrayButtons) && count($arrayButtons) > 0) {
                 foreach ($arrayButtons as $button) {
                     if (is_string($button)) {
-                        //file_put_contents('ttt.txt',$strbegin . 'td/' . $button . '/following-sibling::td[text()="' . $firstElement . '"]');
+                        //file_put_contents('test.txt', $strbegin . 'td/' . $button . '/following-sibling::td[text()="' . $firstElement . '"]' . PHP_EOL, FILE_APPEND);
                         $this->seeElement($strbegin . 'td/' . $button . '/../following-sibling::td[text()="' . $firstElement . '"]');
                     }
 
                 }
             }
+        }
+    }
+
+    public function dontSeeDynagridData($arrayData, $dynaGridID = '')
+    {
+        if (is_array($arrayData) && count($arrayData) > 0) {
+
+            $strbegin = empty($dynaGridID) ? '//' : '//div[@id="' . $dynaGridID . '"]/div/div/table/tbody/tr/';
+
+            $path = $strbegin . ($arrayData[0] === '' ? 'td[not(normalize-space())]' : 'td[text()="' . $arrayData[0] . '"]');
+
+            unset($arrayData[0]);
+
+            foreach ($arrayData as $value)
+                $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
+
+            $this->dontSeeElement($path);
         }
     }
 
