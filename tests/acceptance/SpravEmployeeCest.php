@@ -96,6 +96,14 @@ class SpravEmployeeCest
     /**
      * @depends saveCreateAuthuser
      */
+    public function loadData(AcceptanceTester $I)
+    {
+        $I->loadDataFromSQLFile('employee.sql');
+    }
+
+    /**
+     * @depends loadData
+     */
     public function openCreateEmployee(AcceptanceTester $I)
     {
         $I->seeLink('Добавить специальность');
@@ -106,14 +114,6 @@ class SpravEmployeeCest
 
     /**
      * @depends openCreateEmployee
-     */
-    public function loadData(AcceptanceTester $I)
-    {
-        $I->loadDataFromSQLFile('employee.sql');
-    }
-
-    /**
-     * @depends loadData
      */
     public function checkFormCreateEmployee(AcceptanceTester $I)
     {
@@ -133,28 +133,11 @@ class SpravEmployeeCest
      */
     public function addCreateEmployeeFromSelect2(AcceptanceTester $I)
     {
-        $I->click('//select[@name="Employee[id_dolzh]"]/following-sibling::span[contains(@class, "select2-container")]');
-        $I->fillField('//input[@class="select2-search__field"]', 'кар');
-        $I->wait(1);
-        $I->click('//li[contains(text(),"КАРДИОЛОГ")]');
-        $I->seeElement('//span[@id="select2-employee-id_dolzh-container" and text()="КАРДИОЛОГ"]');
+        file_put_contents('web\test.txt', 'test = ' . print_r(Dolzh::find()->count(), true) . PHP_EOL, FILE_APPEND);
+        $I->chooseValueFromSelect2('Employee[id_dolzh]', 'КАРДИОЛОГ', 'кар');
+        $I->chooseValueFromSelect2('Employee[id_podraz]', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'общ');
+        $I->chooseValueFromSelect2('Employee[id_build]', 'ПОЛИКЛИНИКА 1', 'пол');
 
-        $I->click('//select[@name="Employee[id_podraz]"]/following-sibling::span[contains(@class, "select2-container")]');
-        $I->fillField('//input[@class="select2-search__field"]', 'общ');
-        $I->wait(1);
-        $I->click('//li[contains(text(),"ОБЩЕПОЛИКЛИНИЧЕСКОЕ")]');
-        $I->seeElement('//span[@id="select2-employee-id_podraz-container" and text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]');
-
-        $I->click('//select[@name="Employee[id_build]"]/following-sibling::span[contains(@class, "select2-container")]');
-        $I->fillField('//input[@class="select2-search__field"]', 'пол');
-        $I->wait(1);
-        $I->seeElement('//li[contains(text(),"ПОЛИКЛИНИКА 1")]');
-        $I->seeElement('//li[contains(text(),"ПОЛИКЛИНИКА 2")]');
-        $I->seeElement('//li[contains(text(),"ПОЛИКЛИНИКА 3")]');
-        $I->click('//li[contains(text(),"ПОЛИКЛИНИКА 1")]');
-        $I->seeElement('//span[@id="select2-employee-id_build-container" and text()="ПОЛИКЛИНИКА 1"]');
-
-        $I->see('Создать');
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
     }
@@ -178,46 +161,23 @@ class SpravEmployeeCest
         $I->wait(2);
         $I->seeElement(['class' => 'employee-form']);
 
-        $I->click('//select[@name="Employee[id_dolzh]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'dolzhgrid_gw']);
-        $I->click('//td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
-
-        $I->click('//select[@name="Employee[id_podraz]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'podrazgrid_gw']);
-        $I->click('//td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
-
-        $I->click('//select[@name="Employee[id_build]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'buildgrid_gw']);
-        $I->click('//td[text()="ПОЛИКЛИНИКА 1"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
+        $I->chooseValueFromGrid('Employee[id_dolzh]', 'КАРДИОЛОГ', 'dolzhgrid_gw');
+        $I->chooseValueFromGrid('Employee[id_podraz]', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'podrazgrid_gw');
+        $I->chooseValueFromGrid('Employee[id_build]', 'ПОЛИКЛИНИКА 1', 'buildgrid_gw');
 
         $I->see('Создать');
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(1);
         $I->see('На этого сотрудника уже есть такая специальность');
 
-        $I->click('//select[@name="Employee[id_build]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'buildgrid_gw']);
-        $I->click('//td[text()="ПОЛИКЛИНИКА 2"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
+        $I->chooseValueFromGrid('Employee[id_build]', 'ПОЛИКЛИНИКА 2', 'buildgrid_gw');
 
         $I->see('Создать');
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'employeeauthusergrid_gw']);
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 1"]/preceding-sibling::td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 2"]/preceding-sibling::td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
+        $I->checkDynagridData(['КАРДИОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'ПОЛИКЛИНИКА 1'], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
+        $I->checkDynagridData(['КАРДИОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'ПОЛИКЛИНИКА 2'], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
     }
 
     /**
@@ -229,20 +189,14 @@ class SpravEmployeeCest
         $I->wait(2);
         $I->seeElement(['class' => 'employee-form']);
 
-        $I->click('//select[@name="Employee[id_build]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'buildgrid_gw']);
-        $I->click('//td[text()="ПОЛИКЛИНИКА 3"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
+        $I->chooseValueFromGrid('Employee[id_build]', 'ПОЛИКЛИНИКА 3', 'buildgrid_gw');
 
         $I->see('Обновить');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'employeeauthusergrid_gw']);
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 1"]/preceding-sibling::td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 3"]/preceding-sibling::td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
+        $I->checkDynagridData(['КАРДИОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'ПОЛИКЛИНИКА 1'], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
+        $I->checkDynagridData(['КАРДИОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'ПОЛИКЛИНИКА 3'], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
     }
 
     /**
@@ -269,27 +223,15 @@ class SpravEmployeeCest
         $I->wait(2);
         $I->seeElement(['class' => 'employee-form']);
 
-        $I->click('//select[@name="Employee[id_dolzh]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'dolzhgrid_gw']);
-        $I->click('//td[text()="НЕВРОЛОГ"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
-
-        $I->click('//select[@name="Employee[id_podraz]"]/following-sibling::div/a[@class="btn btn-success"]');
-        $I->wait(2);
-        $I->seeElement(['id' => 'podrazgrid_gw']);
-        $I->click('//td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->wait(2);
-        $I->seeElement(['class' => 'employee-form']);
+        $I->chooseValueFromGrid('Employee[id_dolzh]', 'НЕВРОЛОГ', 'dolzhgrid_gw');
+        $I->chooseValueFromGrid('Employee[id_podraz]', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'podrazgrid_gw');
 
         $I->see('Создать');
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'employeeauthusergrid_gw']);
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 3"]/preceding-sibling::td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="КАРДИОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
-        $I->seeElement('//td[text()="ОБЩЕПОЛИКЛИНИЧЕСКОЕ"]/preceding-sibling::td[text()="НЕВРОЛОГ"]/preceding-sibling::td/button[@title="Удалить"]/preceding-sibling::a[@title="Обновить"]');
+        $I->checkDynagridData(['КАРДИОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'ПОЛИКЛИНИКА 3', ''], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
+        $I->checkDynagridData(['НЕВРОЛОГ', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', '', ''], 'employeeauthusergrid_gw', ['button[@title="Удалить"]', 'a[@title="Обновить"]']);
     }
 
     /**
@@ -312,10 +254,10 @@ class SpravEmployeeCest
      */
     public function destroyData()
     {
-       /* Employee::deleteAll();
+        Employee::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
         Dolzh::deleteAll();
         Podraz::deleteAll();
-        Build::deleteAll();*/
+        Build::deleteAll();
     }
 }

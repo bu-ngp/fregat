@@ -41,11 +41,13 @@ class AcceptanceTester extends \Codeception\Actor
             $handle = @fopen($sqlFileName, "r");
             $result = true;
             if ($handle) {
+                $dbh = new PDO(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
+                $dbh->beginTransaction();
                 while (($subject = fgets($handle, 4096)) !== false) {
-                    $dbh = new PDO(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
                     if ($dbh->exec($subject) === false)
                         $result = false;
                 }
+                $dbh->commit();
                 fclose($handle);
             } else
                 return false;
@@ -95,14 +97,14 @@ class AcceptanceTester extends \Codeception\Actor
 
             $strbegin = empty($dynaGridID) ? '//' : '//div[@id="' . $dynaGridID . '"]/div/div/table/tbody/tr/';
 
-            $path = $strbegin . 'td[text()="' . $arrayData[0] . '"]';
+            $path = $strbegin . ($arrayData[0] === '' ? 'td[not(normalize-space())]' : 'td[text()="' . $arrayData[0] . '"]');
 
             $firstElement = $arrayData[0];
 
             unset($arrayData[0]);
 
             foreach ($arrayData as $value)
-                $path .= '/following-sibling::td[text()="' . $value . '"]';
+                $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
 
             $this->seeElement($path);
 
