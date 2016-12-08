@@ -101,7 +101,7 @@ class AcceptanceTester extends \Codeception\Actor
             $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
 
         $path .= '/preceding-sibling::td/button[@title="Выбрать"]';
-            file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
+           // file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
         $this->click($path);
 
         $this->wait(2);
