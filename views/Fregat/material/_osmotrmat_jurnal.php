@@ -30,10 +30,7 @@ echo DynaGrid::widget(Proc::DGopts([
             },
         ],
             Yii::$app->user->can('OsmotraktEdit') ? [
-                'osmotraktmatview' => function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/osmotraktmat/update', 'id' => $model->id_osmotraktmat]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                },
+                'update' => ['Fregat/osmotraktmat/update', 'id_osmotraktmat'],
             ] : []),
     ]),
     'gridOptions' => [

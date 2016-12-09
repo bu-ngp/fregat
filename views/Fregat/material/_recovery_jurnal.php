@@ -40,10 +40,7 @@ echo DynaGrid::widget(Proc::DGopts([
             },
         ],
             Yii::$app->user->can('RecoveryEdit') ? [
-                'recoverysendaktview' => function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/recoverysendakt/update', 'id' => $model->id_recoverysendakt]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                },
+                'update' => ['Fregat/recoverysendakt/update', 'id_recoverysendakt'],
             ] : []
         ),
     ]),

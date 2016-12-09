@@ -79,10 +79,10 @@ echo DynaGrid::widget(Proc::DGopts([
                     return '';
             }
         ], Yii::$app->user->can('InstallEdit') ? [
-            'installaktview' => function ($url, $model) use ($params) {
+            'installaktupdate' => function ($url, $model) use ($params) {
                 if (in_array($model->mattraffic_tip, [3, 4])) {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => $model->trOsnovs[0]->id_installakt]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
+                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                 }
             },
         ] : [],
@@ -103,9 +103,12 @@ echo DynaGrid::widget(Proc::DGopts([
         'filterModel' => $searchModel_mattraffic,
         'panel' => [
             'heading' => '<i class="glyphicon glyphicon-random"></i> Движение материальной ценности',
-            'before' => Yii::$app->user->can('MolEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
-                'id' => $model->primaryKey,
-            ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+            'before' => '<div class="btn-toolbar">' . (Yii::$app->user->can('MolEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
+                    'id' => $model->primaryKey,
+                ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '')
+                . (Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить акт перемещения материальной ценности', ['Fregat/installakt/create',
+                    'id' => $model->primaryKey,
+                ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '') . '</div>',
         ],
     ]
 ]));

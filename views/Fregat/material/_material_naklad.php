@@ -60,10 +60,7 @@ echo DynaGrid::widget(Proc::DGopts([
                 ]);
             },
         ], Yii::$app->user->can('NakladEdit') ? [
-            'nakladview' => function ($url, $model) use ($params) {
-                $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/naklad/update', 'id' => $model->id_naklad]);
-                return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-            },
+            'update' => ['Fregat/naklad/update', 'id_naklad'],
         ] : []),
     ]),
     'gridOptions' => [

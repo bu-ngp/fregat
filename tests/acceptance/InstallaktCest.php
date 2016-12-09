@@ -51,6 +51,14 @@ class InstallaktCest
     /**
      * @depends openInstallakt
      */
+    public function loadData(AcceptanceTester $I)
+    {
+        $I->loadDataFromSQLFile('installakt.sql');
+    }
+
+    /**
+     * @depends loadData
+     */
     public function openCreateInstallakt(AcceptanceTester $I)
     {
         $I->seeLink('Добавить');
@@ -61,14 +69,6 @@ class InstallaktCest
 
     /**
      * @depends openCreateInstallakt
-     */
-    public function loadData(AcceptanceTester $I)
-    {
-        $I->loadDataFromSQLFile('installakt.sql');
-    }
-
-    /**
-     * @depends loadData
      */
     public function saveInstallakt(AcceptanceTester $I)
     {
@@ -101,6 +101,7 @@ class InstallaktCest
 
         $I->seeInField('Material[material_name]', '');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', '003');
+        $I->wait(2);
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Шкаф для медикаментов');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
@@ -396,18 +397,18 @@ class InstallaktCest
      */
     public function destroyData()
     {
-        TrMat::deleteAll();
-        TrOsnov::deleteAll();
-        Installakt::deleteAll();
-        Mattraffic::deleteAll();
-        Material::deleteAll();
-        Employee::deleteAll();
-        Matvid::deleteAll();
-        Izmer::deleteAll();
-        Schetuchet::deleteAll();
-        Authuser::deleteAll('auth_user_id <> 1');
-        Build::deleteAll();
-        Dolzh::deleteAll();
-        Podraz::deleteAll();
+        /*  TrMat::deleteAll();
+          TrOsnov::deleteAll();
+          Installakt::deleteAll();
+          Mattraffic::deleteAll();
+          Material::deleteAll();
+          Employee::deleteAll();
+          Matvid::deleteAll();
+          Izmer::deleteAll();
+          Schetuchet::deleteAll();
+          Authuser::deleteAll('auth_user_id <> 1');
+          Build::deleteAll();
+          Dolzh::deleteAll();
+          Podraz::deleteAll();*/
     }
 }

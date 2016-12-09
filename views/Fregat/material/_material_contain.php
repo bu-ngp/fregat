@@ -49,10 +49,7 @@ echo DynaGrid::widget(Proc::DGopts([
         },
         ],
             Yii::$app->user->can('InstallEdit') ? [
-                'installaktview' => function ($url, $model) use ($params) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => $model->id_installakt]);
-                    return \yii\helpers\Html::a('<i class="glyphicon glyphicon-eye-open"></i>', $customurl, ['title' => 'Открыть', 'class' => 'btn btn-xs btn-success', 'data-pjax' => '0']);
-                },
+                'update' => ['Fregat/installakt/update', 'id_installakt'],
             ] : []),
     ]),
     'gridOptions' => [

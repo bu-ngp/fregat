@@ -46,7 +46,15 @@ class MaterialJurnalCest
     }
 
     /**
-     * @depends openMaterialJurnal
+     * @ssdepends openMaterialJurnal
+     */
+    public function loadData(AcceptanceTester $I)
+    {
+        $I->loadDataFromSQLFile('material_jurnal.sql');
+    }
+
+    /**
+     * @depends loadData
      */
     public function openCreateMaterial(AcceptanceTester $I)
     {
@@ -58,14 +66,6 @@ class MaterialJurnalCest
 
     /**
      * @depends openCreateMaterial
-     */
-    public function loadData(AcceptanceTester $I)
-    {
-        $I->loadDataFromSQLFile('material_jurnal.sql');
-    }
-
-    /**
-     * @depends loadData
      */
     public function checkFormCreateMaterial(AcceptanceTester $I)
     {
@@ -91,8 +91,7 @@ class MaterialJurnalCest
     public function addCreateMaterialFromSelect2(AcceptanceTester $I)
     {
         $I->executeJS('window.scrollTo(0,0);');
-        //$I->chooseValueFromSelect2('Material[id_matvid]', 'ШКАФ', 'шка'); ???? пустой список select
-        $I->chooseValueFromGrid('Material[id_matvid]', 'ШКАФ', 'matvidgrid_gw');
+        $I->chooseValueFromSelect2('Material[id_matvid]', 'ШКАФ', 'шка');
         $I->fillField('Material[material_name]', 'Шкаф для одежды');
         $I->fillField('Material[material_inv]', '1000001');
         $I->seeElement('//input[@name="Material[material_number]" and @disabled]');
@@ -108,28 +107,13 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 1"]'
-            . '/preceding-sibling::td[text()="ТЕРАПЕВТ"]'
-            . '/preceding-sibling::td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]'
-            . '/preceding-sibling::td[text()="1.000"]'
-            . '/preceding-sibling::td[text()="Приход"]'
-            . '/preceding-sibling::td/button[@title="Удалить"]');
+        $I->checkDynagridData([Yii::$app->formatter->asDate(date('d.m.Y')), 'Приход', '1.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ', 'ПОЛИКЛИНИКА 1'], 'mattraffic_karta_grid_gw', ['button[@title="Удалить"]']);
 
         $I->see('Обновить');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'materialgrid_gw']);
-        $I->seeElement('//td[text()="Нет"]'
-            . '/preceding-sibling::td[text()="1200.15"]'
-            . '/preceding-sibling::td[text()="шт"]'
-            . '/preceding-sibling::td[text()="1.000"]'
-            . '/preceding-sibling::td[text()="1000001"]'
-            . '/preceding-sibling::td[text()="Шкаф для одежды"]'
-            . '/preceding-sibling::td[text()="ШКАФ"]'
-            . '/preceding-sibling::td[text()="Основное средство"]'
-            . '/preceding-sibling::td/a[@title="Карта материальной ценности"]');
-
+        $I->checkDynagridData(['Основное средство', 'ШКАФ', 'Шкаф для одежды', '1000001', '1.000', 'шт', '1200.15', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
     }
 
     /**
@@ -155,6 +139,7 @@ class MaterialJurnalCest
         $I->chooseValueFromGrid('Material[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', 'schetuchetgrid_gw', '//td[text()="НОВЫЙ СЧЕТ"]'
             . '/preceding-sibling::td[text()="101.34"]'
             . '/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->fillField('Material[material_comment]', 'Заметка');
 
         $I->uncheckOption('Запись изменяема при импортировании из 1С');
 
@@ -169,12 +154,7 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->seeElement('//td[text()="ПОЛИКЛИНИКА 1"]'
-            . '/preceding-sibling::td[text()="ТЕРАПЕВТ"]'
-            . '/preceding-sibling::td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]'
-            . '/preceding-sibling::td[text()="5.000"]'
-            . '/preceding-sibling::td[text()="Приход"]'
-            . '/preceding-sibling::td/button[@title="Удалить"]');
+        $I->checkDynagridData([Yii::$app->formatter->asDate(date('d.m.Y')), 'Приход', '5.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ', 'ПОЛИКЛИНИКА 1'], 'mattraffic_karta_grid_gw', ['button[@title="Удалить"]']);
 
         $I->see('Движение материальной ценности');
         $I->seeElement(['id' => 'mattraffic_karta_grid_gw']);
@@ -183,16 +163,7 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'materialgrid_gw']);
-        $I->seeElement('//td[text()="Нет"]'
-            . '/preceding-sibling::td[text()="15000.00"]'
-            . '/preceding-sibling::td[text()="шт"]'
-            . '/preceding-sibling::td[text()="5.000"]'
-            . '/preceding-sibling::td[text()="1000002"]'
-            . '/preceding-sibling::td[text()="Кухонный стол"]'
-            . '/preceding-sibling::td[text()="СТОЛ"]'
-            . '/preceding-sibling::td[text()="Материал"]'
-            . '/preceding-sibling::td/a[@title="Карта материальной ценности"]');
+        $I->checkDynagridData(['Материал', 'СТОЛ', 'Кухонный стол', '1000002', '5.000', 'шт', '15000.00', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
     }
 
     /**
@@ -206,14 +177,17 @@ class MaterialJurnalCest
 
         $I->chooseValueFromSelect2('MaterialFilter[mol_fullname_material][]', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ива');
         $I->chooseValueFromSelect2('MaterialFilter[material_writeoff]', 'Нет');
+
         $I->fillField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
         $I->fillField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
         $I->fillField('MaterialFilter[mattraffic_username]', 'admin');
+        $I->checkOption('Материальные ценности в рабочем состоянии');
+
         $I->wait(1);
         $I->click(['id' => 'MaterialFilter_apply']);
         $I->wait(2);
 
-        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ' ПО ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ';']);
+        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ' ПО ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ';', 'Материальные ценности в рабочем состоянии']);
         $I->checkDynagridData(['Материал', 'СТОЛ', 'Кухонный стол', '1000002', '5.000', 'шт', '15000.00', 'Нет']);
         $I->checkDynagridData(['Основное средство', 'ШКАФ', 'Шкаф для одежды', '1000001', '1.000', 'шт', '1200.15', 'Нет']);
 
@@ -225,8 +199,17 @@ class MaterialJurnalCest
         $I->seeInField('MaterialFilter[mattraffic_username]', 'ADMIN');
         $I->seeInField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
         $I->seeInField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
+        $I->seeCheckboxIsChecked('MaterialFilter[material_working_mark]');
         $I->click(['id' => 'MaterialFilter_close']);
         $I->wait(2);
+
+        $I->click('//a[@title="Дополнительный фильтр"]');
+        $I->wait(4);
+        $I->checkOption('В актах восстановления прикреплены файлы');
+        $I->wait(1);
+        $I->click(['id' => 'MaterialFilter_apply']);
+        $I->wait(2);
+        $I->see('Ничего не найдено');
 
         $I->click(['id' => 'MaterialFilter_resetfilter']);
         $I->wait(2);
@@ -290,15 +273,15 @@ class MaterialJurnalCest
      */
     public function destroyData()
     {
-        Mattraffic::deleteAll();
-        Material::deleteAll();
-        Employee::deleteAll();
-        Matvid::deleteAll();
-        Izmer::deleteAll();
-        Schetuchet::deleteAll();
-        Authuser::deleteAll('auth_user_id <> 1');
-        Build::deleteAll();
-        Dolzh::deleteAll();
-        Podraz::deleteAll();
+         Mattraffic::deleteAll();
+         Material::deleteAll();
+         Employee::deleteAll();
+         Matvid::deleteAll();
+         Izmer::deleteAll();
+         Schetuchet::deleteAll();
+         Authuser::deleteAll('auth_user_id <> 1');
+         Build::deleteAll();
+         Dolzh::deleteAll();
+         Podraz::deleteAll();
     }
 }
