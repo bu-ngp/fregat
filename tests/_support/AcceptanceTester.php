@@ -81,11 +81,13 @@ class AcceptanceTester extends \Codeception\Actor
         }
     }
 
-    public function chooseValueFromGrid($attributeName, $resultValue, $gridID, $chooseXPath = '')
+    public function chooseValueFromGrid($attributeName, $resultValue, $gridID, $chooseXPath = '', $countRecordsGrid = NULL)
     {
         $this->click('//select[@name="' . $attributeName . '"]/following-sibling::div/a[@class="btn btn-success"]');
         $this->wait(2);
         $this->seeElement(['id' => $gridID]);
+        if ($countRecordsGrid !== NULL)
+            $this->countRowsDynagridEquals($gridID, $countRecordsGrid);
         $this->click(empty($chooseXPath) ? '//td[text()="' . $resultValue . '"]/preceding-sibling::td/button[@title="Выбрать"]' : $chooseXPath);
         $this->wait(2);
         $this->seeElement('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span[@title="' . $resultValue . '"]');
@@ -101,7 +103,7 @@ class AcceptanceTester extends \Codeception\Actor
             $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::td[text()="' . $value . '"]';
 
         $path .= '/preceding-sibling::td/button[@title="Выбрать"]';
-           // file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
+        // file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
         $this->click($path);
 
         $this->wait(2);
@@ -188,6 +190,13 @@ class AcceptanceTester extends \Codeception\Actor
                 }
             }
         }
+    }
+
+    public function countRowsDynagridEquals($dynaGridID, $needCount)
+    {
+        $gridCount = str_replace(' ', '', $this->grabTextFrom('//div[@id="' . $dynaGridID . '"]/descendant::div[@class="summary"]/b[2]'));
+        if ($this->grabTextFrom('//div[@id="' . $dynaGridID . '"]/descendant::div[@class="summary"]/b[2]') != $needCount)
+            $this->fail('Количество записей Dynagrid не равно ' . $needCount . '. Всего записей ' . $gridCount);
     }
 
 }

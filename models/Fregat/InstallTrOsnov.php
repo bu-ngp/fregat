@@ -92,6 +92,7 @@ class InstallTrOsnov extends Model
                             $transaction->commit();
                             return true;
                         } else {
+                            $this->addError('id_mattraffic', $trOsnov->getErrors('id_mattraffic')[0]);
                             $transaction->rollBack();
                             return false;
                         }
