@@ -383,7 +383,6 @@ class InstallaktCest
      */
     public function deleteInstallakt(AcceptanceTester $I)
     {
-
         $I->click('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]/preceding-sibling::td/button[@title="Удалить"]');
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
@@ -397,7 +396,7 @@ class InstallaktCest
      */
     public function destroyData()
     {
-        /*  TrMat::deleteAll();
+          TrMat::deleteAll();
           TrOsnov::deleteAll();
           Installakt::deleteAll();
           Mattraffic::deleteAll();
@@ -409,6 +408,6 @@ class InstallaktCest
           Authuser::deleteAll('auth_user_id <> 1');
           Build::deleteAll();
           Dolzh::deleteAll();
-          Podraz::deleteAll();*/
+          Podraz::deleteAll();
     }
 }

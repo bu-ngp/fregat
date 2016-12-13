@@ -72,7 +72,7 @@ function RedirectToChangeMol() {
     if ($("#material-material_id").val() == "")
         bootbox.alert("Выберете материальную ценность, для которой будет изменено материально-ответственное лицо.");
     else
-        window.location.href = baseUrl + "Fregat/mattraffic/create&id=" + $("#material-material_id").val();
+        window.location.href = baseUrl + "Fregat/mattraffic/create?id=" + $("#material-material_id").val();
 }
 
 $(document).ready(function () {

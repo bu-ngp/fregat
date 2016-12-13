@@ -199,4 +199,24 @@ class AcceptanceTester extends \Codeception\Actor
             $this->fail('Количество записей Dynagrid не равно ' . $needCount . '. Всего записей ' . $gridCount);
     }
 
+    public function clickButtonDynagrid($dynaGridID, $Button, $arrayData)
+    {
+        if (is_array($arrayData) && count($arrayData) > 0) {
+
+            $arrayData = array_reverse($arrayData);
+
+            $path = ($arrayData[0] === '' ? '//div[@id="' . $dynaGridID . '"]/descendant::td[not(normalize-space())]' : '//div[@id="' . $dynaGridID . '"]/descendant::td[text()="' . $arrayData[0] . '"]');
+            unset($arrayData[0]);
+
+            foreach ($arrayData as $value) {
+                $path .= ($value == '' ? '/preceding-sibling::td[not(normalize-space())]' : '/preceding-sibling::td[text()="' . $value . '"]');
+            }
+
+            $path .= '/preceding-sibling::td/' . $Button;
+
+            $this->click($path);
+            $this->wait(2);
+        }
+    }
+
 }
