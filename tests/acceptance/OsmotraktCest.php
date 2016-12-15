@@ -1,4 +1,19 @@
 <?php
+use app\models\Config\Authuser;
+use app\models\Fregat\Build;
+use app\models\Fregat\Dolzh;
+use app\models\Fregat\Employee;
+use app\models\Fregat\Installakt;
+use app\models\Fregat\Izmer;
+use app\models\Fregat\Material;
+use app\models\Fregat\Mattraffic;
+use app\models\Fregat\Matvid;
+use app\models\Fregat\Organ;
+use app\models\Fregat\Osmotrakt;
+use app\models\Fregat\Podraz;
+use app\models\Fregat\Reason;
+use app\models\Fregat\Schetuchet;
+use app\models\Fregat\TrOsnov;
 use yii\helpers\Url;
 
 /**
@@ -13,7 +28,6 @@ class OsmotraktCest
     public function _after(AcceptanceTester $I)
     {
     }
-
 
     /**
      * @depends LoginCest:login
@@ -60,7 +74,7 @@ class OsmotraktCest
      */
     public function saveOsmotrakt(AcceptanceTester $I)
     {
-        $I->chooseValueFromGrid('Osmotrakt[id_tr_osnov]', '1000002, каб. 101, ПОЛИКЛИНИКА 1, Кухонный стол', 'tr-osnovgrid_gw', '', 1);
+        $I->chooseValueFromGrid('Osmotrakt[id_tr_osnov]', '1000002, каб. 101, ПОЛИКЛИНИКА 1, Кухонный стол', 'tr-osnovgrid_gw', '//div[@id="tr-osnovgrid_gw"]/descendant::td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Выбрать"]', 1);
         $I->seeInField('Material[material_name]', 'Кухонный стол');
         $I->seeInField('Material[material_inv]', '1000002');
         $I->seeInField('Material[material_serial]', '');
@@ -94,7 +108,7 @@ class OsmotraktCest
         $I->click('//a[@data-toggle="collapse"]');
         $I->wait(2);
 
-        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, Шкаф для медикаментов', 'mattrafficgrid_gw', '', 3);
+        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, Шкаф для медикаментов', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td[text()="Шкаф для медикаментов"]/preceding-sibling::td/button[@title="Выбрать"]', 3);
 
         $I->seeInField('Material[material_name]', 'Шкаф для медикаментов');
         $I->seeInField('Material[material_writeoff]', 'Нет');
@@ -137,7 +151,7 @@ class OsmotraktCest
         $I->click('//a[@data-toggle="collapse"]');
         $I->wait(2);
 
-        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '', 3);
+        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
@@ -153,13 +167,13 @@ class OsmotraktCest
         $I->wait(2);
         $I->seeElement(['id' => 'employeegrid_gw']);
 
-        $I->click('//button[contains(text(), "Добавить")]');
+        $I->click('//a[contains(text(), "Добавить")]');
         $I->wait(2);
 
         $I->click('//td[contains(text(), "ИВАНОВ ИВАН ИВАНОВИЧ")]/preceding-sibling::td/a[@title="Обновить"]');
         $I->wait(2);
 
-        $I->checkDynagridData(['1175', 'ТЕРАПЕВТ', 'ТЕРАПЕВТИЧЕСКОЕ', '101', 'ПОЛИКЛИНИКА 1'], 'employeeauthusergrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['1175', 'ТЕРАПЕВТ', 'ТЕРАПЕВТИЧЕСКОЕ', 'ПОЛИКЛИНИКА 1'], 'employeeauthusergrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('employeeauthusergrid_gw', 1);
 
         $I->click('//a[contains(text(), "Добавить специальность")]');
@@ -184,6 +198,8 @@ class OsmotraktCest
         $I->clickChooseButtonFromGrid(['1179', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ', 'ТЕРАПЕВТИЧЕСКОЕ', 'ПОЛИКЛИНИКА 2'], 'employeegrid_gw');
         $I->click('//button[contains(text(), "Сменить")]');
 
+        $I->executeJS('window.scrollTo(0,200);');
+        $I->wait(1);
         $I->chooseValueFromSelect2('InstallTrOsnov[id_mattraffic]', '1000002, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2, Кухонный стол', '002');
         $I->wait(2);
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
@@ -200,7 +216,7 @@ class OsmotraktCest
 
         $I->checkDynagridData(['1', Yii::$app->formatter->asDate(date('d.m.Y')), 'Кухонный стол', '1000002', '101', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', 'Образовалась трещина', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->checkDynagridData(['2', Yii::$app->formatter->asDate(date('d.m.Y')), 'Шкаф для одежды', '1000001', '102', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->checkDynagridData(['3', Yii::$app->formatter->asDate(date('d.m.Y')), 'Кухонный стол', '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['3', Yii::$app->formatter->asDate(date('d.m.Y')), 'Кухонный стол', '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('osmotraktgrid_gw', 3);
     }
 
@@ -217,7 +233,7 @@ class OsmotraktCest
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['3', Yii::$app->formatter->asDate(date('d.m.Y')), 'Кухонный стол', '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', 'Неисправна', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['3', date('d.m.Y'), 'Кухонный стол', '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', 'Неисправна', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('osmotraktgrid_gw', 3);
     }
 
@@ -226,85 +242,31 @@ class OsmotraktCest
      */
     public function checkExcelExportOsmotrakt(AcceptanceTester $I)
     {
-        $I->click('//');
+        $I->click('//div[@id="osmotraktgrid_gw"]/descendant::td[text()="Кухонный стол"]/preceding-sibling::td[text()="' . date('d.m.Y') . '"]/preceding-sibling::td[text()="3"]/preceding-sibling::td/button[@title="Скачать отчет"]');
         $I->wait(4);
 
-        $I->seeFileFound($I->convertOSFileName('Акт снятия комплектующих с матер-ых цен-тей №1.xlsx'), 'web/files');
-        $I->checkExcelFile($I->convertOSFileName('Акт снятия комплектующих с матер-ых цен-тей №1.xlsx'), [
-            ['A', 3, 'комплектующих № 1 от ' . date('d.m.Y')],
+        $I->seeFileFound($I->convertOSFileName('Акт осмотра №3.xlsx'), 'web/files');
+        $I->checkExcelFile($I->convertOSFileName('Акт осмотра №3.xlsx'), [
+            ['A', 3, 'вышедшей из строя № 3 от ' . date('d.m.Y')],
 
-            ['A', 7, '№'],
-            ['B', 7, 'Вид'],
-            ['C', 7, 'Наименование'],
-            ['D', 7, 'Инвентарный номер'],
-            ['E', 7, 'Серийный номер'],
-            ['F', 7, 'Год выпуска'],
-            ['G', 7, 'Стоимость'],
-            ['H', 7, 'Здание'],
-            ['I', 7, 'Кабинет'],
-            ['J', 7, 'Материально-ответственное лицо'],
-            ['K', 7, 'Тип'],
+            ['C', 5, 'СТОЛ'],
+            ['C', 6, 'Кухонный стол'],
+            ['C', 7, '1000002'],
+            ['C', 8, ''],
+            ['C', 9, 'ПОЛИКЛИНИКА 2, 103'],
+            ['C', 10, 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ'],
+            ['C', 11, 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ'],
+            ['C', 12, 'СЛОМАНА НОЖКА. Неисправна'],
 
-            ['A', 9, '1'],
-            ['B', 9, 'ШКАФ'],
-            ['C', 9, 'Шкаф для инвентаря'],
-            ['D', 9, '0001'],
-            ['E', 9, ''],
-            ['F', 9, ''],
-            ['G', 9, '1.00'],
-            ['H', 9, 'ПОЛИКЛИНИКА 1'],
-            ['I', 9, '101'],
-            ['J', 9, 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ'],
-            ['K', 9, 'Основное средство'],
-
-            ['A', 11, '№'],
-            ['B', 11, 'Вид'],
-            ['C', 11, 'Наименование'],
-            ['D', 11, 'Инвентарный номер'],
-            ['E', 11, 'Серийный номер'],
-            ['F', 11, 'Кол-во'],
-            ['G', 11, 'Единица измерения'],
-            ['H', 11, 'Год выпуска'],
-            ['I', 11, 'Стоимость'],
-            ['J', 11, 'Материально-ответственное лицо'],
-            ['K', 11, 'Тип'],
-
-            ['A', 13, '1'],
-            ['B', 13, 'ШВАБРА'],
-            ['C', 13, 'Швабра деревянная'],
-            ['D', 13, '0003'],
-            ['E', 13, ''],
-            ['F', 13, '1'],
-            ['G', 13, 'шт'],
-            ['H', 13, ''],
-            ['I', 13, '1'],
-            ['J', 13, 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ'],
-            ['K', 13, 'Материал'],
-
-            ['A', 14, '2'],
-            ['B', 14, 'ВЕДРО'],
-            ['C', 14, 'Ведро пластиковое'],
-            ['D', 14, '0002'],
-            ['E', 14, ''],
-            ['F', 14, '1'],
-            ['G', 14, 'шт'],
-            ['H', 14, ''],
-            ['I', 14, '1'],
-            ['J', 14, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ'],
-            ['K', 14, 'Материал'],
-
-            ['A', 17, 'Материально ответственное лицо'],
-            ['D', 17, 'ПРОГРАММИСТ'],
-            ['H', 17, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'],
-
-            ['A', 18, 'Материально ответственное лицо'],
-            ['D', 18, 'ТЕРАПЕВТ'],
-            ['H', 18, 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ'],
-
-            ['A', 19, 'Демонтажник'],
-            ['D', 19, 'ПРОГРАММИСТ'],
-            ['H', 19, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'],
+            ['C', 14, 'ПРОГРАММИСТ'],
+            ['D', 14, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'],
         ]);
+    }
+
+    public function deleteExcelFile(AcceptanceTester $I)
+    {
+        if (file_exists($I->convertOSFileName('web/files/' . 'Акт осмотра №3.xlsx')))
+            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт осмотра №3.xlsx'));
     }
 
     /**
@@ -323,5 +285,54 @@ class OsmotraktCest
         $I->countRowsDynagridEquals('osmotraktgrid_gw', 2);
     }
 
+    /**
+     * @depends deleteOsmotrakt
+     */
+    public function sendEmailOsmotrakt(AcceptanceTester $I)
+    {
+        $I->click('//div[@id="osmotraktgrid_gw"]/descendant::td[text()="Кухонный стол"]/preceding-sibling::td[text()="' . date('d.m.Y') . '"]/preceding-sibling::td[text()="3"]/preceding-sibling::td/a[@title="Отправить акт в организацию по электронной почте"]');
+        $I->wait(2);
+        $I->click('//button[@id="SendOsmotraktDialog_apply"]');
+        $I->seeElement('//div[@class="errordialog" and text()="Не выбрана организация"]');
+        $I->wait(1);
+        $I->click('//button[@id="SendOsmotraktDialog_close"]');
+        $I->wait(1);
+
+        $I->click('//div[@id="osmotraktgrid_gw"]/descendant::td[text()="Кухонный стол"]/preceding-sibling::td[text()="' . date('d.m.Y') . '"]/preceding-sibling::td[text()="3"]/preceding-sibling::td/a[@title="Отправить акт в организацию по электронной почте"]');
+        $I->wait(2);
+        $I->chooseValueFromSelect2('Organ[organ_id]', 'ФИРМА', 'фир');
+
+        $I->click('//button[@id="SendOsmotraktDialog_apply"]');
+        $I->wait(1);
+        $I->seeElement('//div[@class="errordialog" and text()="Не заполнен Email у организации"]');
+
+        $I->chooseValueFromSelect2('Organ[organ_id]', 'РОГА И КОПЫТА', 'рог');
+        $I->click('//button[@id="SendOsmotraktDialog_apply"]');
+        $I->wait(3);
+
+        $I->dontSeeElement(['class' => 'osmotraktsendfilter-form']);
+    }
+
+    /**
+     * @depends loadData
+     */
+    public function destroyData()
+    {
+        Organ::deleteAll();
+        Osmotrakt::deleteAll();
+        Reason::deleteAll();
+        TrOsnov::deleteAll();
+        Installakt::deleteAll();
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Izmer::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll('auth_user_id <> 1');
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
+    }
 
 }

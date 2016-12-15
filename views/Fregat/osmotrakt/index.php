@@ -76,16 +76,15 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ],
             ],
             'buttons' => array_merge(
-                [
+                empty($foreign) ? [
+                    'downloadreport' => ['Fregat/osmotrakt/osmotrakt-report'],
                     'sendosmotrakt' => function ($url, $model) {
                         return \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-send"></i>', ['send-osmotrakt-content', 'osmotrakt_id' => $model->primaryKey], [
                             'title' => 'Отправить акт в организацию по электронной почте',
                             'class' => 'btn btn-xs btn-success osmotraktsend'
                         ]);
-                    }
-                ],
-                empty($foreign) ? [
-                    'downloadreport' => ['Fregat/osmotrakt/osmotrakt-report']] : [
+                    },
+                ] : [
                     'chooseajax' => ['Fregat/osmotrakt/assign-to-grid']], Yii::$app->user->can('OsmotraktEdit') ? [
                 'update' => ['Fregat/osmotrakt/update', 'osmotrakt_id'],
                 'deleteajax' => ['Fregat/osmotrakt/delete', 'osmotrakt_id'],

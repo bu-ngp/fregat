@@ -184,7 +184,7 @@ use yii\bootstrap\ButtonDropdown;
                 'filterModel' => $searchModelmat,
                 'panel' => [
                     'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-compressed"></i> Восстанавливаемые материалы</h3>',
-                    'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материала для восстановления', ['Fregat/tr-mat-osmotr/forrecoveryrecieveaktmat',
+                    'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материал для восстановления', ['Fregat/tr-mat-osmotr/forrecoveryrecieveaktmat',
                         'foreignmodel' => 'Recoveryrecieveaktmat',
                         'url' => $this->context->module->requestedRoute,
                         'field' => 'id_tr_mat_osmotr',

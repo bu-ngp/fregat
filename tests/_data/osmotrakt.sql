@@ -11,3 +11,4 @@ INSERT INTO `mattraffic` VALUES (1,'2016-11-22',1.000,34,1175,'admin','2016-11-2
 INSERT INTO `installakt` VALUES (1,'2016-12-12',1176);
 INSERT INTO `tr_osnov` VALUES (1,'101',1,4);
 INSERT INTO `reason` VALUES (1,'СЛОМАНА НОЖКА'),(2,'СЛОМАНА ПОЛКА');
+INSERT INTO `organ` VALUES (1,'РОГА И КОПЫТА','karpovvv@mugp-nv.ru','123456'),(2,'ФИРМА','','');

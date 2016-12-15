@@ -64,8 +64,8 @@ class OsmotraktmatReport extends BaseReportPortal
             $num++;
         }
 
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows + 1, $Osmotraktmat->idMaster->idperson->auth_user_fullname);
-        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows + 1, $Osmotraktmat->idMaster->iddolzh->dolzh_name);
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows + 1, $Osmotraktmat->idMaster->iddolzh->dolzh_name );
+        $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows + 1, $Osmotraktmat->idMaster->idperson->auth_user_fullname);
         $objPHPExcel->getActiveSheet()->removeRow($num + $crows);
     }
 
