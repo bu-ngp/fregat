@@ -81,6 +81,23 @@ class AcceptanceTester extends \Codeception\Actor
         }
     }
 
+    public function cantChooseValueFromSelect2($attributeName, $resultValue, $inputValue = '')
+    {
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]');
+        if (!empty($inputValue)) {
+            $this->fillField('//input[@class="select2-search__field"]', $inputValue);
+            $this->wait(1);
+        }
+        $this->dontSeeElement('//li[contains(text(),"' . $resultValue . '")]');
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]');
+    }
+
+    public function clearSelect2($attributeName)
+    {
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span/span/span/span/span[@class="select2-selection__clear"]');
+        $this->wait(1);
+    }
+
     public function chooseValueFromGrid($attributeName, $resultValue, $gridID, $chooseXPath = '', $countRecordsGrid = NULL)
     {
         $this->click('//select[@name="' . $attributeName . '"]/following-sibling::div/a[@class="btn btn-success"]');
@@ -181,7 +198,6 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
         $objPHPExcel = \PHPExcel_IOFactory::load(Yii::$app->basePath . '/web/files/' . $fileName);
-
         if (is_string($fileName) && !empty($fileName) && is_array($dataArray) && count($dataArray) > 0) {
             foreach ($dataArray as $cell) {
                 $cellValue = $objPHPExcel->getActiveSheet()->getCell($cell[0] . $cell[1])->getValue();
@@ -194,8 +210,16 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function countRowsDynagridEquals($dynaGridID, $needCount)
     {
-        $gridCount = str_replace(' ', '', $this->grabTextFrom('//div[@id="' . $dynaGridID . '"]/descendant::div[@class="summary"]/b[2]'));
-        if ($this->grabTextFrom('//div[@id="' . $dynaGridID . '"]/descendant::div[@class="summary"]/b[2]') != $needCount)
+        try {
+            $gridCount = str_replace(' ', '', $this->grabTextFrom('//div[@id="' . $dynaGridID . '"]/descendant::div[@class="summary"]/b[2]'));
+        } catch (Exception $e) {
+            $gridCount = 0;
+        }
+
+        if ($needCount == 0 && $gridCount != 0)
+            $this->fail('Количество записей Dynagrid не равно 0' . $needCount . '. Всего записей ' . $gridCount);
+
+        if ($gridCount != $needCount)
             $this->fail('Количество записей Dynagrid не равно ' . $needCount . '. Всего записей ' . $gridCount);
     }
 
@@ -219,4 +243,10 @@ class AcceptanceTester extends \Codeception\Actor
         }
     }
 
+    public function seeInSelect2($name, $value, $disabled = false)
+    {
+        $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span/span/span/span[@class="select2-selection__rendered" and contains(text(),"' . $value . '")]');
+        if ($disabled)
+            $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span[contains(@class,"select2-container--disabled")]');
+    }
 }

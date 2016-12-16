@@ -64,6 +64,8 @@ class RecoveryrecieveaktmatController extends Controller
             $searchModel = new RecoveryrecieveaktmatSearch();
             $dataProvider = $searchModel->searchbase(Yii::$app->request->queryParams);
 
+            $model->recoveryrecieveaktmat_date = empty($model->recoveryrecieveaktmat_date) ? date('Y-m-d') : $model->recoveryrecieveaktmat_date;
+
             return $this->render('update', [
                 'model' => $model,
                 'UploadFile' => $UploadFile,

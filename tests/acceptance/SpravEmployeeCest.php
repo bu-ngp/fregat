@@ -133,7 +133,6 @@ class SpravEmployeeCest
      */
     public function addCreateEmployeeFromSelect2(AcceptanceTester $I)
     {
-        file_put_contents('web\test.txt', 'test = ' . print_r(Dolzh::find()->count(), true) . PHP_EOL, FILE_APPEND);
         $I->chooseValueFromSelect2('Employee[id_dolzh]', 'КАРДИОЛОГ', 'кар');
         $I->chooseValueFromSelect2('Employee[id_podraz]', 'ОБЩЕПОЛИКЛИНИЧЕСКОЕ', 'общ');
         $I->chooseValueFromSelect2('Employee[id_build]', 'ПОЛИКЛИНИКА 1', 'пол');

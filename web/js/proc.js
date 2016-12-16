@@ -207,7 +207,11 @@ function ExportExcel(model, url, button, dopfields, removefile) {
         ExcelDoExport(model, url, button, dopfields, removefile);
 }
 
-function DownloadReport(url, button, dopparams) {
+function DownloadReport(url, button, dopparams, removefile) {
+
+    if ($.type(removefile) === "undefined")
+        removefile = true;
+
     $.ajax({
         url: url,
         type: "post",
@@ -221,14 +225,15 @@ function DownloadReport(url, button, dopparams) {
             window.location.href = baseUrl + "files/" + response;
             /* Открываем файл */
             /* Удаляем файл через 5 секунд*/
-            setTimeout(function () {
-                $.ajax({
-                    url: baseUrl + "site/delete-excel-file",
-                    type: "post",
-                    data: {filename: response},
-                    async: true
-                });
-            }, 5000);
+            if (removefile)
+                setTimeout(function () {
+                    $.ajax({
+                        url: baseUrl + "site/delete-excel-file",
+                        type: "post",
+                        data: {filename: response},
+                        async: true
+                    });
+                }, 5000);
         },
         error: function (data) {
             console.error('Ошибка');

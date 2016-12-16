@@ -6,7 +6,9 @@ use app\func\ReportsTemplate\RecoverysendaktmatReport;
 use app\func\ReportTemplates;
 use app\models\Config\Generalsettings;
 use app\models\Fregat\Fregatsettings;
+use app\models\Fregat\Recoveryrecieveaktmat;
 use app\models\Fregat\RecoverysendaktFilter;
+use Exception;
 use Yii;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RecoverysendaktSearch;
@@ -113,8 +115,18 @@ class RecoverysendaktController extends Controller
 
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                Recoveryrecieveakt::deleteAll(['id_recoverysendakt' => $id]);
+                Recoveryrecieveaktmat::deleteAll(['id_recoverysendakt' => $id]);
+                echo $this->findModel($id)->delete();
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage() . ' Удаление невозможно.');
+            }
+        }
     }
 
     // Печать акта осмотра

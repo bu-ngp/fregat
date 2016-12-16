@@ -198,6 +198,14 @@ class Mattraffic extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getSpisosnovmaterials()
+    {
+        return $this->hasMany(Spisosnovmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['spisosnovmaterials' => Spisosnovmaterials::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getNakladmaterials()
     {
         return $this->hasMany(Nakladmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['nakladmaterials' => Nakladmaterials::tableName()]);
@@ -354,7 +362,7 @@ class Mattraffic extends \yii\db\ActiveRecord
             $query = self::find()
                 ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
                 ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
+                ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial', 'spisosnovmaterials'])
                 ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
                 ->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3))')
                 ->andWhere(['in', 'mattraffic_tip', [1]])
@@ -365,6 +373,7 @@ class Mattraffic extends \yii\db\ActiveRecord
                 ->andWhere(['id_mol' => $Spisosnovakt->id_mol])
                 ->andWhere(['idMaterial.id_schetuchet' => $Spisosnovakt->id_schetuchet])
                 ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
+                ->andWhere(['or', ['not', ['spisosnovmaterials.id_spisosnovakt' => $params['spisosnovakt_id']]], ['spisosnovmaterials.id_spisosnovakt' => NULL]])
                 ->limit(20)
                 ->asArray()
                 ->$method();

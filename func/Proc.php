@@ -313,6 +313,8 @@ class Proc
                 };
             }
 
+            //  file_put_contents('test.txt', YII_ENV . PHP_EOL, FILE_APPEND);
+
             // Если есть кнопка скачивания отчета по ИД
             if (isset($Params['buttons']['downloadreport']) && is_array($Params['buttons']['downloadreport'])) {
                 $Params['buttons']['downloadreport'] = function ($url, $model) use ($Params) {
@@ -320,7 +322,7 @@ class Proc
                         'type' => 'button',
                         'title' => 'Скачать отчет',
                         'class' => 'btn btn-xs btn-info',
-                        'onclick' => 'DownloadReport("' . Url::to([$Params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '} )'
+                        'onclick' => 'DownloadReport("' . Url::to([$Params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '}, ' . (YII_ENV === 'test' ? 0 : 1) . ')'
                     ]);
                 };
             }
