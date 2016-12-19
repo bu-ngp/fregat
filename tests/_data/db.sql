@@ -501,9 +501,9 @@ CREATE TABLE `fregatsettings` (
   `fregatsettings_id` smallint(6) NOT NULL AUTO_INCREMENT,
   `fregatsettings_recoverysend_emailtheme` char(255) DEFAULT NULL COMMENT 'Тема электронного письма',
   `fregatsettings_recoverysend_emailfrom` char(255) DEFAULT NULL COMMENT 'Электронная почта, от которой отправляется письмо',
-  `fregatsettings_glavvrach_name` char(255) DEFAULT NULL COMMENT '╨д╨Ш╨Ю ╨У╨╗╨░╨▓╨╜╨╛╨│╨╛ ╨▓╤А╨░╤З╨░',
-  `fregatsettings_uchrezh_namesokr` char(255) DEFAULT NULL COMMENT '╨б╨╛╨║╤А╨░╤Й╨╡╨╜╨╜╨╛╨╡ ╨╜╨░╨╕╨╝╨╡╨╜╨╛╨▓╨░╨╜╨╕╨╡ ╤Г╤З╤А╨╡╨╢╨┤╨╡╨╜╨╕╤П',
-  `fregatsettings_uchrezh_name` char(255) DEFAULT NULL COMMENT '╨Я╨╛╨╗╨╜╨╛╨╡ ╨╜╨░╨╕╨╝╨╡╨╜╨╛╨▓╨░╨╜╨╕╨╡ ╤Г╤З╤А╨╡╨╢╨┤╨╡╨╜╨╕╤П',
+  `fregatsettings_glavvrach_name` char(255) DEFAULT NULL COMMENT 'ФИО Главного врача',
+  `fregatsettings_uchrezh_namesokr` char(255) DEFAULT NULL COMMENT 'Сокращенное наименование учреждения',
+  `fregatsettings_uchrezh_name` char(255) DEFAULT NULL COMMENT 'Полное наименование учреждения',
   PRIMARY KEY (`fregatsettings_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -514,7 +514,7 @@ CREATE TABLE `fregatsettings` (
 
 LOCK TABLES `fregatsettings` WRITE;
 /*!40000 ALTER TABLE `fregatsettings` DISABLE KEYS */;
-INSERT INTO `fregatsettings` VALUES (1,'БУ \"Нижневартовская городская поликлиника\"','it@mugp-nv.ru','╨С╨Ы╨о╨б╨Ю╨Т╨Р ╨Ь╨Р╨а╨Ш╨п ╨Х╨Т╨б╨в╨Ш╨У╨Э╨Х╨Х╨Т╨Э╨Р','╨С╨г \"╨Э╨╕╨╢╨╜╨╡╨▓╨░╤А╤В╨╛╨▓╤Б╨║╨░╤П ╨│╨╛╤А╨╛╨┤╤Б╨║╨░╤П ╨┐╨╛╨╗╨╕╨║╨╗╨╕╨╜╨╕╨║╨░\"','╨С╤О╨┤╨╢╨╡╤В╨╜╨╛╨╡ ╤Г╤З╤А╨╡╨╢╨┤╨╡╨╜╨╕╨╡ ╨е╨░╨╜╤В╤Л-╨Ь╨░╨╜╤Б╨╕╨╣╤Б╨║╨╛╨│╨╛ ╨░╨▓╤В╨╛╨╜╨╛╨╝╨╜╨╛╨│╨╛ ╨╛╨║╤А╤Г╨│╨░ - ╨о╨│╤А╤Л \"╨Э╨╕╨╢╨╜╨╡╨▓╨░╤А╤В╨╛╨▓╤Б╨║╨░╤П ╨│╨╛╤А╨╛╨┤╤Б╨║╨░╤П ╨┐╨╛╨╗╨╕╨║╨╗╨╕╨╜╨╕╨║╨░\"');
+INSERT INTO `fregatsettings` VALUES (1,'БУ \"Нижневартовская городская поликлиника\"','it@mugp-nv.ru','БЛЮСОВА МАРИЯ ЕВСТИГНЕЕВНА','БУ \"Нижневартовская городская поликлиника\"','Бюджетное учреждение Ханты-Мансийского автономного округа - Югры \"Нижневартовская городская поликлиника\"');
 /*!40000 ALTER TABLE `fregatsettings` ENABLE KEYS */;
 UNLOCK TABLES;
 

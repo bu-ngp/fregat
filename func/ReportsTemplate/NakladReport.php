@@ -43,7 +43,7 @@ class NakladReport extends BaseReportPortal
 
         $objPHPExcel->getActiveSheet()->setCellValue('AK7', date('d', strtotime($Naklad->naklad_date)));
         $objPHPExcel->getActiveSheet()->setCellValue('AO7', Yii::$app->formatter->asDate(date('M', strtotime($Naklad->naklad_date)), 'php:F'));
-        $objPHPExcel->getActiveSheet()->setCellValue('BB7', date('y', strtotime('2016-11-05')));
+        $objPHPExcel->getActiveSheet()->setCellValue('BB7', date('y', strtotime($Naklad->naklad_date)));
         $objPHPExcel->getActiveSheet()->setCellValue('CL7', Yii::$app->formatter->asDate($Naklad->naklad_date));
 
         $objPHPExcel->getActiveSheet()->setCellValue('O8', $Fregatsettings->fregatsettings_uchrezh_namesokr);

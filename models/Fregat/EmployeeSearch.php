@@ -27,7 +27,7 @@ class EmployeeSearch extends Employee
     {
         return [
             [['id_dolzh', 'id_podraz', 'id_build', 'id_person'], 'integer'],
-            [['employee_id', 'employee_username', 'employee_lastchange', 'employee_dateinactive', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name', 'idperson.auth_user_fullname'], 'safe'],
+            [['employee_id', 'employee_lastchange', 'employee_dateinactive', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name', 'idperson.auth_user_fullname'], 'safe'],
         ];
     }
 
@@ -221,7 +221,7 @@ class EmployeeSearch extends Employee
             'sort' => ['defaultOrder' => ['employee_id' => SORT_ASC]],
         ]);
 
-        $query->joinWith(['iddolzh', 'idpodraz', 'idbuild']);
+        $query->joinWith(['iddolzh', 'idpodraz', 'idbuild', 'idperson']);
         $query->innerJoinWith('mattraffics');
 
         $this->load($params);
@@ -243,11 +243,13 @@ class EmployeeSearch extends Employee
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
-        $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
+        $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idperson.auth_user_fullname')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
 
-        Proc::AssignRelatedAttributes($dataProvider, ['iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
+        $query->andWhere(['mattraffics.mattraffic_tip' => 1]);
+
+        Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
 
         $query->groupBy('employee_id');
 

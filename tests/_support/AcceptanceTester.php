@@ -249,4 +249,10 @@ class AcceptanceTester extends \Codeception\Actor
         if ($disabled)
             $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span[contains(@class,"select2-container--disabled")]');
     }
+
+    public function clickGridButtonBySelect2($nameSelect2)
+    {
+        $this->click('//select[@name="' . $nameSelect2 . '"]/following-sibling::div/a[@class="btn btn-success"]');
+        $this->wait(2);
+    }
 }
