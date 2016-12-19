@@ -18,12 +18,14 @@ use app\models\Fregat\TrOsnovSearch;
 /**
  * TrOsnovController implements the CRUD actions for TrOsnov model.
  */
-class TrOsnovController extends Controller {
+class TrOsnovController extends Controller
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -49,17 +51,19 @@ class TrOsnovController extends Controller {
         ];
     }
 
-    public function actionForosmotrakt() {
+    public function actionForosmotrakt()
+    {
         $searchModel = new TrOsnovSearch();
         $dataProvider = $searchModel->searchforosmotrakt(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new TrOsnov();
         $Mattraffic = new Mattraffic;
         $Material = new Material;
@@ -91,7 +95,7 @@ class TrOsnovController extends Controller {
                 }
 
                 //Акт установки уже создан и берется из URL параметра
-                $model->id_installakt = (string) filter_input(INPUT_GET, 'idinstallakt');
+                $model->id_installakt = (string)filter_input(INPUT_GET, 'idinstallakt');
 
                 //Сохраняем кабинет в модель из отправленной формы
                 $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
@@ -126,11 +130,11 @@ class TrOsnovController extends Controller {
                 $transaction->rollBack();
 
                 return $this->render('create', [
-                            'model' => $model,
-                            'Mattraffic' => $Mattraffic,
-                            'Material' => $Material, // Для просмотра
-                            'Employee' => $Employee, // Для просмотра
-                            'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
+                    'model' => $model,
+                    'Mattraffic' => $Mattraffic,
+                    'Material' => $Material, // Для просмотра
+                    'Employee' => $Employee, // Для просмотра
+                    'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
                 ]);
             }
         } catch (Exception $e) {
@@ -140,18 +144,20 @@ class TrOsnovController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrosnov($q = null, $idinstallakt = null) {
+    public function actionSelectinputfortrosnov($q = null, $idinstallakt = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::ResultSelect2([
-                        'model' => new Mattraffic,
-                        'q' => $q,
-                        'methodquery' => 'selectinputfortrosnov',
-                        'methodparams' => ['idinstallakt' => $idinstallakt],
+                'model' => new Mattraffic,
+                'q' => $q,
+                'methodquery' => 'selectinputfortrosnov',
+                'methodparams' => ['idinstallakt' => $idinstallakt],
             ]);
     }
 
     // Заполнение полей формы после выбора материальной ценности по инвентарнику
-    public function actionFilltrosnov() {
+    public function actionFilltrosnov()
+    {
         if (Yii::$app->request->isAjax) {
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
             if (!empty($mattraffic_id)) {
@@ -173,21 +179,24 @@ class TrOsnovController extends Controller {
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputforosmotrakt($q = null) {
+    public function actionSelectinputforosmotrakt($q = null)
+    {
         if (Yii::$app->request->isAjax)
             return Proc::ResultSelect2([
-                        'model' => new TrOsnov,
-                        'q' => $q,
-                        'methodquery' => 'selectinputforosmotrakt',
+                'model' => new TrOsnov,
+                'q' => $q,
+                'methodquery' => 'selectinputforosmotrakt',
             ]);
     }
 
-    public function actionAssignToSelect2() {
+    public function actionAssignToSelect2()
+    {
         Proc::AssignToModelFromGrid();
     }
 
     // Заполнение полей формы после выбора материальной ценности по инвентарнику
-    public function actionFillinstalledmat() {
+    public function actionFillinstalledmat()
+    {
         if (Yii::$app->request->isAjax) {
             $id_tr_osnov = Yii::$app->request->post('id_tr_osnov');
             if (!empty($id_tr_osnov)) {
@@ -208,7 +217,8 @@ class TrOsnovController extends Controller {
     }
 
     // Удаление перемещаемой мат. цен-ти из акта установки
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -232,7 +242,8 @@ class TrOsnovController extends Controller {
      * @return TrOsnov the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = TrOsnov::findOne($id)) !== null) {
             return $model;
         } else {
