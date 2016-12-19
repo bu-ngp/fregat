@@ -8,7 +8,7 @@ modules:
         - Asserts
     config:
         WebDriver:
-            url: 'http://127.0.0.1:44444/'
+            url: 'http://127.0.0.1:44443/'
             port: 13246
             browser: chrome
             window_size: 1280x1024

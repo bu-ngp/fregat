@@ -295,19 +295,19 @@ class NakladCest
      */
     public function destroyData(AcceptanceTester $I)
     {
-        /* Nakladmaterials::deleteAll();
-         Naklad::deleteAll();
-         TrOsnov::deleteAll();
-         Installakt::deleteAll();
-         Mattraffic::deleteAll();
-         Material::deleteAll();
-         Employee::deleteAll();
-         Matvid::deleteAll();
-         Izmer::deleteAll();
-         Schetuchet::deleteAll();
-         Authuser::deleteAll('auth_user_id <> 1');
-         Build::deleteAll();
-         Dolzh::deleteAll();
-         Podraz::deleteAll();*/
+        Nakladmaterials::deleteAll();
+        Naklad::deleteAll();
+        TrOsnov::deleteAll();
+        Installakt::deleteAll();
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Izmer::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll('auth_user_id <> 1');
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
     }
 }
