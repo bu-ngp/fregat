@@ -17,6 +17,7 @@ use yii\bootstrap\Html;
  *
  * @property RraDocfiles[] $rraDocfiles
  * @property RramatDocfiles[] $rramatDocfiles
+ * @property MaterialDocfiles[] $materialDocfiles
  */
 class Docfiles extends \yii\db\ActiveRecord
 {
@@ -72,6 +73,14 @@ class Docfiles extends \yii\db\ActiveRecord
     public function getRramatDocfiles()
     {
         return $this->hasMany(RramatDocfiles::className(), ['id_docfiles' => 'docfiles_id'])->from(['rramatDocfiles' => RramatDocfiles::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMaterialDocfiles()
+    {
+        return $this->hasMany(MaterialDocfiles::className(), ['id_docfiles' => 'docfiles_id'])->from(['materialDocfiles' => MaterialDocfiles::tableName()]);;
     }
 
     public function getdocfiles_name_html()

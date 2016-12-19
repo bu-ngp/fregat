@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Fregat\Schetuchet;
+use kartik\file\FileInput;
 use yii\bootstrap\Tabs;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -317,8 +318,75 @@ use yii\helpers\Url;
             </div>
         </div>
 
-    <?php endif; ?>
+        <?=
+        DynaGrid::widget(Proc::DGopts([
+            'options' => ['id' => 'materialDocfilesgrid'],
+            'columns' => Proc::DGcols([
+                'columns' => [
+                    [
+                        'attribute' => 'idDocfiles.docfiles_ext',
+                        'format' => 'raw',
+                        'value' => 'idDocfiles.docfiles_iconshow',
+                        'contentOptions' => ['style' => 'width: 40px; text-align: center;'], // <-- right here
+                        'filter' => false,
+                    ],
+                    [
+                        'attribute' => 'idDocfiles.docfiles_name',
+                        'format' => 'raw',
+                        'value' => 'idDocfiles.docfiles_name_html',
+                    ],
+                    [
+                        'attribute' => 'idDocfiles.docfiles_hash',
+                        'visible' => false,
+                    ],
+                ],
+                'buttons' => array_merge(Yii::$app->user->can('DocfilesEdit') ? [
+                    'deleteajax' => ['Fregat/material-docfiles/delete', 'material_docfiles_id', 'materialDocfilesgrid'],
+                ] : []
+                ),
+            ]),
+            'gridOptions' => [
+                'dataProvider' => $dataProvidermd,
+                'filterModel' => $searchModelmd,
+                'panel' => [
+                    'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
+                ],
+            ]
+        ])); ?>
 
+        <?php
+        $form2 = ActiveForm::begin([
+            'id' => 'UploadDocform',
+        ]);
+        ?>
+        
+        <?= $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
+            'pluginOptions' => [
+                'uploadUrl' => Url::to(['Fregat/material-docfiles/create']),
+                'uploadExtraData' => [
+                    'id_material' => $_GET['id'],
+                ],
+                'dropZoneEnabled' => false,
+                'previewZoomSettings' => [
+                    'image' => [
+                        'width' => 'auto',
+                        'height' => '100%',
+                    ],
+                ],
+                'showPreview' => false,
+                'showUpload' => false,
+                'showCancel' => false,
+            ],
+            'pluginEvents' => [
+                "change" => 'function(event) { $("#uploaddocfile-docfile").fileinput("upload"); }',
+                "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("materialDocfilesgrid", event, data); }'
+            ],
+        ]);
+        ?>
+
+        <?php ActiveForm::end(); ?>
+
+    <?php endif; ?>
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">

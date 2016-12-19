@@ -27,9 +27,10 @@ use yii\db\Query;
  *
  * @property Izmer $idIzmer
  * @property Matvid $idMatv
- * @property Mattraffic[] $mattraffics
  * @property Schetuchet $idSchetuchet
- * @property TrMat[] $trMats
+ * @property MaterialDocfiles[] $materialDocfiles
+ * @property Mattraffic[] $mattraffics
+ *
  */
 class Material extends \yii\db\ActiveRecord
 {
@@ -146,6 +147,14 @@ class Material extends \yii\db\ActiveRecord
     public function getMattraffics()
     {
         return $this->hasMany(Mattraffic::className(), ['id_material' => 'material_id'])->from(['mattraffics' => Mattraffic::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMaterialDocfiles()
+    {
+        return $this->hasMany(MaterialDocfiles::className(), ['id_material' => 'material_id'])->from(['materialDocfiles' => MaterialDocfiles::tableName()]);
     }
 
     public function getCurrentMattraffic()

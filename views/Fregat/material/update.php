@@ -3,13 +3,15 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
+\Yii::$app->getView()->registerJsFile('@web/js/docfiles.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/docfiles.js'));
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Material */
 
 $this->title = 'Карта материальной ценности';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-            'model' => [$model, $Mattraffic],
-        ]);
+    'model' => [$model, $Mattraffic],
+]);
 ?>
 <div class="material-update">
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -19,8 +21,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
             $this->render('_form', [
                 'model' => $model,
                 'Mattraffic' => $Mattraffic,
+                'UploadFile' => $UploadFile,
                 'searchModel_mattraffic' => $searchModel_mattraffic,
                 'dataProvider_mattraffic' => $dataProvider_mattraffic,
+                'searchModelmd' => $searchModelmd,
+                'dataProvidermd' => $dataProvidermd,
                 'searchModel_recovery' => $searchModel_recovery,
                 'dataProvider_recovery' => $dataProvider_recovery,
                 'searchModel_recoverymat' => $searchModel_recoverymat,

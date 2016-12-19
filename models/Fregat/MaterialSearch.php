@@ -181,6 +181,16 @@ class MaterialSearch extends Material
                     ->andWhere('materials.material_id = material.material_id')
             ]);
 
+            $attr = 'material_attachfiles_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('materialDocfiles.id_material')
+                    ->from('material_docfiles materialDocfiles')
+                    ->andWhere('materialDocfiles.id_material = material.material_id')
+                ],
+            ]);
+
             $attr = 'mol_id_build';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,

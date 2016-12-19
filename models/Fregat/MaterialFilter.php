@@ -22,6 +22,7 @@ class MaterialFilter extends Model
     public $mattraffic_lastchange_end;
     public $material_working_mark;
     public $material_recovery_attachfiles_mark;
+    public $material_attachfiles_mark;
 
     public function rules()
     {
@@ -35,6 +36,7 @@ class MaterialFilter extends Model
                 'tr_osnov_kab',
                 'material_working_mark',
                 'material_recovery_attachfiles_mark',
+                'material_attachfiles_mark',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
@@ -60,6 +62,7 @@ class MaterialFilter extends Model
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
             'material_working_mark' => 'Материальные ценности в рабочем состоянии',
             'material_recovery_attachfiles_mark' => 'В актах восстановления прикреплены файлы',
+            'material_attachfiles_mark' => 'Прикреплены файлы в карте материальной ценности',
         ];
     }
 

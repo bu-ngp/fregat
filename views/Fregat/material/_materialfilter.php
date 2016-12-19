@@ -86,6 +86,8 @@ use app\func\Proc;
                     ],
                 ]));
                 ?>
+                
+                <?= $form->field($model, 'material_attachfiles_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
             </div>
         </div>

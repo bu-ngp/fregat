@@ -137,8 +137,7 @@ use yii\helpers\Url;
     ]);
     ?>
 
-    <?php
-    echo $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
+    <?= $form2->field($UploadFile, 'docFile')->widget(FileInput::classname(), [
         'pluginOptions' => [
             'uploadUrl' => Url::to(['Fregat/rramat-docfiles/create']),
             'uploadExtraData' => [
@@ -151,8 +150,12 @@ use yii\helpers\Url;
                     'height' => '100%',
                 ],
             ],
+            'showPreview' => false,
+            'showUpload' => false,
+            'showCancel' => false,
         ],
         'pluginEvents' => [
+            "change" => 'function(event) { $("#uploaddocfile-docfile").fileinput("upload"); }',
             "fileuploaded" => 'function(event, data, previewId, index) { UploadedFiles("rramatDocfilesgrid", event, data); }'
         ],
     ]);

@@ -2,12 +2,14 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\MaterialDocfilesSearch;
 use app\models\Fregat\Nakladmaterials;
 use app\models\Fregat\NakladmaterialsSearch;
 use app\models\Fregat\Spisosnovmaterials;
 use app\models\Fregat\SpisosnovmaterialsSearch;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrMatSearch;
+use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\Material;
 use app\models\Fregat\MaterialSearch;
@@ -118,6 +120,8 @@ class MaterialController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $UploadFile = new UploadDocFile;
+
         $Mattraffic = Mattraffic::find()
             ->andWhere(['id_material' => $model->material_id])
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
@@ -126,6 +130,9 @@ class MaterialController extends Controller
 
         $searchModel_mattraffic = new MattrafficSearch();
         $dataProvider_mattraffic = $searchModel_mattraffic->searchformaterialmattraffic(Yii::$app->request->queryParams);
+
+        $searchModelmd = new MaterialDocfilesSearch();
+        $dataProvidermd = $searchModelmd->search(Yii::$app->request->queryParams);
 
         $searchModel_recovery = new OsmotraktSearch();
         $dataProvider_recovery = $searchModel_recovery->searchformaterialkarta(Yii::$app->request->queryParams);
@@ -154,8 +161,11 @@ class MaterialController extends Controller
             return $this->render('update', [
                 'model' => $model,
                 'Mattraffic' => $Mattraffic,
+                'UploadFile' => $UploadFile,
                 'searchModel_mattraffic' => $searchModel_mattraffic,
                 'dataProvider_mattraffic' => $dataProvider_mattraffic,
+                'searchModelmd' => $searchModelmd,
+                'dataProvidermd' => $dataProvidermd,
                 'searchModel_recovery' => $searchModel_recovery,
                 'dataProvider_recovery' => $dataProvider_recovery,
                 'searchModel_recoverymat' => $searchModel_recoverymat,
