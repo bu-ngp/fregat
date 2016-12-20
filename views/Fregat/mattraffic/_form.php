@@ -189,10 +189,65 @@ use yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
                 <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Сменить', ['class' => 'btn btn-success', 'form' => 'MattrafficMolform']) ?>
+                <?= Html::button('<i class="glyphicon glyphicon-calendar"></i> Добавить здание выбранному МОЛ', ['id' => 'ChangeBuildMOL', 'class' => 'btn btn-info', 'onclick' => 'DialogBuildAddOpen()']) ?>
             </div>
         </div>
     </div>
 
 </div>
+
+<?php
+yii\bootstrap\Modal::begin([
+    'header' => 'Добавить здание материально-ответственному лицу',
+    'id' => 'ChangeBuildMolDialog',
+    'options' => [
+        'class' => 'modal_filter',
+        'tabindex' => false, // чтобы работал select2 в модальном окне
+    ],
+]);
+?>
+
+<?php $model = new Build(); ?>
+
+<div class="addbuildmol-form">
+    <?php $form = ActiveForm::begin(['options' => ['id' => $model->formName() . '-form', 'data-pjax' => true]]); ?>
+    <div class="insideforms">
+
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
+            <div class="panel-heading"><?= Html::encode('Здание') ?></div>
+            <div class="panel-body">
+
+                <?=
+                $form->field($model, 'build_id')->widget(Select2::classname(), Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new \app\models\Fregat\Build,
+                    'placeholder' => 'Введите здание',
+                    'setsession' => false,
+                    'fields' => [
+                        'keyfield' => 'build_id',
+                        'resultfield' => 'build_name',
+                    ],
+                    'resultrequest' => 'Fregat/build/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
+                ]))->label(false);
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <?= Html::button('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary', 'id' => $model->formName() . '_apply']) ?>
+                <?= Html::button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => $model->formName() . '_close']) ?>
+            </div>
+        </div>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+</div>
+
+<?php
+yii\bootstrap\Modal::end();
+?>
