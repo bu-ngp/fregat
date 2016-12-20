@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\MaterialDocfiles;
 use app\models\Fregat\MaterialDocfilesSearch;
 use app\models\Fregat\Nakladmaterials;
 use app\models\Fregat\NakladmaterialsSearch;
@@ -40,12 +41,12 @@ class MaterialController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'update', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel', 'selectinput'],
+                        'actions' => ['index', 'forinstallakt_mat', 'assign-to-select2', 'materialfilter', 'toexcel', 'selectinput'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create'],
+                        'actions' => ['create', 'update'],
                         'allow' => true,
                         'roles' => ['MaterialEdit'],
                     ],
@@ -180,6 +181,7 @@ class MaterialController extends Controller
                 'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
                 'searchModel_naklad' => $searchModel_naklad,
                 'dataProvider_naklad' => $dataProvider_naklad,
+                'gallery' => MaterialDocfiles::getImagesList((string)filter_input(INPUT_GET, 'id')),
             ]);
     }
 

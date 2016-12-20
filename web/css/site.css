@@ -1004,4 +1004,23 @@ div.tab-content {
     background-color: #ffebdd;
     border: 1px solid rgb(190, 144, 143);
 }
+/*
+div.gallery_preview {
+    border: 3px solid #cccccc;
+    height: 600px;
+    font-size: 400px;
+    text-align: center;
+    color: #e7e7e7;
+    padding-top: 5px;
+}
 
+div.gallery_preview > div {
+    position: absolute;
+    left: 50%
+}
+
+div.gallery_preview > div > i {
+    position: relative;
+    left: -50%;
+}
+*/

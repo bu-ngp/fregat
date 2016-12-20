@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
+\Yii::$app->getView()->registerJsFile('@web/js/materialform_update.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/materialform_update.js'));
 \Yii::$app->getView()->registerJsFile('@web/js/docfiles.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/docfiles.js'));
 
 /* @var $this yii\web\View */
@@ -40,6 +41,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
                 'searchModel_naklad' => $searchModel_naklad,
                 'dataProvider_naklad' => $dataProvider_naklad,
+                'gallery' => $gallery,
             ])
             ?>
         </div>

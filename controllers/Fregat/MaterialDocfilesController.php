@@ -30,9 +30,9 @@ class MaterialDocfilesController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['create', 'delete', 'get-images'],
                         'allow' => true,
-                        'roles' => ['RecoveryEdit'],
+                        'roles' => ['MaterialEdit'],
                     ],
                 ],
             ],
@@ -79,6 +79,13 @@ class MaterialDocfilesController extends Controller
             $id_docfiles = $ar->id_docfiles;
             if ($ar->delete())
                 Proc::DeleteDocFile($id_docfiles);
+        }
+    }
+
+    public function actionGetImages()
+    {
+        if (Yii::$app->request->isAjax) {
+            echo json_encode(MaterialDocfiles::getImagesList(Yii::$app->request->post('id_material')));
         }
     }
 
