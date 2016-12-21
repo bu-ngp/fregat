@@ -11,3 +11,4 @@ INSERT INTO `mattraffic` VALUES (1,'2016-12-08',1.000,34,1175,'admin','2016-12-0
 INSERT INTO `installakt` VALUES (1,'2016-12-08',1178);
 INSERT INTO `tr_osnov` VALUES (1,'101',1,4);
 INSERT INTO `tr_mat` VALUES (1,1,5,4),(2,1,6,4);
+ALTER TABLE `removeakt` AUTO_INCREMENT = 1;

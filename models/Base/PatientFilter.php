@@ -122,7 +122,7 @@ class PatientFilter extends Model
                 'glaukuchet_operdate_end',
                 'glaukuchet_lastvisit_beg',
                 'glaukuchet_lastvisit_end',
-                'glaukuchet_lastmetabo_beg',
+                'glaukuchet_lastmetabol_beg',
                 'glaukuchet_lastmetabol_end',
                 'patient_lastchange_beg',
                 'patient_lastchange_end',

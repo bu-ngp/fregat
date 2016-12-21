@@ -210,7 +210,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                         'type' => 'button',
                         'title' => 'Экспорт в Excel',
                         'class' => 'btn btn-default button_export',
-                        'onclick' => 'ExportExcel("PatientSearch","' . \yii\helpers\Url::toRoute('Base/patient/toexcel') . '", $(this)[0].id, {"PatientSearch[glaukuchets.glpreps.glaukuchet_preparats]": ""});'
+                        'onclick' => 'ExportExcel("PatientSearch","' . \yii\helpers\Url::to('Base/patient/toexcel') . '", $(this)[0].id, {"PatientSearch[glaukuchets.glpreps.glaukuchet_preparats]": ""});'
                     ]) . '{export}{dynagrid}',
                 ],
             ],
