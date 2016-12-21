@@ -1,7 +1,9 @@
 <?php
 
-use app\models\Fregat\Grupa;
-use app\models\Fregat\Material;
+use app\models\Config\Authuser;
+use app\models\Fregat\Build;
+use app\models\Fregat\Dolzh;
+use app\models\Fregat\Podraz;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -9,40 +11,96 @@ use app\func\Proc;
 
 /* @var $this yii\web\View */
 /* @var $form yii\widgets\ActiveForm */
-$model = new \app\models\Fregat\Build();
 ?>
-
 <div class="addbuildmol-form">
     <?php $form = ActiveForm::begin(['options' => ['id' => $model->formName() . '-form', 'data-pjax' => true]]); ?>
     <div class="insideforms">
 
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
-            <div class="panel-heading"><?= Html::encode('Здание') ?></div>
+            <div class="panel-heading"><?= Html::encode('Материально-ответственное лицо') ?></div>
             <div class="panel-body">
+                <div class="errordialog" style="display: none;">
+
+                </div>
 
                 <?=
-                $form->field($model, 'build_id')->widget(Select2::classname(), Proc::DGselect2([
+                $form->field($model, 'id_person')->widget(Select2::classname(), Proc::DGselect2(array(
                     'model' => $model,
-                    'resultmodel' => new \app\models\Fregat\Build,
-                    'placeholder' => 'Введите здание',
-                    'setsession' => false,
+                    'resultmodel' => new Authuser,
+                    'fields' => array(
+                        'keyfield' => 'id_person',
+                        'resultfield' => 'auth_user_fullname',
+                    ),
+                    'placeholder' => '',
+                    'resultrequest' => 'Fregat/authuser/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'disabled' => true,
+                )))->label('ФИО');
+                ?>
+
+                <?=
+                $form->field($model, 'id_dolzh')->widget(Select2::classname(), Proc::DGselect2(array(
+                    'model' => $model,
+                    'resultmodel' => new Dolzh,
+                    'fields' => array(
+                        'keyfield' => 'id_dolzh',
+                        'resultfield' => 'dolzh_name',
+                    ),
+                    'placeholder' => '',
+                    'resultrequest' => 'Fregat/dolzh/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'disabled' => true,
+                )));
+                ?>
+
+                <?=
+                $form->field($model, 'id_podraz')->widget(Select2::classname(), Proc::DGselect2(array(
+                    'model' => $model,
+                    'resultmodel' => new Podraz,
+                    'fields' => array(
+                        'keyfield' => 'id_podraz',
+                        'resultfield' => 'podraz_name',
+                    ),
+                    'placeholder' => '',
+                    'resultrequest' => 'Fregat/podraz/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'disabled' => true,
+                )));
+                ?>
+
+                <?=
+                $form->field($model, 'id_build')->widget(Select2::classname(), Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new Build,
                     'fields' => [
-                        'keyfield' => 'build_id',
+                        'keyfield' => 'id_build',
                         'resultfield' => 'build_name',
                     ],
+                    'placeholder' => 'Выберете здание',
                     'resultrequest' => 'Fregat/build/selectinput',
                     'thisroute' => $this->context->module->requestedRoute,
                     'onlyAjax' => false,
-                ]))->label(false);
+                    'MethodQuery' => 'BuildAddMol',
+                    'preloaddataajaxcondition' => function ($query) use ($employee_id) {
+                        /** @var $query \yii\db\ActiveQuery */
+                        return $query
+                            ->leftJoin('employee', 'employee.id_build = build.build_id and employee_id = ' . $employee_id)
+                            ->andWhere(['employee.employee_id' => NULL]);
+
+                    },
+                    'DopParams' => $employee_id,
+                ]));
                 ?>
+
             </div>
         </div>
     </div>
+
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::button('<i class="glyphicon glyphicon-ok"></i> Применить', ['class' => 'btn btn-primary', 'id' => $model->formName() . '_apply']) ?>
-                <?= Html::button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => $model->formName() . '_close']) ?>
+                <?= Html::button('<i class="glyphicon glyphicon-ok"></i> Добавить', ['class' => 'btn btn-primary ', 'id' => 'ChangeBuildMolDialog_apply']) ?>
+                <?= Html::button('<i class="glyphicon glyphicon-remove"></i> Отмена', ['class' => 'btn btn-danger', 'id' => 'ChangeBuildMolDialog_close']) ?>
             </div>
         </div>
     </div>

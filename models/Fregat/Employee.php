@@ -60,6 +60,7 @@ class Employee extends \yii\db\ActiveRecord
                 return 'IMPORT';
             }, 'on' => 'import1c'],
             [['id_dolzh', 'id_podraz', 'id_person', 'employee_username', 'employee_lastchange'], 'required'],
+            [['id_build'], 'required', 'on' => 'buildRequire'],
             [['employee_username'], 'string', 'max' => 128],
             [['employee_lastchange'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['employee_dateinactive'], 'date', 'format' => 'yyyy-MM-dd'],

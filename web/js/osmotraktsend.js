@@ -23,7 +23,7 @@ $(document).ready(function () {
 
         var dopparams;
         dopparams = {id: $("#osmotrakt-osmotrakt_id").val()};
-        console.debug($("#organ-organ_id").val())
+
         if ($("#organ-organ_id").val() != "")
             $.ajax({
                 url: baseUrl + "Fregat/osmotrakt/osmotrakt-send",

@@ -14,15 +14,17 @@ use yii\filters\AccessControl;
 /**
  * BuildController implements the CRUD actions for Build model.
  */
-class BuildController extends Controller {
+class BuildController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2', 'selectinput-changemol'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
                     ],
@@ -47,57 +49,63 @@ class BuildController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $searchModel = new BuildSearch();
         $Request = Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($Request);
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                    'iduser' => $Request['iduser'],
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'iduser' => $Request['iduser'],
         ]);
     }
 
-    public function actionSelectinput($field, $q = null) {
+    public function actionSelectinput($field, $q = null)
+    {
         return Proc::ResultSelect2([
-                    'model' => new Build,
-                    'field' => $field,
-                    'q' => $q,
-                    'order' => 'build_name'
+            'model' => new Build,
+            'field' => $field,
+            'q' => $q,
+            'order' => 'build_name'
         ]);
     }
 
-    public function actionCreate() {
+    public function actionCreate()
+    {
         $model = new Build();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('update', [
-                        'model' => $model,
+                'model' => $model,
             ]);
         }
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (Yii::$app->request->isAjax)
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToSelect2() {
+    public function actionAssignToSelect2()
+    {
         Proc::AssignToModelFromGrid();
     }
 
@@ -108,7 +116,8 @@ class BuildController extends Controller {
      * @return Build the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = Build::findOne($id)) !== null) {
             return $model;
         } else {
