@@ -32,7 +32,7 @@ class MattrafficController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create'],
+                        'actions' => ['create', 'change-build-mol-content'],
                         'allow' => true,
                         'roles' => ['MolEdit'],
                     ],
@@ -214,6 +214,23 @@ class MattrafficController extends Controller
                 throw new HttpException(500, $status);
 
             echo $this->findModel($id)->delete();
+        }
+    }
+
+    public function actionChangeBuildMolContent($employee_id)
+    {
+        $model = new Employee;
+        $model->setScenario('buildRequire');
+
+        $CurrentMol = Employee::findOne($employee_id);
+        $model->attributes = $CurrentMol->attributes;
+        $model->id_build = NULL;
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            return $this->renderAjax('_add_build_mol', [
+                'model' => $model,
+                'employee_id' => $employee_id,
+            ]);
         }
     }
 

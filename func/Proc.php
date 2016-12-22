@@ -1783,7 +1783,6 @@ class Proc
                             else {
                                 $ExistsSubQuery->andWhere($WhereStatement);
                                 $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
-                                $a = '';
                             }
                         break;
                     case Proc::Mark:

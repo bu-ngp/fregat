@@ -189,10 +189,30 @@ use yii\helpers\Url;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
                 <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Сменить', ['class' => 'btn btn-success', 'form' => 'MattrafficMolform']) ?>
+                <?php // Html::button('<i class="glyphicon glyphicon-calendar"></i> Добавить здание выбранному МОЛ', ['id' => 'ChangeBuildMOL', 'class' => 'btn btn-info', 'onclick' => 'DialogBuildAddOpen()']) ?>
+
+                <?=
+                Html::a('<i class="glyphicon glyphicon-calendar"></i> Добавить здание выбранному МОЛ', ['change-build-mol-content'], [
+                    'id' => 'ChangeBuildMOL',
+                    'title' => 'Добавить здание выбранному МОЛ',
+                    'class' => 'btn btn-info'
+                ]);
+                ?>
             </div>
         </div>
     </div>
 
 </div>
+
+<?php
+yii\bootstrap\Modal::begin([
+    'header' => 'Добавить здание материально-ответственному лицу',
+    'id' => 'ChangeBuildMolDialog',
+    'options' => [
+        'class' => 'modal_filter',
+        'tabindex' => false, // чтобы работал select2 в модальном окне
+    ],
+]);
+yii\bootstrap\Modal::end();
+?>
