@@ -4,6 +4,7 @@ use app\models\Config\Authuser;
 use app\models\Fregat\Build;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Podraz;
+use yii\db\Query;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -83,12 +84,13 @@ use app\func\Proc;
                     'MethodQuery' => 'BuildAddMol',
                     'preloaddataajaxcondition' => function ($query) use ($employee_id) {
                         /** @var $query \yii\db\ActiveQuery */
-                        return $query
-                            ->leftJoin('employee', 'employee.id_build = build.build_id and employee_id = ' . $employee_id)
-                            ->andWhere(['employee.employee_id' => NULL]);
-
+                        return $query->andWhere(['not exists', (new Query())
+                            ->select(['e2.id_build'])
+                            ->from('employee e1')
+                            ->innerJoin('employee e2', 'e1.id_dolzh = e2.id_dolzh and e1.id_podraz = e2.id_podraz and e1.id_person = e2.id_person and e1.employee_id = ' . $employee_id)
+                            ->andWhere('build.build_id = e2.id_build')
+                        ]);
                     },
-                    'DopParams' => $employee_id,
                 ]));
                 ?>
 

@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use HttpException;
 use Yii;
 use app\models\Fregat\Employee;
 use app\models\Fregat\EmployeeSearch;
@@ -11,6 +12,8 @@ use yii\filters\VerbFilter;
 use app\func\Proc;
 use yii\filters\AccessControl;
 use app\models\Fregat\Impemployee;
+use yii\web\Response;
+use yii\web\Session;
 
 /**
  * EmployeeController implements the CRUD actions for Employee model.
@@ -35,7 +38,7 @@ class EmployeeController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'add-employee'],
                         'allow' => true,
                         'roles' => ['EmployeeEdit'],
                     ],
@@ -107,7 +110,8 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function actionSelectinputwithmaterials($q = null) {
+    public function actionSelectinputwithmaterials($q = null)
+    {
         return Proc::ResultSelect2([
             'model' => new Employee,
             'q' => $q,
@@ -162,7 +166,7 @@ class EmployeeController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     public function actionDelete($id)
     {
         if (Yii::$app->request->isAjax)
@@ -172,6 +176,41 @@ class EmployeeController extends Controller
     public function actionAssignToGrid()
     {
         Proc::AssignToModelFromGrid(True, new Impemployee, 'id_importemployee');
+    }
+
+    public function actionAddEmployee()
+    {
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            $build_id = Yii::$app->request->post('build_id');
+            $employee_id = Yii::$app->request->post('employee_id');
+            if (empty($build_id))
+                throw new HttpException(500, 'Не заполнено здание.');
+
+            if (empty($employee_id))
+                throw new HttpException(500, 'Ошибка при отправке запроса.');
+
+            $EmployeeCurrent = Employee::findOne($employee_id);
+            $Employee = new Employee;
+            $Employee->attributes = $EmployeeCurrent->attributes;
+            $Employee->id_build = $build_id;
+            if (!$Employee->save())
+                throw new HttpException(500, 'Ошибка при сохранении нового здания.');
+
+            $BC = Proc::GetBreadcrumbsFromSession();
+            end($BC);
+            $BC[key($BC)]['dopparams']['Mattraffic']['id_mol'] = $Employee->primaryKey;
+
+            $session = new Session;
+            $session->open();
+            $session['breadcrumbs'] = $BC;
+            $session->close();
+
+            $text = $Employee->selectinput(['init' => true, 'q' => $Employee->primaryKey]);
+
+            return json_encode((object)['id' => $Employee->primaryKey, 'text' => $text['text']]);
+        }
     }
 
     /**

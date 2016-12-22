@@ -4,9 +4,8 @@ $(document).ready(function () {
     $(document).on('ready pjax:success', function () {
         $('#ChangeBuildMOL').click(function (e) {
             e.preventDefault(); //for prevent default behavior of <a> tag.
- var employee_id =$('select[name="Mattraffic[id_mol]"]').val();
+            var employee_id = $('select[name="Mattraffic[id_mol]"]').val();
             if (employee_id !== "") {
-                console.debug($(this).attr('href') + "?employee_id=" + employee_id);
                 $(ChangeBuildMolDialog).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
                 $(ChangeBuildMolDialog).modal('show').find('.modal-body').load($(this).attr('href') + "?employee_id=" + employee_id, function () {
 
@@ -21,20 +20,19 @@ $(document).ready(function () {
         if ($("form.gridview-filter-form").find(".has-error").length)
             return false;
 
-        var dopparams;
-        dopparams = {id: $("#osmotrakt-osmotrakt_id").val()};
-        console.debug($("#organ-organ_id").val())
-        if ($("#organ-organ_id").val() != "")
+        if ($("#employee-id_build").val() != "")
             $.ajax({
-                url: baseUrl + "Fregat/osmotrakt/osmotrakt-send",
+                url: baseUrl + "Fregat/employee/add-employee",
                 type: "post",
                 data: {
-                    osmotrakt_id: $("#osmotrakt-osmotrakt_id").val(),
-                    organ_id: $("#organ-organ_id").val(),
-                    dopparams: JSON.stringify(dopparams),
+                    employee_id: $("#mattraffic-id_mol").val(),
+                    build_id: $("#employee-id_build").val(),
                     buttonloadingid: "ChangeBuildMolDialog_apply"
                 },
                 success: function (data) {
+                    data = JSON.parse(data);
+                    $("#mattraffic-id_mol").append("<option value='" + data.id + "'>" + data.text + "</option>");
+                    $("#mattraffic-id_mol").val(data.id).trigger('change');
                     $(ChangeBuildMolDialog).modal("hide");
                 },
                 error: function (err) {
@@ -47,7 +45,7 @@ $(document).ready(function () {
             });
         else {
             $("div.errordialog").show();
-            $("div.errordialog").text("Не выбрана организация");
+            $("div.errordialog").text("Не выбрано здание.");
         }
 
         return false;
