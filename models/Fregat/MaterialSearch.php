@@ -191,6 +191,40 @@ class MaterialSearch extends Material
                 ],
             ]);
 
+            $attr = 'not_material_attachfiles_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('materialDocfiles.id_material')
+                    ->from('material_docfiles materialDocfiles')
+                    ->andWhere('materialDocfiles.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'material_attachphoto_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('materialDocfiles.id_material')
+                    ->from('material_docfiles materialDocfiles')
+                    ->leftJoin('docfiles idDocfiles', 'idDocfiles.docfiles_id = materialDocfiles.id_docfiles')
+                    ->andWhere(['in', 'idDocfiles.docfiles_ext', ['PNG', 'JPG', 'JPEG', 'TIFF']])
+                    ->andWhere('materialDocfiles.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'material_attachdoc_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('materialDocfiles.id_material')
+                    ->from('material_docfiles materialDocfiles')
+                    ->leftJoin('docfiles idDocfiles', 'idDocfiles.docfiles_id = materialDocfiles.id_docfiles')
+                    ->andWhere(['in', 'idDocfiles.docfiles_ext', ['XLS', 'XLSX', 'DOC', 'DOCX', 'PDF', 'TXT']])
+                    ->andWhere('materialDocfiles.id_material = material.material_id')
+                ],
+            ]);
+
             $attr = 'mol_id_build';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,

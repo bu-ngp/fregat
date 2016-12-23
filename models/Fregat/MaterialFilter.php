@@ -16,13 +16,17 @@ class MaterialFilter extends Model
     public $mat_id_grupa_not;
     public $mol_id_build;
     public $mol_id_build_not;
+    public $material_attachfiles_mark;
+    public $not_material_attachfiles_mark;
+    public $material_attachphoto_mark;
+    public $material_attachdoc_mark;
     public $tr_osnov_kab;
     public $mattraffic_username;
     public $mattraffic_lastchange_beg;
     public $mattraffic_lastchange_end;
     public $material_working_mark;
     public $material_recovery_attachfiles_mark;
-    public $material_attachfiles_mark;
+
 
     public function rules()
     {
@@ -37,6 +41,9 @@ class MaterialFilter extends Model
                 'material_working_mark',
                 'material_recovery_attachfiles_mark',
                 'material_attachfiles_mark',
+                'not_material_attachfiles_mark',
+                'material_attachphoto_mark',
+                'material_attachdoc_mark',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
@@ -57,12 +64,16 @@ class MaterialFilter extends Model
             'mol_id_build' => 'Здание в котором установлена материальная ценность',
             'material_writeoff' => 'Списан',
             'mat_id_grupa' => 'Группа',
+            'material_attachfiles_mark' => 'Прикреплены файлы в карте материальной ценности',
+            'not_material_attachfiles_mark' => 'Файлы в карте материальной ценности не прикреплены',
+            'material_attachphoto_mark' => 'Прикреплены картинки в карте материальной ценности',
+            'material_attachdoc_mark' => 'Прикреплены документы в карте материальной ценности',
             'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
             'material_working_mark' => 'Материальные ценности в рабочем состоянии',
             'material_recovery_attachfiles_mark' => 'В актах восстановления прикреплены файлы',
-            'material_attachfiles_mark' => 'Прикреплены файлы в карте материальной ценности',
+
         ];
     }
 
