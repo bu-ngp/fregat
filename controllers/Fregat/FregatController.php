@@ -14,6 +14,7 @@ use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\Material;
+use app\models\Fregat\MaterialDocfiles;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Naklad;
 use app\models\Fregat\Nakladmaterials;
@@ -33,6 +34,7 @@ use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
 use yii\base\Request;
+use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\helpers\Url;
 use yii\test\Fixture;
@@ -88,6 +90,7 @@ class FregatController extends Controller
                             'import-do2',
                             'populate-data',
                             'rename-prog',
+                            'mat-files',
                         ],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
@@ -735,6 +738,46 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
         Authuser::updateAll(['auth_user_fullname' => 'БАЙНАКОВ БУЛАТ МУРАЛЕЕВИЧ'], ['auth_user_id' => 988]);
         Authuser::updateAll(['auth_user_fullname' => 'СТЕЦЮК АНДРЕЙ ЕВГЕНЬЕВИЧ'], ['auth_user_id' => 989]);
         Authuser::updateAll(['auth_user_fullname' => 'СУВОРОВ ДМИТРИЙ АЛЕКСАНДРОВИЧ'], ['auth_user_id' => 1020]);
+    }
+
+    public function actionMatFiles($id_docfiles, $material_name)
+    {
+        $count = Material::find()->andWhere(['like', 'material_name', $material_name])->count();
+        $Docfiles = Docfiles::findOne($id_docfiles);
+
+        if (empty($Docfiles))
+            echo 'Файл и ИД ' . $id_docfiles . ' не найден.';
+        else {
+            if ($count > 0 && $count <= 200) {
+                $query = Material::find()->andWhere(['like', 'material_name', $material_name])->all();
+                $i = 0;
+                $suc = 0;
+                $err = 0;
+                foreach ($query as $ar) {
+                    /** @var $ar Material */
+                    $MaterialDocfiles = new MaterialDocfiles;
+                    $MaterialDocfiles->id_docfiles = $id_docfiles;
+                    $MaterialDocfiles->id_material = $ar->primaryKey;
+                    if ($MaterialDocfiles->save())
+                        $suc++;
+                    else {
+                        $err++;
+                        echo 'Ошибка при сохранении файла материальной ценности.<BR>';
+                        echo 'Материальная ценность ' . $ar->material_inv . ', ' . $ar->material_name . '<BR>';
+                        echo 'Ошибки:<BR>';
+                        print_r($MaterialDocfiles->errors, true);
+                        echo '<BR>';
+                    }
+                    $i++;
+                }
+
+                echo '<BR> Из ' . $count . ' записей. Успешно добавлены ' . $suc . ' файлов. Ошибок: ' . $err . '.';
+            } elseif ($count == 0) {
+                echo 'Найдено ' . $count . ' записей по условию "' . $material_name . '"';
+            } else {
+                echo 'Установлено ограничение в 200 материальных ценностей. По данному наименованию найдено ' . $count . '.';
+            }
+        }
     }
 
 }
