@@ -744,7 +744,6 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
     {
         $count = Material::find()->andWhere(['like', 'material_name', $material_name])->count();
         $Docfiles = Docfiles::findOne($id_docfiles);
-
         if (empty($Docfiles))
             echo 'Файл и ИД ' . $id_docfiles . ' не найден.';
         else {
@@ -765,7 +764,7 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
                         echo 'Ошибка при сохранении файла материальной ценности.<BR>';
                         echo 'Материальная ценность ' . $ar->material_inv . ', ' . $ar->material_name . '<BR>';
                         echo 'Ошибки:<BR>';
-                        print_r($MaterialDocfiles->errors, true);
+                        print_r($MaterialDocfiles->errors);
                         echo '<BR>';
                     }
                     $i++;

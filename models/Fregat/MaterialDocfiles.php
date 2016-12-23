@@ -35,6 +35,7 @@ class MaterialDocfiles extends \yii\db\ActiveRecord
             [['id_docfiles', 'id_material'], 'integer'],
             [['id_docfiles'], 'exist', 'skipOnError' => true, 'targetClass' => Docfiles::className(), 'targetAttribute' => ['id_docfiles' => 'docfiles_id']],
             [['id_material'], 'exist', 'skipOnError' => true, 'targetClass' => Material::className(), 'targetAttribute' => ['id_material' => 'material_id']],
+            [['id_docfiles'], 'unique', 'targetAttribute' => ['id_docfiles', 'id_material'], 'message' => 'Файл уже прикреплен к данной материальной ценности.'],
         ];
     }
 
