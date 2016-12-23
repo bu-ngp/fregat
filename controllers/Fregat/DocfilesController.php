@@ -3,6 +3,9 @@
 namespace app\controllers\Fregat;
 
 use app\func\Proc;
+use app\models\Fregat\MaterialDocfiles;
+use app\models\Fregat\RraDocfiles;
+use app\models\Fregat\RramatDocfiles;
 use app\models\Fregat\UploadDocFile;
 use Yii;
 use app\models\Fregat\Docfiles;
@@ -29,7 +32,7 @@ class DocfilesController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-select2'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2', 'assign-to-grid'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -123,6 +126,17 @@ class DocfilesController extends Controller
         $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
 
         return Yii::$app->response->sendFile($fileroot, $Docfiles->docfiles_name);
+    }
+
+    public function actionAssignToGrid()
+    {
+        $LastBC = Proc::GetLastBreadcrumbsFromSession();
+        if ($LastBC['dopparams']['foreign']['model'] === 'MaterialDocfiles')
+            Proc::AssignToModelFromGrid(True, new MaterialDocfiles, 'id_material');
+        elseif ($LastBC['dopparams']['foreign']['model'] === 'RraDocfiles')
+            Proc::AssignToModelFromGrid(True, new RraDocfiles, 'id_recoveryrecieveakt');
+        elseif ($LastBC['dopparams']['foreign']['model'] === 'RramatDocfiles')
+            Proc::AssignToModelFromGrid(True, new RramatDocfiles, 'id_recoveryrecieveaktmat');
     }
 
     /**

@@ -125,6 +125,12 @@ use yii\helpers\Url;
             'filterModel' => $searchModelrra,
             'panel' => [
                 'heading' => '<i class="glyphicon glyphicon-file"></i> Прикрепленные файлы',
+                'before' => (Yii::$app->user->can('RecoveryEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить из справочника прикрепленных файлов', ['Fregat/docfiles/index',
+                    'foreignmodel' => 'RraDocfiles',
+                    'url' => $this->context->module->requestedRoute,
+                    'field' => 'id_docfiles',
+                    'id' => $model->primaryKey,
+                ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : ''),
             ],
         ]
     ])); ?>

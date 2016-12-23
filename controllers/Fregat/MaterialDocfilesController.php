@@ -79,6 +79,7 @@ class MaterialDocfilesController extends Controller
             $id_docfiles = $ar->id_docfiles;
             if ($ar->delete())
                 Proc::DeleteDocFile($id_docfiles);
+                
         }
     }
 

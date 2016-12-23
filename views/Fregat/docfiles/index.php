@@ -66,7 +66,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             ],
             'buttons' => array_merge(
                 empty($foreign) ? [] : [
-                    'chooseajax' => ['Fregat/docfiles/assign-to-select2']
+                    'chooseajax' => ['Fregat/docfiles/assign-to-grid']
                 ], Yii::$app->user->can('DocfilesEdit') ? [
                 'deleteajax' => ['Fregat/docfiles/delete'],
             ] : []

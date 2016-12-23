@@ -8,6 +8,7 @@ use app\models\Config\Authuser;
 use app\models\Fregat\Docfiles;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Import\Importconfig;
+use app\models\Fregat\MaterialDocfiles;
 use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RraDocfiles;
 use app\models\Fregat\RramatDocfiles;
@@ -1834,18 +1835,24 @@ class Proc
         if (!empty($docfile_id)) {
             $existdb1 = RraDocfiles::find()->andWhere(['id_docfiles' => $docfile_id])->count();
             $existdb2 = RramatDocfiles::find()->andWhere(['id_docfiles' => $docfile_id])->count();
-            if (empty($existdb1) && empty($existdb2)) {
-                $Docfiles = Docfiles::findOne($docfile_id);
-                if (!empty($Docfiles)) {
-                    $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
-                    $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
-
-                    if ($Docfiles->delete() && file_exists($fileroot))
-                        return unlink($fileroot);
-                }
+            $existdb3 = MaterialDocfiles::find()->andWhere(['id_docfiles' => $docfile_id])->count();
+            if (empty($existdb1) && empty($existdb2) && empty($existdb3)) {
+                self::DeleteDocFileFromFileSystem($docfile_id);
             }
         }
         return false;
+    }
+
+    public static function DeleteDocFileFromFileSystem($docfile_id)
+    {
+        $Docfiles = Docfiles::findOne($docfile_id);
+        if (!empty($Docfiles)) {
+            $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
+            $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+
+            if ($Docfiles->delete() && file_exists($fileroot))
+                return unlink($fileroot);
+        }
     }
 
     public static function ActiveRecordErrorsToString($ActiveRecord)
