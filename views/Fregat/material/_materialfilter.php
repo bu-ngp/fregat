@@ -95,6 +95,8 @@ use app\func\Proc;
 
                 <?= $form->field($model, 'material_attachdoc_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
+                <?= $form->field($model, 'material_comment_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
             </div>
         </div>
 

@@ -225,6 +225,12 @@ class MaterialSearch extends Material
                 ],
             ]);
 
+            $attr = 'material_comment_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => "material.material_comment <> ''",
+            ]);
+
             $attr = 'mol_id_build';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,

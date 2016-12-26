@@ -20,6 +20,7 @@ class MaterialFilter extends Model
     public $not_material_attachfiles_mark;
     public $material_attachphoto_mark;
     public $material_attachdoc_mark;
+    public $material_comment_mark;
     public $tr_osnov_kab;
     public $mattraffic_username;
     public $mattraffic_lastchange_beg;
@@ -44,6 +45,7 @@ class MaterialFilter extends Model
                 'not_material_attachfiles_mark',
                 'material_attachphoto_mark',
                 'material_attachdoc_mark',
+                'material_comment_mark',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
@@ -68,6 +70,7 @@ class MaterialFilter extends Model
             'not_material_attachfiles_mark' => 'Файлы в карте материальной ценности не прикреплены',
             'material_attachphoto_mark' => 'Прикреплены картинки в карте материальной ценности',
             'material_attachdoc_mark' => 'Прикреплены документы в карте материальной ценности',
+            'material_comment_mark' => 'Содержит заметку',
             'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
