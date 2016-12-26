@@ -1767,24 +1767,29 @@ class Proc
                             }
                         break;
                     case Proc::Strict:
-                        $FilterWhere = empty($FilterValues[$Attribute . '_not']) ? [$SQLAttribute => $FilterValues[$Attribute]] : ['not', [$SQLAttribute => $FilterValues[$Attribute]]];
+                        $Not = empty($FilterValues[$Attribute . '_not']) ? '' : 'not ';
+                        $FilterWhere = empty($Not) ? [$SQLAttribute => $FilterValues[$Attribute]] : ['not', [$SQLAttribute => $FilterValues[$Attribute]]];
 
                         if (empty($ExistsSubQuery))
                             $ActiveQuery->andFilterWhere($FilterWhere);
                         else {
-                            $ExistsSubQuery->andFilterWhere($FilterWhere);
-                            $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            $ExistsSubQuery->andFilterWhere([$SQLAttribute => $FilterValues[$Attribute]]);
+                            $ActiveQuery->andWhere([$Not . 'exists', $ExistsSubQuery]);
                         }
                         break;
                     case Proc::WhereStatement:
+                        $Not = empty($FilterValues[$Attribute . '_not']) ? '' : 'not ';
                         $WhereStatement = isset($Params['WhereStatement']) ? $Params['WhereStatement'] : NULL;
-                        if (!empty($WhereStatement))
+
+                        if (!empty($WhereStatement)) {
+                            $FilterWhere = empty($Not) ? $WhereStatement : ['not', $WhereStatement];
                             if (empty($ExistsSubQuery))
-                                $ActiveQuery->andWhere($WhereStatement);
+                                $ActiveQuery->andWhere($FilterWhere);
                             else {
                                 $ExistsSubQuery->andWhere($WhereStatement);
-                                $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                                $ActiveQuery->andWhere([$Not . 'exists', $ExistsSubQuery]);
                             }
+                        }
                         break;
                     case Proc::Mark:
                         $WhereStatement = isset($Params['WhereStatement']) ? $Params['WhereStatement'] : NULL;
@@ -1818,11 +1823,13 @@ class Proc
                         }
                         break;
                     case Proc::MultiChoice:
+                        $Not = empty($FilterValues[$Attribute . '_not']) ? '' : 'not ';
+
                         if (empty($ExistsSubQuery))
-                            $ActiveQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                            $ActiveQuery->andFilterWhere([empty($Not) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
                         else {
-                            $ExistsSubQuery->andFilterWhere([empty($FilterValues[$Attribute . '_not']) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
-                            $ActiveQuery->andWhere(['exists', $ExistsSubQuery]);
+                            $ExistsSubQuery->andFilterWhere([empty($Not) ? 'IN' : 'NOT IN', $SQLAttribute, $FilterValues[$Attribute]]);
+                            $ActiveQuery->andWhere([$Not . 'exists', $ExistsSubQuery]);
                         }
                         break;
                 }
