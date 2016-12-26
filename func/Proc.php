@@ -1744,7 +1744,7 @@ class Proc
             $Value = $FilterValues[$Attribute];
             $ExistsSubQuery = isset($Params['ExistsSubQuery']) ? $Params['ExistsSubQuery'] : NULL;
 
-            if (!empty($Value) || $Type === Proc::DateRange)
+            if (!empty($Value) || $Type === Proc::DateRange || $Value !== '' && Proc::Strict)
                 switch ($Type) {
                     case Proc::Text:
                         $LikeManual = isset($Params['LikeManual']) ? $Params['LikeManual'] : true;
