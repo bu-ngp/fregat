@@ -1,0 +1,1 @@
+ALTER TABLE `docfiles` AUTO_INCREMENT = 1;

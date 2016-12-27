@@ -13,6 +13,7 @@ use app\models\Fregat\Recoverysendakt;
 use app\models\Fregat\RraDocfiles;
 use app\models\Fregat\RramatDocfiles;
 use Yii;
+use yii\base\Exception;
 use yii\base\View;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -1128,7 +1129,7 @@ class Proc
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($i, $r, $r - 5);
                 foreach (array_keys($data) as $attr) {
                     $i++;
-                    $ValidatorsAttr = $ar->getActiveValidators($attr);
+                    $ValidatorsAttr = self::getARValidators($ar, $attr);
                     array_walk($ValidatorsAttr, function (&$val) {
                         $val = (new \ReflectionClass($val::className()))->getShortName();
                     });
@@ -1176,7 +1177,7 @@ class Proc
         $FileName = $reportName;
 
         // Устанавливаем имя листа
-        $objPHPExcel->getActiveSheet()->setTitle($FileName);
+        // $objPHPExcel->getActiveSheet()->setTitle($FileName);
 
         // Выбираем первый лист
         $objPHPExcel->setActiveSheetIndex(0);
@@ -1900,5 +1901,26 @@ class Proc
     public static function appendTimestampUrlParam($filePath)
     {
         return '?v=' . @filemtime($filePath);
+    }
+
+    private static function getARValidators(ActiveRecord $ar, $attr)
+    {
+        try {
+            $models_arr = explode('.', $attr);
+
+            if (count($models_arr) === 1)
+                return $ar->getActiveValidators();
+
+            array_pop($models_arr);
+            if (count($models_arr) > 0) {
+                foreach ($models_arr as $model_relat)
+                    $ar = $ar->$model_relat;
+
+                if ($ar instanceof ActiveRecord)
+                    return $ar->getActiveValidators();
+            }
+        } catch (Exception $e) {
+        }
+        return [];
     }
 }

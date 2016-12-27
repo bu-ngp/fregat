@@ -7,6 +7,7 @@ use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\InstallTrOsnov;
 use app\models\Fregat\Material;
 use app\models\Fregat\Organ;
+use app\models\Fregat\OsmotraktFilter;
 use Exception;
 use Yii;
 use app\models\Fregat\Osmotrakt;
@@ -36,7 +37,7 @@ class OsmotraktController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-grid', 'selectinputforrecoverysendakt', 'osmotrakt-report'],
+                        'actions' => ['index', 'fillnewinstallakt', 'selectinputforosmotrakt', 'forrecoveryrecieveakt', 'assign-to-grid', 'selectinputforrecoverysendakt', 'osmotrakt-report', 'osmotraktfilter', 'toexcel'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -59,11 +60,13 @@ class OsmotraktController extends Controller
     public function actionIndex()
     {
         $searchModel = new OsmotraktSearch();
+        $filter = Proc::SetFilter($searchModel->formName(), new OsmotraktFilter);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filter' => $filter,
         ]);
     }
 
@@ -247,6 +250,32 @@ class OsmotraktController extends Controller
                     throw new HttpException(500, 'Не заполнен Email у организации');
             }
         }
+    }
+
+    public function actionOsmotraktfilter()
+    {
+        $model = new OsmotraktFilter();
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isGet) {
+            Proc::PopulateFilterForm('OsmotraktSearch', $model);
+
+            return $this->renderAjax('_osmotraktfilter', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionToexcel()
+    {
+        $searchModel = new OsmotraktSearch();
+        $params = Yii::$app->request->queryParams;
+        $inputdata = json_decode($params['inputdata']);
+        $modelname = $searchModel->formName();
+        $dataProvider = $searchModel->search(Proc::GetArrayValuesByKeyName($modelname, $inputdata));
+        $selectvalues = json_decode($params['selectvalues']);
+        $labelvalues = isset($params['labelvalues']) ? json_decode($params['labelvalues']) : NULL;
+
+        Proc::Grid2Excel($dataProvider, $modelname, 'Журнал осмотров материальных ценностей', $selectvalues, new OsmotraktFilter, $labelvalues);
     }
 
     /**

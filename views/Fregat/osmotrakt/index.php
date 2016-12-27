@@ -4,6 +4,7 @@ use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 
 \Yii::$app->getView()->registerJsFile('@web/js/osmotraktsend.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktsend.js'));
+\Yii::$app->getView()->registerJsFile('@web/js/osmotraktfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktfilter.js'));
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\Fregat\OsmotraktSearch */
@@ -98,6 +99,20 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'heading' => '<i class="glyphicon glyphicon-search"></i> ' . $this->title,
                 'before' => Yii::$app->user->can('OsmotraktEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
             ],
+            'toolbar' => [
+                'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['osmotraktfilter'], [
+                        'title' => 'Дополнительный фильтр',
+                        'class' => 'btn btn-default filter_button'
+                    ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-floppy-disk"></i>', [
+                        'id' => 'Osmotraktexcel',
+                        'type' => 'button',
+                        'title' => 'Экспорт в Excel',
+                        'class' => 'btn btn-default button_export',
+                        'onclick' => 'ExportExcel("OsmotraktSearch","' . \yii\helpers\Url::to('Fregat/osmotrakt/toexcel') . '", $(this)[0].id, undefined, ' . (YII_ENV === 'test' ? 0 : 1) . ');'
+                    ]) . '{export}{dynagrid}',
+                ],
+            ],
+            'afterHeader' => $filter,
         ]
     ]));
     ?>
@@ -113,6 +128,15 @@ yii\bootstrap\Modal::begin([
     ],
 ]);
 
+yii\bootstrap\Modal::end();
 
+yii\bootstrap\Modal::begin([
+    'header' => 'Дополнительный фильтр',
+    'id' => 'OsmotraktFilter',
+    'options' => [
+        'class' => 'modal_filter',
+        'tabindex' => false, // чтобы работал select2 в модальном окне
+    ],
+]);
 yii\bootstrap\Modal::end();
 ?>

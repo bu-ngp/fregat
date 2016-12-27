@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Osmotrakt;
 use app\func\Proc;
+use yii\db\Query;
 
 /**
  * OsmotraktSearch represents the model behind the search form about `app\models\Fregat\Osmotrakt`.
@@ -44,10 +45,10 @@ class OsmotraktSearch extends Osmotrakt
         return [
             [['osmotrakt_id', 'id_reason', 'id_user', 'id_master', 'id_tr_osnov'], 'integer'],
             [['osmotrakt_comment', 'osmotrakt_date'], 'safe'],
+            [['idTrosnov.idMattraffic.idMaterial.material_inv'], 'string'],
             [[
                 'idTrosnov.idMattraffic.idMaterial.idMatv.matvid_name',
                 'idTrosnov.idMattraffic.idMaterial.material_name',
-                'idTrosnov.idMattraffic.idMaterial.material_inv',
                 'idTrosnov.idMattraffic.idMaterial.material_serial',
                 'idTrosnov.idMattraffic.idMol.idbuild.build_name',
                 'idTrosnov.tr_osnov_kab',
@@ -157,6 +158,8 @@ class OsmotraktSearch extends Osmotrakt
         $this->baseFilter($query);
         $this->baseSort($dataProvider);
 
+        $this->osmotraktDopFilter($query);
+
         return $dataProvider;
     }
 
@@ -262,6 +265,35 @@ class OsmotraktSearch extends Osmotrakt
         ]);
 
         return $dataProvider;
+    }
+
+    private function osmotraktDopFilter(&$query)
+    {
+        $filter = Proc::GetFilter($this->formName(), 'OsmotraktFilter');
+
+        if (!empty($filter)) {
+
+            $attr = 'osmotrakt_recoverysendakt_exists_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('recoveryrecieveakts.id_osmotrakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->andWhere('recoveryrecieveakts.id_osmotrakt = osmotrakt.osmotrakt_id')
+                ],
+            ]);
+
+            $attr = 'osmotrakt_recoverysendakt_not_exists_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('recoveryrecieveakts.id_osmotrakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->andWhere('recoveryrecieveakts.id_osmotrakt = osmotrakt.osmotrakt_id')
+                ],
+            ]);
+
+        }
     }
 
 }
