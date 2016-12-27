@@ -1,4 +1,5 @@
 <?php
+use app\models\Fregat\Material;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
@@ -17,6 +18,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <?php
     $result = Proc::GetLastBreadcrumbsFromSession();
     $foreign = isset($result['dopparams']['foreign']) ? $result['dopparams']['foreign'] : '';
+    $material_writeoff = Material::VariablesValues('material_writeoff');
 
     echo DynaGrid::widget(Proc::DGopts([
         'options' => ['id' => 'osmotraktgrid'],
@@ -37,6 +39,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'idTrosnov.idMattraffic.idMaterial.material_serial',
                     'visible' => false,
+                ],
+                [
+                    'attribute' => 'idTrosnov.idMattraffic.idMaterial.material_writeoff',
+                    'visible' => false,
+                    'filter' => $material_writeoff,
+                    'value' => function ($model) use ($material_writeoff) {
+                        return isset($material_writeoff[$model->idTrosnov->idMattraffic->idMaterial->material_writeoff]) ? $material_writeoff[$model->idTrosnov->idMattraffic->idMaterial->material_writeoff] : '';
+                    },
                 ],
                 [
                     'attribute' => 'idUser.idperson.auth_user_fullname',

@@ -23,6 +23,7 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMaterial.material_name',
             'idTrosnov.idMattraffic.idMaterial.material_inv',
             'idTrosnov.idMattraffic.idMaterial.material_serial',
+            'idTrosnov.idMattraffic.idMaterial.material_writeoff',
             'idTrosnov.idMattraffic.idMol.idbuild.build_name',
             'idTrosnov.tr_osnov_kab',
             'idUser.idperson.auth_user_fullname',
@@ -50,6 +51,7 @@ class OsmotraktSearch extends Osmotrakt
                 'idTrosnov.idMattraffic.idMaterial.idMatv.matvid_name',
                 'idTrosnov.idMattraffic.idMaterial.material_name',
                 'idTrosnov.idMattraffic.idMaterial.material_serial',
+                'idTrosnov.idMattraffic.idMaterial.material_writeoff',
                 'idTrosnov.idMattraffic.idMol.idbuild.build_name',
                 'idTrosnov.tr_osnov_kab',
                 'idUser.idperson.auth_user_fullname',
@@ -104,6 +106,7 @@ class OsmotraktSearch extends Osmotrakt
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_serial')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrosnov.idMattraffic.idMaterial.material_writeoff'));
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idTrosnov.idMattraffic.idMol.idbuild.build_name')]);
         $query->andFilterWhere(['LIKE', 'idTrosnov.tr_osnov_kab', $this->getAttribute('idTrosnov.tr_osnov_kab')]);
         $query->andFilterWhere(['LIKE', 'iduserperson.auth_user_fullname', $this->getAttribute('idUser.idperson.auth_user_fullname')]);
@@ -123,6 +126,7 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMaterial.material_name',
             'idTrosnov.idMattraffic.idMaterial.material_inv',
             'idTrosnov.idMattraffic.idMaterial.material_serial',
+            'idTrosnov.idMattraffic.idMaterial.material_writeoff',
             'idTrosnov.idMattraffic.idMol.idbuild.build_name',
             'idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name',
