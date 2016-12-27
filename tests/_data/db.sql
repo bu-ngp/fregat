@@ -1019,6 +1019,34 @@ LOCK TABLES `material` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `material_docfiles`
+--
+
+DROP TABLE IF EXISTS `material_docfiles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `material_docfiles` (
+  `material_docfiles_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `id_docfiles` mediumint(8) unsigned NOT NULL,
+  `id_material` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`material_docfiles_id`),
+  KEY `fk_material_docfiles_docfiles1_idx` (`id_docfiles`),
+  KEY `fk_material_docfiles_material1_idx` (`id_material`),
+  CONSTRAINT `fk_material_docfiles_docfiles1` FOREIGN KEY (`id_docfiles`) REFERENCES `docfiles` (`docfiles_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_material_docfiles_material1` FOREIGN KEY (`id_material`) REFERENCES `material` (`material_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `material_docfiles`
+--
+
+LOCK TABLES `material_docfiles` WRITE;
+/*!40000 ALTER TABLE `material_docfiles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `material_docfiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `matlog`
 --
 
@@ -1889,4 +1917,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-08 11:42:12
+-- Dump completed on 2016-12-26 13:23:05

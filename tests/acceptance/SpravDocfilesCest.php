@@ -1,4 +1,5 @@
 <?php
+use app\models\Fregat\Docfiles;
 use yii\helpers\Url;
 
 /**
@@ -36,6 +37,14 @@ class SpravDocfilesCest
 
     /**
      * @depends openSprav
+     */
+    public function loadData(AcceptanceTester $I)
+    {
+        $I->loadDataFromSQLFile('docfiles.sql');
+    }
+
+    /**
+     * @depends loadData
      */
     public function openDocfiles(AcceptanceTester $I)
     {
@@ -142,5 +151,14 @@ class SpravDocfilesCest
         $I->wait(2);
 
         $I->see('Ничего не найдено');
+    }
+
+
+    /**
+     * @depends loadData
+     */
+    public function destroyData()
+    {
+        Docfiles::deleteAll();
     }
 }
