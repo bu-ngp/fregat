@@ -167,9 +167,9 @@ class FregatImport
 
             $rows = self::GetRowsPDO('select importmaterial_combination, id_matvid from importmaterial where importmaterial_combination like :importmaterial_combination order by CHAR_LENGTH(importmaterial_combination)', ['importmaterial_combination' => $str . '%'], true);
 
-            if (count($rows) === 1 && mb_stripos($material_name1c, $rows[0]['importmaterial_combination'], 0, 'UTF-8') === 0 || count($rows) > 1)
+            if (count($rows) === 1 && mb_stripos($material_name1c, $rows[0]['importmaterial_combination'], 0, 'UTF-8') === 0)
                 $tmpmin = [$rows[0]['id_matvid'], $rows[0]['importmaterial_combination']];
-            else
+            elseif (count($rows) <= 1)
                 break;
 
             $i++;
@@ -609,7 +609,7 @@ class FregatImport
                     $Material->material_name = $Material->material_name1c;
                    $diff_attr['material_name'] = $Material->material_name1c;
                }*/
-                
+
                 if (!$Material->isNewRecord && $Material->getOldAttribute('material_name') === $Material->getOldAttribute('material_name1c') && $xls_attributes_material['material_name1c'] != $Material->getOldAttribute('material_name1c') && $Material->material_importdo === 1) {
                     $Material->material_name = $Material->material_name1c;
                     $diff_attr['material_name'] = $Material->material_name1c;
