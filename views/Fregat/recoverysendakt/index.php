@@ -55,7 +55,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     <div class="panel panel-default">
         <div class="panel-heading">
             
-            <?= Html::button('<i class="glyphicon glyphicon-list"></i> Выгрузка', ['id' => 'DownloadExportReport', 'class' => 'btn btn-success', 'onclick' => 'ExportExcel("RecoverysendaktSearch","' . \yii\helpers\Url::toRoute('Fregat/recoverysendakt/toexcel') . '", $(this)[0].id);']); ?>
+            <?= Html::button('<i class="glyphicon glyphicon-list"></i> Выгрузка', ['id' => 'DownloadExportReport', 'class' => 'btn btn-success', 'onclick' => 'ExportExcel("RecoverysendaktSearch","' . \yii\helpers\Url::to('Fregat/recoverysendakt/toexcel') . '", $(this)[0].id);']); ?>
         </div>
     </div>
 </div>
