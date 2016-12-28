@@ -22,8 +22,18 @@ use app\func\Proc;
         </div>
     </div>
 
+
     <?php $form = ActiveForm::begin(['options' => ['id' => $model->formName() . '-form', 'data-pjax' => true]]); ?>
     <div class="insideforms">
+
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
+            <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
+            <div class="panel-body">
+
+                <?php Proc::FilterFieldDateRange($form, $model, 'mattraffic_date_writeoff') ?>
+
+            </div>
+        </div>
 
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Журнал восстановления материальных ценностей') ?></div>

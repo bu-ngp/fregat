@@ -277,6 +277,21 @@ class OsmotraktSearch extends Osmotrakt
 
         if (!empty($filter)) {
 
+            $attr = 'mattraffic_date_writeoff';
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'idMattrafficMat.mattraffic_date',
+                'ExistsSubQuery' => (new Query())
+                    ->select('idOsmotrakt.osmotrakt_id')
+                    ->from('osmotrakt idOsmotrakt')
+                    ->leftJoin('tr_osnov idTrosnov', 'idTrosnov.tr_osnov_id = idOsmotrakt.id_tr_osnov')
+                    ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrosnov.id_mattraffic')
+                    ->leftJoin('mattraffic idMattrafficMat', 'idMattraffic.id_material = idMattrafficMat.id_material and idMattraffic.id_mol = idMattrafficMat.id_mol')
+                    ->leftJoin('material idMaterial', 'idMaterial.material_id = idMattraffic.id_material')
+                    ->andWhere(['idMaterial.material_writeoff' => 1])
+                    ->andWhere('idOsmotrakt.osmotrakt_id = osmotrakt.osmotrakt_id')
+            ]);
+
             $attr = 'osmotrakt_recoverysendakt_exists_mark';
             Proc::Filter_Compare(Proc::Mark, $query, $filter, [
                 'Attribute' => $attr,
