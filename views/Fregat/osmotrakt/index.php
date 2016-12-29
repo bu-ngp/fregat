@@ -3,6 +3,7 @@ use app\models\Fregat\Material;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
+use yii\helpers\Url;
 
 \Yii::$app->getView()->registerJsFile('@web/js/osmotraktsend.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktsend.js'));
 \Yii::$app->getView()->registerJsFile('@web/js/osmotraktfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/osmotraktfilter.js'));
@@ -34,7 +35,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'osmotrakt_date',
                     'format' => 'date',
                 ],
-                'idTrosnov.idMattraffic.idMaterial.material_name',
+                [
+                    'attribute' => 'idTrosnov.idMattraffic.idMaterial.material_name',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrosnov->idMattraffic->id_material]) . '">' . $model->idTrosnov->idMattraffic->idMaterial->material_name . '</a>';
+                    }
+                ],
                 'idTrosnov.idMattraffic.idMaterial.material_inv',
                 [
                     'attribute' => 'idTrosnov.idMattraffic.idMaterial.material_serial',

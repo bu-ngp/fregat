@@ -21,7 +21,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'options' => ['id' => 'trmatosmotrgrid'],
                 'columns' => Proc::DGcols([
                     'columns' => [
-                        'idTrMat.idMattraffic.idMaterial.material_name',
+                        [
+                            'attribute' => 'idTrMat.idMattraffic.idMaterial.material_name',
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idMattraffic->id_material]) . '">' . $model->idTrMat->idMattraffic->idMaterial->material_name . '</a>';
+                            }
+                        ],
                         'idTrMat.idMattraffic.idMaterial.material_inv',
                         'tr_mat_osmotr_number',
                         [
@@ -39,6 +45,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         [
                             'attribute' => 'idTrMat.idParent.idMaterial.material_name',
                             'label' => 'Укомплектовано в матер-ую цен-ть',
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idParent->id_material]) . '">' . $model->idTrMat->idParent->idMaterial->material_name . '</a>';
+                            }
                         ],
                         [
                             'attribute' => 'idTrMat.idParent.idMaterial.material_inv',

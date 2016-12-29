@@ -58,7 +58,13 @@ use yii\helpers\Url;
             'columns' => Proc::DGcols([
                 'buttonsfirst' => true,
                 'columns' => [
-                    'idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idMattraffic.idMaterial.material_inv',
                     'idMattraffic.mattraffic_number',
                     [
@@ -99,6 +105,10 @@ use yii\helpers\Url;
                     [
                         'attribute' => 'idParent.idMaterial.material_name',
                         'label' => 'В составе материальной ценности',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idParent->id_material]) . '">' . $model->idParent->idMaterial->material_name . '</a>';
+                        }
                     ],
                     [
                         'attribute' => 'idParent.idMaterial.material_inv',
@@ -111,7 +121,13 @@ use yii\helpers\Url;
                             return $model->idParent->trOsnovs[0]->tr_osnov_kab;
                         },
                     ],
-                    'idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idMattraffic.idMaterial.material_inv',
                     'idMattraffic.mattraffic_number',
                     [

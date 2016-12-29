@@ -52,7 +52,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'idMaterial.idMatv.matvid_name',
                     'visible' => false,
                 ],
-                'idMaterial.material_name',
+                [
+                    'attribute' => 'idMaterial.material_name',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->id_material]) . '">' . $model->idMaterial->material_name . '</a>';
+                    }
+                ],
                 'idMaterial.material_inv',
                 'idMol.idperson.auth_user_fullname',
                 'idMol.iddolzh.dolzh_name',

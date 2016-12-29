@@ -31,7 +31,13 @@ use yii\helpers\Url;
             'columns' => [
                 'idTrMatOsmotr.idOsmotraktmat.osmotraktmat_id',
                 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
-                'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                [
+                    'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMatOsmotr->idTrMat->idMattraffic->id_material]) . '">' . $model->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name . '</a>';
+                    }
+                ],
                 'idTrMatOsmotr.tr_mat_osmotr_number',
                 [
                     'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',

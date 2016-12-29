@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
 use app\models\Fregat\Material;
+use yii\helpers\Url;
 
 \Yii::$app->getView()->registerJsFile('@web/js/materialfilter.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/materialfilter.js'));
 
@@ -34,7 +35,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     },
                 ],
                 'idMatv.matvid_name',
-                'material_name',
+                [
+                    'attribute' => 'material_name',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->primaryKey]) . '">' . $model->material_name . '</a>';
+                    }
+                ],
                 [
                     'attribute' => 'material_name1c',
                     'visible' => false,

@@ -60,7 +60,13 @@ use yii\helpers\Url;
             'options' => ['id' => 'trRmMatgrid'],
             'columns' => Proc::DGcols([
                 'columns' => [
-                    'idTrMat.idParent.idMaterial.material_name',
+                    [
+                        'attribute' => 'idTrMat.idParent.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idParent->id_material]) . '">' . $model->idTrMat->idParent->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idTrMat.idParent.idMaterial.material_inv',
                     'idTrMat.idParent.idMaterial.material_serial',
                     'idTrMat.idParent.idMol.idbuild.build_name',
@@ -70,10 +76,13 @@ use yii\helpers\Url;
                             return $model->idTrMat->idParent->trOsnovs[0]->tr_osnov_kab;
                         },
                     ],
-
                     [
                         'attribute' => 'idTrMat.idMattraffic.idMaterial.material_name',
                         'label' => 'Наименование комплектующего',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idMattraffic->id_material]) . '">' . $model->idTrMat->idMattraffic->idMaterial->material_name . '</a>';
+                        }
                     ],
                     [
                         'attribute' => 'idTrMat.idMattraffic.idMaterial.material_inv',

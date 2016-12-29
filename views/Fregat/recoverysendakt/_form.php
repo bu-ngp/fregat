@@ -85,7 +85,13 @@ use yii\bootstrap\ButtonDropdown;
                 'columns' => [
                     'idOsmotrakt.osmotrakt_id',
                     'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
-                    'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idOsmotrakt->idTrosnov->idMattraffic->id_material]) . '">' . $model->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
                     'idOsmotrakt.idTrosnov.tr_osnov_kab',
                     'idOsmotrakt.idReason.reason_text',
@@ -148,7 +154,13 @@ use yii\bootstrap\ButtonDropdown;
                         'format' => 'date',
                     ],
                     'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_inv',
-                    'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMatOsmotr->idTrMat->idMattraffic->id_material]) . '">' . $model->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idTrMatOsmotr.tr_mat_osmotr_number',
                     [
                         'attribute' => 'idTrMatOsmotr.idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',

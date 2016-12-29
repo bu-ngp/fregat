@@ -120,7 +120,13 @@ use yii\widgets\ActiveForm;
             'options' => ['id' => 'spisosnovmaterialsgrid'],
             'columns' => Proc::DGcols([
                 'columns' => [
-                    'idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idMattraffic.idMaterial.material_inv',
                     'idMattraffic.idMaterial.material_serial',
                     [

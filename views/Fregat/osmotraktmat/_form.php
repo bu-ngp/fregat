@@ -58,7 +58,13 @@ use \yii\helpers\Url;
             'columns' => Proc::DGcols([
                 'columns' => [
                     'idTrMat.idMattraffic.idMaterial.idMatv.matvid_name',
-                    'idTrMat.idMattraffic.idMaterial.material_name',
+                    [
+                        'attribute' => 'idTrMat.idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idMattraffic->id_material]) . '">' . $model->idTrMat->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idTrMat.idMattraffic.idMaterial.material_inv',
                     [
                         'attribute' => 'idTrMat.idMattraffic.mattraffic_number',
@@ -77,6 +83,10 @@ use \yii\helpers\Url;
                     [
                         'attribute' => 'idTrMat.idParent.idMaterial.material_name',
                         'label' => 'В составе материальной ценности',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idTrMat->idParent->id_material]) . '">' . $model->idTrMat->idParent->idMaterial->material_name . '</a>';
+                        }
                     ],
                     [
                         'attribute' => 'idTrMat.idParent.idMaterial.material_inv',
