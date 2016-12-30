@@ -141,7 +141,7 @@ class AcceptanceTester extends \Codeception\Actor
             foreach ($arrayData as $value)
                 $path .= $value === '' ? '/following-sibling::td[not(normalize-space())]' : '/following-sibling::' . $this->convertGridCell($value);
 
-            file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
+            // file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
             $this->seeElement($path);
 
             if (is_array($arrayButtons) && count($arrayButtons) > 0) {
@@ -239,15 +239,15 @@ class AcceptanceTester extends \Codeception\Actor
 
             $arrayData = array_reverse($arrayData);
 
-            $path = ($arrayData[0] === '' ? '//div[@id="' . $dynaGridID . '"]/descendant::td[not(normalize-space())]' : '//div[@id="' . $dynaGridID . '"]/descendant::td[text()="' . $arrayData[0] . '"]');
+            $path = ($arrayData[0] === '' ? '//div[@id="' . $dynaGridID . '"]/descendant::td[not(normalize-space())]' : '//div[@id="' . $dynaGridID . '"]/descendant::' . $this->convertGridCell($arrayData[0]));
             unset($arrayData[0]);
 
             foreach ($arrayData as $value) {
-                $path .= ($value == '' ? '/preceding-sibling::td[not(normalize-space())]' : '/preceding-sibling::td[text()="' . $value . '"]');
+                $path .= ($value == '' ? '/preceding-sibling::td[not(normalize-space())]' : '/preceding-sibling::' . $this->convertGridCell($value));
             }
 
             $path .= '/preceding-sibling::td/' . $Button;
-
+             file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
             $this->click($path);
             $this->wait(2);
         }

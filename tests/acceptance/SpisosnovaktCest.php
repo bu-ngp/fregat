@@ -97,7 +97,7 @@ class SpisosnovaktCest
     {
         $I->click('//a[contains(text(),"Добавить материальную ценность")]');
         $I->wait(2);
-        $I->chooseValueFromGrid('Spisosnovmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td[text()="HP LJ 1022"]/preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Spisosnovmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->click('//button[contains(text(),"Создать")]');
         $I->wait(1);
         $I->see('Материальная ценность не соответствует МОЛ\'у, заявки на списание: ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
@@ -111,7 +111,7 @@ class SpisosnovaktCest
         $I->click('//button[contains(text(),"Создать")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', '', '01.05.2010', '1.000', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '', '01.05.2010', '1.000', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('spisosnovmaterialsgrid_gw', 1);
     }
 
@@ -120,7 +120,7 @@ class SpisosnovaktCest
      */
     public function deleteSpisosnovmaterials(AcceptanceTester $I)
     {
-        $I->clickButtonDynagrid('spisosnovmaterialsgrid_gw', 'button[@title="Удалить"]', ['Кухонный стол', '1000002', '', '01.05.2010', '1.000', '15000.00']);
+        $I->clickButtonDynagrid('spisosnovmaterialsgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '', '01.05.2010', '1.000', '15000.00']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
@@ -141,7 +141,7 @@ class SpisosnovaktCest
         $I->click(['id' => 'addspisosnovmaterials']);
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', '', '01.05.2010', '1.000', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '', '01.05.2010', '1.000', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('spisosnovmaterialsgrid_gw', 1);
 
         $I->cantChooseValueFromSelect2('Mattraffic[mattraffic_id]', '1000001, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '001');
@@ -154,7 +154,7 @@ class SpisosnovaktCest
      */
     public function updateSpisosnovmaterials(AcceptanceTester $I)
     {
-        $I->clickButtonDynagrid('spisosnovmaterialsgrid_gw', 'a[@title="Обновить"]', ['Кухонный стол', '1000002', '', '01.05.2010', '1.000', '15000.00']);
+        $I->clickButtonDynagrid('spisosnovmaterialsgrid_gw', 'a[@title="Обновить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '', '01.05.2010', '1.000', '15000.00']);
         $I->wait(2);
 
         $I->fillField('Spisosnovmaterials[spisosnovmaterials_number]', '0.500');
@@ -162,7 +162,7 @@ class SpisosnovaktCest
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', '', '01.05.2010', '0.500', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '', '01.05.2010', '0.500', '15000.00'], 'spisosnovmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('spisosnovmaterialsgrid_gw', 1);
 
         $I->click('//button[contains(text(),"Обновить")]');
@@ -195,7 +195,6 @@ class SpisosnovaktCest
     {
         $I->clickButtonDynagrid('spisosnovaktgrid_gw', 'button[@title="Скачать отчет"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ', 'АУП', '', '', '101.34', 'НОВЫЙ СЧЕТ']);
         $I->wait(4);
-
 
         $I->seeFileFound($I->convertOSFileName('Заявка на списание основных средств №1.xlsx'), 'web/files');
         $I->checkExcelFile($I->convertOSFileName('Заявка на списание основных средств №1.xlsx'), [

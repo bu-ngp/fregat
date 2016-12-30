@@ -89,7 +89,7 @@ class OsmotraktmatCest
         $I->wait(2);
         $I->seeElement(['class' => 'tr-mat-osmotr-form']);
 
-        $I->chooseValueFromGrid('TrMatOsmotr[id_tr_mat]', 'Картиридж Kard, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, 1.000', 'trmatgrid_gw', '//div[@id="trmatgrid_gw"]/descendant::td[text()="Картиридж Kard"]/preceding-sibling::td/button[@title="Выбрать"]', 1);
+        $I->chooseValueFromGrid('TrMatOsmotr[id_tr_mat]', 'Картиридж Kard, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, 1.000', 'trmatgrid_gw', '//div[@id="trmatgrid_gw"]/descendant::td/a[text()="Картиридж Kard" and @href="/Fregat/material/update?id=37"]/../preceding-sibling::td/button[@title="Выбрать"]', 1);
         $I->chooseValueFromSelect2('TrMatOsmotr[id_reason]', 'ТРЕБУЕТСЯ ЗАПРАВКА', 'зап');
         $I->fillField('TrMatOsmotr[tr_mat_osmotr_comment]', 'С заменой чипа');
 
@@ -97,7 +97,7 @@ class OsmotraktmatCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['КАРТРИДЖ', 'Картиридж Kard', '000004', '1.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ', 'HP LJ 1022', '00001', 'ТРЕБУЕТСЯ ЗАПРАВКА', 'С заменой чипа'], 'tr-mat-osmotrgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['КАРТРИДЖ', ['link' => ['text' => 'Картиридж Kard', 'href' => '/Fregat/material/update?id=37']], '000004', '1.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ', ['link' => ['text' => 'HP LJ 1022', 'href' => '/Fregat/material/update?id=34']], '00001', 'ТРЕБУЕТСЯ ЗАПРАВКА', 'С заменой чипа'], 'tr-mat-osmotrgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
 
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);

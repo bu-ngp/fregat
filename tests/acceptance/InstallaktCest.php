@@ -130,7 +130,7 @@ class InstallaktCest
         $I->seeElement(['class' => 'installakt-form']);
         $I->seeElement(['id' => 'trOsnovgrid_gw']);
 
-        $I->checkDynagridData(['Шкаф для одежды', '1000001', '1.000', 'ПОЛИКЛИНИКА 1', '101', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trOsnovgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'ПОЛИКЛИНИКА 1', '101', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trOsnovgrid_gw', ['button[@title="Удалить"]']);
     }
 
     /**
@@ -144,7 +144,7 @@ class InstallaktCest
 
         $I->seeInField('Material[material_name]', '');
 
-        $I->chooseValueFromGrid('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'mattrafficgrid_gw', '//td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]');
 
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Кухонный стол');
@@ -164,7 +164,7 @@ class InstallaktCest
         $I->seeElement(['class' => 'installakt-form']);
         $I->seeElement(['id' => 'trOsnovgrid_gw']);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trOsnovgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trOsnovgrid_gw', ['button[@title="Удалить"]']);
     }
 
     /**
@@ -199,7 +199,7 @@ class InstallaktCest
         $I->seeElement(['id' => 'trMatgrid_gw']);
 
         // $I->executeJS('window.scrollTo(0,200);');
-        $I->checkDynagridData(['Шкаф для одежды', '1000001', 'ПОЛИКЛИНИКА 1', '101', 'Картридж А12', '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
     }
 
     /**
@@ -210,8 +210,8 @@ class InstallaktCest
         $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
 
-        $I->chooseValueFromGrid('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', 'mattrafficgrid_gw', '//td[text()="Шкаф для одежды"]/preceding-sibling::td/button[@title="Выбрать"]');
-        $I->chooseValueFromGrid('TrMat[id_mattraffic]', '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td[text()="Картридж 36A"]/preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', 'mattrafficgrid_gw', '//td/a[text()="Шкаф для одежды" and @href="/Fregat/material/update?id=34"]/../preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrMat[id_mattraffic]', '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="Картридж 36A" and @href="/Fregat/material/update?id=38"]/../preceding-sibling::td/button[@title="Выбрать"]');
 
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 4.000"]');
@@ -222,8 +222,8 @@ class InstallaktCest
         $I->seeElement(['class' => 'installakt-form']);
         $I->seeElement(['id' => 'trMatgrid_gw']);
 
-        $I->checkDynagridData(['Шкаф для одежды', '1000001', 'ПОЛИКЛИНИКА 1', '101', 'Картридж 36A', '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
-        $I->checkDynagridData(['Шкаф для одежды', '1000001', 'ПОЛИКЛИНИКА 1', '101', 'Картридж А12', '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
     }
 
     /**
@@ -339,12 +339,12 @@ class InstallaktCest
      */
     public function deleteTrmat(AcceptanceTester $I)
     {
-        $I->click('//div[@id="trMatgrid_gw"]/div/div/table/tbody/tr/td[text()="Картридж А12"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->dontSeeElement('//div[@id="trMatgrid_gw"]/div/div/table/tbody/tr/td[text()="Картридж А12"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->dontSeeDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw');
     }
 
     /**
@@ -352,12 +352,12 @@ class InstallaktCest
      */
     public function deleteTrosnov(AcceptanceTester $I)
     {
-        $I->click('//div[@id="trOsnovgrid_gw"]/div/div/table/tbody/tr/td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->clickButtonDynagrid('trOsnovgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->dontSeeElement('//div[@id="trOsnovgrid_gw"]/div/div/table/tbody/tr/td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->dontSeeDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trOsnovgrid_gw');
     }
 
     /**
@@ -396,18 +396,18 @@ class InstallaktCest
      */
     public function destroyData()
     {
-          TrMat::deleteAll();
-          TrOsnov::deleteAll();
-          Installakt::deleteAll();
-          Mattraffic::deleteAll();
-          Material::deleteAll();
-          Employee::deleteAll();
-          Matvid::deleteAll();
-          Izmer::deleteAll();
-          Schetuchet::deleteAll();
-          Authuser::deleteAll('auth_user_id <> 1');
-          Build::deleteAll();
-          Dolzh::deleteAll();
-          Podraz::deleteAll();
+        TrMat::deleteAll();
+        TrOsnov::deleteAll();
+        Installakt::deleteAll();
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Izmer::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll('auth_user_id <> 1');
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
     }
 }

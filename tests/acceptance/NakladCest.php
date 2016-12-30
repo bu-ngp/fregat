@@ -111,19 +111,19 @@ class NakladCest
         $I->wait(1);
         $I->see('Необходимо заполнить «Материальная ценность».');
 
-        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ПОЛИКЛИНИКА 2, HP LJ 1022', 'mattrafficgrid_gw', '//td[text()="HP LJ 1022"]/preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ПОЛИКЛИНИКА 2, HP LJ 1022', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->fillField('Nakladmaterials[nakladmaterials_number]', '2.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Материальная ценность не соответствует МОЛ требования-накладной: ПЕТРОВ П. П., ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
         $I->see('Максимально допустимое количество у этого МОЛ равно 1.000');
 
-        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//td[text()="Кухонный стол"]/preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->fillField('Nakladmaterials[nakladmaterials_number]', '1.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', 'шт', '796', '15000.00', '1.000', '15000'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'шт', '796', '15000.00', '1.000', '15000'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('nakladmaterialsgrid_gw', 1);
     }
 
@@ -132,7 +132,7 @@ class NakladCest
      */
     public function updateNakladmaterials(AcceptanceTester $I)
     {
-        $I->clickButtonDynagrid('nakladmaterialsgrid_gw', 'a[@title="Обновить"]', ['Кухонный стол', '1000002', 'шт', '796', '15000.00', '1.000', '15000']);
+        $I->clickButtonDynagrid('nakladmaterialsgrid_gw', 'a[@title="Обновить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'шт', '796', '15000.00', '1.000', '15000']);
         $I->wait(2);
 
         $I->fillField('Nakladmaterials[nakladmaterials_number]', '0.500');
@@ -140,7 +140,7 @@ class NakladCest
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', 'шт', '796', '15000.00', '0.500', '7500'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'шт', '796', '15000.00', '0.500', '7500'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('nakladmaterialsgrid_gw', 1);
     }
 
@@ -156,8 +156,8 @@ class NakladCest
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Кухонный стол', '1000002', 'шт', '796', '15000.00', '0.500', '7500'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->checkDynagridData(['Шкаф для одежды', '1000001', 'шт', '796', '1200.15', '1.000', '1200.15'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'шт', '796', '15000.00', '0.500', '7500'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'шт', '796', '1200.15', '1.000', '1200.15'], 'nakladmaterialsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('nakladmaterialsgrid_gw', 2);
 
         $I->click('//button[contains(text(),"Обновить")]');
@@ -265,7 +265,7 @@ class NakladCest
     {
         $I->clickButtonDynagrid('nakladgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ', 'ТЕРАПЕВТИЧЕСКОЕ', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ', 'АУП']);
 
-        $I->clickButtonDynagrid('nakladmaterialsgrid_gw', 'button[@title="Удалить"]', ['Кухонный стол', '1000002', 'шт', '796', '15000.00', '0.500', '7500']);
+        $I->clickButtonDynagrid('nakladmaterialsgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'шт', '796', '15000.00', '0.500', '7500']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
