@@ -286,7 +286,7 @@ class OsmotraktSearch extends Osmotrakt
                     ->from('osmotrakt idOsmotrakt')
                     ->leftJoin('tr_osnov idTrosnov', 'idTrosnov.tr_osnov_id = idOsmotrakt.id_tr_osnov')
                     ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = idTrosnov.id_mattraffic')
-                    ->leftJoin('mattraffic idMattrafficMat', 'idMattraffic.id_material = idMattrafficMat.id_material and idMattraffic.id_mol = idMattrafficMat.id_mol')
+                    ->leftJoin('mattraffic idMattrafficMat', 'idMattraffic.id_material = idMattrafficMat.id_material and idMattraffic.id_mol = idMattrafficMat.id_mol and idMattrafficMat.mattraffic_tip = 2')
                     ->leftJoin('material idMaterial', 'idMaterial.material_id = idMattraffic.id_material')
                     ->andWhere(['idMaterial.material_writeoff' => 1])
                     ->andWhere('idOsmotrakt.osmotrakt_id = osmotrakt.osmotrakt_id')

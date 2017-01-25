@@ -22,6 +22,7 @@ use PDO;
 use PDOException;
 use Yii;
 use yii\base\Exception;
+use yii\db\ActiveRecord;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -82,6 +83,7 @@ class FregatImport
     private static $materialexists; // Если количество материалов больше 0, то True, иначе False
     private static $Mishanya; // Ограничение на кол-во писем с новыми сотрудницами для Мишани
     private static $Debug; // Отключает функционал при отладке
+    private static $writeoffDateChanged = false; // Ключ изменения даты списания
 
     private static function SetFileType($FileType)
     {
@@ -870,6 +872,8 @@ class FregatImport
                 $Mattraffic->scenario = 'import1c';
             if ($Mattraffic->validate())
                 $Mattraffic->save(false);
+        } elseif (self::IsFileType(self::os) && $Material->material_writeoff && !$Mattraffic->isNewRecord) {
+            self::CheckAndChangeDateWriteoff($Material, $Traflog, $xls_attributes_mattraffic['mattraffic_date']);
         } else
             $Mattraffic->clearErrors();
 
@@ -1181,6 +1185,34 @@ class FregatImport
                     ])
                     ->setSubject($subthemes[rand(0, count($subthemes) - 1)])
                     ->send();
+            }
+        }
+    }
+
+    static function CheckAndChangeDateWriteoff(ActiveRecord $Material, $Traflog, $DateXls)
+    {
+        $LastWriteoffMattraffic = Mattraffic::find()
+            ->andWhere(['mattraffic_tip' => 2])
+            ->andWhere(['id_material' => $Material->primaryKey])
+            ->orderBy(['mattraffic_date' => SORT_DESC])
+            ->one();
+
+        if (!empty($LastWriteoffMattraffic) && $LastWriteoffMattraffic->mattraffic_date != $DateXls) {
+            $OldDate = $LastWriteoffMattraffic->mattraffic_date;
+            $LastWriteoffMattraffic->mattraffic_date = $DateXls;
+            $Traflog->id_logreport = self::$logreport_id;
+            $Traflog->traflog_type = 2;
+            $Traflog->traflog_filename = self::$filename;
+            $Traflog->traflog_rownum = self::$rownum_xls;
+            if ($LastWriteoffMattraffic->save()) {
+                $Traflog->traflog_message .= 'Запись изменена: Дата списания изменена с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '".';
+                self::$logreport_updates++;
+                self::$writeoffDateChanged = true;
+            } else {
+                $Traflog->traflog_message .= 'Ошибка при изменении даты списания с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '": ';
+                foreach ($LastWriteoffMattraffic->getErrors() as $fields)
+                    $Traflog->traflog_message .= implode(' ', $fields) . ' ';
+                self::$logreport_errors++;
             }
         }
     }
@@ -1539,7 +1571,9 @@ class FregatImport
                                             }
 
                                             if ($EmployeeDo) {
-                                                if ($MattrafficDo || (count($mattraffic->getErrors()) > 0)) {
+                                                if ($MattrafficDo || (count($mattraffic->getErrors()) > 0) || self::$writeoffDateChanged) {
+                                                    self::$writeoffDateChanged = false;
+
                                                     if ($matlog->IsNewRecord) {
                                                         $matlog->material_number = $material->material_number; // Иначе пишется предыдущее значение количества материальной ценности
                                                         $matlog->save(false);
