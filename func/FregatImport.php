@@ -1207,13 +1207,13 @@ class FregatImport
             if ($LastWriteoffMattraffic->save()) {
                 $Traflog->traflog_message .= 'Запись изменена: Дата списания изменена с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '".';
                 self::$logreport_updates++;
-                self::$writeoffDateChanged = true;
             } else {
                 $Traflog->traflog_message .= 'Ошибка при изменении даты списания с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '": ';
                 foreach ($LastWriteoffMattraffic->getErrors() as $fields)
                     $Traflog->traflog_message .= implode(' ', $fields) . ' ';
                 self::$logreport_errors++;
             }
+            self::$writeoffDateChanged = true;
         }
     }
 
