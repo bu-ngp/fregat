@@ -1204,6 +1204,9 @@ class FregatImport
             $Traflog->traflog_type = 2;
             $Traflog->traflog_filename = self::$filename;
             $Traflog->traflog_rownum = self::$rownum_xls;
+            if (isset($LastWriteoffMattraffic->scenarios()['import1c']))
+                $LastWriteoffMattraffic->scenario = 'import1c';
+            
             if ($LastWriteoffMattraffic->save()) {
                 $Traflog->traflog_message .= 'Запись изменена: Дата списания изменена с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '".';
                 self::$logreport_updates++;
