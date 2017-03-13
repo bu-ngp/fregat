@@ -25,22 +25,23 @@ use app\models\Fregat\Build;
 
             <?=
             $form->field($model, 'id_mattraffic')->widget(Select2::classname(), array_merge(Proc::DGselect2([
-                                'model' => $model,
-                                'resultmodel' => new Mattraffic,
-                                'fields' => [
-                                    'keyfield' => 'id_mattraffic',
-                                ],
-                                'placeholder' => 'Введите инвентарный номер материальной ценности',
-                                'fromgridroute' => 'Fregat/mattraffic/forinstallakt',
-                                'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
-                                'thisroute' => $this->context->module->requestedRoute,
-                                'methodquery' => 'selectinputfortrosnov',
-                                'methodparams' => ['idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt')],
-                                'dopparams' => [
-                                    'foreigndo' => '1',
-                                    'idinstallakt' => (string) filter_input(INPUT_GET, 'idinstallakt'),
-                                ],
-                            ]), [
+                'model' => $model,
+                'resultmodel' => new Mattraffic,
+                'fields' => [
+                    'keyfield' => 'id_mattraffic',
+                ],
+                'placeholder' => 'Введите инвентарный номер материальной ценности',
+                'fromgridroute' => 'Fregat/mattraffic/forinstallakt',
+                'resultrequest' => 'Fregat/tr-osnov/selectinputfortrosnov',
+                'thisroute' => $this->context->module->requestedRoute,
+                'methodquery' => 'selectinputfortrosnov',
+                'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
+                'disabled' => !$model->isNewRecord,
+                'dopparams' => [
+                    'foreigndo' => '1',
+                    'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
+                ],
+            ]), [
                 'pluginEvents' => [
                     "select2:select" => "function() { FillTrOsnov(); }",
                     "select2:unselect" => "function() { ClearTrOsnov(); }"
@@ -50,7 +51,7 @@ use app\models\Fregat\Build;
 
             <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList([0 => '', 1 => 'Основное средство', 2 => 'Материал', 3 => 'Групповой учет'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])    ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
@@ -76,6 +77,7 @@ use app\models\Fregat\Build;
     $form->field($Mattraffic, 'mattraffic_number', [
         'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">' . $mattraffic_number_max . '</span></div>'
     ])->widget(TouchSpin::classname(), [
+        'disabled' => !$model->isNewRecord,
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
             'verticalbuttons' => true,
@@ -88,13 +90,12 @@ use app\models\Fregat\Build;
     ]);
     ?>
 
-    <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>    
+    <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
 
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
-                <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Добавить', ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
             </div>
         </div>
     </div>

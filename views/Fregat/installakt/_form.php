@@ -82,6 +82,10 @@ use yii\helpers\Url;
                     ],
                 ],
                 'buttons' => [
+                    'updatecustom' => function ($url, $model) {
+                        $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/tr-osnov/update', 'id' => $model->primaryKey, 'idinstallakt' => $model->id_installakt]);
+                        return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
+                    },
                     'deleteajax' => ['Fregat/tr-osnov/delete', 'tr_osnov_id', 'trOsnovgrid'],
                 ],
             ]),

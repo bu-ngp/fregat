@@ -36,7 +36,7 @@ class TrOsnovController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['InstallEdit'],
                     ],
@@ -140,6 +140,28 @@ class TrOsnovController extends Controller
         } catch (Exception $e) {
             $transaction->rollBack();
             throw new Exception($e->getMessage());
+        }
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $Mattraffic = Mattraffic::findOne($model->id_mattraffic);
+        $Material = Material::find()->joinWith('mattraffics')->where(['mattraffic_id' => $model->id_mattraffic])->one();
+        $Employee = Employee::find()->joinWith('mattraffics')->where(['mattraffic_id' => $model->id_mattraffic])->one();
+        $mattraffic_number_max = NULL;
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+        } else {
+            return $this->render('update', [
+                'model' => $model,
+                'Mattraffic' => $Mattraffic,
+                'Material' => $Material, // Для просмотра
+                'Employee' => $Employee, // Для просмотра
+                'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
+
+            ]);
         }
     }
 
