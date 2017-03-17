@@ -171,7 +171,15 @@ class FregatImport
 
             if (count($rows) === 1 && mb_stripos($material_name1c, $rows[0]['importmaterial_combination'], 0, 'UTF-8') === 0)
                 $tmpmin = [$rows[0]['id_matvid'], $rows[0]['importmaterial_combination']];
-            elseif (count($rows) <= 1)
+            elseif (count($rows) > 1) {
+                $arr = array_filter($rows, function ($elem) use ($str) {
+                    return $elem['importmaterial_combination'] == $str;
+                });
+                if (count($arr) === 1) {
+                    $tmpmin = [$arr[key($arr)]['id_matvid'], $arr[key($arr)]['importmaterial_combination']];
+                    break;
+                }
+            } elseif (count($rows) <= 1)
                 break;
 
             $i++;
