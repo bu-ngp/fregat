@@ -36,7 +36,7 @@ use app\models\Fregat\Build;
                 'thisroute' => $this->context->module->requestedRoute,
                 'methodquery' => 'selectinputfortrosnov',
                 'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
-                'disabled' => !$model->isNewRecord,
+              //  'disabled' => !$model->isNewRecord,
                 'dopparams' => [
                     'foreigndo' => '1',
                     'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
@@ -77,7 +77,7 @@ use app\models\Fregat\Build;
     $form->field($Mattraffic, 'mattraffic_number', [
         'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">' . $mattraffic_number_max . '</span></div>'
     ])->widget(TouchSpin::classname(), [
-        'disabled' => !$model->isNewRecord,
+       // 'disabled' => !$model->isNewRecord,
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
             'verticalbuttons' => true,

@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use app\func\Proc;
 
+\Yii::$app->getView()->registerJsFile('@web/js/replacematerial.js' . Proc::appendTimestampUrlParam(Yii::$app->basePath . '/web/js/replacematerial.js'));
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\TrOsnov */
 
