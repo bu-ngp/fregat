@@ -177,7 +177,6 @@ class FregatImport
                 });
                 if (count($arr) === 1) {
                     $tmpmin = [$arr[key($arr)]['id_matvid'], $arr[key($arr)]['importmaterial_combination']];
-                    break;
                 }
             } elseif (count($rows) <= 1)
                 break;
@@ -1214,7 +1213,7 @@ class FregatImport
             $Traflog->traflog_rownum = self::$rownum_xls;
             if (isset($LastWriteoffMattraffic->scenarios()['import1c']))
                 $LastWriteoffMattraffic->scenario = 'import1c';
-            
+
             if ($LastWriteoffMattraffic->save()) {
                 $Traflog->traflog_message .= 'Запись изменена: Дата списания изменена с "' . Yii::$app->formatter->asDate($OldDate) . '" на "' . Yii::$app->formatter->asDate($DateXls) . '".';
                 self::$logreport_updates++;
