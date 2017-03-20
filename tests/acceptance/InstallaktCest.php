@@ -170,6 +170,13 @@ class InstallaktCest
     /**
      * @depends createTrosnovGrids
      */
+    public function updateTrosnovGrids(AcceptanceTester $I) {
+
+    }
+
+    /**
+     * @depends updateTrosnovGrids
+     */
     public function createTrmatSelect2(AcceptanceTester $I)
     {
         $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
