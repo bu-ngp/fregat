@@ -170,7 +170,54 @@ class InstallaktCest
     /**
      * @depends createTrosnovGrids
      */
-    public function updateTrosnovGrids(AcceptanceTester $I) {
+    public function updateTrosnovGrids(AcceptanceTester $I)
+    {
+        $I->clickButtonDynagrid('trOsnovgrid_gw', 'a[@title="Обновить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
+        $I->wait(2);
+
+        $I->seeInSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство"]');
+        $I->seeInField('Material[material_name]', 'Кухонный стол');
+        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+
+        $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
+        $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
+        $I->seeInField('Podraz[podraz_name]', 'АУП');
+        $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
+
+        $I->seeInField('Mattraffic[mattraffic_number]', '1.000');
+        $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
+
+        $I->seeInField('TrOsnov[tr_osnov_kab]', '102');
+
+        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
+
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
+        $I->seeInField('Material[material_name]', 'Картридж А12');
+        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
+        $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
+        $I->seeInField('Podraz[podraz_name]', 'ТЕРАПЕВТИЧЕСКОЕ');
+        $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
+        $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
+
+        $I->fillField('Mattraffic[mattraffic_number]', '6.000');
+        $I->fillField('TrOsnov[tr_osnov_kab]', '103');
+
+        $I->click('//button[contains(text(),"Обновить")]');
+        $I->wait(1);
+
+        $I->see('Количество не может превышать 5.000');
+        $I->fillField('Mattraffic[mattraffic_number]', '4.000');
+
+        $I->click('//button[contains(text(),"Обновить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '4.000', 'ПОЛИКЛИНИКА 1', '103', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trOsnovgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'ПОЛИКЛИНИКА 1', '101', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trOsnovgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('trOsnovgrid_gw', 2);
+
+
 
     }
 
