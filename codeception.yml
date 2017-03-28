@@ -22,6 +22,6 @@ modules:
             dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
             user: 'root'
             password: '265463'
-#            dump: tests/_data/db.sql
+            dump: tests/_data/db.sql
             cleanup: false
             populate: true
