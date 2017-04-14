@@ -81,7 +81,7 @@ class SpisosnovaktCest
         $I->seeInField('Spisosnovakt[spisosnovakt_id]', '1');
         $I->seeElement('//input[@name="Spisosnovakt[spisosnovakt_id]" and @disabled]');
 
-        $I->seeInField('spisosnovakt_date-spisosnovakt-spisosnovakt_date', date('d.m.Y'));
+        $I->seeInDatecontrol('Spisosnovakt[spisosnovakt_date]',date('d.m.Y'));
         $I->seeInSelect2('Spisosnovakt[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', true);
         $I->seeInSelect2('Spisosnovakt[id_mol]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', true);
         $I->seeInSelect2('Spisosnovakt[id_employee]', 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ');

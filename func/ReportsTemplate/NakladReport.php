@@ -129,18 +129,18 @@ class NakladReport extends BaseReportPortal
 
         $objPHPExcel->getActiveSheet()->setCellValue('B' . ($num + 9), date('d', strtotime($Naklad->naklad_date)));
         $objPHPExcel->getActiveSheet()->setCellValue('E' . ($num + 9), Yii::$app->formatter->asDate(date('M', strtotime($Naklad->naklad_date)), 'php:F'));
-        $objPHPExcel->getActiveSheet()->setCellValue('Q' . ($num + 9), date('Y', strtotime('2016-11-05')));
+        $objPHPExcel->getActiveSheet()->setCellValue('Q' . ($num + 9), date('Y'));
 
         $objPHPExcel->getActiveSheet()->setCellValue('AG' . ($num + 9), date('d', strtotime($Naklad->naklad_date)));
         $objPHPExcel->getActiveSheet()->setCellValue('AJ' . ($num + 9), Yii::$app->formatter->asDate(date('M', strtotime($Naklad->naklad_date)), 'php:F'));
-        $objPHPExcel->getActiveSheet()->setCellValue('AV' . ($num + 9), date('Y', strtotime('2016-11-05')));
+        $objPHPExcel->getActiveSheet()->setCellValue('AV' . ($num + 9), date('Y'));
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num + 11, $Naklad->idMolGot->iddolzh->dolzh_name);
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(34, $num + 11, $Naklad->idMolGot->idperson->shortName);
 
         $objPHPExcel->getActiveSheet()->setCellValue('B' . ($num + 13), date('d', strtotime($Naklad->naklad_date)));
         $objPHPExcel->getActiveSheet()->setCellValue('E' . ($num + 13), Yii::$app->formatter->asDate(date('M', strtotime($Naklad->naklad_date)), 'php:F'));
-        $objPHPExcel->getActiveSheet()->setCellValue('Q' . ($num + 13), date('Y', strtotime('2016-11-05')));
+        $objPHPExcel->getActiveSheet()->setCellValue('Q' . ($num + 13), date('Y'));
     }
 
 }

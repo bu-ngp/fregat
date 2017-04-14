@@ -81,21 +81,27 @@ class Mattraffic extends \yii\db\ActiveRecord
         if (empty($idinstallakt))
             throw new \Exception('Отсутствует ID акта установки');
         else {
-            $query = self::find()
-                ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
-                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-                ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $idinstallakt . ' )')
-                ->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
-                ->andWhere([
-                    'id_material' => $this->id_material,
-                    'id_mol' => $this->id_mol,
-                ])
-                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-                ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]])
-                ->one();
+            if (!$this->isNewRecord && $this->mattraffic_tip == 3) {
+                $query = $this;
+                $mattraffic_id = $this->getMattrafficIDByMaterialAndMol($query->id_material, $query->id_mol);
+            } else {
+                $query = self::find()
+                    ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
+                    ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                    ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $idinstallakt . ' )')
+                    ->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
+                    ->andWhere([
+                        'id_material' => $this->id_material,
+                        'id_mol' => $this->id_mol,
+                    ])
+                    ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]])
+                    ->one();
+                $mattraffic_id = $query->mattraffic_id;
+            }
 
-            $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id, ['idinstallakt' => $idinstallakt]);
+            $max_number = self::GetMaxNumberMattrafficForInstallAkt($mattraffic_id, ['idinstallakt' => $idinstallakt]);
 
             if (!empty($query) && $this->mattraffic_number > $max_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $max_number);
@@ -245,21 +251,31 @@ class Mattraffic extends \yii\db\ActiveRecord
 
         $method = isset($params['init']) ? 'one' : 'all';
 
-        $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            //   ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )')//and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
-            ->join('LEFT JOIN', '(select mt1.id_material from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic where to1.id_installakt = ' . $params['idinstallakt'] . ') tmp1', 'tmp1.id_material = mattraffic.id_material')
-            ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
-            ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
-            ->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
-            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
-            ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['or', ['tmp1.id_material' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]])
-            ->groupBy(['mattraffic.mattraffic_id'])// Костыль на баг debug выдает одну запись, $query две с одним mattraffic_id
-            ->limit(20)
-            ->asArray()
-            ->$method();
+        if ($method == 'one') {
+            $query = self::find()
+                ->select(['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text'])
+                ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
+                ->where(['mattraffic_id' => $params['q']])
+                ->asArray()
+                ->one();
+        } else {
+            $query = self::find()
+                ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
+                ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+                //   ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )')//and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+                ->join('LEFT JOIN', '(select mt1.id_material from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic where to1.id_installakt = ' . $params['idinstallakt'] . ') tmp1', 'tmp1.id_material = mattraffic.id_material')
+                ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
+                ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+                ->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
+                ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+                ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
+                ->andWhere(['or', ['tmp1.id_material' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]])
+                ->groupBy(['mattraffic.mattraffic_id'])// Костыль на баг debug выдает одну запись, $query две с одним mattraffic_id
+                ->limit(20)
+                ->asArray()
+                ->$method();
+        }
+
 
         return $query;
     }
@@ -410,14 +426,17 @@ class Mattraffic extends \yii\db\ActiveRecord
     {
         $mattraffic = self::findOne($mattraffic_id);
 
+        $mattraffic_date = $mattraffic->mattraffic_date;
+
         $SumMN = Mattraffic::find()
-            ->leftJoin('mattraffic mt', 'mt.id_material = mattraffic.id_material and mt.id_mol = mattraffic.id_mol and mattraffic.mattraffic_tip in (1,2) and mattraffic.mattraffic_date < mt.mattraffic_date')
+            ->leftJoin('mattraffic mt', "mt.id_material = mattraffic.id_material and mt.id_mol = mattraffic.id_mol and mt.mattraffic_tip in (1,2) and mt.mattraffic_date <= '$mattraffic_date' and mattraffic.mattraffic_date < mt.mattraffic_date")
             ->joinWith('idMaterial')
             ->andWhere([
                 'mattraffic.id_material' => $mattraffic->id_material,
                 'mt.mattraffic_id' => NULL,
             ])
             ->andWhere(['in', 'mattraffic.mattraffic_tip', [1, 2]])
+            ->andWhere("mattraffic.mattraffic_date <= '$mattraffic_date'")
             ->sum('mattraffic.mattraffic_number');
 
         return $SumMN;
@@ -431,7 +450,7 @@ class Mattraffic extends \yii\db\ActiveRecord
 
         $os = self::findOne($mattraffic_id)->idMaterial->material_tip === 1;
         // $SumMT = self::GetSumMattraffic_Number($mattraffic_id);
-        $SumMT = self::findOne($mattraffic_id)->mattraffic_number;
+        $SumMT = !$os ? self::GetSumMattraffic_Number($mattraffic_id) : self::findOne($mattraffic_id)->mattraffic_number;
         $SumMT = (!$os && $SumMT == 0) ? 1 : $SumMT;
 
         return $os ? 1 : $SumMT;
@@ -484,6 +503,21 @@ class Mattraffic extends \yii\db\ActiveRecord
             }
         }
         return $status;
+    }
+
+    public function getMattrafficIDByMaterialAndMol($material_id, $mol_id)
+    {
+        $query = Mattraffic::find()
+            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->andWhere([
+                'id_material' => $material_id,
+                'id_mol' => $mol_id,
+            ])
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->one();
+
+        return $query->primaryKey;
     }
 
     public static function VariablesValues($attribute)

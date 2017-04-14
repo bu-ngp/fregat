@@ -86,7 +86,7 @@ class RecoverysendaktCest
         $I->wait(2);
 
         $I->seeElement('//select[@name="Recoverysendakt[id_organ]"]/following-sibling::span/span/span/span[@title="РОГА И КОПЫТА"]');
-        $I->seeInField('recoverysendakt_date-recoverysendakt-recoverysendakt_date', date('d.m.Y'));
+        $I->seeInDatecontrol('Recoverysendakt[recoverysendakt_date]',date('d.m.Y'));
         $I->seeElement(['id' => 'recoveryrecieveaktgrid_gw']);
         $I->seeElement('//div[@id="recoveryrecieveaktgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
         $I->seeElement(['id' => 'recoveryrecieveaktmatgrid_gw']);

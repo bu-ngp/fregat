@@ -36,7 +36,7 @@ class TrOsnovController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'delete'],
+                        'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['InstallEdit'],
                     ],
@@ -137,6 +137,67 @@ class TrOsnovController extends Controller
                     'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
                 ]);
             }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $Mattraffic = Mattraffic::findOne($model->id_mattraffic);
+        $Material = Material::find()->joinWith('mattraffics')->where(['mattraffic_id' => $model->id_mattraffic])->one();
+        $Employee = Employee::find()->joinWith('mattraffics')->where(['mattraffic_id' => $model->id_mattraffic])->one();
+        $mattraffic_number_max = NULL;
+        $id_mattraffic = isset(Yii::$app->request->post('TrOsnov')['id_mattraffic']) ? Yii::$app->request->post('TrOsnov')['id_mattraffic'] : '';
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // Если форма отправлена на сервер, то создать запись перемещения мат цен-ти в mattraffic
+            if (!empty($id_mattraffic)) {
+                $Mattrafficcurrent = Mattraffic::findOne($id_mattraffic);
+
+                $Mattraffic->mattraffic_date = $Mattrafficcurrent->mattraffic_date;
+                $Mattraffic->id_mol = $Mattrafficcurrent->id_mol;
+                $Mattraffic->id_material = $Mattrafficcurrent->id_material;
+                $Mattraffic->mattraffic_number = isset(Yii::$app->request->post('Mattraffic')['mattraffic_number']) ? Yii::$app->request->post('Mattraffic')['mattraffic_number'] : NULL;
+                if (isset($Mattraffic->scenarios()['traffic']))
+                    $Mattraffic->scenario = 'traffic';
+
+
+                //Сохраняем кабинет в модель из отправленной формы
+                $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
+
+                if ($Mattraffic->save() && $model->save()) {
+                    $transaction->commit();
+                    return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+                } else {
+                    $transaction->rollBack();
+
+                    return $this->render('update', [
+                        'model' => $model,
+                        'Mattraffic' => $Mattraffic,
+                        'Material' => $Material, // Для просмотра
+                        'Employee' => $Employee, // Для просмотра
+                        'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
+
+                    ]);
+                }
+
+            } else {
+                $transaction->rollBack();
+
+                return $this->render('update', [
+                    'model' => $model,
+                    'Mattraffic' => $Mattraffic,
+                    'Material' => $Material, // Для просмотра
+                    'Employee' => $Employee, // Для просмотра
+                    'mattraffic_number_max' => $mattraffic_number_max, //максимально допустимое кол-во материала
+
+                ]);
+            }
+
         } catch (Exception $e) {
             $transaction->rollBack();
             throw new Exception($e->getMessage());

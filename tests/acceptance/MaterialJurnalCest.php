@@ -46,7 +46,7 @@ class MaterialJurnalCest
     }
 
     /**
-     * @ssdepends openMaterialJurnal
+     * @depends openMaterialJurnal
      */
     public function loadData(AcceptanceTester $I)
     {
@@ -81,8 +81,8 @@ class MaterialJurnalCest
         $I->see('Необходимо заполнить «Инвентарный номер».');
         $I->see('Необходимо заполнить «Материально-ответственное лицо».');
 
-        $I->checkDatePicker('material_release-material-material_release');
-        $I->checkDatePicker('mattraffic_date-mattraffic-mattraffic_date');
+        $I->checkDatePicker('Material[material_release]');
+        $I->checkDatePicker('Mattraffic[mattraffic_date]');
     }
 
     /**
@@ -98,7 +98,7 @@ class MaterialJurnalCest
         $I->chooseValueFromSelect2('Material[id_izmer]', 'шт', 'шт');
         $I->fillField('Material[material_price]', '1200.15');
         $I->fillField('Material[material_serial]', 'ABCD123');
-        $I->fillField('material_release-material-material_release', '01.01.2005');
+        $I->fillDatecontrol('Material[material_release]', '01.01.2005');
         $I->executeJS('window.scrollTo(0,200);');
         $I->chooseValueFromSelect2('Material[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', '101');
         $I->chooseValueFromSelect2('Mattraffic[id_mol]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
@@ -171,6 +171,8 @@ class MaterialJurnalCest
      */
     public function applyFilter(AcceptanceTester $I)
     {
+        $dateNow = date('d.m.Y');
+
         $I->seeElement('//a[@title="Дополнительный фильтр"]');
         $I->click('//a[@title="Дополнительный фильтр"]');
         $I->wait(4);
@@ -178,8 +180,8 @@ class MaterialJurnalCest
         $I->chooseValueFromSelect2('MaterialFilter[mol_fullname_material][]', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ива');
         $I->chooseValueFromSelect2('MaterialFilter[material_writeoff]', 'Нет');
 
-        $I->fillField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
-        $I->fillField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
+        $I->fillDatecontrol('MaterialFilter[mattraffic_lastchange_beg]', $dateNow);
+        $I->fillDatecontrol('MaterialFilter[mattraffic_lastchange_end]', $dateNow);
         $I->fillField('MaterialFilter[mattraffic_username]', 'admin');
         $I->checkOption('Материальные ценности в рабочем состоянии');
 
@@ -187,7 +189,7 @@ class MaterialJurnalCest
         $I->click(['id' => 'MaterialFilter_apply']);
         $I->wait(2);
 
-        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ' ПО ' . Yii::$app->formatter->asDate(date('d.m.Y')) . ';', 'Материальные ценности в рабочем состоянии']);
+        $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate($dateNow) . ' ПО ' . Yii::$app->formatter->asDate($dateNow) . ';', 'Материальные ценности в рабочем состоянии']);
         $I->checkDynagridData(['Материал', 'СТОЛ', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '5.000', 'шт', '15000.00', 'Нет']);
         $I->checkDynagridData(['Основное средство', 'ШКАФ', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'шт', '1200.15', 'Нет']);
 
@@ -197,8 +199,8 @@ class MaterialJurnalCest
         $I->seeElement('//select[@name="MaterialFilter[mol_fullname_material][]"]/following-sibling::span/span/span/ul/li[@title="ИВАНОВ ИВАН ИВАНОВИЧ"]');
         $I->seeElement('//select[@name="MaterialFilter[material_writeoff]"]/following-sibling::span/span/span/span[@title="Нет"]');
         $I->seeInField('MaterialFilter[mattraffic_username]', 'ADMIN');
-        $I->seeInField('mattraffic_lastchange_beg-materialfilter-mattraffic_lastchange_beg', date('d.m.Y'));
-        $I->seeInField('mattraffic_lastchange_end-materialfilter-mattraffic_lastchange_end', date('d.m.Y'));
+        $I->seeInDatecontrol('MaterialFilter[mattraffic_lastchange_beg]', $dateNow);
+        $I->seeInDatecontrol('MaterialFilter[mattraffic_lastchange_end]', $dateNow);
         $I->seeCheckboxIsChecked('MaterialFilter[material_working_mark]');
         $I->click(['id' => 'MaterialFilter_close']);
         $I->wait(2);
@@ -273,15 +275,15 @@ class MaterialJurnalCest
      */
     public function destroyData()
     {
-         Mattraffic::deleteAll();
-         Material::deleteAll();
-         Employee::deleteAll();
-         Matvid::deleteAll();
-         Izmer::deleteAll();
-         Schetuchet::deleteAll();
-         Authuser::deleteAll('auth_user_id <> 1');
-         Build::deleteAll();
-         Dolzh::deleteAll();
-         Podraz::deleteAll();
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Izmer::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll('auth_user_id <> 1');
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
     }
 }

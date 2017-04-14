@@ -80,7 +80,7 @@ class RemoveaktCest
         $I->wait(2);
 
         $I->seeElement('//select[@name="Removeakt[id_remover]"]/following-sibling::span/span/span/span[@title="ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1"]');
-        $I->seeInField('removeakt_date-removeakt-removeakt_date', date('d.m.Y'));
+        $I->seeInDatecontrol('Removeakt[removeakt_date]',date('d.m.Y'));
         $I->seeElement(['class' => 'removeakt-form']);
         $I->seeElement(['id' => 'trRmMatgrid_gw']);
         $I->seeElement('//div[@id="trRmMatgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
