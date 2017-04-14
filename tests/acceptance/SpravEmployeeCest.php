@@ -125,7 +125,7 @@ class SpravEmployeeCest
         $I->seeElement('//div[contains(@class, "field-employee-id_build has-success")]');
         $I->seeElement('//div[contains(@class, "field-employee-employee_importdo has-success")]');
 
-        $I->checkDatePicker('employee_dateinactive-employee-employee_dateinactive');
+        $I->checkDatePicker('Employee[employee_dateinactive]');
     }
 
     /**

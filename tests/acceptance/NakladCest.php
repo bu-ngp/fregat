@@ -91,7 +91,7 @@ class NakladCest
         $I->seeInField('Naklad[naklad_id]', '1');
         $I->seeElement('//input[@name="Naklad[naklad_id]" and @disabled]');
 
-        $I->seeInField('naklad_date-naklad-naklad_date', date('d.m.Y'));
+        $I->seeInDatecontrol('Naklad[naklad_date]', date('d.m.Y'));
         $I->seeInSelect2('Naklad[id_mol_release]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', true);
         $I->seeInSelect2('Naklad[id_mol_got]', 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ');
 

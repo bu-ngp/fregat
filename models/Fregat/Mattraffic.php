@@ -83,6 +83,7 @@ class Mattraffic extends \yii\db\ActiveRecord
         else {
             if (!$this->isNewRecord && $this->mattraffic_tip == 3) {
                 $query = $this;
+                $mattraffic_id = $this->getMattrafficIDByMaterialAndMol($query->id_material, $query->id_mol);
             } else {
                 $query = self::find()
                     ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
@@ -97,9 +98,10 @@ class Mattraffic extends \yii\db\ActiveRecord
                     ->andWhere(['m2.mattraffic_date_m2' => NULL])
                     ->andWhere(['or', ['tr_osnov.id_mattraffic' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]])
                     ->one();
+                $mattraffic_id = $query->mattraffic_id;
             }
 
-            $max_number = self::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id, ['idinstallakt' => $idinstallakt]);
+            $max_number = self::GetMaxNumberMattrafficForInstallAkt($mattraffic_id, ['idinstallakt' => $idinstallakt]);
 
             if (!empty($query) && $this->mattraffic_number > $max_number)
                 $this->addError($attribute, 'Количество не может превышать ' . $max_number);
@@ -501,6 +503,21 @@ class Mattraffic extends \yii\db\ActiveRecord
             }
         }
         return $status;
+    }
+
+    public function getMattrafficIDByMaterialAndMol($material_id, $mol_id)
+    {
+        $query = Mattraffic::find()
+            ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+            ->andWhere([
+                'id_material' => $material_id,
+                'id_mol' => $mol_id,
+            ])
+            ->andWhere(['in', 'mattraffic_tip', [1, 2]])
+            ->andWhere(['m2.mattraffic_date_m2' => NULL])
+            ->one();
+
+        return $query->primaryKey;
     }
 
     public static function VariablesValues($attribute)

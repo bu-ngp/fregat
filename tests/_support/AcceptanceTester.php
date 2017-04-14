@@ -57,7 +57,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function checkDatePicker($nameDatePicker)
     {
-        $this->click('//input[@name="' . $nameDatePicker . '"]');
+        $this->click('//input[@name="' . $nameDatePicker . '"]/../div/input');
         $this->seeElement('//div[contains(@class, "datepicker")]');
         $this->seeElement('//th[contains(text(), "Вс")]');
         $this->seeElement(['class' => 'kv-date-remove']);
@@ -65,7 +65,8 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function chooseValueFromSelect2($attributeName, $resultValue, $inputValue = '')
     {
-        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]');
+        $this->wait(1);
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]/*[contains(@class, "select2-selection__rendered")]');
         if (!empty($inputValue)) {
             $this->fillField('//input[@class="select2-search__field"]', $inputValue);
             $this->wait(1);
@@ -247,7 +248,7 @@ class AcceptanceTester extends \Codeception\Actor
             }
 
             $path .= '/preceding-sibling::td/' . $Button;
-             file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
+            //  file_put_contents('test.txt', $path . PHP_EOL, FILE_APPEND);
             $this->click($path);
             $this->wait(2);
         }
@@ -264,5 +265,18 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $this->click('//select[@name="' . $nameSelect2 . '"]/following-sibling::div/a[@class="btn btn-success"]');
         $this->wait(2);
+    }
+
+    public function seeInDatecontrol($attributeName, $value)
+    {
+        $this->seeElement('//input[@name="' . $attributeName . '"]/../div/input[@value="' . $value . '"]');
+    }
+
+
+    public function fillDatecontrol($attributeName, $value)
+    {
+        $this->click('//input[@name="' . $attributeName . '"]/../div/input');
+        $this->wait(1);
+        $this->fillField('//input[@name="' . $attributeName . '"]/../div/input', $value);
     }
 }
