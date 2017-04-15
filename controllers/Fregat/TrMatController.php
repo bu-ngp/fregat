@@ -136,14 +136,14 @@ class TrMatController extends Controller
     }
 
     // Действие наполнения списка Select2 при помощи ajax
-    public function actionSelectinputfortrmatchild($q = null, $idinstallakt = null)
+    public function actionSelectinputfortrmatchild($q = null, $idinstallakt = null, $id_parent = null)
     {
         if (Yii::$app->request->isAjax)
             return Proc::ResultSelect2([
                 'model' => new Mattraffic,
                 'q' => $q,
                 'methodquery' => 'selectinputfortrmat_child',
-                'methodparams' => ['idinstallakt' => $idinstallakt],
+                'methodparams' => ['idinstallakt' => $idinstallakt, 'id_parent' => $id_parent],
             ]);
     }
 

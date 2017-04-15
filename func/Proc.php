@@ -365,6 +365,9 @@ class Proc
      * <br>         'DopParams' => [] (array) Дополнительные параметры Url выбора из справочника $Params['FromGridRoute'].
      * <br>         'MethodQuery' => (string) Метод модели $Params['ResultModel'] формирующий результат ActiveQuery для значений списка Select2.
      * <br>         'MethodParams' => [] (array) Массив параметров для Ajax запроса для вывода результата поиска Select2 в JSON формате.
+     * <br>             Значение параметра массива может содержать массив, где:
+     * <br>             'forInit' => (string) Значение для инициализации Select2
+     * <br>             'forJs' => (string) Значение для POST параметров Ajax запроса Select2
      * <br>         'MinimumInputLength' => 3 (integer) Минимальное количество символов введеных пользователем в Select2, чтобы вызвать Ajax запрос поиска.
      * <br>         'Form' => '' (string) Опция имени формы Select2.
      * <br>         'Options' => [] (array) Массив опций Select2.
@@ -407,8 +410,12 @@ class Proc
             $showToggleAll = isset($Params['multiple']['multipleshowall']) ? $Params['multiple']['multipleshowall'] : true;
 
             $ajaxparamsString = '';
-            foreach ($methodparams as $key => $value)
-                $ajaxparamsString .= ',' . $key . ': ' . $value;
+            foreach ($methodparams as $key => $value) {
+                if (is_array($value) && isset($value['forjs']))
+                    $ajaxparamsString .= ',' . $key . ': ' . $value['forjs'];
+                else
+                    $ajaxparamsString .= ',' . $key . ': ' . $value;
+            }
 
             if (empty($fields['showresultfields'])/* && empty($methodquery)*/)
                 $fields['showresultfields'] = [$fields['resultfield']];
@@ -436,10 +443,17 @@ class Proc
                 $valuemodel = is_array($model->$fields['keyfield']) ? $model->$fields['keyfield'] : [$model->$fields['keyfield']];
 
                 if (!empty($methodquery)) {
-                    $methodparams['q'] = $model->$fields['keyfield'];
-                    $methodparams['init'] = true;
+                    $methodparams_tmp = $methodparams;
 
-                    $initrecord = isset($methodparams['q']) ? $resultmodel->$methodquery($methodparams) : [];
+                    $methodparams_tmp['q'] = $model->$fields['keyfield'];
+                    $methodparams_tmp['init'] = true;
+
+                    foreach ($methodparams_tmp as $key => $value) {
+                        if (is_array($value) && isset($value['forinit']))
+                            $methodparams_tmp[$key] = $value['forinit'];
+                    }
+
+                    $initrecord = isset($methodparams_tmp['q']) ? $resultmodel->$methodquery($methodparams_tmp) : [];
                     if (!is_array($initrecord))
                         $initrecord = [$initrecord];
                 } else {
@@ -475,8 +489,6 @@ class Proc
                     ->all(),
                     $resultmodel->primaryKey()[0], 'text');
 
-                $a = '';
-
                 return array_merge(
                     $onlyAjax || $needAjax ? [] : [
                         'data' => $data,
@@ -499,7 +511,7 @@ class Proc
                             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                         ]
                     ),
-                ], !empty($fromgridroute) && (empty($Params['disabled']) || $Params['disabled'] === false) ? [
+                ], !empty($fromgridroute) /*&& (empty($Params['disabled']) || $Params['disabled'] === false)*/ ? [
                     'addon' => [
                         'append' => [
                             'content' => Html::a('<i class="glyphicon glyphicon-plus-sign"></i>', array_merge([$fromgridroute,
@@ -507,7 +519,7 @@ class Proc
                                 'url' => $thisroute,
                                 'field' => $fields['keyfield'],
                                 'id' => $model->primaryKey,
-                            ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success']),
+                            ], !is_array($dopparams) ? [] : $dopparams), ['class' => 'btn btn-success' . ((empty($Params['disabled']) || $Params['disabled'] === false) ? '' : ' disabled')]),
                             'asButton' => true
                         ]
                     ]] : [], !empty($multiple) && ($onlyAjax || $needAjax) ? [

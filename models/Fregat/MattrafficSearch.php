@@ -106,10 +106,10 @@ class MattrafficSearch extends Mattraffic
     private function baseFilter(&$query)
     {
         $query->andFilterWhere([
-            'mattraffic_id' => $this->mattraffic_id,
-            'mattraffic_tip' => $this->mattraffic_tip,
-            'id_material' => $this->id_material,
-            'id_mol' => $this->id_mol,
+            'mattraffic.mattraffic_id' => $this->mattraffic_id,
+            'mattraffic.mattraffic_tip' => $this->mattraffic_tip,
+            'mattraffic.id_material' => $this->id_material,
+            'mattraffic.id_mol' => $this->id_mol,
         ]);
 
         $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
@@ -136,10 +136,10 @@ class MattrafficSearch extends Mattraffic
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idMol.idbuild.build_name')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMol.employee_lastchange', Proc::DateTime));
         $query->andFilterWhere(['LIKE', 'idMol.employee_importdo', $this->getAttribute('idMol.employee_importdo')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_date', Proc::Date));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_number'));
-        $query->andFilterWhere(['LIKE', 'mattraffic_username', $this->getAttribute('mattraffic_username')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_lastchange', Proc::DateTime));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_date', Proc::Date, 'mattraffic.mattraffic_date'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_number', null, 'mattraffic.mattraffic_number'));
+        $query->andFilterWhere(['LIKE', 'mattraffic.mattraffic_username', $this->getAttribute('mattraffic_username')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'mattraffic_lastchange', Proc::DateTime, 'mattraffic.mattraffic_lastchange'));
     }
 
     private function baseSort(&$dataProvider)
@@ -309,7 +309,7 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' )'); //and tr_osnov.id_installakt = '.$params['dopparams']['idinstallakt'])
+            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' and tmat.id_parent = ' . $params['id_parent'] . ' )');
 
 
         $this->baseRelations($query);

@@ -256,7 +256,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function seeInSelect2($name, $value, $disabled = false)
     {
-        $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span/span/span/span[@class="select2-selection__rendered" and contains(text(),"' . $value . '")]');
+        $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span/span/span/span[@class="select2-selection__rendered" and normalize-space(text()[1])="' . $value . '"]');
         if ($disabled)
             $this->seeElement('//select[@name="' . $name . '"]/following-sibling::span[contains(@class,"select2-container--disabled")]');
     }

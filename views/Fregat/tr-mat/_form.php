@@ -35,7 +35,7 @@ use kartik\touchspin\TouchSpin;
     ?>
 
     <?=
-    $form->field($model, 'id_parent')->widget(Select2::classname(), Proc::DGselect2([
+    $form->field($model, 'id_parent')->widget(Select2::classname(), array_merge(Proc::DGselect2([
         'model' => $model,
         'resultmodel' => new app\models\Fregat\Mattraffic,
         'fields' => [
@@ -50,7 +50,13 @@ use kartik\touchspin\TouchSpin;
         'dopparams' => [
             'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
         ],
-    ]));
+    ]),
+        [
+            'pluginEvents' => [
+                "select2:select" => "function() { SetParentMaterial(); }",
+                "select2:unselect" => "function() { UnSetParentMaterial(); }"
+            ],
+        ]));
     ?>
 
     <?=
@@ -65,11 +71,17 @@ use kartik\touchspin\TouchSpin;
             'resultrequest' => 'Fregat/tr-mat/selectinputfortrmatchild',
             'thisroute' => $this->context->module->requestedRoute,
             'methodquery' => 'selectinputfortrmat_child',
-            'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
-            'dopparams' => [
+            'methodparams' => /*array_merge(*/
+                [
+                    'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
+                    'id_parent' => ['forInit' => $model->id_parent, 'forJs' => '$("#trmat-id_parent").val()'],
+                ],// empty($model->id_parent) ? [] : ['id_parent' => $model->id_parent]),
+            'dopparams' => array_merge([
                 'foreigndo' => '1',
                 'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
-            ],
+
+            ], empty($model->id_parent) ? [] : ['id_parent' => $model->id_parent]),
+            'disabled' => empty($model->id_parent),
         ]),
             [
                 'pluginEvents' => [
@@ -100,7 +112,7 @@ use kartik\touchspin\TouchSpin;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                
+
                 <?= Html::submitButton('<i class="glyphicon glyphicon-plus"></i> Добавить', ['class' => 'btn btn-success']) ?>
             </div>
         </div>
