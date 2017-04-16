@@ -20,19 +20,21 @@
 
 html,
 body {
-    overflow-x: hidden;
+    /*overflow-x: hidden;*/
+    display: table;
+    width: 100%;
+    height: 100%;
+    margin: 0;
 }
 
 .wrap {
-    min-height: 100%;
-    height: auto;
-    margin: 0 auto -60px;
-    padding: 0 0 60px;
+    /*margin: 0 auto -60px;
+    padding: 0 0 60px;*/
+    height: calc(100% - 50px);
 }
 
 .wrap > .container {
-    padding: 70px 15px 20px;
-    min-height: 920px;
+    /*padding: 70px 15px 20px;*/
 }
 
 .footer {
@@ -40,6 +42,13 @@ body {
     background-color: #ffe9d9;
     border-top: 1px solid #ffe9d9;
     padding-top: 20px;
+    width: 100%;
+    bottom: 0;
+    /* margin-top: -60px;*/
+}
+
+.footer > .container > p {
+    text-align: center;
 }
 
 .jumbotron {
@@ -510,6 +519,9 @@ div.container.body-container {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff8e3', endColorstr='#fff8e3', GradientType=1); /* IE6-9 fallback on horizontal gradient */
 
     box-shadow: 0 0 15px 10px #ecc5a8, 0 0 0px 15px #ffe9d9;
+
+    padding-top: 10px;
+    height: 100%;
 }
 
 /*div.panel-body {
@@ -1004,6 +1016,11 @@ div.tab-content {
     background-color: #ffebdd;
     border: 1px solid rgb(190, 144, 143);
 }
+/* Глюк, при инициализации ширина input (Kartik FileInput) выходит за границу экрана*/
+input[data-krajee-fileinput] {
+    display: none;
+}
+
 /*
 div.gallery_preview {
     border: 3px solid #cccccc;

@@ -39,6 +39,7 @@ use yii\helpers\Url;
             <?= $form->field($model, 'material_id')->hiddenInput()->label(false) ?>
 
             <?= $form->field($model, 'material_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
+            <div class="col-md-12" style="padding-left: 0;">
             <div class="col-md-4" style="padding-left: 0;">
                 <?=
                 $form->field($model, 'material_tip')->widget(Select2::classname(), [
@@ -156,7 +157,7 @@ use yii\helpers\Url;
                 ])
                 ?>
             </div>
-
+        </div>
             <?php
             if (!$model->isNewRecord)
                 echo $form->field($model, 'material_writeoff')->widget(Select2::classname(), [

@@ -45,8 +45,8 @@ AppAsset::register($this);
         'brandLabel' => '<img class="brandlogo" src="' . Yii::$app->urlManager->baseUrl . '/images/logo.png">' . 'БУ "Нижневартовская городская поликлиника"',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-        'class' => 'navbar-inverse navbar-fixed-top',
-    ],
+            'class' => 'navbar-inverse navbar-fixed-top',
+        ],
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
@@ -69,6 +69,10 @@ AppAsset::register($this);
                   style="filter: drop-shadow(4px 3px 0 #59010b) drop-shadow(-4px 3px 0 #59010b); height: 80px;"></image>
        </div>-->
     <div class="container body-container">
+        <script>
+            var h1 = $("nav.navbar-fixed-top.navbar").height();
+            $("div.container.body-container").css("margin-top", h1 + "px");
+        </script>
         <?php
         /*   $controller = Yii::$app->controller;
           $default_controller = Yii::$app->defaultRoute;
@@ -129,7 +133,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Карпов Владимир, БУ "Нижневартовская городская поликлиника" <?= date('Y') ?></p>
+        <p>&copy; Карпов Владимир, БУ "Нижневартовская городская поликлиника" <?= date('Y') ?></p>
     </div>
 </footer>
 
