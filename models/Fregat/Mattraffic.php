@@ -331,14 +331,19 @@ class Mattraffic extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
             ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . (empty($params['id_parent']) ? '' : ' and tmat.id_parent = ' . $params['id_parent']) . ' )')
+            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (1,2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . (empty($params['id_parent']) ? '' : ' and tmat.id_parent = ' . $params['id_parent']) . ' )')
+            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt left join tr_osnov tosn on tosn.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material' . (empty($params['id_parent']) ? '' : ' and mt.mattraffic_id <> ' . $params['id_parent']) . ' )')
             ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild'])
             ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
             ->andWhere('mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['tr_mat.id_mattraffic' => NULL])
-            ->andWhere(['idMaterial.material_tip' => 2])
+            ->andWhere([
+                'or',
+                ['and', ['tr_mat.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]],
+                ['and', ['not', ['tr_osnov.id_mattraffic' => NULL]], ['idMaterial.material_tip' => 1]],
+            ])
+            ->andWhere(['in', 'idMaterial.material_tip', [1, 2]])
             ->limit(20)
             ->asArray()
             ->$method();
