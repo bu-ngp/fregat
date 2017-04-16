@@ -88,7 +88,7 @@ class RemoveaktReport extends BaseReportPortal
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $arm->idParent->idMaterial->idMatv->matvid_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $arm->idParent->idMaterial->material_name);
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $arm->idParent->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $arm->idParent->idMaterial->material_serial);
+                $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $arm->idParent->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($arm->idParent->idMaterial->material_release, 'y'));
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $arm->idParent->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $arm->idParent->idMol->idbuild->build_name);
@@ -142,7 +142,7 @@ class RemoveaktReport extends BaseReportPortal
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idMattraffic->idMaterial->idMatv->matvid_name);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $num, $ar->idMattraffic->idMaterial->material_name);
                     $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial);
+                    $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, $ar->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, $ar->idMattraffic->mattraffic_number);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idMattraffic->idMaterial->idIzmer->izmer_name);
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release, 'y'));

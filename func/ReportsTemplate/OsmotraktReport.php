@@ -31,7 +31,7 @@ class OsmotraktReport extends BaseReportPortal
         $objPHPExcel->getActiveSheet()->setCellValue('C5', $Osmotrakt->idTrosnov->idMattraffic->idMaterial->idMatv->matvid_name);
         $objPHPExcel->getActiveSheet()->setCellValue('C6', $Osmotrakt->idTrosnov->idMattraffic->idMaterial->material_name);
         $objPHPExcel->getActiveSheet()->setCellValueExplicit('C7', $Osmotrakt->idTrosnov->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-        $objPHPExcel->getActiveSheet()->setCellValue('C8', $Osmotrakt->idTrosnov->idMattraffic->idMaterial->material_serial);
+        $objPHPExcel->getActiveSheet()->setCellValueExplicit('C8', $Osmotrakt->idTrosnov->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
         $objPHPExcel->getActiveSheet()->setCellValue('C9', $Osmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name . ', ' . $Osmotrakt->idTrosnov->tr_osnov_kab);
         $objPHPExcel->getActiveSheet()->setCellValue('C10', $Osmotrakt->idUser->idperson->auth_user_fullname . ', ' . $Osmotrakt->idUser->iddolzh->dolzh_name);
         $objPHPExcel->getActiveSheet()->setCellValue('C11', $Osmotrakt->idTrosnov->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $Osmotrakt->idTrosnov->idMattraffic->idMol->iddolzh->dolzh_name);

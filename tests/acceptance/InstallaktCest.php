@@ -301,6 +301,7 @@ class InstallaktCest
     {
         $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
+        $I->seeInSelect2('TrMat[id_mattraffic]', '', true);
 
         $I->chooseValueFromGrid('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', 'mattrafficgrid_gw', '//td/a[text()="Шкаф для одежды" and @href="/Fregat/material/update?id=34"]/../preceding-sibling::td/button[@title="Выбрать"]');
         $I->chooseValueFromGrid('TrMat[id_mattraffic]', '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="Картридж 36A" and @href="/Fregat/material/update?id=38"]/../preceding-sibling::td/button[@title="Выбрать"]');
@@ -323,7 +324,43 @@ class InstallaktCest
      */
     public function createTrmatDependByParentMaterial(AcceptanceTester $I)
     {
+        $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
+        $I->wait(2);
 
+        $I->seeInSelect2('TrMat[id_mattraffic]', '', true);
+        $I->chooseValueFromSelect2('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', '001');
+        $I->seeInSelect2('TrMat[id_mattraffic]', '', false);
+        $I->seeSelect2Options('TrMat[id_mattraffic]', '000', []);
+
+        $I->chooseValueFromSelect2('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 102, 1000002, Кухонный стол', '002');
+        $I->seeInSelect2('TrMat[id_mattraffic]', '', false);
+        $I->seeSelect2Options('TrMat[id_mattraffic]', '000', [
+            '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1',
+            '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2',
+        ]);
+
+        $I->chooseValueFromSelect2('TrMat[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
+        $I->wait(1);
+        $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5.000"]');
+        $I->fillField('Mattraffic[mattraffic_number]','6.000');
+
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(1);
+        $I->see('Количество не может превышать 5.000');
+
+        $I->fillField('Mattraffic[mattraffic_number]','5.000');
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'ПОЛИКЛИНИКА 1', '102', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '5.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+
+        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'ПОЛИКЛИНИКА 1', '102', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '5.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ']);
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
     }
 
     /**

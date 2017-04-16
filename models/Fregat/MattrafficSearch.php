@@ -279,7 +279,6 @@ class MattrafficSearch extends Mattraffic
 
         $query->andWhere('mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic_tip', [3]]);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
 
         $this->load($params);
 
@@ -290,6 +289,7 @@ class MattrafficSearch extends Mattraffic
         }
 
         $this->baseFilter($query);
+        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
 
         $this->baseSort($dataProvider);
         Proc::AssignRelatedAttributes($dataProvider, [

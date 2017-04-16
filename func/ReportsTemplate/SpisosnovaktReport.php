@@ -43,7 +43,7 @@ class SpisosnovaktReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $num, $ar->idMattraffic->idMaterial->material_name);
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(1, $num, 2, $num);
             $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(3, $num, $ar->idMattraffic->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(4, $num, empty($ar->idMattraffic->idMaterial->material_serial) ? '-' : $ar->idMattraffic->idMaterial->material_serial);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(4, $num, empty($ar->idMattraffic->idMaterial->material_serial) ? '-' : $ar->idMattraffic->idMaterial->material_serial, \PHPExcel_Cell_DataType::TYPE_STRING);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, empty($ar->idMattraffic->idMaterial->material_release) ? '-' : Yii::$app->formatter->asDate($ar->idMattraffic->idMaterial->material_release));
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->spisosnovmaterials_number);
             if (!empty($ar->idMattraffic->idMaterial->material_release)) {

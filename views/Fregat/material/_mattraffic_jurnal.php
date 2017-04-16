@@ -56,9 +56,10 @@ echo DynaGrid::widget(Proc::DGopts([
             [
                 'attribute' => 'trMats.idParent.idMaterial.material_inv',
                 'label' => 'Инвент-ый номер мат-ой цен-ти, в которую включен в состав',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->trMats[0]->idParent->idMaterial->material_inv;
-                },
+                    return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->trMats[0]->idParent->idMaterial->primaryKey]) . '">' . $model->trMats[0]->idParent->idMaterial->material_inv . '</a>';
+                }
             ],
         ],
         'buttons' => array_merge([

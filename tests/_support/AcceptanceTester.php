@@ -279,4 +279,27 @@ class AcceptanceTester extends \Codeception\Actor
         $this->wait(1);
         $this->fillField('//input[@name="' . $attributeName . '"]/../div/input', $value);
     }
+
+    public function seeSelect2Options($attributeName, $inputValue, array $optionsResult)
+    {
+        $this->wait(1);
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]/*[contains(@class, "select2-selection__rendered")]');
+        if (!empty($inputValue)) {
+            $this->fillField('//input[@class="select2-search__field"]', $inputValue);
+            $this->wait(1);
+        }
+
+        $strBegin = '//span[@class="select2-results"]/ul[@class="select2-results__options"]';
+        $path = '/';
+
+        foreach ($optionsResult as $key => $value) {
+            $path .= ($key === 0 ? '' : 'following-sibling::') . 'li[contains(@class, "select2-results__option") and text()="' . $value . '"]';
+        }
+
+        if (empty($optionsResult)) {
+            $this->seeElement($strBegin . $path . 'li[@class="select2-results__option select2-results__message" and text()="Совпадений не найдено"]');
+        } else {
+            $this->seeElement($strBegin . $path);
+        }
+    }
 }

@@ -9,9 +9,10 @@ use app\func\Proc;
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Material */
 
-$this->title = 'Карта материальной ценности';
+$this->title = 'Карта материальной ценности' . ' (' . explode(' ', $model->material_name)[0] . '...)';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
     'model' => [$model, $Mattraffic],
+    'postfix' => $model->primaryKey,
 ]);
 ?>
 <div class="material-update">
