@@ -68,6 +68,7 @@ class AcceptanceTester extends \Codeception\Actor
         $this->wait(1);
         $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]/*[contains(@class, "select2-selection__rendered")]');
         if (!empty($inputValue)) {
+
             $this->fillField('//input[@class="select2-search__field"]', $inputValue);
             $this->wait(1);
         }
@@ -293,7 +294,7 @@ class AcceptanceTester extends \Codeception\Actor
         $path = '/';
 
         foreach ($optionsResult as $key => $value) {
-            $path .= ($key === 0 ? '' : 'following-sibling::') . 'li[contains(@class, "select2-results__option") and text()="' . $value . '"]';
+            $path .= ($key === 0 ? '/' : '/following-sibling::') . 'li[contains(@class, "select2-results__option") and text()="' . $value . '"]';
         }
 
         if (empty($optionsResult)) {
@@ -301,5 +302,7 @@ class AcceptanceTester extends \Codeception\Actor
         } else {
             $this->seeElement($strBegin . $path);
         }
+
+        $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]/*[contains(@class, "select2-selection__rendered")]');
     }
 }

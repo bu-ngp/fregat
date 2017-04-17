@@ -345,13 +345,13 @@ class InstallaktCest
         $I->chooseValueFromSelect2('TrMat[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5.000"]');
-        $I->fillField('Mattraffic[mattraffic_number]','6.000');
+        $I->fillField('Mattraffic[mattraffic_number]', '6.000');
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Количество не может превышать 5.000');
 
-        $I->fillField('Mattraffic[mattraffic_number]','5.000');
+        $I->fillField('Mattraffic[mattraffic_number]', '5.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -379,25 +379,26 @@ class InstallaktCest
 
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1.000"]');
-        $I->fillField('Mattraffic[mattraffic_number]','2.000');
+        $I->fillField('Mattraffic[mattraffic_number]', '2.000');
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Количество не может превышать 1.000');
 
-        $I->fillField('Mattraffic[mattraffic_number]','0.500');
+        $I->fillField('Mattraffic[mattraffic_number]', '0.500');
+        $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Количество должно быть целым числом');
 
-        $I->fillField('Mattraffic[mattraffic_number]','1.000');
+        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
-        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000001', '1.000', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
 
-        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000001', '1.000', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
+        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
@@ -575,18 +576,18 @@ class InstallaktCest
      */
     public function destroyData()
     {
-        TrMat::deleteAll();
-        TrOsnov::deleteAll();
-        Installakt::deleteAll();
-        Mattraffic::deleteAll();
-        Material::deleteAll();
-        Employee::deleteAll();
-        Matvid::deleteAll();
-        Izmer::deleteAll();
-        Schetuchet::deleteAll();
-        Authuser::deleteAll('auth_user_id <> 1');
-        Build::deleteAll();
-        Dolzh::deleteAll();
-        Podraz::deleteAll();
+          TrMat::deleteAll();
+          TrOsnov::deleteAll();
+          Installakt::deleteAll();
+          Mattraffic::deleteAll();
+          Material::deleteAll();
+          Employee::deleteAll();
+          Matvid::deleteAll();
+          Izmer::deleteAll();
+          Schetuchet::deleteAll();
+          Authuser::deleteAll('auth_user_id <> 1');
+          Build::deleteAll();
+          Dolzh::deleteAll();
+          Podraz::deleteAll();
     }
 }
