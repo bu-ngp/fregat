@@ -6,3 +6,4 @@ INSERT INTO `employee` VALUES (1175,165,40,8,1196,'admin','2016-11-17 13:33:17',
 INSERT INTO `matvid` VALUES (851,'ШКАФ'),(852,'СТОЛ');
 INSERT INTO `izmer` VALUES (1,'шт', '796');
 INSERT INTO `schetuchet` VALUES (1,'101.34','НОВЫЙ СЧЕТ');
+ALTER TABLE `material` AUTO_INCREMENT = 34;
