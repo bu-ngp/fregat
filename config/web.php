@@ -19,6 +19,7 @@ $config = [
         ],
         'assetManager' => [
             'appendTimestamp' => true,
+            'linkAssets' => true,
         ],
         'user' => [
             'identityClass' => 'app\models\User',
