@@ -84,6 +84,10 @@ $("#mb_naklad_j").click(function () {
     window.location.href = baseUrl + "Fregat/naklad/index";
 });
 
+$("#mb_spismat_j").click(function () {
+    window.location.href = baseUrl + "Fregat/spismat/index";
+});
+
 $("#mb_prihod_new").click(function () {
     window.location.href = baseUrl + "Fregat/material/create";
 });

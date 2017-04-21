@@ -20,6 +20,7 @@ use Yii;
  * @property TrOsnov[] $trOsnovs
  * @property Writeoffakt[] $writeoffakts
  * @property Nakladmaterials[] $nakladmaterials
+ * @property Spismatmaterials[] $spismatmaterials
  */
 class Mattraffic extends \yii\db\ActiveRecord
 {
@@ -216,6 +217,15 @@ class Mattraffic extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Nakladmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['nakladmaterials' => Nakladmaterials::tableName()]);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpismatmaterials()
+    {
+        return $this->hasMany(Spismatmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['spismatmaterials' => Spismatmaterials::tableName()]);
+    }
+
 
     public function beforeValidate()
     {

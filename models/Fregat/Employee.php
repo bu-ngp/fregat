@@ -35,6 +35,7 @@ use app\models\Config\Authuser;
  * @property Spisosnovakt[] $spisosnovakts0
  * @property Naklad[] $gotNaklads
  * @property Naklad[] $releaseNaklads
+ * @property Spismat[] $spismats
  */
 class Employee extends \yii\db\ActiveRecord
 {
@@ -191,6 +192,14 @@ class Employee extends \yii\db\ActiveRecord
     public function getGotNaklads()
     {
         return $this->hasMany(Naklad::className(), ['id_mol_got' => 'employee_id'])->from(['gotNaklads' => Naklad::tableName()]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpismats()
+    {
+        return $this->hasMany(Spismat::className(), ['id_mol' => 'employee_id'])->from(['spismats' => Spismat::tableName()]);
     }
 
     public function getEmployeeName()
