@@ -195,6 +195,7 @@ class InstallaktCest
 
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
 
+        $I->wait(2);
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeInField('Material[material_name]', 'Картридж А12');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
@@ -563,7 +564,7 @@ class InstallaktCest
      */
     public function deleteInstallakt(AcceptanceTester $I)
     {
-        $I->click('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]/preceding-sibling::td/button[@title="Удалить"]');
+       $I->click('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]/preceding-sibling::td/button[@title="Удалить"]');
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
