@@ -17,6 +17,7 @@ use Yii;
 class Spismat extends \yii\db\ActiveRecord
 {
     public $spismat_spisinclude;
+    public $period;
     public $period_beg;
     public $period_end;
 
@@ -52,7 +53,9 @@ class Spismat extends \yii\db\ActiveRecord
             'id_mol' => 'Материально-ответственное лицо',
             'spismat_date' => 'Дата ведомости',
             'spismat_spisinclude' => 'Включить в ведомость списанные материалы',
-            'period_beg' => 'Включить в ведомость материалы, установленные в данный период',
+            'period' => 'Включить в ведомость материалы, установленные в данный период',
+            'period_beg' => 'Начало перода',
+            'period_end' => 'Окончание периода',
         ];
     }
 

@@ -82,7 +82,7 @@ echo DynaGrid::widget(Proc::DGopts([
         ], Yii::$app->user->can('InstallEdit') ? [
             'installaktupdate' => function ($url, $model) use ($params) {
                 if (in_array($model->mattraffic_tip, [3, 4])) {
-                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => $model->trOsnovs[0]->id_installakt]);
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/installakt/update', 'id' => (isset($model->trOsnovs[0]) ? $model->trOsnovs[0]->id_installakt : $model->trMats[0]->id_installakt)]);
                     return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Обновить', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                 }
             },

@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\models\Fregat\Employee;
 use app\models\Fregat\Material;
+use app\models\Fregat\Spismatmaterials;
 use Yii;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\MattrafficSearch;
@@ -27,7 +28,7 @@ class MattrafficController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputformaterial', 'forinstallakt', 'forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-select2', 'forosmotrakt'],
+                        'actions' => ['selectinputformaterial', 'forinstallakt', 'forinstallakt_matparent', 'forinstallakt_mat', 'assign-to-select2', 'assign-to-spismatmaterials-grid', 'forosmotrakt'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -51,6 +52,11 @@ class MattrafficController extends Controller
                         'allow' => true,
                         'roles' => ['NakladEdit'],
                     ],
+                    [
+                        'actions' => ['forspismat'],
+                        'allow' => true,
+                        'roles' => ['SpismatEdit'],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -159,6 +165,17 @@ class MattrafficController extends Controller
         ]);
     }
 
+    public function actionForspismat()
+    {
+        $searchModel = new MattrafficSearch();
+        $dataProvider = $searchModel->searchforspismat(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     public
     function actionSelectinputformaterial($q = null)
     {
@@ -192,6 +209,11 @@ class MattrafficController extends Controller
     function actionAssignToSelect2()
     {
         Proc::AssignToModelFromGrid();
+    }
+
+    public function actionAssignToSpismatmaterialsGrid()
+    {
+        Proc::AssignToModelFromGrid(true, new Spismatmaterials, 'id_spismat');
     }
 
     public function actionFornaklad()

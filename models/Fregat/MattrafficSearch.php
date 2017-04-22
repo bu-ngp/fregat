@@ -454,7 +454,6 @@ class MattrafficSearch extends Mattraffic
             'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
         ]);
 
-
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
 
         $this->baseRelations($query);
@@ -462,6 +461,34 @@ class MattrafficSearch extends Mattraffic
         $query->andWhere(['idMaterial.material_writeoff' => 0]);
         $query->andWhere(['in', 'mattraffic_tip', [1]]);
         $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
+    public function searchforspismat($params) {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $this->baseRelations($query);
+
+        $query->andWhere(['idMaterial.material_tip' => 2]);
+        $query->andWhere(['mattraffic.mattraffic_tip' => 4]);
 
         $this->load($params);
 

@@ -31,11 +31,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     echo DynaGrid::widget(Proc::DGopts([
                 'options' => ['id' => 'mattrafficgrid'],
                 'columns' => Proc::DGcols([
-                    'buttonsfirst' => true,
                     'buttons' => empty($foreign) ? [] : [
-                        'chooseajax' => ['Fregat/mattraffic/assign-to-select2']
+                        'chooseajax' => [empty($foreign['id']) ? 'Fregat/mattraffic/assign-to-select2' : 'Fregat/mattraffic/assign-to-spismatmaterials-grid']
                             ],
-                    'buttonsfirst' => true,
                     'columns' => [
                         [
                             'attribute' => 'mattraffic_date',

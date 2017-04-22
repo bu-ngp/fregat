@@ -26,6 +26,8 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'fregatsettings_uchrezh_namesokr')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
 
+    <?= $form->field($model, 'fregatsettings_glavbuh_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase', 'autofocus' => true]) ?>
+
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">

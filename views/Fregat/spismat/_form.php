@@ -51,47 +51,6 @@ use yii\web\JsExpression;
     ]));
     ?>
 
-    <?php
-    if ($model->isNewRecord)
-        echo $form->field($model, 'spismat_spisinclude')->checkbox();
-    ?>
-
-    <?php
-    if ($model->isNewRecord):
-        ?>
-        <div class="form-group"><label class="control-label"
-                                       for="period_beg"><?= $model->getAttributeLabel('period_beg') ?></label>
-            <div class="row">
-                <div class="col-xs-6">
-                    <?= $form->field($model, 'period_beg', [
-                        'inputTemplate' => '<div class="input-group"><span class="input-group-addon">ОТ</span>{input}</div>'
-                    ])->widget(DateControl::classname(), [
-                        'type' => DateControl::FORMAT_DATE,
-                        'options' => [
-                            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
-                        ],
-                        'saveOptions' => ['class' => 'form-control'],
-                    ])->label(false);
-                    ?>
-                </div>
-                <div class="col-xs-6">
-                    <?= $form->field($model, 'period_end', [
-                        'inputTemplate' => '<div class="input-group"><span class="input-group-addon">ДО</span>{input}</div>'
-                    ])->widget(DateControl::classname(), [
-                        'type' => DateControl::FORMAT_DATE,
-                        'options' => [
-                            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
-                        ],
-                        'saveOptions' => ['class' => 'form-control'],
-                    ])->label(false);
-                    ?>
-                </div>
-            </div>
-        </div>
-        <?php
-    endif;
-    ?>
-
     <?php ActiveForm::end(); ?>
 
     <?php
@@ -120,44 +79,92 @@ use yii\web\JsExpression;
     ?>
 
     <?php
-    /*  if (!$model->isNewRecord) {
-          echo DynaGrid::widget(Proc::DGopts([
-              'options' => ['id' => 'spismatmaterialsgrid'],
-              'columns' => Proc::DGcols([
-                  'columns' => [
-                      [
-                          'attribute' => 'idMattraffic.idMaterial.material_name',
-                          'format' => 'raw',
-                          'value' => function ($model) {
-                              return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
-                          }
-                      ],
-                      'idMattraffic.idMaterial.material_inv',
-                      'idMattraffic.idMaterial.material_serial',
-                      [
-                          'attribute' => 'idMattraffic.idMaterial.material_release',
-                          'format' => 'date',
-                      ],
-                      'spisosnovmaterials_number',
-                      'idMattraffic.idMaterial.material_price',
-                  ],
-                  'buttons' => [
-                      'update' => ['Fregat/spisosnovmaterials/update'],
-                      'deleteajax' => ['Fregat/spisosnovmaterials/delete'],
-                  ],
-              ]),
-              'gridOptions' => [
-                  'dataProvider' => $dataProvider,
-                  'filterModel' => $searchModel,
-                  'panel' => [
-                      'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-compressed"></i> Списываемые материальные ценности</h3>',
-                      'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материальную ценность', ['Fregat/spisosnovmaterials/create',
-                          'idspisosnovakt' => $model->primaryKey,
-                      ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
-                  ],
-              ]
-          ]));
-      }*/
+    if (!$model->isNewRecord) {
+        echo DynaGrid::widget(Proc::DGopts([
+            'options' => ['id' => 'spismatmaterialsgrid'],
+            'columns' => Proc::DGcols([
+                'columns' => [
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_name',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
+                    'idMattraffic.idMaterial.material_inv',
+                    [
+                        'attribute' => 'idMattraffic.mattraffic_number',
+                        'label' => 'Установленное количество',
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.idParent.idMaterial.material_name',
+                        'label' => 'Наименование, куда установлено',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->trMats[0]->idParent->id_material]) . '">' . $model->idMattraffic->trMats[0]->idParent->idMaterial->material_name . '</a>';
+                        },
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.idParent.idMaterial.material_inv',
+                        'label' => 'Инвентарный номер, куда установлено',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return $model->idMattraffic->trMats[0]->idParent->idMaterial->material_inv;
+                        },
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.id_installakt',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return '<a data-pjax="0" href="' . Url::to(['Fregat/installakt/update', 'id' => $model->idMattraffic->trMats[0]->id_installakt]) . '">' . $model->idMattraffic->trMats[0]->id_installakt . '</a>';
+                        },
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.idInstallakt.installakt_date',
+                        'format' => 'date',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return $model->idMattraffic->trMats[0]->idInstallakt->installakt_date;
+                        },
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
+                        'label' => 'ФИО мастера',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return $model->idMattraffic->trMats[0]->idInstallakt->idInstaller->idperson->auth_user_fullname;
+                        },
+                    ],
+                    [
+                        'attribute' => 'idMattraffic.trMats.idInstallakt.idInstaller.iddolzh.dolzh_name',
+                        'label' => 'Должность мастера',
+                        'value' => function ($model) {
+                            if (isset($model->idMattraffic->trMats[0]))
+                                return $model->idMattraffic->trMats[0]->idInstallakt->idInstaller->iddolzh->dolzh_name;
+                        },
+                    ],
+                ],
+                'buttons' => [
+                    'deleteajax' => ['Fregat/spismatmaterials/delete'],
+                ],
+            ]),
+            'gridOptions' => [
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'panel' => [
+                    'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-shopping-cart"></i> Списываемые материалы</h3>',
+                    'before' => Html::a('<i class="glyphicon glyphicon-download"></i> Добавить материал', ['Fregat/mattraffic/forspismat',
+                        'foreignmodel' => 'Spismatmaterials',
+                        'url' => $this->context->module->requestedRoute,
+                        'field' => 'id_mattraffic',
+                        'id' => $model->primaryKey,
+                    ], ['class' => 'btn btn-success', 'data-pjax' => '0']),
+                ],
+            ]
+        ]));
+    }
     ?>
 
     <div class="form-group">

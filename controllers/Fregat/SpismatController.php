@@ -2,15 +2,18 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\SpismatReport;
 use app\models\Fregat\SpismatFilter;
 use app\models\Fregat\Spismatmaterials;
 use app\models\Fregat\SpismatmaterialsSearch;
+use app\models\Fregat\TrMat;
 use Exception;
 use Yii;
 use app\func\Proc;
 use app\models\Fregat\Spismat;
 use app\models\Fregat\SpismatSearch;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -35,7 +38,7 @@ class SpismatController extends Controller
                         'roles' => ['FregatUserPermission'],
                     ],
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'create-by-installakt', 'check-materials'],
                         'allow' => true,
                         'roles' => ['SpismatEdit'],
                     ],
@@ -89,6 +92,45 @@ class SpismatController extends Controller
     }
 
     /**
+     * Creates a new Spismat model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreateByInstallakt()
+    {
+        $model = new Spismat();
+        $params = Yii::$app->request->post();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if ($model->load($params)
+                && TrMat::getCountMaterials($params['Spismat']['id_mol'], $params['Spismat']['period_beg'], $params['Spismat']['period_end'], $params['Spismat']['spisinclude']) > 0
+                && $model->save()
+            ) {
+                $rows = TrMat::getMaterialsSpismat($params['Spismat']['id_mol'], $params['Spismat']['period_beg'], $params['Spismat']['period_end'], $params['Spismat']['spisinclude']);
+                foreach ($rows as $ar) {
+                    $sm = new Spismatmaterials;
+                    $sm->id_spismat = $model->primaryKey;
+                    $sm->id_mattraffic = $ar['id_mattraffic'];
+                    $sm->save();
+                }
+
+                Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+                $transaction->commit();
+                return $this->redirect(['update', 'id' => $model->primaryKey]);
+            } else {
+                $model->spismat_date = empty($model->spismat_date) ? date('Y-m-d') : $model->spismat_date;
+                $transaction->rollBack();
+                return $this->render('create_by_installakt', [
+                    'model' => $model,
+                ]);
+            }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    /**
      * Updates an existing Spismat model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
@@ -123,6 +165,35 @@ class SpismatController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionCheckMaterials()
+    {
+        if (Yii::$app->request->isAjax) {
+            $params = json_decode(Yii::$app->request->post()['params']);
+
+            if ($params === null)
+                throw new HttpException(500, 'не валидный JSON запрос');
+
+            if (!ctype_digit($params->id_mol))
+                throw new HttpException(500, 'не валидный id_mol');
+
+            if (!preg_match('/\d{4}-\d{2}-\d{2}/', $params->period_beg))
+                throw new HttpException(500, 'не валидный period_beg');
+
+            if (!preg_match('/\d{4}-\d{2}-\d{2}/', $params->period_end))
+                throw new HttpException(500, 'не валидный period_end');
+
+            return json_encode(['count' => TrMat::getCountMaterials($params->id_mol, $params->period_beg, $params->period_end, $params->spisinclude)]);
+        } else
+            throw new HttpException(500, 'не Ajax запрос');
+    }
+
+    // Печать ведомости списания материалов
+    public function actionSpismatReport()
+    {
+        $Report = new SpismatReport();
+        echo $Report->Execute(false);
     }
 
     /**

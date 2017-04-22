@@ -38,7 +38,7 @@ class TrMat extends \yii\db\ActiveRecord
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
             [['id_parent'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_parent' => 'mattraffic_id']],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
-         //   [['id_parent'], 'IsMaterialInstalled'],
+            //   [['id_parent'], 'IsMaterialInstalled'],
         ];
     }
 
@@ -130,6 +130,38 @@ class TrMat extends \yii\db\ActiveRecord
             ->$method();
 
         return $query;
+    }
+
+    public static function getCountMaterials($id_mol, $period_beg, $period_end, $spisinclude = false)
+    {
+        $query = self::find()
+            ->joinWith(['idInstallakt', 'idMattraffic.idMaterial', 'idMattraffic.idMol'])
+            ->andWhere(['idMaterial.material_tip' => 2])
+            ->andWhere(['idMol.id_person' => Employee::findOne($id_mol)->id_person])
+            ->andWhere(['between', 'idInstallakt.installakt_date', $period_beg, $period_end]);
+
+        if (!$spisinclude)
+            $query->andWhere(['idMaterial.material_writeoff' => 0]);
+
+        $count = $query->count();
+
+        return $query === false ? 0 : $count;
+    }
+
+    public static function getMaterialsSpismat($id_mol, $period_beg, $period_end, $spisinclude = false)
+    {
+        $query = self::find()
+            ->joinWith(['idInstallakt', 'idMattraffic.idMaterial', 'idMattraffic.idMol'])
+            ->andWhere(['idMaterial.material_tip' => 2])
+            ->andWhere(['idMol.id_person' => Employee::findOne($id_mol)->id_person])
+            ->andWhere(['between', 'idInstallakt.installakt_date', $period_beg, $period_end]);
+
+        if (!$spisinclude)
+            $query->andWhere(['idMaterial.material_writeoff' => 0]);
+
+        $rows = $query->asArray()->all();
+
+        return $rows;
     }
 
 }

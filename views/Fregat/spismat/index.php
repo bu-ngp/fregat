@@ -49,7 +49,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'filterModel' => $searchModel,
                 'panel' => [
                     'heading' => '<i class="glyphicon glyphicon-th"></i> ' . $this->title,
-                    'before' => Yii::$app->user->can('SpismatEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '',
+                    'before' => Yii::$app->user->can('SpismatEdit') ?
+                        '<div class="btn-toolbar">' . Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить вручную', ['create'], ['class' => 'btn btn-success', 'data-pjax' => '0'])
+                        . Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить по актам перемещения', ['create-by-installakt'], ['class' => 'btn btn-info', 'data-pjax' => '0']) . '</div>'
+                        : '',
                 ],
                 'toolbar' => [
                     'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['spismatfilter'], [
