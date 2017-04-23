@@ -93,18 +93,25 @@ class Spismatmaterials extends \yii\db\ActiveRecord
             ->asArray()
             ->all();
 
-        $rows = [];
+        $material_sheets_count = ceil(count($materials) / 1/*10*/);
+        $installer_sheets_count = ceil(count($installers) / 1/*14*/);
 
-        foreach ($materials as $material) {
-            $rows[$material['id_material']] = [
+        $rows = [
+            'material_sheets_count' => $material_sheets_count,
+            'installer_sheets_count' => $installer_sheets_count,
+        ];
+
+        foreach ($materials as $key_m => $material) {
+            $rows['materials'][$material['id_material']] = [
                 'material_name' => $material['material_name'],
                 'material_inv' => $material['material_inv'],
                 'material_price' => $material['material_price'],
                 'izmer_name' => $material['izmer_name'],
                 'installers' => [],
             ];
-            foreach ($installers as $installer) {
-                $rows[$material['id_material']]['installers'][$installer['id_person']] = [
+
+            foreach ($installers as $key_i => $installer) {
+                $rows['materials'][$material['id_material']]['installers'][$installer['id_person']] = [
                     'auth_user_fullname' => $installer['auth_user_fullname'],
                     'vsum' => 0,
                 ];
@@ -128,14 +135,14 @@ class Spismatmaterials extends \yii\db\ActiveRecord
             ])
             ->andWhere(['spismatmaterials.id_spismat' => $spismat_id])
             ->groupBy(['idMattraffic.id_material', 'idInstaller.id_person'])
-            ->orderBy(['idMattraffic.id_material' => SORT_ASC])
+            ->orderBy(['idMattraffic.id_material' => SORT_ASC, 'personmaster.auth_user_fullname' => SORT_ASC])
             ->asArray()
             ->all();
 
 
         if ($query !== false) {
             foreach ($query as $ar) {
-                $rows[$ar['id_material']]['installers'] = [$ar['id_person'] => $ar['vsum']];
+                $rows['materials'][$ar['id_material']]['installers'] = array_replace_recursive($rows['materials'][$ar['id_material']]['installers'], [$ar['id_person'] => ['vsum' => $ar['vsum']]]);
             }
 
             return $rows;
