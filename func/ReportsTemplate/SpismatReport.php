@@ -11,8 +11,8 @@ use app\models\Fregat\Spismat;
 
 class SpismatReport extends BaseReportPortal
 {
-    const MATERIAL_PER_SHEET = 10;
-    const INSTALLER_PER_SHEET = 1;
+    const MATERIAL_PER_SHEET = 1;
+    const INSTALLER_PER_SHEET = 2;
 
     private $mat_sheet_address = [
         'AH',
@@ -56,40 +56,57 @@ class SpismatReport extends BaseReportPortal
 
         $VedomostArr = Spismatmaterials::getVedomostArray($ID);
 
-        
+        $key_m = 1;
+        $key_i = 1;
+        $key_i_sum = 0;
+        foreach ($VedomostArr['materials'] as $mattraffic_id => $material) {
+            foreach ($material['installers'] as $installer_id => $installer) {
+//                if ($key_i >= self::INSTALLER_PER_SHEET)
+//                    $key_i = 1;
+
+                $ind1 = ceil(($key_i) / self::INSTALLER_PER_SHEET);
+//                $ind2 = ceil(($key_m) / self::MATERIAL_PER_SHEET);
+
+                $VedomostArr['materials'][$mattraffic_id]['installers'][$installer_id]['sheet'] = $key_i_sum;
+              //  $VedomostArr['materials'][$mattraffic_id]['installers'][$installer_id]['pos_y'] = $pos_y;
+
+                $key_i++;
+            }
+            $key_m++;
+        }
 
         file_put_contents('test.txt', print_r($VedomostArr, true));
 
         $i = 0;
 
         $sheetIndex = 1;
-    /*    foreach ($VedomostArr['materials'] as $mattraffic_id => $material) {
+        /*    foreach ($VedomostArr['materials'] as $mattraffic_id => $material) {
 
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '3', $material['material_name']);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValueExplicit($this->mat_sheet_address[$i] . '4', $material['material_inv'], \PHPExcel_Cell_DataType::TYPE_STRING);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '5', $material['izmer_name']);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '25', $material['material_price']);
+                $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '3', $material['material_name']);
+                $objPHPExcel->getSheet($sheetIndex)->setCellValueExplicit($this->mat_sheet_address[$i] . '4', $material['material_inv'], \PHPExcel_Cell_DataType::TYPE_STRING);
+                $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '5', $material['izmer_name']);
+                $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . '25', $material['material_price']);
 
-            $e = 9;
-            foreach ($material['installers'] as $installer_id => $installer) {
+                $e = 9;
+                foreach ($material['installers'] as $installer_id => $installer) {
 
-//                if ($e === (self::INSTALLER_PER_SHEET + 9)) {
-//                    $sheetIndex = $this->createSheet($objPHPExcel) - 1;
-//                    $i = 0;
-//                    $e = 9;
-//                }
+    //                if ($e === (self::INSTALLER_PER_SHEET + 9)) {
+    //                    $sheetIndex = $this->createSheet($objPHPExcel) - 1;
+    //                    $i = 0;
+    //                    $e = 9;
+    //                }
 
-                if ($i === 0)
-                    $objPHPExcel->getSheet($sheetIndex)->setCellValue('A' . $e, $this->getShortName($installer['auth_user_fullname']));
+                    if ($i === 0)
+                        $objPHPExcel->getSheet($sheetIndex)->setCellValue('A' . $e, $this->getShortName($installer['auth_user_fullname']));
 
 
-                if (!empty($installer['vsum']))
-                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . $e, $installer['vsum']);
-                $e++;
-            }
+                    if (!empty($installer['vsum']))
+                        $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$i] . $e, $installer['vsum']);
+                    $e++;
+                }
 
-            $i++;
-        }*/
+                $i++;
+            }*/
     }
 
 
