@@ -43,6 +43,12 @@ class MattrafficSearch extends Mattraffic
             'trOsnovs.tr_osnov_kab',
             'trMats.idParent.idMaterial.material_inv',
             'idMaterial.idSchetuchet.schetuchet_kod',
+            'trMats.idParent.idMaterial.material_name',
+            'trMats.idParent.idMaterial.material_inv',
+            'trMats.id_installakt',
+            'trMats.idInstallakt.installakt_date',
+            'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
+            'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name',
         ]);
     }
 
@@ -78,6 +84,12 @@ class MattrafficSearch extends Mattraffic
                 'idMaterial.material_number',
                 'idMaterial.material_price',
                 'idMaterial.idSchetuchet.schetuchet_kod',
+                'trMats.idParent.idMaterial.material_name',
+                'trMats.idParent.idMaterial.material_inv',
+                'trMats.id_installakt',
+                'trMats.idInstallakt.installakt_date',
+                'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
+                'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name',
             ], 'safe'],
         ];
     }
@@ -477,7 +489,8 @@ class MattrafficSearch extends Mattraffic
         return $dataProvider;
     }
 
-    public function searchforspismat($params) {
+    public function searchforspismat($params)
+    {
         $query = Mattraffic::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -486,6 +499,11 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $this->baseRelations($query);
+        $query->joinWith([
+            'trMats.idParent.idMaterial matparent',
+            'trMats.idInstallakt.idInstaller.idperson personmaster',
+            'trMats.idInstallakt.idInstaller.iddolzh dolzhmaster',
+        ]);
 
         $query->andWhere(['idMaterial.material_tip' => 2]);
         $query->andWhere(['mattraffic.mattraffic_tip' => 4]);
@@ -500,7 +518,23 @@ class MattrafficSearch extends Mattraffic
 
         $this->baseFilter($query);
 
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('trMats.idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('trMats.idParent.idMaterial.material_inv')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'trMats.id_installakt'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'trMats.idInstallakt.installakt_date', Proc::Date));
+        $query->andFilterWhere(['LIKE', 'personmaster.auth_user_fullname', $this->getAttribute('trMats.idInstallakt.idInstaller.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'dolzhmaster.dolzh_name', $this->getAttribute('trMats.idInstallakt.idInstaller.iddolzh.dolzh_name')]);
+
         $this->baseSort($dataProvider);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'trMats.idParent.idMaterial.material_name' => 'matparent',
+            'trMats.idParent.idMaterial.material_inv' => 'matparent',
+            'trMats.id_installakt',
+            'trMats.idInstallakt.installakt_date',
+            'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname' => 'personmaster',
+            'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name' => 'dolzhmaster',
+        ]);
 
         return $dataProvider;
     }

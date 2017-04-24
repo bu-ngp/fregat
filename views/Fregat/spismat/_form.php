@@ -170,13 +170,21 @@ use yii\web\JsExpression;
     <div class="form-group">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Spismatform']) ?>
-                <?php
-                if (!$model->isNewRecord)
-                    echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать ведомость', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/spismat/spismat-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
-                ?>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <?= Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-plus"></i> Создать' : '<i class="glyphicon glyphicon-edit"></i> Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'form' => 'Spismatform']) ?>
+                            <?php
+                            if (!$model->isNewRecord) {
+                                echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать ведомость', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/spismat/spismat-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
+                                echo Html::button('<i class="glyphicon glyphicon-list"></i> Скачать акты установки', ['id' => 'DownloadReport', 'class' => 'btn btn-info', 'onclick' => 'DownloadReport("' . Url::to(['Fregat/spismat/spismat-report']) . '", $(this)[0].id, {id: ' . $model->primaryKey . '} )']);
+                                echo '</div></div></div>';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
