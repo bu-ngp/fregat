@@ -33,7 +33,7 @@ class SpismatController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'spismat-report', 'spismatfilter'],
+                        'actions' => ['index', 'spismat-report', 'spismatfilter', 'spismat-installakts'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -194,6 +194,12 @@ class SpismatController extends Controller
     {
         $Report = new SpismatReport();
         echo $Report->Execute(false);
+    }
+
+    // Скачать акты установки
+    public function actionSpismatInstallakts()
+    {
+        
     }
 
     /**

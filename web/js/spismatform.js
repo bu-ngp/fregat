@@ -65,3 +65,37 @@ function AddMattraffic(spismat_id) {
     } else
         bootbox.alert("Необходимо ввести инвентарный номер материальной ценности или ее наименование в поле \"Для быстрого добавления материальных ценностей\"!");
 }
+/* not used*/
+function DownloadInstallakts(url, button, dopparams, removefile) {
+
+    if ($.type(removefile) === "undefined")
+        removefile = true;
+
+    $.ajax({
+        url: url,
+        type: "post",
+        data: {
+            buttonloadingid: button,
+            dopparams: JSON.stringify(dopparams)
+        }, /* buttonloadingid - id кнопки, для дизактивации кнопки во время выполнения запроса */
+        async: true,
+        success: function (response) {
+            /* response - Путь к новому файлу  */
+            window.location.href = baseUrl + "files/" + response;
+            /* Открываем файл */
+            /* Удаляем файл через 5 секунд*/
+            if (removefile)
+                setTimeout(function () {
+                    $.ajax({
+                        url: baseUrl + "site/delete-excel-file",
+                        type: "post",
+                        data: {filename: response},
+                        async: true
+                    });
+                }, 5000);
+        },
+        error: function (data) {
+            console.error('Ошибка');
+        }
+    });
+}
