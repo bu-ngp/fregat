@@ -20,6 +20,8 @@ use yii\web\JsExpression;
 
     <?php $form = ActiveForm::begin([
         'id' => 'Spismatform',
+       // 'enableClientValidation'=>false,
+     //   'enableAjaxValidation' => true,
     ]); ?>
 
     <?=
@@ -53,22 +55,20 @@ use yii\web\JsExpression;
     ?>
 
 
-    <div class="form-group"><label class="control-label"
+    <div class="form-group required"><label class="control-label"
                                    for="period_beg"><?= $model->getAttributeLabel('period') ?></label>
         <div class="row">
             <div class="col-xs-12 col-lg-7">
                 <div class="row">
                     <div class="col-sm-6">
-                        <?= $form->field($model, 'period_beg')->widget(DateControl::classname(), [
+                        <?= $form->field($model, 'period_beg', ['enableAjaxValidation' => true])->widget(DateControl::classname(), [
                             'type' => DateControl::FORMAT_DATE,
-                            'options' => [
-                                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control'],
-                            ],
                             'saveOptions' => ['class' => 'form-control'],
                             'widgetOptions' => [
                                 'layout' => '<span class="input-group-addon">ОТ</span>{picker}{remove}{input}',
+                                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
                                 'pluginEvents' => [
-                                    "changeDate" => "function(e) { checkMaterialsCount(); }",
+                                    //     "changeDate" => "function(e) { checkMaterialsCount(); }",
                                     "clearDate" => "function(e) { spismatCreateDisabled(true); }",
                                 ],
                             ],
@@ -76,16 +76,14 @@ use yii\web\JsExpression;
                         ?>
                     </div>
                     <div class="col-sm-6">
-                        <?= $form->field($model, 'period_end')->widget(DateControl::classname(), [
+                        <?= $form->field($model, 'period_end', ['enableAjaxValidation' => true])->widget(DateControl::classname(), [
                             'type' => DateControl::FORMAT_DATE,
-                            'options' => [
-                                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
-                            ],
                             'saveOptions' => ['class' => 'form-control'],
                             'widgetOptions' => [
                                 'layout' => '<span class="input-group-addon">ДО</span>{picker}{remove}{input}',
+                                'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
                                 'pluginEvents' => [
-                                    "changeDate" => "function(e) {  checkMaterialsCount(); }",
+                                    //   "changeDate" => "function(e) {  checkMaterialsCount(); }",
                                     "clearDate" => "function(e) {  spismatCreateDisabled(true); }",
                                 ],
                             ],

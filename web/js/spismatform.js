@@ -1,6 +1,7 @@
 function checkMaterialsCount() {
-    if ($("#spismat-id_mol").val() && parseDateControl("spismat-period_beg") && parseDateControl("spismat-period_end")) {
-
+    if ($("#spismat-id_mol").val() && parseDateControl("spismat-period_beg") && parseDateControl("spismat-period_end")
+        && $("#spismat-id_mol").attr("aria-invalid", false) && $("#spismat-period_beg").attr("aria-invalid", false) && $("#spismat-period_end").attr("aria-invalid", false)
+    ) {
         $.ajax({
             url: baseUrl + "Fregat/spismat/check-materials",
             type: "post",
@@ -17,18 +18,39 @@ function checkMaterialsCount() {
                     var obj = JSON.parse(data);
 
                     $("#spismat_alert").html("<strong>Доступно материалов для добавления: </strong>" + obj.count);
-                }
-                spismatCreateDisabled(false);
+                    $("#spismat_alert").show();
+                    //  $('#Spismatform').yiiActiveForm('updateMessages', {}, true);
+
+                    //   $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_beg', '');
+                    //   $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_end', '');
+                    if (obj.count > 0)
+                        spismatCreateDisabled(false);
+                    else
+                        spismatCreateDisabled(true, false);
+                } else
+                    spismatCreateDisabled(true);
             },
             error: function (err) {
                 spismatCreateDisabled(true);
             }
         });
     }
-
 }
 
-function spismatCreateDisabled(operation) {
+$('#Spismatform').on('afterValidateAttribute', function (e, attr, msg) {
+    /* console.debug(e)
+     console.debug(attr)
+     console.debug(msg)*/
+    if (msg.length === 0) {
+        //  $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_beg', '');
+        //  $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_end', '');
+        checkMaterialsCount();
+    }
+
+    return true;
+});
+
+function spismatCreateDisabled(operation, withAlert) {
     if (operation) {
         $("#spismat_create").prop("disabled", true);
         $("#spismat_create").addClass("disabled");
@@ -36,13 +58,15 @@ function spismatCreateDisabled(operation) {
     } else {
         $("#spismat_create").prop("disabled", false);
         $("#spismat_create").removeClass("disabled");
-        $("#spismat_alert").show();
+        if (withAlert)
+            $("#spismat_alert").show();
     }
 }
 
 function parseDateControl(id) {
     str = $("#" + id).prev("div").children("input").val();
-    return str.replace(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/, "$3-$2-$1");
+    if (typeof str !== "undefined")
+        return str.replace(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/, "$3-$2-$1");
 }
 
 function AddMattraffic(spismat_id) {
@@ -99,3 +123,7 @@ function DownloadInstallakts(url, button, dopparams, removefile) {
         }
     });
 }
+
+$(document).ready(function () {
+    checkMaterialsCount();
+});

@@ -29,6 +29,15 @@ class Spismat extends \yii\db\ActiveRecord
         return 'spismat';
     }
 
+    public function attributes()
+    {
+        // add related fields to searchable attributes
+        return array_merge(parent::attributes(), [
+            'period_beg',
+            'period_end',
+        ]);
+    }
+
     /**
      * @inheritdoc
      */
@@ -39,6 +48,8 @@ class Spismat extends \yii\db\ActiveRecord
             [['id_mol', 'spismat_spisinclude'], 'integer'],
             [['spismat_date', 'period_beg', 'period_end'], 'date', 'format' => 'yyyy-MM-dd'],
             [['spismat_date', 'period_beg', 'period_end'], 'compare', 'compareValue' => date('Y-m-d'), 'operator' => '<=', 'message' => 'Значение {attribute} должно быть меньше или равно значения «' . Yii::$app->formatter->asDate(date('Y-m-d')) . '».'],
+            //   [['period_beg'], 'compare', 'compareAttribute' => 'period_end', 'operator' => '<=', 'message' => 'Дата начала периода должна быть меньше или равно даты окончания периода'],
+            [['period_beg', 'period_end'], 'DateRangeValid'],
             [['id_mol'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['id_mol' => 'employee_id']],
         ];
     }
@@ -57,6 +68,20 @@ class Spismat extends \yii\db\ActiveRecord
             'period_beg' => 'Начало перода',
             'period_end' => 'Окончание периода',
         ];
+    }
+
+    public function DateRangeValid($attribute)
+    {
+        if (empty($this->period_beg))
+            $this->addError($attribute, 'Заполните дату начала периода');
+
+        if (empty($this->period_end))
+            $this->addError($attribute, 'Заполните дату окончания периода');
+
+        if (!empty($this->period_beg) && !empty($this->period_end)) {
+            if ($this->period_beg > $this->period_end)
+                $this->addError($attribute, 'Дата начала периода не может быть больше даты окончания');
+        }
     }
 
     /**

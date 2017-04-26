@@ -54,9 +54,9 @@ class SpismatReport extends BaseReportPortal
 
         $this->createSheet($objPHPExcel);
 
-        $VedomostArr = Spismatmaterials::getVedomostArray($ID);
+        $VedomostArr = Spismatmaterials::getVedomostArrayTest($ID);
 
-        $key_m = 1;
+ /*       $key_m = 1;
         $key_i = 1;
         $key_i_sum = 0;
         foreach ($VedomostArr['materials'] as $mattraffic_id => $material) {
@@ -74,7 +74,7 @@ class SpismatReport extends BaseReportPortal
             }
             $key_m++;
         }
-
+*/
         file_put_contents('test.txt', print_r($VedomostArr, true));
 
         $i = 0;

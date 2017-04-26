@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\ReportsTemplate\InstallaktReport;
 use app\func\ReportsTemplate\SpismatReport;
 use app\models\Fregat\SpismatFilter;
 use app\models\Fregat\Spismatmaterials;
@@ -12,11 +13,14 @@ use Yii;
 use app\func\Proc;
 use app\models\Fregat\Spismat;
 use app\models\Fregat\SpismatSearch;
+use yii\bootstrap\ActiveForm;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\Response;
+use ZipArchive;
 
 /**
  * SpismatController implements the CRUD actions for Spismat model.
@@ -102,21 +106,37 @@ class SpismatController extends Controller
         $params = Yii::$app->request->post();
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if ($model->load($params)
+            $loaded = $model->load($params);
+
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($model);
+            }
+
+            if ($loaded
                 && TrMat::getCountMaterials($params['Spismat']['id_mol'], $params['Spismat']['period_beg'], $params['Spismat']['period_end'], $params['Spismat']['spisinclude']) > 0
                 && $model->save()
             ) {
                 $rows = TrMat::getMaterialsSpismat($params['Spismat']['id_mol'], $params['Spismat']['period_beg'], $params['Spismat']['period_end'], $params['Spismat']['spisinclude']);
-                foreach ($rows as $ar) {
-                    $sm = new Spismatmaterials;
-                    $sm->id_spismat = $model->primaryKey;
-                    $sm->id_mattraffic = $ar['id_mattraffic'];
-                    $sm->save();
-                }
 
-                Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-                $transaction->commit();
-                return $this->redirect(['update', 'id' => $model->primaryKey]);
+                if ($rows) {
+                    foreach ($rows as $ar) {
+                        $sm = new Spismatmaterials;
+                        $sm->id_spismat = $model->primaryKey;
+                        $sm->id_mattraffic = $ar['id_mattraffic'];
+                        $sm->save();
+                    }
+
+                    Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
+                    $transaction->commit();
+                    return $this->redirect(['update', 'id' => $model->primaryKey]);
+                } else {
+                    $model->spismat_date = empty($model->spismat_date) ? date('Y-m-d') : $model->spismat_date;
+                    $transaction->rollBack();
+                    return $this->render('create_by_installakt', [
+                        'model' => $model,
+                    ]);
+                }
             } else {
                 $model->spismat_date = empty($model->spismat_date) ? date('Y-m-d') : $model->spismat_date;
                 $transaction->rollBack();
@@ -199,7 +219,59 @@ class SpismatController extends Controller
     // Скачать акты установки
     public function actionSpismatInstallakts()
     {
-        
+        $Report = new InstallaktReport();
+        $spismat_id = json_decode(Yii::$app->request->post()['dopparams'])->id;
+
+        $materials = Spismatmaterials::find()
+            ->select(['trMats.id_installakt'])
+            ->joinWith([
+                'idMattraffic.trMats',
+            ])
+            ->andWhere([
+                'id_spismat' => $spismat_id,
+            ])
+            ->groupBy(['trMats.id_installakt'])
+            ->asArray()
+            ->all();
+
+        if ($materials) {
+            $subDirName = DIRECTORY_SEPARATOR . 'Акты установки для ведомости №' . $spismat_id;
+            $subDirName = DIRECTORY_SEPARATOR === '/' ? $subDirName : mb_convert_encoding($subDirName, 'Windows-1251', 'UTF-8');
+
+            $dir_work = $Report->getDirectoryFiles();
+            $directory = $Report->getDirectoryFiles() . $subDirName;
+
+            // Создаем временную директорию
+            if (!is_dir($directory))
+                mkdir($directory);
+
+            $Report->setDirectoryFiles($directory);
+            $aktsNames = [];
+
+            // Пишем во временную директорию акты установки
+            foreach ($materials as $material) {
+                $Report->setParams('id_report', $material['id_installakt']);
+                $aktsNames[] = $Report->Execute();
+            }
+
+            // Создаем архив временной директории
+            $zip = new ZipArchive();
+            $zip->open($dir_work . $subDirName . '.zip', ZipArchive::CREATE);
+            foreach ($aktsNames as $aktName) {
+                $aktName_encode = DIRECTORY_SEPARATOR === '/' ? $aktName : mb_convert_encoding($aktName, 'Windows-1251', 'UTF-8');
+                $aktName = mb_convert_encoding($aktName, 'CP866', 'UTF-8');
+                $zip->addFile($directory . DIRECTORY_SEPARATOR . $aktName_encode, $aktName);
+            }
+            $zip->close();
+
+            // Удаляем временную директорию с файлами
+            array_map('unlink', glob($directory . DIRECTORY_SEPARATOR . "*"));
+            rmdir($directory);
+
+            $subDirName = DIRECTORY_SEPARATOR === '/' ? $subDirName : mb_convert_encoding($subDirName, 'UTF-8', 'Windows-1251');
+
+            echo $subDirName . '.zip';
+        }
     }
 
     /**

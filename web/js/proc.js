@@ -68,8 +68,7 @@ function SetSession(thiselem) {
     var elem = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input") : $(thiselem);
 
     if ($(thiselem).hasClass("krajee-datepicker")) {
-        elem.unbind('change');
-        elem.on("change", function () {
+        elem.change(function () {
             SendSetSession(field, $(this).val())
         });
     } else

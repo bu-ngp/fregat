@@ -35,6 +35,10 @@ abstract class BaseReportPortal
      */
     private $_objPHPExcel;
     /**
+     * @var array $_params Параметры установленные вручную
+     */
+    private $_params;
+    /**
      * @var array $_Dopparams Дополнительные переменные POST, отправленные Ajax запросом
      */
     private $_Dopparams;
@@ -194,7 +198,7 @@ abstract class BaseReportPortal
     private function SaveFileIfExists($fileroot)
     {
         $counter = 1;
-        $filename = substr($fileroot, strpos($fileroot, '/') + 1);
+        $filename = substr($fileroot, strrpos($fileroot, '/') + 1);
 
         while (file_exists($fileroot)) {
             preg_match('/(.+\/)(.+?)((\(.+)?\.)(.+)/i', $fileroot, $file_arr);
@@ -256,6 +260,24 @@ abstract class BaseReportPortal
                 return mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
         } else
             throw new \Exception('Ошибка в BaseReportPortal->DownloadExcelPHP()');
+    }
+
+    /**
+     * @param string $paramName
+     * @param mixed $value
+     */
+    public function setParams($paramName, $value)
+    {
+        $this->_params[$paramName] = $value;
+    }
+
+    /**
+     * @param string $paramName
+     * @return mixed
+     */
+    public function getParams($paramName)
+    {
+        return $this->_params[$paramName];
     }
 
     /**
