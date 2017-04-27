@@ -38,7 +38,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     ],
                 ],
                 'buttons' => array_merge(Yii::$app->user->can('SpismatEdit') ? [
-                    'downloadreport' => ['Fregat/spismat/spismat-report'],
+                    'downloadreport' => ['Fregat/spismat/spismat-report', 'Скачать ведомость'],
                     'update' => ['Fregat/spismat/update'],
                     'deleteajax' => ['Fregat/spismat/delete'],
                 ] : []

@@ -19,6 +19,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
         // add related fields to searchable attributes
         return array_merge(parent::attributes(), [
             'idMattraffic.idMaterial.material_name',
+            'idMattraffic.idMaterial.material_name1c',
             'idMattraffic.idMaterial.material_inv',
             'idMattraffic.mattraffic_number',
             'idMattraffic.trMats.idParent.idMaterial.material_name',
@@ -39,6 +40,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
             [['spismatmaterials_id', 'id_spismat', 'id_mattraffic'], 'integer'],
             [[
                 'idMattraffic.idMaterial.material_name',
+                'idMattraffic.idMaterial.material_name1c',
                 'idMattraffic.idMaterial.material_inv',
                 'idMattraffic.mattraffic_number',
                 'idMattraffic.trMats.idParent.idMaterial.material_name',
@@ -101,6 +103,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
         ]);
 
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_name1c', $this->getAttribute('idMattraffic.idMaterial.material_name1c')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idMattraffic.trMats.idParent.idMaterial.material_name')]);
@@ -112,6 +115,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
+            'idMattraffic.idMaterial.material_name1c',
             'idMattraffic.idMaterial.material_inv',
             'idMattraffic.mattraffic_number',
             'idMattraffic.trMats.idParent.idMaterial.material_name' => 'matparent',

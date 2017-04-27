@@ -26,7 +26,7 @@ function checkMaterialsCount() {
                     if (obj.count > 0)
                         spismatCreateDisabled(false);
                     else
-                        spismatCreateDisabled(true, false);
+                        spismatCreateDisabled(true, true);
                 } else
                     spismatCreateDisabled(true);
             },
@@ -58,9 +58,15 @@ function spismatCreateDisabled(operation, withAlert) {
     } else {
         $("#spismat_create").prop("disabled", false);
         $("#spismat_create").removeClass("disabled");
-        if (withAlert)
-            $("#spismat_alert").show();
     }
+
+    if (typeof withAlert !== "undefined") {
+        if (withAlert == true)
+            $("#spismat_alert").show();
+        else
+            $("#spismat_alert").hide();
+    }
+
 }
 
 function parseDateControl(id) {

@@ -21,6 +21,7 @@ class MattrafficSearch extends Mattraffic
             'idMaterial.material_tip',
             'idMaterial.idMatv.matvid_name',
             'idMaterial.material_name',
+            'idMaterial.material_name1c',
             'idMaterial.material_inv',
             'idMaterial.material_serial',
             'idMaterial.material_release',
@@ -62,6 +63,7 @@ class MattrafficSearch extends Mattraffic
             [['mattraffic_date', 'mattraffic_username', 'mattraffic_lastchange',
                 'idMaterial.idMatv.matvid_name',
                 'idMaterial.material_name',
+                'idMaterial.material_name1c',
                 'idMaterial.material_inv',
                 'idMaterial.material_serial',
                 'idMaterial.material_release',
@@ -127,6 +129,7 @@ class MattrafficSearch extends Mattraffic
         $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMaterial.idMatv.matvid_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_name1c', $this->getAttribute('idMaterial.material_name1c')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
@@ -160,6 +163,7 @@ class MattrafficSearch extends Mattraffic
             'idMaterial.material_tip',
             'idMaterial.idMatv.matvid_name',
             'idMaterial.material_name',
+            'idMaterial.material_name1c',
             'idMaterial.material_inv',
             'idMaterial.material_serial',
             'idMaterial.material_release',

@@ -91,6 +91,14 @@ use yii\web\JsExpression;
                             return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
                         }
                     ],
+                    [
+                        'attribute' => 'idMattraffic.idMaterial.material_name1c',
+                        'visible' => false,
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->idMattraffic->id_material]) . '">' . $model->idMattraffic->idMaterial->material_name . '</a>';
+                        }
+                    ],
                     'idMattraffic.idMaterial.material_inv',
                     [
                         'attribute' => 'idMattraffic.mattraffic_number',

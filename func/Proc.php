@@ -178,11 +178,11 @@ class Proc
 
             $session['breadcrumbs'] = $result;
 
-          /* echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
-             $s1 = $_SESSION;
-             unset($s1['__flash']);
-             print_r($s1);
-             echo '</pre>'; */
+            /* echo '<pre class="xdebug-var-dump" style="max-height: 350px; font-size: 15px;">';
+               $s1 = $_SESSION;
+               unset($s1['__flash']);
+               print_r($s1);
+               echo '</pre>'; */
 
             $session->close();
 
@@ -322,7 +322,7 @@ class Proc
                 $Params['buttons']['downloadreport'] = function ($url, $model) use ($Params) {
                     return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                         'type' => 'button',
-                        'title' => 'Скачать отчет',
+                        'title' => isset($Params['buttons']['downloadreport'][1]) ? $Params['buttons']['downloadreport'][1] : 'Скачать отчет',
                         'class' => 'btn btn-xs btn-info',
                         'onclick' => 'DownloadReport("' . Url::to([$Params['buttons']['downloadreport'][0]]) . '", null, {id: ' . $model->primaryKey . '}, ' . (YII_ENV === 'test' ? 0 : 1) . ')'
                     ]);

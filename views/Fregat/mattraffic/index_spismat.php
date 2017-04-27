@@ -38,11 +38,19 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
             'columns' => [
                 [
                     'attribute' => 'idMaterial.material_name',
-                    'label' => 'Наименование',
                     'format' => 'raw',
                     'value' => function ($model) {
                         if (isset($model->trMats[0]))
                             return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->id_material]) . '">' . $model->idMaterial->material_name . '</a>';
+                    },
+                ],
+                [
+                    'attribute' => 'idMaterial.material_name1c',
+                    'visible' => false,
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        if (isset($model->trMats[0]))
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->id_material]) . '">' . $model->idMaterial->material_name1c . '</a>';
                     },
                 ],
                 'idMaterial.material_inv',

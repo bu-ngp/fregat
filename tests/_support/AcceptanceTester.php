@@ -220,6 +220,27 @@ class AcceptanceTester extends \Codeception\Actor
         }
     }
 
+    public function checkZipFile($fileName, $filesArray)
+    {
+        $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
+
+        $zip = new ZipArchive();
+        if ($zip->open($fileName, ZipArchive::EXCL) !== true)
+            $this->fail('Не существует архив ' . $fileNameOutput);
+
+        $filesFromZip = [];
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
+        }
+
+        file_put_contents('tt.txt', print_r($filesFromZip, true));
+
+        $this->fail('fdsfd');
+
+        $zip->close();
+    }
+
     public function countRowsDynagridEquals($dynaGridID, $needCount)
     {
         try {
@@ -279,6 +300,8 @@ class AcceptanceTester extends \Codeception\Actor
         $this->click('//input[@name="' . $attributeName . '"]/../div/input');
         $this->wait(1);
         $this->fillField('//input[@name="' . $attributeName . '"]/../div/input', $value);
+        $this->click('//body');
+        $this->wait(1);
     }
 
     public function seeSelect2Options($attributeName, $inputValue, array $optionsResult)
