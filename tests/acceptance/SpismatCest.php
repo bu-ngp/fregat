@@ -163,6 +163,7 @@ class SpismatCest
         $I->fillDatecontrol('Spismat[period_end]', date('d.m.Y'));
 
         $I->wait(2);
+
         $I->seeElement('//div[@id="spismat_alert" and text()="0"]');
         $I->seeElement('//button[@id="spismat_create" and contains(@class,"disabled") and @disabled]');
 
@@ -271,20 +272,20 @@ class SpismatCest
      */
     public function destroyData()
     {
-    /*    Spismatmaterials::deleteAll();
-        Spismat::deleteAll();
-        TrMat::deleteAll();
-        TrOsnov::deleteAll();
-        Installakt::deleteAll();
-        Mattraffic::deleteAll();
-        Material::deleteAll();
-        Employee::deleteAll();
-        Matvid::deleteAll();
-        Izmer::deleteAll();
-        Schetuchet::deleteAll();
-        Authuser::deleteAll('auth_user_id <> 1');
-        Build::deleteAll();
-        Dolzh::deleteAll();
-        Podraz::deleteAll();*/
+        /*    Spismatmaterials::deleteAll();
+            Spismat::deleteAll();
+            TrMat::deleteAll();
+            TrOsnov::deleteAll();
+            Installakt::deleteAll();
+            Mattraffic::deleteAll();
+            Material::deleteAll();
+            Employee::deleteAll();
+            Matvid::deleteAll();
+            Izmer::deleteAll();
+            Schetuchet::deleteAll();
+            Authuser::deleteAll('auth_user_id <> 1');
+            Build::deleteAll();
+            Dolzh::deleteAll();
+            Podraz::deleteAll();*/
     }
 }

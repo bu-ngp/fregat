@@ -300,8 +300,10 @@ class AcceptanceTester extends \Codeception\Actor
         $this->click('//input[@name="' . $attributeName . '"]/../div/input');
         $this->wait(1);
         $this->fillField('//input[@name="' . $attributeName . '"]/../div/input', $value);
-        $this->click('//body');
+        $this->pressKey('//input[@name="' . $attributeName . '"]/../div/input', WebDriverKeys::ENTER);
         $this->wait(1);
+        /*   $this->click('//body');
+           $this->wait(1);*/
     }
 
     public function seeSelect2Options($attributeName, $inputValue, array $optionsResult)

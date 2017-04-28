@@ -1,6 +1,6 @@
 function checkMaterialsCount() {
     if ($("#spismat-id_mol").val() && parseDateControl("spismat-period_beg") && parseDateControl("spismat-period_end")
-        && $("#spismat-id_mol").attr("aria-invalid", false) && $("#spismat-period_beg").attr("aria-invalid", false) && $("#spismat-period_end").attr("aria-invalid", false)
+        && $("#spismat-id_mol").attr("aria-invalid") == false && $("#spismat-period_beg").attr("aria-invalid") == false && $("#spismat-period_end").attr("aria-invalid") == false
     ) {
         $.ajax({
             url: baseUrl + "Fregat/spismat/check-materials",
@@ -21,8 +21,8 @@ function checkMaterialsCount() {
                     $("#spismat_alert").show();
                     //  $('#Spismatform').yiiActiveForm('updateMessages', {}, true);
 
-                    //   $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_beg', '');
-                    //   $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_end', '');
+                      // $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_beg', '');
+                      // $('#Spismatform').yiiActiveForm('updateAttribute', 'spismat-period_end', '');
                     if (obj.count > 0)
                         spismatCreateDisabled(false);
                     else
