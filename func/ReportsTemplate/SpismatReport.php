@@ -56,7 +56,7 @@ class SpismatReport extends BaseReportPortal
 
         $VedomostArr = Spismatmaterials::getVedomostArrayTest($ID);
 
-     //   file_put_contents('test.txt', print_r($VedomostArr, true));
+        //   file_put_contents('test.txt', print_r($VedomostArr, true));
 
         foreach ($VedomostArr as $mattraffic_id => $material) {
 
