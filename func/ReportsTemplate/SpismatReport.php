@@ -56,7 +56,7 @@ class SpismatReport extends BaseReportPortal
 
         $VedomostArr = Spismatmaterials::getVedomostArrayTest($ID);
 
-        file_put_contents('test.txt', print_r($VedomostArr, true));
+     //   file_put_contents('test.txt', print_r($VedomostArr, true));
 
         foreach ($VedomostArr as $mattraffic_id => $material) {
 
@@ -66,16 +66,20 @@ class SpismatReport extends BaseReportPortal
                 $this->createSheet($objPHPExcel);
             }
 
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '3', $material['material_name']);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValueExplicit($this->mat_sheet_address[$material['posx']] . '4', $material['material_inv'], \PHPExcel_Cell_DataType::TYPE_STRING);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '5', $material['izmer_name']);
-            $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '25', $material['material_price']);
-
             foreach ($material['installers'] as $installer_id => $installer) {
                 $sheetIndex = $installer['sheet'];
 
                 if ($objPHPExcel->getSheetCount() - 2 < $sheetIndex)
                     $this->createSheet($objPHPExcel);
+
+                if ($installer['posy'] == 1) {
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '3', $material['material_name']);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValueExplicit($this->mat_sheet_address[$material['posx']] . '4', $material['material_inv'], \PHPExcel_Cell_DataType::TYPE_STRING);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '5', $material['izmer_name']);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '23', $material['count']);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '25', $material['material_price']);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '26', $material['material_sum']);
+                }
 
                 if ($material['posx'] == 1)
                     $objPHPExcel->getSheet($sheetIndex)->setCellValue('A' . ($installer['posy'] + 8), $this->getShortName($installer['auth_user_fullname']));

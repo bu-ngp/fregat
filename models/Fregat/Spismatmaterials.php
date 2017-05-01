@@ -173,20 +173,14 @@ class Spismatmaterials extends \yii\db\ActiveRecord
             ->asArray()
             ->all();
 
-        $material_sheets_count = ceil(count($materials) / 1/*10*/);
-        $installer_sheets_count = ceil(count($installers) / 1/*14*/);
-
         $max_m = 10;
         $max_m_tmp = $max_m;
         $max_i = 14;
-        $max_i_tmp = $max_i;
         $posx = 0;
-        $posy = 0;
 
         $rows = [];
 
         $curSheet = 1;
-        $mat_complete = 0;
 
         foreach ($materials as $key_m => $material) {
             $rows[$material['id_material']] = [
@@ -198,7 +192,6 @@ class Spismatmaterials extends \yii\db\ActiveRecord
                 'installers' => [],
             ];
 
-            $a1 = floor($max_m_tmp / ($key_m + 1));
             $posy = 0;
             if (floor($max_m_tmp / ($key_m + 1)) == 0) {
                 $max_m_tmp = $max_m_tmp + $max_m;
@@ -210,11 +203,8 @@ class Spismatmaterials extends \yii\db\ActiveRecord
             }
 
             foreach ($installers as $key_i => $installer) {
-                //  $curSheet = ceil(($key_m + 1) / $max_m) + ceil(($key_i + 1) / $max_i) + $mat_complete;
-
 
                 if (floor($max_i / ($key_i + 1)) == 0) {
-                    // $max_i_tmp = $max_i_tmp + $max_i;
                     $posy = 1;
                     $curSheet++;
                 } else {
@@ -230,11 +220,12 @@ class Spismatmaterials extends \yii\db\ActiveRecord
                     'posy' => $posy,
                     'vsum' => 0,
                 ];
-
-
             }
+
+            if (floor(($key_m + 1) / $max_m_tmp) < 1)
+                $curSheet = $curSheet - max($rows[$material['id_material']]['sheets']) + min($rows[$material['id_material']]['sheets']);
+
             $rows[$material['id_material']]['sheets'] = array_unique($rows[$material['id_material']]['sheets'], SORT_NUMERIC);
-            $mat_complete++;
         }
 
         $query = self::find()
@@ -258,13 +249,35 @@ class Spismatmaterials extends \yii\db\ActiveRecord
             ->asArray()
             ->all();
 
+        $query2 = self::find()
+            ->select([
+                'idMattraffic.id_material',
+                'idMaterial.material_price',
+                new Expression('sum(idMattraffic.mattraffic_number) as vcount'),
+            ])
+            ->joinWith([
+                'idMattraffic.idMaterial',
+            ])
+            ->andWhere(['spismatmaterials.id_spismat' => $spismat_id])
+            ->groupBy(['idMattraffic.id_material'])
+            ->orderBy(['idMattraffic.id_material' => SORT_ASC])
+            ->asArray()
+            ->all();
+
 
         if ($query !== false) {
             foreach ($query as $ar) {
                 $rows[$ar['id_material']]['installers'] = array_replace_recursive($rows[$ar['id_material']]['installers'], [$ar['id_person'] => ['vsum' => $ar['vsum']]]);
             }
-
-            return $rows;
         }
+
+        if ($query2 !== false) {
+            foreach ($query2 as $ar) {
+                $rows[$ar['id_material']]['count'] = $ar['vcount'];
+                $rows[$ar['id_material']]['material_sum'] = $ar['vcount'] * $ar['material_price'];
+            }
+        }
+
+        return $rows;
     }
 }
