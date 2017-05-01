@@ -68,8 +68,7 @@ use yii\web\JsExpression;
                                 'layout' => '<span class="input-group-addon">ОТ</span>{picker}{remove}{input}',
                                 'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
                                 'pluginEvents' => [
-                                    //     "changeDate" => "function(e) { checkMaterialsCount(); }",
-                                    "clearDate" => "function(e) { spismatCreateDisabled(true); }",
+                                    "clearDate" => "function(e) { clearDatePicker(); }",
                                 ],
                             ],
                         ])->label(false);
@@ -83,8 +82,7 @@ use yii\web\JsExpression;
                                 'layout' => '<span class="input-group-addon">ДО</span>{picker}{remove}{input}',
                                 'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
                                 'pluginEvents' => [
-                                    //   "changeDate" => "function(e) {  checkMaterialsCount(); }",
-                                    "clearDate" => "function(e) {  spismatCreateDisabled(true); }",
+                                    "clearDate" => "function(e) {  clearDatePicker(); }",
                                 ],
                             ],
                         ])->label(false);

@@ -22,13 +22,12 @@ use yii\web\JsExpression;
         'id' => 'Spismatform',
     ]); ?>
 
-
     <?= !$model->isNewRecord ? $form->field($model, 'spismat_id')->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) : '' ?>
 
     <?=
     $form->field($model, 'spismat_date')->widget(DateControl::classname(), [
         'type' => DateControl::FORMAT_DATE,
-        'options' => [
+        'widgetOptions' => [
             'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
         ],
     ])

@@ -63,23 +63,13 @@ function SendSetSession(Field, Value) {
     });
 }
 
-function t1(e, date) {
-    console.debug('changed');
-    SendSetSession(field, date);
-}
-
 function SetSession(thiselem) {
     var field = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input").attr("name") : $(thiselem).attr("name");
     var elem = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input") : $(thiselem);
 
     if ($(thiselem).hasClass("krajee-datepicker")) {
-        elem.kvDatepicker().change(function (e) {
-            console.debug('changed');
-            SendSetSession(field, $(this).val());
-        });
-        /* elem.change(function () {
-         SendSetSession(field, $(this).val())
-         });*/
+        str = $(thiselem).val();
+        SendSetSession(field, str.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1"));
     } else
         SendSetSession(field, elem.val())
 }
