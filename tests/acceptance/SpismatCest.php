@@ -3,6 +3,7 @@ use app\models\Config\Authuser;
 use app\models\Fregat\Build;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
+use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\Installakt;
 use app\models\Fregat\Izmer;
 use app\models\Fregat\Material;
@@ -162,7 +163,7 @@ class SpismatCest
         $I->fillDatecontrol('Spismat[period_beg]', date('d.m.Y'));
         $I->fillDatecontrol('Spismat[period_end]', date('d.m.Y'));
 
-        $I->wait(2);
+        $I->wait(4);
 
         $I->seeElement('//div[@id="spismat_alert" and text()="0"]');
         $I->seeElement('//button[@id="spismat_create" and contains(@class,"disabled") and @disabled]');
@@ -178,10 +179,10 @@ class SpismatCest
 
         $I->seeElement(['id' => 'spismatmaterialsgrid_gw']);
         $I->checkDynagridData([['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', ['link' => ['text' => '5', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ', 'ТЕРАПЕВТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
-        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=38']], '1000004', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '4', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
-        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '2.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '3', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ', 'ТЕРАПЕВТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
-        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=37']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
-        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=39']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '4', 'href' => '/Fregat/installakt/update?id=4']], date('d.m.Y'), 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '2.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '3', 'href' => '/Fregat/installakt/update?id=3']], date('d.m.Y'), 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ', 'ТЕРАПЕВТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=39']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=2']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=39']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=2']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('spismatmaterialsgrid_gw', 5);
     }
 
@@ -191,7 +192,7 @@ class SpismatCest
     public function checkZipInstallakts(AcceptanceTester $I)
     {
         $I->click('//button[contains(text(),"Скачать акты установки")]');
-        $I->wait(4);
+        $I->wait(6);
 
         $I->seeFileFound($I->convertOSFileName('Акты установки для ведомости №2.zip'), 'web/files');
         $I->checkZipFile($I->convertOSFileName('Акты установки для ведомости №2.zip'), [
@@ -209,52 +210,87 @@ class SpismatCest
     }
 
     /**
-     * @depends updateSpisosnovakt
+     * @depends checkZipInstallakts
      */
     public function checkExcelExportSpismat(AcceptanceTester $I)
     {
-        $I->clickButtonDynagrid('spisosnovaktgrid_gw', 'button[@title="Скачать ведомость"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ', 'АУП', '', '', '101.34', 'НОВЫЙ СЧЕТ']);
+        $I->click('//button[contains(text(),"Скачать ведомость")]');
         $I->wait(4);
 
-        $I->seeFileFound($I->convertOSFileName('Заявка на списание основных средств №1.xlsx'), 'web/files');
-        $I->checkExcelFile($I->convertOSFileName('Заявка на списание основных средств №1.xlsx'), [
-            ['A', 3, 'основных средств № 1 от ' . date('d.m.Y')],
-
-            ['C', 4, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ'],
-            ['C', 5, 'АУП'],
-            ['C', 6, '101.34, НОВЫЙ СЧЕТ'],
-
-            ['A', 9, '№'],
-            ['B', 9, 'Наименование'],
-            ['D', 9, 'Инвентарный номер'],
-            ['E', 9, 'Серийный номер'],
-            ['F', 9, 'Дата выпуска'],
-            ['G', 9, "Кол-\nво\n"],
-            ['H', 9, 'Срок службы'],
-            ['I', 9, 'Стоимость'],
-
-            ['A', 11, '1'],
-            ['B', 11, 'Кухонный стол'],
-            ['D', 11, '1000002'],
-            ['E', 11, '-'],
-            ['F', 11, '01.05.2010'],
-            ['G', 11, '0.5'],
-            ['I', 11, '15000'],
-
-            ['A', 13, 'Материально ответственное лицо'],
-            ['D', 13, 'ПРОГРАММИСТ'],
-            ['F', 13, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'],
+        $I->seeFileFound($I->convertOSFileName('Ведомость №2.xlsx'), 'web/files');
+        $I->checkExcelFile($I->convertOSFileName('Ведомость №2.xlsx'), [
+            ['EH', 2, 'БЛЮСОВА М. Е.'],
+            ['DL', 11, '№ 2'],
+            ['BC', 13, date('d')],
+            ['BJ', 13, Yii::$app->formatter->asDate(date('M'), 'php:F')],
+            ['CH', 13, date('y')],
+            ['L', 14, 'БУ "Нижневартовская городская поликлиника"'],
+            ['Y', 15, 'АУП'],
+            ['AC', 16, 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'],
+            ['AA', 27, 'НИКИФОРОВА Г. Р.'],
+            ['CP', 27, 'ПРОГРАММИСТ'],
+            ['EF', 27, 'ПЕТРОВ П. П.'],
+            ['AH', 3, 'Картридж А12', 1],
+            ['AS', 3, 'Картридж 36A', 1],
+            ['BD', 3, 'Лопата', 1],
+            ['AH', 4, '1000004', 1],
+            ['AS', 4, '1000005', 1],
+            ['BD', 4, '1000006', 1],
+            ['AH', 5, 'шт', 1],
+            ['AS', 5, 'шт', 1],
+            ['BD', 5, 'шт', 1],
+            ['A', 9, 'ПЕТРОВ П. П.', 1],
+            ['A', 10, 'ФЕДОТОВ Ф. Ф.', 1],
+            ['A', 11, 'СИДОРОВ Е. А.', 1],
+            ['AH', 9, '', 1],
+            ['AH', 10, '2', 1],
+            ['AH', 11, '1', 1],
+            ['AS', 9, '', 1],
+            ['AS', 10, '2', 1],
+            ['AS', 11, '', 1],
+            ['BD', 9, '2', 1],
+            ['BD', 10, '', 1],
+            ['BD', 11, '', 1],
+            ['AH', 23, '3', 1],
+            ['AS', 23, '2', 1],
+            ['BD', 23, '2', 1],
+            ['AH', 25, '900', 1],
+            ['AS', 25, '1500', 1],
+            ['BD', 25, '500', 1],
+            ['AH', 26, '2700', 1],
+            ['AS', 26, '3000', 1],
+            ['BD', 26, '1000', 1],
         ]);
     }
 
     public function deleteExcelFile(AcceptanceTester $I)
     {
-        if (file_exists($I->convertOSFileName('web/files/' . 'Заявка на списание основных средств №1.xlsx')))
-            $I->deleteFile($I->convertOSFileName('web/files/' . 'Заявка на списание основных средств №1.xlsx'));
+        if (file_exists($I->convertOSFileName('web/files/' . 'Ведомость №2.xlsx')))
+            $I->deleteFile($I->convertOSFileName('web/files/' . 'Ведомость №2.xlsx'));
     }
 
     /**
      * @depends checkExcelExportSpismat
+     */
+    public function deleteSpismaterials(AcceptanceTester $I)
+    {
+        $I->clickButtonDynagrid('spismatmaterialsgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', ['link' => ['text' => '5', 'href' => '/Fregat/installakt/update?id=5']], date('d.m.Y'), 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ', 'ТЕРАПЕВТ']);
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '4', 'href' => '/Fregat/installakt/update?id=4']], date('d.m.Y'), 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '2.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '3', 'href' => '/Fregat/installakt/update?id=3']], date('d.m.Y'), 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ', 'ТЕРАПЕВТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=39']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=2']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Лопата', 'href' => '/Fregat/material/update?id=39']], '1000006', '1.000', ['link' => ['text' => 'Шкаф для медикаментов', 'href' => '/Fregat/material/update?id=36']], '1000003', ['link' => ['text' => '2', 'href' => '/Fregat/installakt/update?id=2']], date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'spismatmaterialsgrid_gw', ['button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('spismatmaterialsgrid_gw', 4);
+
+        $I->click('//button[contains(text(),"Обновить")]');
+        $I->wait(2);
+    }
+
+    /**
+     * @depends deleteSpismaterials
      */
     public function deleteSpismat(AcceptanceTester $I)
     {
@@ -272,20 +308,20 @@ class SpismatCest
      */
     public function destroyData()
     {
-        /*    Spismatmaterials::deleteAll();
-            Spismat::deleteAll();
-            TrMat::deleteAll();
-            TrOsnov::deleteAll();
-            Installakt::deleteAll();
-            Mattraffic::deleteAll();
-            Material::deleteAll();
-            Employee::deleteAll();
-            Matvid::deleteAll();
-            Izmer::deleteAll();
-            Schetuchet::deleteAll();
-            Authuser::deleteAll('auth_user_id <> 1');
-            Build::deleteAll();
-            Dolzh::deleteAll();
-            Podraz::deleteAll();*/
+        Spismatmaterials::deleteAll();
+        Spismat::deleteAll();
+        TrMat::deleteAll();
+        TrOsnov::deleteAll();
+        Installakt::deleteAll();
+        Mattraffic::deleteAll();
+        Material::deleteAll();
+        Employee::deleteAll();
+        Matvid::deleteAll();
+        Izmer::deleteAll();
+        Schetuchet::deleteAll();
+        Authuser::deleteAll('auth_user_id <> 1');
+        Build::deleteAll();
+        Dolzh::deleteAll();
+        Podraz::deleteAll();
     }
 }

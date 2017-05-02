@@ -11,7 +11,7 @@ function checkMaterialsCount() {
                     id_mol: $("#spismat-id_mol").val(),
                     period_beg: parseDateControl("spismat-period_beg"),
                     period_end: parseDateControl("spismat-period_end"),
-                    spisinclude: $("#spismat-spismat_spisinclude")
+                    spisinclude: $("#spismat-spismat_spisinclude").val()
                 })
             },
             success: function (data) {

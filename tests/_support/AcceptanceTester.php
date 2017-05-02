@@ -212,7 +212,9 @@ class AcceptanceTester extends \Codeception\Actor
         $objPHPExcel = \PHPExcel_IOFactory::load(Yii::$app->basePath . '/web/files/' . $fileName);
         if (is_string($fileName) && !empty($fileName) && is_array($dataArray) && count($dataArray) > 0) {
             foreach ($dataArray as $cell) {
-                $cellValue = $objPHPExcel->getActiveSheet()->getCell($cell[0] . $cell[1])->getValue();
+                $sheetIndex = isset($cell[3]) ? isset($cell[3]) : 0;
+
+                $cellValue = $objPHPExcel->getSheet($sheetIndex)->getCell($cell[0] . $cell[1])->getValue();
                 if ($cellValue != $cell[2]) {
                     $this->fail('Значение в файле "' . $fileNameOutput . '" не совпадает с заданным: ячейка "' . $cell[0] . $cell[1] . '", "' . $cellValue . '" <> "' . $cell[2] . '"');
                 }
@@ -225,7 +227,7 @@ class AcceptanceTester extends \Codeception\Actor
         $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
 
         $zip = new ZipArchive();
-        if ($zip->open($fileName, ZipArchive::EXCL) !== true)
+        if ($zip->open(Yii::$app->basePath . '/web/files/' . $fileName) !== true)
             $this->fail('Не существует архив ' . $fileNameOutput);
 
         $filesFromZip = [];
@@ -234,9 +236,10 @@ class AcceptanceTester extends \Codeception\Actor
             $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
         }
 
-        file_put_contents('tt.txt', print_r($filesFromZip, true));
+        $result = array_diff($filesArray, $filesFromZip);
 
-        $this->fail('fdsfd');
+        if (!empty($result))
+            $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
 
         $zip->close();
     }
