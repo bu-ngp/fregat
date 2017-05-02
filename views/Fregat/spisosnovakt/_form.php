@@ -10,7 +10,7 @@ use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Fregat\Spisosnovakt */

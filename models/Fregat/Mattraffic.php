@@ -3,6 +3,8 @@
 namespace app\models\Fregat;
 
 use Yii;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * This is the model class for table "mattraffic".
@@ -20,6 +22,7 @@ use Yii;
  * @property TrOsnov[] $trOsnovs
  * @property Writeoffakt[] $writeoffakts
  * @property Nakladmaterials[] $nakladmaterials
+ * @property Spismatmaterials[] $spismatmaterials
  */
 class Mattraffic extends \yii\db\ActiveRecord
 {
@@ -217,6 +220,15 @@ class Mattraffic extends \yii\db\ActiveRecord
         return $this->hasMany(Nakladmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['nakladmaterials' => Nakladmaterials::tableName()]);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSpismatmaterials()
+    {
+        return $this->hasMany(Spismatmaterials::className(), ['id_mattraffic' => 'mattraffic_id'])->from(['spismatmaterials' => Spismatmaterials::tableName()]);
+    }
+
+
     public function beforeValidate()
     {
         if ((empty($this->mattraffic_lastchange) || empty($this->mattraffic_forimport)) && $this->isAttributeRequired('mattraffic_lastchange'))
@@ -331,8 +343,6 @@ class Mattraffic extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idMaterial.material_inv, idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
             ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (1,2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . (empty($params['id_parent']) ? '' : ' and tmat.id_parent = ' . $params['id_parent']) . ' )')
-            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt left join tr_osnov tosn on tosn.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material' . (empty($params['id_parent']) ? '' : ' and mt.mattraffic_id <> ' . $params['id_parent']) . ' )')
             ->joinWith(['idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild'])
             ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
             ->andWhere('mattraffic_number > 0')
@@ -340,10 +350,34 @@ class Mattraffic extends \yii\db\ActiveRecord
             ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
             ->andWhere([
                 'or',
-                ['and', ['tr_mat.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]],
-                ['and', ['not', ['tr_osnov.id_mattraffic' => NULL]], ['idMaterial.material_tip' => 1]],
+                [
+                    'and',
+                    ['exists', (new Query())
+                        ->select(['mt.mattraffic_id'])
+                        ->from('mattraffic mt')
+                        ->innerJoin('tr_osnov tosn', 'tosn.id_mattraffic = mt.mattraffic_id')
+                        ->andWhere([
+                            'mt.id_mol' => new Expression('mattraffic.id_mol'),
+                            'mt.id_material' => new Expression('mattraffic.id_material'),
+                        ])
+                        ->andWhere(empty($params['id_parent']) ? [] : ['<>', 'mt.mattraffic_id', $params['id_parent']])
+                    ],
+                    ['idMaterial.material_tip' => 1]],
+                [
+                    'and',
+                    ['not exists', (new Query())
+                        ->select(['mt.mattraffic_id'])
+                        ->from('mattraffic mt')
+                        ->innerJoin('tr_mat tmat', 'tmat.id_mattraffic = mt.mattraffic_id')
+                        ->andWhere(array_merge([
+                            'mt.id_mol' => new Expression('mattraffic.id_mol'),
+                            'mt.id_material' => new Expression('mattraffic.id_material'),
+                            'tmat.id_installakt' => $params['idinstallakt'],
+                        ], empty($params['id_parent']) ? [] : ['tmat.id_parent' => $params['id_parent']]))
+                    ],
+                    ['idMaterial.material_tip' => 2]
+                ]
             ])
-            ->andWhere(['in', 'idMaterial.material_tip', [1, 2]])
             ->limit(20)
             ->asArray()
             ->$method();

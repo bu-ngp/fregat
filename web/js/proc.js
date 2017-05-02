@@ -68,13 +68,12 @@ function SetSession(thiselem) {
     var elem = $(thiselem).hasClass("krajee-datepicker") ? $(thiselem).parent("div").next("input") : $(thiselem);
 
     if ($(thiselem).hasClass("krajee-datepicker")) {
-        elem.unbind('change');
-        elem.on("change", function () {
-            SendSetSession(field, $(this).val())
-        });
+        str = $(thiselem).val();
+        SendSetSession(field, str.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1"));
     } else
         SendSetSession(field, elem.val())
 }
+
 
 function InitWindowGUID() {
     $.ajax({

@@ -40,6 +40,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 <i class="glyphicon glyphicon-paste"></i>
             </div>
         <?php endif; ?>
+        <?php if (Yii::$app->user->can('NakladEdit')): ?>
+            <div class="menubutton menubutton_activeanim mb_yellow" id="mb_naklad_j">
+                <span class="hoverspan"></span>
+                <div class="menubutton_cn">Журнал требований - накладных</div>
+                <i class="glyphicon glyphicon-bell"></i>
+            </div>
+        <?php endif; ?>
     </div>
 <?php endif; ?>
 
@@ -76,11 +83,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 <i class="glyphicon glyphicon-trash"></i>
             </div>
         <?php endif; ?>
-        <?php if (Yii::$app->user->can('NakladEdit')): ?>
-            <div class="menubutton menubutton_activeanim mb_green" id="mb_naklad_j">
+        <?php if (Yii::$app->user->can('SpismatEdit')): ?>
+            <div class="menubutton menubutton_activeanim mb_green" id="mb_spismat_j">
                 <span class="hoverspan"></span>
-                <div class="menubutton_cn">Журнал требований - накладных</div>
-                <i class="glyphicon glyphicon-bell"></i>
+                <div class="menubutton_cn">Журнал списания материалов</div>
+                <i class="glyphicon glyphicon-th"></i>
             </div>
         <?php endif; ?>
     </div>

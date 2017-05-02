@@ -307,7 +307,7 @@ class TrMatSearch extends TrMat
         $query->andWhere(['trRmMats.id_tr_mat' => NULL]);
         $query->andWhere(['idParent.id_material' => $params['id']]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'id_installakt'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_date'), 'date');
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));

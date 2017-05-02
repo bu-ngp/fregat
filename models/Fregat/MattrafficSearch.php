@@ -7,6 +7,8 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Fregat\Mattraffic;
 use app\func\Proc;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * MattrafficSearch represents the model behind the search form about `app\models\Fregat\Mattraffic`.
@@ -21,6 +23,7 @@ class MattrafficSearch extends Mattraffic
             'idMaterial.material_tip',
             'idMaterial.idMatv.matvid_name',
             'idMaterial.material_name',
+            'idMaterial.material_name1c',
             'idMaterial.material_inv',
             'idMaterial.material_serial',
             'idMaterial.material_release',
@@ -43,6 +46,12 @@ class MattrafficSearch extends Mattraffic
             'trOsnovs.tr_osnov_kab',
             'trMats.idParent.idMaterial.material_inv',
             'idMaterial.idSchetuchet.schetuchet_kod',
+            'trMats.idParent.idMaterial.material_name',
+            'trMats.idParent.idMaterial.material_inv',
+            'trMats.id_installakt',
+            'trMats.idInstallakt.installakt_date',
+            'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
+            'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name',
         ]);
     }
 
@@ -56,6 +65,7 @@ class MattrafficSearch extends Mattraffic
             [['mattraffic_date', 'mattraffic_username', 'mattraffic_lastchange',
                 'idMaterial.idMatv.matvid_name',
                 'idMaterial.material_name',
+                'idMaterial.material_name1c',
                 'idMaterial.material_inv',
                 'idMaterial.material_serial',
                 'idMaterial.material_release',
@@ -78,6 +88,12 @@ class MattrafficSearch extends Mattraffic
                 'idMaterial.material_number',
                 'idMaterial.material_price',
                 'idMaterial.idSchetuchet.schetuchet_kod',
+                'trMats.idParent.idMaterial.material_name',
+                'trMats.idParent.idMaterial.material_inv',
+                'trMats.id_installakt',
+                'trMats.idInstallakt.installakt_date',
+                'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
+                'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name',
             ], 'safe'],
         ];
     }
@@ -115,6 +131,7 @@ class MattrafficSearch extends Mattraffic
         $query->andFilterWhere(['LIKE', 'idMaterial.material_tip', $this->getAttribute('idMaterial.material_tip')]);
         $query->andFilterWhere(['LIKE', 'idMatv.matvid_name', $this->getAttribute('idMaterial.idMatv.matvid_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'idMaterial.material_name1c', $this->getAttribute('idMaterial.material_name1c')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idMaterial.material_serial')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMaterial.material_name')]);
@@ -148,6 +165,7 @@ class MattrafficSearch extends Mattraffic
             'idMaterial.material_tip',
             'idMaterial.idMatv.matvid_name',
             'idMaterial.material_name',
+            'idMaterial.material_name1c',
             'idMaterial.material_inv',
             'idMaterial.material_serial',
             'idMaterial.material_release',
@@ -308,22 +326,44 @@ class MattrafficSearch extends Mattraffic
             'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
         ]);
 
-        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            ->join('LEFT JOIN', 'tr_mat', 'material_tip in (1,2) and tr_mat.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_mat tmat on tmat.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tmat.id_installakt = ' . $params['idinstallakt'] . ' and tmat.id_parent = ' . $params['id_parent'] . ' )')
-            ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt left join tr_osnov tosn on tosn.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and mt.mattraffic_id <> ' . $params['id_parent'] . ' )');
+        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
 
         $this->baseRelations($query);
 
         $query->andWhere('mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['tr_mat.id_mattraffic' => NULL])
             ->andWhere([
                 'or',
-                ['and', ['tr_mat.id_mattraffic' => NULL], ['idMaterial.material_tip' => 2]],
-                ['and', ['not', ['tr_osnov.id_mattraffic' => NULL]], ['idMaterial.material_tip' => 1]],
-            ])
-            ->andWhere(['in', 'idMaterial.material_tip', [1, 2]]);
+                [
+                    'and',
+                    ['exists', (new Query())
+                        ->select(['mt.mattraffic_id'])
+                        ->from('mattraffic mt')
+                        ->innerJoin('tr_osnov tosn', 'tosn.id_mattraffic = mt.mattraffic_id')
+                        ->andWhere([
+                            'mt.id_mol' => new Expression('mattraffic.id_mol'),
+                            'mt.id_material' => new Expression('mattraffic.id_material'),
+                        ])
+                        ->andWhere(['<>', 'mt.mattraffic_id', $params['id_parent']])
+                    ],
+                    ['idMaterial.material_tip' => 1]],
+                [
+                    'and',
+                    ['not exists', (new Query())
+                        ->select(['mt.mattraffic_id'])
+                        ->from('mattraffic mt')
+                        ->innerJoin('tr_mat tmat', 'tmat.id_mattraffic = mt.mattraffic_id')
+                        ->andWhere([
+                            'mt.id_mol' => new Expression('mattraffic.id_mol'),
+                            'mt.id_material' => new Expression('mattraffic.id_material'),
+                            'tmat.id_installakt' => $params['idinstallakt'],
+                            'tmat.id_parent' => $params['id_parent'],
+                        ])
+                    ],
+                    ['idMaterial.material_tip' => 2]
+                ]
+            ]);
 
         $this->load($params);
 
@@ -454,7 +494,6 @@ class MattrafficSearch extends Mattraffic
             'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
         ]);
 
-
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
 
         $this->baseRelations($query);
@@ -474,6 +513,56 @@ class MattrafficSearch extends Mattraffic
         $this->baseFilter($query);
 
         $this->baseSort($dataProvider);
+
+        return $dataProvider;
+    }
+
+    public function searchforspismat($params)
+    {
+        $query = Mattraffic::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
+        ]);
+
+        $this->baseRelations($query);
+        $query->joinWith([
+            'trMats.idParent.idMaterial matparent',
+            'trMats.idInstallakt.idInstaller.idperson personmaster',
+            'trMats.idInstallakt.idInstaller.iddolzh dolzhmaster',
+        ]);
+
+        $query->andWhere(['idMaterial.material_tip' => 2]);
+        $query->andWhere(['mattraffic.mattraffic_tip' => 4]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $this->baseFilter($query);
+
+        $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('trMats.idParent.idMaterial.material_name')]);
+        $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('trMats.idParent.idMaterial.material_inv')]);
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'trMats.id_installakt'));
+        $query->andFilterWhere(Proc::WhereConstruct($this, 'trMats.idInstallakt.installakt_date', Proc::Date));
+        $query->andFilterWhere(['LIKE', 'personmaster.auth_user_fullname', $this->getAttribute('trMats.idInstallakt.idInstaller.idperson.auth_user_fullname')]);
+        $query->andFilterWhere(['LIKE', 'dolzhmaster.dolzh_name', $this->getAttribute('trMats.idInstallakt.idInstaller.iddolzh.dolzh_name')]);
+
+        $this->baseSort($dataProvider);
+
+        Proc::AssignRelatedAttributes($dataProvider, [
+            'trMats.idParent.idMaterial.material_name' => 'matparent',
+            'trMats.idParent.idMaterial.material_inv' => 'matparent',
+            'trMats.id_installakt',
+            'trMats.idInstallakt.installakt_date',
+            'trMats.idInstallakt.idInstaller.idperson.auth_user_fullname' => 'personmaster',
+            'trMats.idInstallakt.idInstaller.iddolzh.dolzh_name' => 'dolzhmaster',
+        ]);
 
         return $dataProvider;
     }

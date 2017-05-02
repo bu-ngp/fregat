@@ -212,12 +212,36 @@ class AcceptanceTester extends \Codeception\Actor
         $objPHPExcel = \PHPExcel_IOFactory::load(Yii::$app->basePath . '/web/files/' . $fileName);
         if (is_string($fileName) && !empty($fileName) && is_array($dataArray) && count($dataArray) > 0) {
             foreach ($dataArray as $cell) {
-                $cellValue = $objPHPExcel->getActiveSheet()->getCell($cell[0] . $cell[1])->getValue();
+                $sheetIndex = isset($cell[3]) ? isset($cell[3]) : 0;
+
+                $cellValue = $objPHPExcel->getSheet($sheetIndex)->getCell($cell[0] . $cell[1])->getValue();
                 if ($cellValue != $cell[2]) {
                     $this->fail('Значение в файле "' . $fileNameOutput . '" не совпадает с заданным: ячейка "' . $cell[0] . $cell[1] . '", "' . $cellValue . '" <> "' . $cell[2] . '"');
                 }
             }
         }
+    }
+
+    public function checkZipFile($fileName, $filesArray)
+    {
+        $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
+
+        $zip = new ZipArchive();
+        if ($zip->open(Yii::$app->basePath . '/web/files/' . $fileName) !== true)
+            $this->fail('Не существует архив ' . $fileNameOutput);
+
+        $filesFromZip = [];
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
+        }
+
+        $result = array_diff($filesArray, $filesFromZip);
+
+        if (!empty($result))
+            $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
+
+        $zip->close();
     }
 
     public function countRowsDynagridEquals($dynaGridID, $needCount)
@@ -279,6 +303,10 @@ class AcceptanceTester extends \Codeception\Actor
         $this->click('//input[@name="' . $attributeName . '"]/../div/input');
         $this->wait(1);
         $this->fillField('//input[@name="' . $attributeName . '"]/../div/input', $value);
+        $this->pressKey('//input[@name="' . $attributeName . '"]/../div/input', WebDriverKeys::ENTER);
+        $this->wait(1);
+        /*   $this->click('//body');
+           $this->wait(1);*/
     }
 
     public function seeSelect2Options($attributeName, $inputValue, array $optionsResult)

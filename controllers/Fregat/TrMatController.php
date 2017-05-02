@@ -186,10 +186,10 @@ class TrMatController extends Controller
         ]);
     }
 
-   /* public function actionAssignToTrmatosmotr()
-    {
-        Proc::AssignToModelFromGrid(True, new TrMatOsmotr, 'id_osmotraktmat');
-    }*/
+    /* public function actionAssignToTrmatosmotr()
+     {
+         Proc::AssignToModelFromGrid(True, new TrMatOsmotr, 'id_osmotraktmat');
+     }*/
 
     public function actionSelectinputfortrmatosmotr($q = null, $idosmotraktmat = null)
     {

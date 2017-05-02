@@ -27,7 +27,7 @@ class InstallaktReport extends BaseReportPortal
 
     protected function Body()
     {
-        $ID = $this->getDopparamID();
+        $ID = $this->getParams('id_report') ? $this->getParams('id_report') : $this->getDopparamID();
         $this->setReportName('Акт перемещения матер-ых цен-тей №' . $ID);
 
         $Installakt = Installakt::findOne($ID);
