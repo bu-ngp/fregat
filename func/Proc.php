@@ -335,7 +335,9 @@ class Proc
                     'header' => Html::encode('Действия'),
                     'contentOptions' => ['style' => 'white-space: nowrap;'],
                     'template' => $tmpl,
-                    'buttons' => is_array($Params['buttons']) ? $Params['buttons'] : [],]
+                    'buttons' => is_array($Params['buttons']) ? $Params['buttons'] : [],
+                    'order' => (!isset($Params['buttonsfirst']) || $Params['buttonsfirst'] === true) ? 'fixleft' : 'fixright',
+                ]
             ] : [];
 
             $masitog = (!isset($Params['buttonsfirst']) || $Params['buttonsfirst'] === true) ? array_merge($masbuttons, $mascolumns) : $masitog = array_merge($mascolumns, $masbuttons);
@@ -343,6 +345,7 @@ class Proc
             return array_merge([
                 ['class' => 'kartik\grid\SerialColumn',
                     'header' => Html::encode('№'),
+                    'order' => 'fixleft',
                 ]
             ], $masitog);
         }
