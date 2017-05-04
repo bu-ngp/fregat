@@ -286,7 +286,14 @@ class SpismatController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 Spismatmaterials::deleteAll(['id_spismat' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Spismat = $this->findModel($id)->delete();
+
+                if ($Spismat === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Spismat;
+
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

@@ -145,7 +145,13 @@ class NakladController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 Nakladmaterials::deleteAll(['id_naklad' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Naklad = $this->findModel($id)->delete();
+
+                if ($Naklad === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Naklad;
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

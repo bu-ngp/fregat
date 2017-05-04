@@ -73,7 +73,7 @@ class SpismatReport extends BaseReportPortal
                     $this->createSheet($objPHPExcel);
 
                 if ($installer['posy'] == 1) {
-                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '3', $material['material_name']);
+                    $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '3', $material['material_name1c']);
                     $objPHPExcel->getSheet($sheetIndex)->setCellValueExplicit($this->mat_sheet_address[$material['posx']] . '4', $material['material_inv'], \PHPExcel_Cell_DataType::TYPE_STRING);
                     $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '5', $material['izmer_name']);
                     $objPHPExcel->getSheet($sheetIndex)->setCellValue($this->mat_sheet_address[$material['posx']] . '23', $material['count']);

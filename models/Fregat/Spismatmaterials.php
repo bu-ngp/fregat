@@ -72,7 +72,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
     public static function getVedomostArray($spismat_id)
     {
         $materials = self::find()
-            ->select(['idMattraffic.id_material', 'idMaterial.material_name', 'idMaterial.material_inv', 'idMaterial.material_price', 'idIzmer.izmer_name'])
+            ->select(['idMattraffic.id_material', 'idMaterial.material_name1c', 'idMaterial.material_inv', 'idMaterial.material_price', 'idIzmer.izmer_name'])
             ->joinWith([
                 'idMattraffic.idMaterial.idIzmer',
                 'idMattraffic.trMats.idInstallakt.idInstaller',
@@ -103,7 +103,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
 
         foreach ($materials as $key_m => $material) {
             $rows['materials'][$material['id_material']] = [
-                'material_name' => $material['material_name'],
+                'material_name1c' => $material['material_name1c'],
                 'material_inv' => $material['material_inv'],
                 'material_price' => $material['material_price'],
                 'izmer_name' => $material['izmer_name'],
@@ -121,7 +121,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
         $query = self::find()
             ->select([
                 'idMattraffic.id_material',
-                'idMaterial.material_name',
+                'idMaterial.material_name1c',
                 'idMaterial.material_inv',
                 'idMaterial.material_price',
                 'idIzmer.izmer_name',
@@ -152,7 +152,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
     public static function getVedomostArrayTest($spismat_id)
     {
         $materials = self::find()
-            ->select(['idMattraffic.id_material', 'idMaterial.material_name', 'idMaterial.material_inv', 'idMaterial.material_price', 'idIzmer.izmer_name'])
+            ->select(['idMattraffic.id_material', 'idMaterial.material_name1c', 'idMaterial.material_inv', 'idMaterial.material_price', 'idIzmer.izmer_name'])
             ->joinWith([
                 'idMattraffic.idMaterial.idIzmer',
                 'idMattraffic.trMats.idInstallakt.idInstaller',
@@ -184,7 +184,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
 
         foreach ($materials as $key_m => $material) {
             $rows[$material['id_material']] = [
-                'material_name' => $material['material_name'],
+                'material_name1c' => $material['material_name1c'],
                 'material_inv' => $material['material_inv'],
                 'izmer_name' => $material['izmer_name'],
                 'material_price' => $material['material_price'],
@@ -231,7 +231,7 @@ class Spismatmaterials extends \yii\db\ActiveRecord
         $query = self::find()
             ->select([
                 'idMattraffic.id_material',
-                'idMaterial.material_name',
+                'idMaterial.material_name1c',
                 'idMaterial.material_inv',
                 'idMaterial.material_price',
                 'idIzmer.izmer_name',

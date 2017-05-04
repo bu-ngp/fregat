@@ -124,8 +124,16 @@ class TrMatController extends Controller
             try {
                 $tr_mat = $this->findModel($id);
                 $id_mattraffic = $tr_mat->id_mattraffic;
-                $tr_mat->delete();
-                echo Mattraffic::findOne($id_mattraffic)->delete();
+
+                if ($tr_mat->delete() === false)
+                    throw new Exception('Удаление невозможно.');
+
+                $Mattraffic = Mattraffic::findOne($id_mattraffic)->delete();
+
+                if ($Mattraffic === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Mattraffic;
 
                 $transaction->commit();
             } catch (Exception $e) {

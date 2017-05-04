@@ -120,7 +120,14 @@ class RecoverysendaktController extends Controller
             try {
                 Recoveryrecieveakt::deleteAll(['id_recoverysendakt' => $id]);
                 Recoveryrecieveaktmat::deleteAll(['id_recoverysendakt' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Recoverysendakt = $this->findModel($id)->delete();
+
+                if ($Recoverysendakt === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Recoverysendakt;
+
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

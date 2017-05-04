@@ -104,7 +104,14 @@ class OsmotraktmatController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 TrMatOsmotr::deleteAll(['id_osmotraktmat' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Osmotraktmat = $this->findModel($id)->delete();
+
+                if ($Osmotraktmat === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Osmotraktmat;
+
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();
