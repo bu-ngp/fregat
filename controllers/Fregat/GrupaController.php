@@ -114,7 +114,13 @@ class GrupaController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 Grupavid::deleteAll(['id_grupa' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Grupa = $this->findModel($id)->delete();
+
+                if ($Grupa === false)
+                    throw new Exception('Не удалось удалить группу');
+
+                echo $Grupa;
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

@@ -285,8 +285,16 @@ class TrOsnovController extends Controller
             try {
                 $tr_osnov = $this->findModel($id);
                 $id_mattraffic = $tr_osnov->id_mattraffic;
-                $tr_osnov->delete();
-                echo Mattraffic::findOne($id_mattraffic)->delete();
+
+                if ($tr_osnov->delete() === false)
+                    throw new Exception('Не удалось удалить акт установки');
+
+                $Mattraffic = Mattraffic::findOne($id_mattraffic)->delete();
+
+                if ($Mattraffic === false)
+                    throw new Exception('Не удалось удалить акт установки');
+
+                echo $Mattraffic;
 
                 $transaction->commit();
             } catch (Exception $e) {

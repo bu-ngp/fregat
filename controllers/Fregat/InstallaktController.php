@@ -134,7 +134,14 @@ class InstallaktController extends Controller
             try {
                 TrOsnov::deleteAll(['id_installakt' => $id]);
                 TrMat::deleteAll(['id_installakt' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Installakt = $this->findModel($id)->delete();
+
+                if ($Installakt === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Installakt;
+                
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

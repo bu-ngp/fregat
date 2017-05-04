@@ -126,7 +126,14 @@ class RemoveaktController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 TrRmMat::deleteAll(['id_removeakt' => $id]);
-                echo $this->findModel($id)->delete();
+
+                $Removeakt = $this->findModel($id)->delete();
+
+                if ($Removeakt === false)
+                    throw new Exception('Удаление невозможно.');
+
+                echo $Removeakt;
+
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();

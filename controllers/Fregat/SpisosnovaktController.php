@@ -126,11 +126,17 @@ class SpisosnovaktController extends Controller
             Spisosnovmaterials::deleteAll([
                 'id_spisosnovakt' => $id,
             ]);
-            $this->findModel($id)->delete();
+
+            $Spisosnovakt = $this->findModel($id)->delete();
+            if ($Spisosnovakt === false)
+                throw new Exception('Удаление невозможно.');
+
+            echo $Spisosnovakt;
+
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
-            throw new Exception($e->getMessage());
+            throw new Exception($e->getMessage() . ' Удаление невозможно.');
         }
     }
 
