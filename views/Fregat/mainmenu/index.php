@@ -29,7 +29,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
         <?php if (Yii::$app->user->can('InstallEdit')): ?>
             <div class="menubutton menubutton_activeanim mb_yellow" id="mb_install_j">
                 <span class="hoverspan"></span>
-                <div class="menubutton_cn">Журнал перемещений материальных ценностей</div>
+                <div class="menubutton_cn">Журнал установки материальных ценностей</div>
                 <i class="glyphicon glyphicon-random"></i>
             </div>
         <?php endif; ?>

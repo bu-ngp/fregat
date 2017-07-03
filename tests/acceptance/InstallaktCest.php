@@ -34,7 +34,7 @@ class InstallaktCest
     {
         $I->amOnPage(Url::toRoute('/Fregat/fregat/mainmenu'));
         $I->wait(2);
-        $I->see('Журнал перемещений материальных ценностей');
+        $I->see('Журнал установки материальных ценностей');
     }
 
     /**
@@ -42,7 +42,7 @@ class InstallaktCest
      */
     public function openInstallakt(AcceptanceTester $I)
     {
-        $I->click('//div[contains(text(), "Журнал перемещений материальных ценностей")]');
+        $I->click('//div[contains(text(), "Журнал установки материальных ценностей")]');
         $I->wait(2);
         $I->seeElement(['id' => 'installaktgrid_gw']);
         $I->see('Ничего не найдено');
@@ -414,8 +414,8 @@ class InstallaktCest
         $I->click(['id' => 'DownloadReport']);
         $I->wait(4);
 
-        $I->seeFileFound($I->convertOSFileName('Акт перемещения матер-ых цен-тей №1.xlsx'), 'web/files');
-        $I->checkExcelFile($I->convertOSFileName('Акт перемещения матер-ых цен-тей №1.xlsx'), [
+        $I->seeFileFound($I->convertOSFileName('Акт установки матер-ых цен-тей №1.xlsx'), 'web/files');
+        $I->checkExcelFile($I->convertOSFileName('Акт установки матер-ых цен-тей №1.xlsx'), [
             ['A', 3, 'материальных ценностей № 1 от ' . date('d.m.Y')],
 
             ['A', 6, '№'],
@@ -510,8 +510,8 @@ class InstallaktCest
 
     public function deleteExcelFile(AcceptanceTester $I)
     {
-        if (file_exists($I->convertOSFileName('web/files/' . 'Акт перемещения матер-ых цен-тей №1.xlsx')))
-            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт перемещения матер-ых цен-тей №1.xlsx'));
+        if (file_exists($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx')))
+            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx'));
     }
 
     /**

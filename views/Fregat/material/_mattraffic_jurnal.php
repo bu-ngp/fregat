@@ -72,7 +72,7 @@ echo DynaGrid::widget(Proc::DGopts([
                 if ($model->mattraffic_tip == 3 || $model->mattraffic_tip == 4)
                     return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                         'type' => 'button',
-                        'title' => 'Скачать акт перемещения матер-ой цен-ти',
+                        'title' => 'Скачать акт установки матер-ой цен-ти',
                         'class' => 'btn btn-xs btn-default',
                         'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $idinstallakt . '} )'
                     ]);
@@ -107,7 +107,7 @@ echo DynaGrid::widget(Proc::DGopts([
             'before' => '<div class="btn-toolbar">' . (Yii::$app->user->can('MolEdit') ? Html::a('<i class="glyphicon glyphicon-education"></i> Сменить Материально-ответственное лицо', ['Fregat/mattraffic/create',
                     'id' => $model->primaryKey,
                 ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '')
-                . (Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить акт перемещения материальной ценности', ['Fregat/installakt/create',
+                . (Yii::$app->user->can('InstallEdit') ? Html::a('<i class="glyphicon glyphicon-plus"></i> Добавить акт установки материальной ценности', ['Fregat/installakt/create',
                     'id' => $model->primaryKey,
                 ], ['class' => 'btn btn-success', 'data-pjax' => '0']) : '') . '</div>',
         ],

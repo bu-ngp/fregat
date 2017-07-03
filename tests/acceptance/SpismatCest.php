@@ -146,8 +146,8 @@ class SpismatCest
      */
     public function openCreateSpismatByInstallakt(AcceptanceTester $I)
     {
-        $I->seeLink('Добавить по актам перемещения');
-        $I->click(['link' => 'Добавить по актам перемещения']);
+        $I->seeLink('Добавить по актам установки');
+        $I->click(['link' => 'Добавить по актам установки']);
         $I->wait(2);
         $I->seeElement(['class' => 'spismat-form']);
         $I->seeElement('//button[@id="spismat_create" and contains(@class,"disabled") and @disabled]');
@@ -196,10 +196,10 @@ class SpismatCest
 
         $I->seeFileFound($I->convertOSFileName('Акты установки для ведомости №2.zip'), 'web/files');
         $I->checkZipFile($I->convertOSFileName('Акты установки для ведомости №2.zip'), [
-            'Акт перемещения матер-ых цен-тей №2.xlsx',
-            'Акт перемещения матер-ых цен-тей №3.xlsx',
-            'Акт перемещения матер-ых цен-тей №4.xlsx',
-            'Акт перемещения матер-ых цен-тей №5.xlsx',
+            'Акт установки матер-ых цен-тей №2.xlsx',
+            'Акт установки матер-ых цен-тей №3.xlsx',
+            'Акт установки матер-ых цен-тей №4.xlsx',
+            'Акт установки матер-ых цен-тей №5.xlsx',
         ]);
     }
 

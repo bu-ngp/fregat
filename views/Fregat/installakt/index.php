@@ -9,7 +9,7 @@ use app\func\Proc;
 /* @var $searchModel app\models\Fregat\InstallaktSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Журнал перемещений материальных ценностей';
+$this->title = 'Журнал установки материальных ценностей';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 ?>
     <div class="installakt-index">
