@@ -16,7 +16,7 @@ use app\func\BaseReportPortal;
  * User: sysadmin
  * Date: 26.08.2016
  * Time: 9:17
- * // Вывод акта перемещения материальной ценности по id
+ * // Вывод акта установки материальной ценности по id
  */
 class InstallaktReport extends BaseReportPortal
 {
@@ -28,7 +28,7 @@ class InstallaktReport extends BaseReportPortal
     protected function Body()
     {
         $ID = $this->getParams('id_report') ? $this->getParams('id_report') : $this->getDopparamID();
-        $this->setReportName('Акт перемещения матер-ых цен-тей №' . $ID);
+        $this->setReportName('Акт установки матер-ых цен-тей №' . $ID);
 
         $Installakt = Installakt::findOne($ID);
         $Trosnov = TrOsnov::findAll(['id_installakt' => $ID]);
@@ -40,7 +40,7 @@ class InstallaktReport extends BaseReportPortal
         $num = 5;
         $c_Trosnov = count($Trosnov);
         if ($c_Trosnov > 0) {
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Перемещение материальных ценностей');
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $num, 'Установка материальных ценностей');
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(0, $num, 10, $num);
             $this->setStyle(self::$TITLE, 'A' . $num . ':K' . $num);
             $num++;

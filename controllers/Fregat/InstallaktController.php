@@ -107,7 +107,7 @@ class InstallaktController extends Controller
         }
     }
 
-    // Печать акта перемещения материальных ценностей
+    // Печать акта установки материальных ценностей
     public function actionInstallaktReport()
     {
         $Report = new InstallaktReport();

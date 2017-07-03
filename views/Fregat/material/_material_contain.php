@@ -48,7 +48,7 @@ echo DynaGrid::widget(Proc::DGopts([
         'buttons' => array_merge(['installaktmatreport' => function ($url, $model) {
             return Html::button('<i class="glyphicon glyphicon-list"></i>', [
                 'type' => 'button',
-                'title' => 'Скачать акт перемещения матер-ой цен-ти',
+                'title' => 'Скачать акт установки матер-ой цен-ти',
                 'class' => 'btn btn-xs btn-default',
                 'onclick' => 'DownloadReport("' . Url::to(['Fregat/installakt/installakt-report']) . '", null, {id: ' . $model->id_installakt . '} )'
             ]);
