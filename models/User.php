@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\helpers\Security;
@@ -22,23 +23,27 @@ use yii\helpers\Security;
  * @property MjcRegistryitem[] $mjcRegistryitems
  * @property MjcRegistrylist[] $mjcRegistrylists
  */
-class User extends ActiveRecord implements IdentityInterface {
+class User extends ActiveRecord implements IdentityInterface
+{
 
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'auth_user';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['auth_user_fullname', 'auth_user_login', 'auth_user_password'], 'required'],
             [['auth_user_fullname', 'auth_user_login'], 'string', 'max' => 128],
+            [['auth_user_authkey'], 'string', 'max' => 32],
             [['auth_user_password'], 'string', 'max' => 255],
             [['auth_user_login'], 'unique'],
             [['auth_user_id'], 'safe'],
@@ -48,12 +53,14 @@ class User extends ActiveRecord implements IdentityInterface {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'auth_user_id' => 'ID',
             'auth_user_fullname' => 'Имя пользователя',
             'auth_user_login' => 'Логин',
             'auth_user_password' => 'Пароль',
+            'auth_user_authkey' => 'Токен',
         ];
     }
 
@@ -64,75 +71,83 @@ class User extends ActiveRecord implements IdentityInterface {
     /**
      * @inheritdoc
      */
-    public static function findIdentity($id) {
+    public static function findIdentity($id)
+    {
         return static::findOne($id);
     }
 
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null) {
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
         return static::findOne(['access_token' => $token]);
     }
 
     /**
      * Finds user by username
      *
-     * @param  string      $username
+     * @param  string $username
      * @return static|null
      */
-    public static function findByUsername($username) {
+    public static function findByUsername($username)
+    {
         return static::findOne(['auth_user_login' => $username]);
     }
 
     /**
      * Finds user by password reset token
      *
-     * @param  string      $token password reset token
+     * @param  string $token password reset token
      * @return static|null
      */
-    public static function findByPasswordResetToken($token) {
+    public static function findByPasswordResetToken($token)
+    {
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         $parts = explode('_', $token);
-        $timestamp = (int) end($parts);
+        $timestamp = (int)end($parts);
         if ($timestamp + $expire < time()) {
             // token expired
             return null;
         }
 
         return static::findOne([
-                    'password_reset_token' => $token
+            'password_reset_token' => $token
         ]);
     }
 
     /**
      * @inheritdoc
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->getPrimaryKey();
     }
 
     /**
      * @inheritdoc
      */
-    public function getAuthKey() {
-        return \Yii::$app->security->generateRandomString();
+    public function getAuthKey()
+    {
+        return $this->auth_user_authkey;
     }
 
     /**
      * @inheritdoc
      */
-    public function validateAuthKey($authKey) {
+    public function validateAuthKey($authKey)
+    {
         return $this->getAuthKey() === $authKey;
     }
 
     /**
      * Validates password
      *
-     * @param  string  $password password to validate
+     * @param  string $password password to validate
      * @return boolean if password provided is valid for current user
      */
-    public function validatePassword($password) {
+    public function validatePassword($password)
+    {
         return $this->auth_user_password === $password; //sha1($password);
 //        return Security::validatePassword($password, $this->password_hash);
     }
@@ -142,29 +157,33 @@ class User extends ActiveRecord implements IdentityInterface {
      *
      * @param string $password
      */
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->password_hash = $password; //Security::generatePasswordHash($password);
     }
 
     /**
      * Generates "remember me" authentication key
      */
-    public function generateAuthKey() {
-        $this->auth_key = Security::generateRandomKey();
+    public function generateAuthKey()
+    {
+        $this->auth_user_authkey = Yii::$app->security->generateRandomString();
     }
 
     /**
      * Generates new password reset token
      */
-    public function generatePasswordResetToken() {
+    public function generatePasswordResetToken()
+    {
         $this->password_reset_token = Security::generateRandomKey() . '_' . time();
     }
 
     /**
      * Removes password reset token
      */
-    public function removePasswordResetToken() {
+    public function removePasswordResetToken()
+    {
         $this->password_reset_token = null;
     }
-    
+
 }

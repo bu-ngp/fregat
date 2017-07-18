@@ -4,7 +4,7 @@ INSERT INTO `schetuchet` VALUES (1,'101.34','НОВЫЙ СЧЕТ');
 INSERT INTO `izmer` VALUES (1,'шт', '796');
 INSERT INTO `build` VALUES (8,'ПОЛИКЛИНИКА 1'),(9,'ПОЛИКЛИНИКА 2');
 INSERT INTO `dolzh` VALUES (165,'ТЕРАПЕВТ'),(166,'ПРОГРАММИСТ'),(167,'НЕВРОЛОГ');
-INSERT INTO `auth_user` VALUES (1196,'ИВАНОВ ИВАН ИВАНОВИЧ','IvanovII','$2y$13$H.bwEoPlfWDVZUCSn0vOju8Ejp0lgw78UG7KvgOoKfZki3m/GLM5S'),(1197,'ПЕТРОВ ПЕТР ПЕТРОВИЧ','PetrovPP','$2y$13$7Tzlr290.eomuM7XeG8utuzDSsiFnGAbhWXJ.WFiW07yrR23Lw6uK'),(1198,'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ','FedotovFF','$2y$13$wj1bw.JqvF45QxsMYtHSbu3QaRWMlOuzL1P.WMw/uBkeHxCYULwTa'),(1199,'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ','SidorovEA','$2y$13$XN0D.IjamZeTLdCGMqSkvegKi.Fhz1oQkMXATsYKEo8BnNElBScxW');
+INSERT INTO `auth_user` VALUES (1196,'ИВАНОВ ИВАН ИВАНОВИЧ','IvanovII','$2y$13$H.bwEoPlfWDVZUCSn0vOju8Ejp0lgw78UG7KvgOoKfZki3m/GLM5S','test'),(1197,'ПЕТРОВ ПЕТР ПЕТРОВИЧ','PetrovPP','$2y$13$7Tzlr290.eomuM7XeG8utuzDSsiFnGAbhWXJ.WFiW07yrR23Lw6uK','test'),(1198,'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ','FedotovFF','$2y$13$wj1bw.JqvF45QxsMYtHSbu3QaRWMlOuzL1P.WMw/uBkeHxCYULwTa','test'),(1199,'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ','SidorovEA','$2y$13$XN0D.IjamZeTLdCGMqSkvegKi.Fhz1oQkMXATsYKEo8BnNElBScxW','test');
 INSERT INTO `employee` VALUES (1175,165,40,8,1196,'admin','2016-11-17 13:33:17',NULL,NULL,1),(1176,166,41,8,1197,'admin','2016-11-22 08:37:08',NULL,NULL,1),(1177,165,40,NULL,1198,'admin','2016-11-22 09:24:59',NULL,NULL,1),(1178,167,40,9,1199,'admin','2016-11-22 13:31:59',NULL,NULL,1);
 INSERT INTO `reason` VALUES (1,'ТРЕБУЕТСЯ ЗАПРАВКА');
 INSERT INTO `removeakt` VALUES (1,'2016-12-15',1176);

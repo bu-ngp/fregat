@@ -44,6 +44,7 @@ class Authuser extends \yii\db\ActiveRecord
             [['auth_user_fullname'], 'filter', 'filter' => function ($value) {
                 return mb_strtoupper($value, 'UTF-8');
             }],
+            [['auth_user_authkey'], 'default', 'value' => Yii::$app->security->generateRandomString()],
         ];
     }
 

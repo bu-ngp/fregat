@@ -28,6 +28,7 @@ use app\models\Fregat\SpisosnovmaterialsSearch;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrMatOsmotr;
 use app\models\Fregat\TrOsnov;
+use app\models\User;
 use Exception;
 use PDO;
 use Yii;
@@ -91,6 +92,7 @@ class FregatController extends Controller
                             'populate-data',
                             'rename-prog',
                             'mat-files',
+                            'generate-authkeys',
                         ],
                         'allow' => true,
                         'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
@@ -779,5 +781,15 @@ INNER JOIN aktuser prog ON akt.id_prog = prog.aktuser_id';
         }
     }
 
+    public function actionGenerateAuthkeys()
+    {
+        /** @var User $auth_user */
+        foreach (User::find()->all() as $auth_user) {
+            $auth_user->generateAuthKey();
+            $auth_user->save();
+        }
+
+        echo 'finish';
+    }
 }
                                         
