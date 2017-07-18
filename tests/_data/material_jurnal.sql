@@ -1,4 +1,4 @@
-INSERT INTO `auth_user` VALUES (1196,'ИВАНОВ ИВАН ИВАНОВИЧ','IvanovII','$2y$13$H.bwEoPlfWDVZUCSn0vOju8Ejp0lgw78UG7KvgOoKfZki3m/GLM5S');
+INSERT INTO `auth_user` VALUES (1196,'ИВАНОВ ИВАН ИВАНОВИЧ','IvanovII','$2y$13$H.bwEoPlfWDVZUCSn0vOju8Ejp0lgw78UG7KvgOoKfZki3m/GLM5S','test');
 INSERT INTO `build` VALUES (8,'ПОЛИКЛИНИКА 1');
 INSERT INTO `dolzh` VALUES (165,'ТЕРАПЕВТ');
 INSERT INTO `podraz` VALUES (40,'ТЕРАПЕВТИЧЕСКОЕ');

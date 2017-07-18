@@ -139,6 +139,7 @@ CREATE TABLE `auth_user` (
   `auth_user_fullname` char(128) NOT NULL COMMENT 'Фамилия Имя Отчество',
   `auth_user_login` char(128) NOT NULL COMMENT 'Логин',
   `auth_user_password` char(255) NOT NULL COMMENT 'Пароль',
+  `auth_user_authkey` char(32) NOT NULL COMMENT 'Токен',
   PRIMARY KEY (`auth_user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1196 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -149,7 +150,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'АДМИНИСТРАТОР','admin','$2y$13$kq0OMrtT/xoNnKgjhf.pAuZFT3EXQk/BwClTiQTIR61mALPxoEtOG');
+INSERT INTO `auth_user` VALUES (1,'АДМИНИСТРАТОР','admin','$2y$13$kq0OMrtT/xoNnKgjhf.pAuZFT3EXQk/BwClTiQTIR61mALPxoEtOG','test');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
