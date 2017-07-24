@@ -261,6 +261,50 @@ class MaterialSearch extends Material
 
             ]);
 
+            $attr = 'tr_osnov_install_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->rightJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'tr_osnov_uninstall_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->rightJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'tr_mat_install_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->rightJoin('tr_mat trMats', 'trMats.id_mattraffic = mattraffics.mattraffic_id')
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
+            $attr = 'tr_mat_uninstall_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->rightJoin('tr_mat trMats', 'trMats.id_mattraffic = mattraffics.mattraffic_id')
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
             $attr = 'mattraffic_username';
             Proc::Filter_Compare(Proc::Text, $query, $filter, [
                 'Attribute' => $attr,

@@ -22,6 +22,10 @@ class MaterialFilter extends Model
     public $material_attachdoc_mark;
     public $material_comment_mark;
     public $tr_osnov_kab;
+    public $tr_osnov_install_mark;
+    public $tr_osnov_uninstall_mark;
+    public $tr_mat_install_mark;
+    public $tr_mat_uninstall_mark;
     public $mattraffic_username;
     public $mattraffic_lastchange_beg;
     public $mattraffic_lastchange_end;
@@ -46,6 +50,10 @@ class MaterialFilter extends Model
                 'material_attachphoto_mark',
                 'material_attachdoc_mark',
                 'material_comment_mark',
+                'tr_osnov_install_mark',
+                'tr_osnov_uninstall_mark',
+                'tr_mat_install_mark',
+                'tr_mat_uninstall_mark',
             ], 'safe'],
             [[
                 'mattraffic_lastchange_beg',
@@ -76,7 +84,10 @@ class MaterialFilter extends Model
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
             'material_working_mark' => 'Материальные ценности в рабочем состоянии',
             'material_recovery_attachfiles_mark' => 'В актах восстановления прикреплены файлы',
-
+            'tr_osnov_install_mark' => 'Имеется акт установки, как перемещенная материальная ценность',
+            'tr_osnov_uninstall_mark' => 'Отсутствует акт установки, как перемещенная материальная ценность',
+            'tr_mat_install_mark' => 'Имеется акт установки, как укомплектованная материальная ценность',
+            'tr_mat_uninstall_mark' => 'Отсутствует акт установки, как укомплектованная материальная ценность',
         ];
     }
 

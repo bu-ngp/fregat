@@ -86,7 +86,7 @@ use app\func\Proc;
                     ],
                 ]));
                 ?>
-                
+
                 <?= $form->field($model, 'material_attachfiles_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= $form->field($model, 'not_material_attachfiles_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
@@ -134,6 +134,14 @@ use app\func\Proc;
                 ?>
 
                 <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase']) ?>
+
+                <?= $form->field($model, 'tr_osnov_install_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?= $form->field($model, 'tr_osnov_uninstall_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?= $form->field($model, 'tr_mat_install_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?= $form->field($model, 'tr_mat_uninstall_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
             </div>
         </div>
