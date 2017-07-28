@@ -272,6 +272,46 @@ class OsmotraktCest
     /**
      * @depends updateOsmotrakt
      */
+    public function checkInstallUniqueKab(AcceptanceTester $I)
+    {
+        $I->seeLink('Добавить');
+        $I->click(['link' => 'Добавить']);
+        $I->wait(2);
+        $I->seeElement(['class' => 'osmotrakt-form']);
+
+
+        $I->click('//a[@data-toggle="collapse"]');
+        $I->wait(2);
+
+        $I->chooseValueFromSelect2('InstallTrOsnov[id_mattraffic]', '1000002, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2, Кухонный стол', '002');
+
+        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '103');
+        $I->chooseValueFromSelect2('Osmotrakt[id_user]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
+        $I->chooseValueFromSelect2('Osmotrakt[id_master]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'пет');
+        $I->chooseValueFromSelect2('Osmotrakt[id_reason]', 'СЛОМАНА НОЖКА', 'нож');
+
+        $I->see('Создать');
+        $I->click('//button[contains(text(), "Создать")]');
+        $I->wait(2);
+
+        $I->see('Данная материальная ценность "Кухонный стол" уже установлена в кабинет "103" в акте установки №3 от ' . date('d.m.Y') . '.');
+
+        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '102');
+
+        $I->see('Создать');
+        $I->click('//button[contains(text(), "Создать")]');
+        $I->wait(2);
+
+        $I->checkDynagridData(['1', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '101', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', 'Образовалась трещина', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['2', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '102', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['3', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', 'Неисправна', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['4', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '102', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('osmotraktgrid_gw', 4);
+    }
+
+    /**
+     * @depends checkInstallUniqueKab
+     */
     public function deleteOsmotrakt(AcceptanceTester $I)
     {
         $I->clickButtonDynagrid('osmotraktgrid_gw', 'button[@title="Удалить"]', ['2', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '102', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ']);
@@ -281,9 +321,10 @@ class OsmotraktCest
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
 
-        $I->checkDynagridData(['1', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', 'Неисправна', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['1', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '101', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', 'Образовалась трещина', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->checkDynagridData(['3', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '103', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', 'Неисправна', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->countRowsDynagridEquals('osmotraktgrid_gw', 2);
+        $I->checkDynagridData(['4', Yii::$app->formatter->asDate(date('d.m.Y')), ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '102', 'ПОЛИКЛИНИКА 2', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw', ['a[@title="Отправить акт в организацию по электронной почте"]', 'button[@title="Скачать отчет"]', 'a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('osmotraktgrid_gw', 3);
     }
 
     /**

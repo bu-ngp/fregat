@@ -228,6 +228,7 @@ class TrOsnovController extends Controller
                         'material_tip' => $query->idMaterial->material_tip,
                         'material_name' => $query->idMaterial->material_name,
                         'material_writeoff' => $query->idMaterial->material_writeoff,
+                        'material_install_kab' => $query->idMaterial->material_install_kab,
                         'auth_user_fullname' => $query->idMol->idperson->auth_user_fullname,
                         'dolzh_name' => $query->idMol->iddolzh->dolzh_name,
                         'podraz_name' => $query->idMol->idpodraz->podraz_name,

@@ -92,7 +92,14 @@ class InstallTrOsnov extends Model
                             $transaction->commit();
                             return true;
                         } else {
-                            $this->addError('id_mattraffic', $trOsnov->getErrors('id_mattraffic')[0]);
+                            if ($errors = $trOsnov->getErrors('id_mattraffic')) {
+                                $this->addError('id_mattraffic', $trOsnov->getErrors('id_mattraffic')[0]);
+                            }
+
+                            if ($errors = $trOsnov->getErrors('tr_osnov_kab')) {
+                                $this->addError('tr_osnov_kab', $trOsnov->getErrors('tr_osnov_kab')[0]);
+                            }
+
                             $transaction->rollBack();
                             return false;
                         }

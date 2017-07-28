@@ -38,6 +38,7 @@ class TrOsnov extends \yii\db\ActiveRecord
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
             [['id_mattraffic'], 'CheckBuild'],
+            [['tr_osnov_kab'], 'checkKabUnique'],
         ];
     }
 
@@ -46,6 +47,25 @@ class TrOsnov extends \yii\db\ActiveRecord
     {
         if (empty($this->idMattraffic->idMol->id_build))
             $this->addError($attribute, 'У материально ответственного лица "' . $this->idMattraffic->idMol->idperson->auth_user_fullname . '" не заполнено "Здание", в которое устанавливается материальная ценность');
+    }
+
+    // Проверка на уже установленную мат ценность в кабинете
+    public function checkKabUnique($attribute)
+    {
+        if ($this->isNewRecord) {
+            $trOsnov = self::find()
+                ->select(['tr_osnov_id', 'tr_osnov_kab', 'idMol.id_build', 'idInstallakt.installakt_date'])
+                ->joinWith(['idMattraffic.idMol', 'idInstallakt'])
+                ->andWhere(['idMattraffic.id_material' => $this->idMattraffic->id_material])
+                ->orderBy(['idMattraffic.mattraffic_date' => SORT_DESC, 'idMattraffic.mattraffic_id' => SORT_DESC])
+                ->limit(1)
+                ->asArray()
+                ->one();
+
+            if ($trOsnov && $trOsnov['tr_osnov_kab'] == $this->tr_osnov_kab && $trOsnov['id_build'] == $this->idMattraffic->idMol->id_build) {
+                $this->addError($attribute, 'Данная материальная ценность "' . $this->idMattraffic->idMaterial->material_name . '" уже установлена в кабинет "' . $this->tr_osnov_kab . '" в акте установки №' . $trOsnov['tr_osnov_id'] . ' от ' . Yii::$app->formatter->asDate($trOsnov['installakt_date']) . '.');
+            }
+        }
     }
 
     /**
