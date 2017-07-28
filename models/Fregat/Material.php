@@ -34,6 +34,7 @@ use yii\db\Query;
  */
 class Material extends \yii\db\ActiveRecord
 {
+    //  public $material_install_kab;
 
     /**
      * @inheritdoc
@@ -81,6 +82,7 @@ class Material extends \yii\db\ActiveRecord
             [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность при импорте не изменяется, 1 - Материальная ценность может быть изменена при импорте
             [['material_number'], 'FoldDevision'],
             [['material_comment'], 'string', 'max' => 512],
+            [['material_install_kab'], 'safe'],
         ];
     }
 
@@ -114,6 +116,7 @@ class Material extends \yii\db\ActiveRecord
             'material_importdo' => 'Запись изменяема при импортировании из 1С',
             'id_schetuchet' => 'Счет учета',
             'material_comment' => 'Заметка',
+            'material_install_kab' => 'В данный момент установлено в кабинете',
         ];
     }
 
@@ -164,6 +167,26 @@ class Material extends \yii\db\ActiveRecord
             ->leftJoin('mattraffic mt1', 'currentmattraffic.id_material = mt1.id_material and `currentmattraffic`.`mattraffic_tip` IN (1, 2) and mt1.mattraffic_tip IN (1, 2) and (currentmattraffic.mattraffic_date < mt1.mattraffic_date or currentmattraffic.mattraffic_date = mt1.mattraffic_date  and currentmattraffic.mattraffic_id < mt1.mattraffic_id)')
             ->andWhere(['in', 'currentmattraffic.mattraffic_tip', [1, 2]])
             ->andWhere(['mt1.mattraffic_date' => NULL]);
+    }
+
+    public function getMaterial_install_kab()
+    {
+        $material = self::find()
+            ->joinWith([
+                'mattraffics' => function (ActiveQuery $query) {
+                    $query->from(['mattraffics' => 'mattraffic'])
+                        ->joinWith([
+                            'trOsnovs' => function (ActiveQuery $query) {
+                                $query->from(['trOsnovs' => 'tr_osnov']);
+                            },
+                        ], true, 'INNER JOIN');
+                }], true, 'INNER JOIN')
+            ->andWhere(['mattraffics.id_material' => $this->primaryKey])
+            ->orderBy(['mattraffics.mattraffic_date' => SORT_DESC, 'mattraffics.mattraffic_id' => SORT_DESC])
+            ->limit(1)
+            ->one();
+
+        return $material ? $material->mattraffics[0]->idMol->idbuild->build_name . ', каб. ' . $material->mattraffics[0]->trOsnovs[0]->tr_osnov_kab : 'не установлено';
     }
 
     public function selectinputfortrmat_parent($params)

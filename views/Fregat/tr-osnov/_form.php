@@ -57,6 +57,8 @@ use app\models\Fregat\Build;
 
             <?= $form->field($Material, 'material_writeoff', ['enableClientValidation' => false])->dropDownList([0 => 'Нет', 1 => 'Да'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
+            <?= $form->field($Material, 'material_install_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+
         </div>
     </div>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
