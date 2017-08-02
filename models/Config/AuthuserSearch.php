@@ -207,6 +207,43 @@ class AuthuserSearch extends Authuser
                     ->leftJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
                     ->andWhere('employees.id_person = auth_user.auth_user_id')
             ]);
+
+            $attr = 'authuser_active_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->innerJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere(['employees.employee_dateinactive' => null])
+                    ->andWhere('employees.id_person = auth_user.auth_user_id'),
+                ],
+            ]);
+
+            $attr = 'authuser_inactive_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->rightJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere(['or', ['employees.employee_dateinactive' => null], ['employees.employee_id' => null]])
+                    ->andWhere('idperson.auth_user_id = auth_user.auth_user_id'),
+                ],
+            ]);
+
+            $attr = 'employee_null_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('employees.id_person')
+                    ->from('employee employees')
+                    ->rightJoin('auth_user idperson', 'idperson.auth_user_id = employees.id_person')
+                    ->andWhere(['employees.employee_id' => null])
+                    ->andWhere('idperson.auth_user_id = auth_user.auth_user_id'),
+                ],
+            ]);
+
         }
     }
 

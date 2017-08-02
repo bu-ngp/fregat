@@ -116,6 +116,12 @@ use app\func\Proc;
                 ]));
                 ?>
 
+                <?= $form->field($model, 'authuser_active_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?= $form->field($model, 'authuser_inactive_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?= $form->field($model, 'employee_null_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
             </div>
         </div>
     </div>
