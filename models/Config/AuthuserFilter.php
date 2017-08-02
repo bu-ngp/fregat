@@ -16,6 +16,9 @@ class AuthuserFilter extends Model
     public $id_podraz_not;
     public $id_build;
     public $id_build_not;
+    public $authuser_active_mark;
+    public $authuser_inactive_mark;
+    public $employee_null_mark;
 
     public function rules()
     {
@@ -28,6 +31,11 @@ class AuthuserFilter extends Model
                 'id_build',
                 'id_build_not',
             ], 'integer'],
+            [[
+                'authuser_active_mark',
+                'authuser_inactive_mark',
+                'employee_null_mark',
+            ],'safe'],
         ];
     }
 
@@ -37,6 +45,9 @@ class AuthuserFilter extends Model
             'id_dolzh' => 'Должность',
             'id_podraz' => 'Подразделение',
             'id_build' => 'Здание',
+            'authuser_active_mark' => 'Имеются активные специальности',
+            'authuser_inactive_mark' => 'Отсутствуют активные специальности',
+            'employee_null_mark' => 'У пользователя отсутствуют специальности',
         ];
     }
 
