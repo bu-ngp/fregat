@@ -6,6 +6,7 @@ use app\models\Fregat\MaterialDocfiles;
 use app\models\Fregat\MaterialDocfilesSearch;
 use app\models\Fregat\Nakladmaterials;
 use app\models\Fregat\NakladmaterialsSearch;
+use app\models\Fregat\SpismatmaterialsSearch;
 use app\models\Fregat\Spisosnovmaterials;
 use app\models\Fregat\SpisosnovmaterialsSearch;
 use app\models\Fregat\TrMat;
@@ -153,6 +154,9 @@ class MaterialController extends Controller
         $searchModel_spisosnovakt = new SpisosnovmaterialsSearch();
         $dataProvider_spisosnovakt = $searchModel_spisosnovakt->searchformaterialspisosnovakt(Yii::$app->request->queryParams);
 
+        $searchModel_spismat = new SpismatmaterialsSearch();
+        $dataProvider_spismat = $searchModel_spismat->searchformaterialspismatakt(Yii::$app->request->queryParams);
+
         $searchModel_naklad = new NakladmaterialsSearch();
         $dataProvider_naklad = $searchModel_naklad->searchformaterialnaklad(Yii::$app->request->queryParams);
 
@@ -179,6 +183,8 @@ class MaterialController extends Controller
                 'dataProvider_mattraffic_contain' => $dataProvider_mattraffic_contain,
                 'searchModel_spisosnovakt' => $searchModel_spisosnovakt,
                 'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
+                'searchModel_spismat' => $searchModel_spismat,
+                'dataProvider_spismat' => $dataProvider_spismat,
                 'searchModel_naklad' => $searchModel_naklad,
                 'dataProvider_naklad' => $dataProvider_naklad,
                 'gallery' => MaterialDocfiles::getImagesList((string)filter_input(INPUT_GET, 'id')),
