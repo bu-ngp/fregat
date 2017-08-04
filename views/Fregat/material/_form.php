@@ -40,124 +40,124 @@ use yii\helpers\Url;
 
             <?= $form->field($model, 'material_name')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
             <div class="col-md-12" style="padding-left: 0;">
-            <div class="col-md-4" style="padding-left: 0;">
-                <?=
-                $form->field($model, 'material_tip')->widget(Select2::classname(), [
-                    'hideSearch' => true,
-                    'data' => $model::VariablesValues('material_tip'),
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                    'options' => ['placeholder' => 'Выберете тип материальной ценности', 'class' => 'form-control setsession'],
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                    'disabled' => ($model->isNewRecord) ? $disabled : true,
-                    'pluginEvents' => [
-                        "select2:select" => "function() { SetTipMaterial(); }",
-                        "select2:unselect" => "function() { UnsetTipMaterial(); }",
-                    ],
-                ]);
-                ?>
+                <div class="col-md-4" style="padding-left: 0;">
+                    <?=
+                    $form->field($model, 'material_tip')->widget(Select2::classname(), [
+                        'hideSearch' => true,
+                        'data' => $model::VariablesValues('material_tip'),
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ],
+                        'options' => ['placeholder' => 'Выберете тип материальной ценности', 'class' => 'form-control setsession'],
+                        'theme' => Select2::THEME_BOOTSTRAP,
+                        'disabled' => ($model->isNewRecord) ? $disabled : true,
+                        'pluginEvents' => [
+                            "select2:select" => "function() { SetTipMaterial(); }",
+                            "select2:unselect" => "function() { UnsetTipMaterial(); }",
+                        ],
+                    ]);
+                    ?>
 
-                <?=
-                $form->field($model, 'id_matvid')->widget(Select2::classname(), Proc::DGselect2([
-                    'model' => $model,
-                    'resultmodel' => new Matvid,
-                    'fields' => [
-                        'keyfield' => 'id_matvid',
-                        'resultfield' => 'matvid_name',
-                    ],
-                    'placeholder' => 'Выберете вид материальной ценности',
-                    'fromgridroute' => 'Fregat/matvid/index',
-                    'resultrequest' => 'Fregat/matvid/selectinput',
-                    'thisroute' => $this->context->module->requestedRoute,
-                    'disabled' => $disabled,
-                    'onlyAjax' => false,
-                ]));
-                ?>
+                    <?=
+                    $form->field($model, 'id_matvid')->widget(Select2::classname(), Proc::DGselect2([
+                        'model' => $model,
+                        'resultmodel' => new Matvid,
+                        'fields' => [
+                            'keyfield' => 'id_matvid',
+                            'resultfield' => 'matvid_name',
+                        ],
+                        'placeholder' => 'Выберете вид материальной ценности',
+                        'fromgridroute' => 'Fregat/matvid/index',
+                        'resultrequest' => 'Fregat/matvid/selectinput',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'disabled' => $disabled,
+                        'onlyAjax' => false,
+                    ]));
+                    ?>
 
-                <?= $form->field($model, 'material_inv')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
+                    <?= $form->field($model, 'material_inv')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
 
-                <?=
-                $form->field($model, 'material_number')->widget(kartik\touchspin\TouchSpin::classname(), [
-                    'options' => ['class' => 'form-control setsession'],
-                    'pluginOptions' => [
-                        'verticalbuttons' => true,
-                        'min' => 1,
-                        'max' => 10000000000,
-                        'step' => 1,
-                        'decimals' => 3,
-                        'forcestepdivisibility' => 'none',
-                    ],
-                    'disabled' => ($model->isNewRecord) ? $disabled : true,
-                ]);
-                ?>
+                    <?=
+                    $form->field($model, 'material_number')->widget(kartik\touchspin\TouchSpin::classname(), [
+                        'options' => ['class' => 'form-control setsession'],
+                        'pluginOptions' => [
+                            'verticalbuttons' => true,
+                            'min' => 1,
+                            'max' => 10000000000,
+                            'step' => 1,
+                            'decimals' => 3,
+                            'forcestepdivisibility' => 'none',
+                        ],
+                        'disabled' => ($model->isNewRecord) ? $disabled : true,
+                    ]);
+                    ?>
 
-                <?=
-                $form->field($model, 'id_izmer')->widget(Select2::classname(), Proc::DGselect2([
-                    'model' => $model,
-                    'resultmodel' => new Izmer,
-                    'fields' => [
-                        'keyfield' => 'id_izmer',
-                        'resultfield' => 'izmer_name',
-                    ],
-                    'placeholder' => 'Выберете единицу измерения',
-                    'fromgridroute' => 'Fregat/izmer/index',
-                    'resultrequest' => 'Fregat/izmer/selectinput',
-                    'thisroute' => $this->context->module->requestedRoute,
-                    'disabled' => $disabled,
-                    'onlyAjax' => false,
-                ]));
-                ?>
+                    <?=
+                    $form->field($model, 'id_izmer')->widget(Select2::classname(), Proc::DGselect2([
+                        'model' => $model,
+                        'resultmodel' => new Izmer,
+                        'fields' => [
+                            'keyfield' => 'id_izmer',
+                            'resultfield' => 'izmer_name',
+                        ],
+                        'placeholder' => 'Выберете единицу измерения',
+                        'fromgridroute' => 'Fregat/izmer/index',
+                        'resultrequest' => 'Fregat/izmer/selectinput',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'disabled' => $disabled,
+                        'onlyAjax' => false,
+                    ]));
+                    ?>
 
-                <?=
-                $form->field($model, 'material_price')->widget(kartik\touchspin\TouchSpin::classname(), [
-                    'options' => ['class' => 'form-control setsession'],
-                    'pluginOptions' => [
-                        'verticalbuttons' => true,
-                        'min' => 0,
-                        'max' => 1000000000,
-                        'step' => 1,
-                        'decimals' => 2,
-                        'forcestepdivisibility' => 'none',
-                    ],
-                    'disabled' => $disabled,
-                ]);
-                ?>
+                    <?=
+                    $form->field($model, 'material_price')->widget(kartik\touchspin\TouchSpin::classname(), [
+                        'options' => ['class' => 'form-control setsession'],
+                        'pluginOptions' => [
+                            'verticalbuttons' => true,
+                            'min' => 0,
+                            'max' => 1000000000,
+                            'step' => 1,
+                            'decimals' => 2,
+                            'forcestepdivisibility' => 'none',
+                        ],
+                        'disabled' => $disabled,
+                    ]);
+                    ?>
 
-                <?= $form->field($model, 'material_serial')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
+                    <?= $form->field($model, 'material_serial')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
 
-                <?=
-                $form->field($model, 'material_release')->widget(DateControl::classname(), [
-                    'type' => DateControl::FORMAT_DATE,
-                    'options' => [
-                        'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
-                    ],
-                    'disabled' => $disabled,
-                ])
-                ?>
+                    <?=
+                    $form->field($model, 'material_release')->widget(DateControl::classname(), [
+                        'type' => DateControl::FORMAT_DATE,
+                        'options' => [
+                            'options' => ['placeholder' => 'Выберите дату ...', 'class' => 'form-control setsession'],
+                        ],
+                        'disabled' => $disabled,
+                    ])
+                    ?>
 
-            </div>
-            <div
-                style="border: 3px solid #cccccc; height: 600px; font-size: 400px; text-align: center; color: #e7e7e7; padding-top: 5px;"
-                class="col-md-8">
-                <div style="position: absolute; left: 50%">
-                    <i class="glyphicon glyphicon-camera" style="position: relative; left: -50%;"></i>
                 </div>
+                <div
+                    style="border: 3px solid #cccccc; height: 600px; font-size: 400px; text-align: center; color: #e7e7e7; padding-top: 5px;"
+                    class="col-md-8">
+                    <div style="position: absolute; left: 50%">
+                        <i class="glyphicon glyphicon-camera" style="position: relative; left: -50%;"></i>
+                    </div>
 
-                <?=
-                \metalguardian\fotorama\Fotorama::widget([
-                    'items' => $gallery,
-                    'id' => 'material_fotorama',
-                    'options' => [
-                        'nav' => 'thumbs',
-                        'minheight' => 520,
-                        'maxheight' => 520,
-                        'width' => '100%',
-                    ]
-                ])
-                ?>
+                    <?=
+                    \metalguardian\fotorama\Fotorama::widget([
+                        'items' => $gallery,
+                        'id' => 'material_fotorama',
+                        'options' => [
+                            'nav' => 'thumbs',
+                            'minheight' => 520,
+                            'maxheight' => 520,
+                            'width' => '100%',
+                        ]
+                    ])
+                    ?>
+                </div>
             </div>
-        </div>
             <?php
             if (!$model->isNewRecord)
                 echo $form->field($model, 'material_writeoff')->widget(Select2::classname(), [
@@ -324,8 +324,16 @@ use yii\helpers\Url;
                                             'dataProvider_spisosnovakt' => $dataProvider_spisosnovakt,
                                             'model' => $model,
                                         ]),
-                                    ]
-                                ]
+                                    ]],
+                                $model->material_tip == 2 ?
+                                    [[
+                                        'label' => 'Как материал',
+                                        'content' => $this->render('_spismat', [
+                                            'searchModel_spismat' => $searchModel_spismat,
+                                            'dataProvider_spismat' => $dataProvider_spismat,
+                                            'model' => $model,
+                                        ])
+                                    ]] : []
                             ),
                         ],
                         [
