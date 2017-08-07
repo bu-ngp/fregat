@@ -1109,7 +1109,7 @@ class Proc
 
         foreach ($fields[$modelName] as $attr => $value) {
             $val_result = $value;
-            if (!empty($value)) {
+            if ($value !== '') {
                 if (isset($selectvalues[$modelName . '[' . $attr . ']']))
                     $val_result = $selectvalues[$modelName . '[' . $attr . ']'][$fields[$modelName][$attr]];
 
