@@ -2,6 +2,7 @@
 
 use app\models\Fregat\Grupa;
 use app\models\Fregat\Material;
+use app\models\Fregat\Recoveryrecieveakt;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\select2\Select2;
@@ -42,6 +43,20 @@ use app\func\Proc;
                 <?= $form->field($model, 'osmotrakt_recoverysendakt_exists_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= $form->field($model, 'osmotrakt_recoverysendakt_not_exists_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
+
+                <?=
+                $form->field($model, 'osmotrakt_recoveryrecieveakt_repaired')->widget(Select2::className(), [
+                    'hideSearch' => true,
+                    'data' => Recoveryrecieveakt::VariablesValues('recoveryrecieveakt_repaired'),
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                    'options' => ['placeholder' => 'Выберете статус восстановления', 'class' => 'form-control setsession'],
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                ]);
+                ?>
+
+                <?= $form->field($model, 'osmotrakt_recoverysendakt_not_recieved_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
             </div>
         </div>

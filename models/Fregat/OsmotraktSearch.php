@@ -312,6 +312,27 @@ class OsmotraktSearch extends Osmotrakt
                 ],
             ]);
 
+            $attr = 'osmotrakt_recoveryrecieveakt_repaired';
+            Proc::Filter_Compare(Proc::WhereStatement, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('recoveryrecieveakts.id_osmotrakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->andWhere(['recoveryrecieveakts.recoveryrecieveakt_repaired' => $filter[$attr]])
+                    ->andWhere('recoveryrecieveakts.id_osmotrakt = osmotrakt.osmotrakt_id')],
+            ]);
+
+            $attr = 'osmotrakt_recoverysendakt_not_recieved_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['exists', (new Query())
+                    ->select('recoveryrecieveakts.id_osmotrakt')
+                    ->from('recoveryrecieveakt recoveryrecieveakts')
+                    ->andWhere(['recoveryrecieveakts.recoveryrecieveakt_repaired' => null])
+                    ->andWhere('recoveryrecieveakts.id_osmotrakt = osmotrakt.osmotrakt_id')
+                ],
+            ]);
+
         }
     }
 
