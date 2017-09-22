@@ -4,6 +4,7 @@ namespace app\controllers\Fregat;
 
 use app\func\ReportsTemplate\InstallaktReport;
 use app\models\Fregat\InstallaktFilter;
+use app\models\Fregat\Mattraffic;
 use app\models\Fregat\TrMat;
 use app\models\Fregat\TrOsnov;
 use Exception;
@@ -132,8 +133,15 @@ class InstallaktController extends Controller
         if (Yii::$app->request->isAjax) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
+                $mattraffics_ids = Mattraffic::find()
+                    ->select(['mattraffic_id'])
+                    ->joinWith(['trOsnovs', 'trMats'])
+                    ->andWhere(['or', ['trOsnovs.id_installakt' => $id], ['trMats.id_installakt' => $id]])
+                    ->column();
+
                 TrOsnov::deleteAll(['id_installakt' => $id]);
                 TrMat::deleteAll(['id_installakt' => $id]);
+                Mattraffic::deleteAll(['in', 'mattraffic_id', $mattraffics_ids]);
 
                 $Installakt = $this->findModel($id)->delete();
 
@@ -141,7 +149,7 @@ class InstallaktController extends Controller
                     throw new Exception('Удаление невозможно.');
 
                 echo $Installakt;
-                
+
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();
