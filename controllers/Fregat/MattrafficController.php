@@ -70,6 +70,7 @@ class MattrafficController extends Controller
 
     public function actionCreate($id)
     {
+        $material_spisan = false;
         $model = new Mattraffic();
 
         $Mattrafficlast = Mattraffic::find()
@@ -87,13 +88,47 @@ class MattrafficController extends Controller
         $dataProvider_mattrafficmols = $searchModel_mattrafficmols->searchformolsmattraffic(Yii::$app->request->queryParams);
 
         $model->attributes = $Mattrafficlast->attributes;
-        $model->id_material = $Material->primaryKey;
-        $model->id_mol = $model->primaryKey;
+        $model->mattraffic_username = 'IMPORT';
+
+        if ($Material->material_tip == 2) {
+            $model->mattraffic_tip = 1;
+
+            if ($model->mattraffic_number == 0) {
+                $material_spisan = true;
+
+                $model->mattraffic_number = 1;
+            }
+        }
+
         $model->mattraffic_date = date('Y-m-d');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
-        } else {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                if ($Material->material_tip == 2) {
+                    $Material->material_number = floatval($Material->material_number) + 1;
+                    if ($material_spisan) {
+                        $Material->material_writeoff = 0;
+                    }
+                    $Material->save();
+                }
+
+                $transaction->commit();
+
+                return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
+            } else {
+                $transaction->rollBack();
+
+                return $this->render('create', [
+                    'model' => $model,
+                    'Material' => $Material,
+                    'searchModel_mattrafficmols' => $searchModel_mattrafficmols,
+                    'dataProvider_mattrafficmols' => $dataProvider_mattrafficmols,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+
             return $this->render('create', [
                 'model' => $model,
                 'Material' => $Material,
@@ -235,7 +270,25 @@ class MattrafficController extends Controller
             if (!empty($status))
                 throw new HttpException(500, $status);
 
-            echo $this->findModel($id)->delete();
+            $Mattraffic = Mattraffic::findOne($id);
+            $Material = Material::findOne($Mattraffic->id_material);
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                echo $this->findModel($id)->delete();
+                $diff = floatval($Material->material_number) - floatval($Mattraffic->mattraffic_number);
+
+                if ($diff < 0) {
+                    throw new HttpException(500, "Разница в количестве меньше 0 ($diff)");
+                }
+
+                Material::updateAll(['material_number' => $diff], ['material_id' => $Mattraffic->id_material]);
+
+                $transaction->commit();
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                throw new $e;
+            }
         }
     }
 
