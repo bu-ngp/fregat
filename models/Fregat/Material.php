@@ -181,7 +181,7 @@ class Material extends \yii\db\ActiveRecord
             ->asArray()
             ->one();
 
-        return $material['build_name'] . ', каб. ' . $material['tr_osnov_kab'];
+        return $material ? $material['build_name'] . ', каб. ' . $material['tr_osnov_kab'] : 'Не установлено';
     }
 
     public function selectinputfortrmat_parent($params)
