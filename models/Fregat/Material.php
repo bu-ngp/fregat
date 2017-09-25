@@ -172,26 +172,20 @@ class Material extends \yii\db\ActiveRecord
     public function getMaterial_install_kab()
     {
         $material = self::find()
-            ->joinWith([
-                'mattraffics' => function (ActiveQuery $query) {
-                    $query->from(['mattraffics' => 'mattraffic'])
-                        ->joinWith([
-                            'trOsnovs' => function (ActiveQuery $query) {
-                                $query->from(['trOsnovs' => 'tr_osnov']);
-                            },
-                        ], true, 'INNER JOIN');
-                }], true, 'INNER JOIN')
+            ->select(['idbuild.build_name', 'trOsnovs.tr_osnov_kab'])
+            ->joinWith(['mattraffics.trOsnovs', 'mattraffics.idMol.idbuild'])
             ->andWhere(['mattraffics.id_material' => $this->primaryKey])
+            ->andWhere(['mattraffics.mattraffic_tip' => 3])
             ->orderBy(['mattraffics.mattraffic_date' => SORT_DESC, 'mattraffics.mattraffic_id' => SORT_DESC])
             ->limit(1)
+            ->asArray()
             ->one();
 
-        return $material ? $material->mattraffics[0]->idMol->idbuild->build_name . ', каб. ' . $material->mattraffics[0]->trOsnovs[0]->tr_osnov_kab : 'не установлено';
+        return $material['build_name'] . ', каб. ' . $material['tr_osnov_kab'];
     }
 
     public function selectinputfortrmat_parent($params)
     {
-
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
