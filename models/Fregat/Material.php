@@ -186,7 +186,6 @@ class Material extends \yii\db\ActiveRecord
 
     public function selectinputfortrmat_parent($params)
     {
-
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
