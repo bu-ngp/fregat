@@ -94,7 +94,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
 <?php endif; ?>
 
 <?php if (Yii::$app->user->can('FregatUserPermission') ||
-    Yii::$app->user->can('FregatImport')
+    Yii::$app->user->can('FregatImport') ||
+    Yii::$app->user->can('FregatConfig') ||
+    Yii::$app->user->can('UserEdit') ||
+    Yii::$app->user->can('RoleEdit')
 ): ?>
     <div class="menublock">
         <?php if (Yii::$app->user->can('FregatImport')): ?>
@@ -110,7 +113,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
                 <div class="menubutton_cn">Справочники</div>
                 <i class="glyphicon glyphicon-list-alt"></i>
             </div>
-
+        <?php endif; ?>
+        <?php if (Yii::$app->user->can('FregatConfig') || Yii::$app->user->can('UserEdit') || Yii::$app->user->can('RoleEdit')): ?>
             <div class="menubutton menubutton_activeanim mb_gray" id="mb_fregatoptions">
                 <span class="hoverspan"></span>
                 <div class="menubutton_cn">Настройки</div>

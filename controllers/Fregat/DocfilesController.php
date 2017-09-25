@@ -32,7 +32,7 @@ class DocfilesController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-select2', 'assign-to-grid'],
+                        'actions' => ['index', 'selectinput', 'assign-to-select2', 'assign-to-grid', 'download-file'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -40,11 +40,6 @@ class DocfilesController extends Controller
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['DocfilesEdit'],
-                    ],
-                    [
-                        'actions' => ['download-file'],
-                        'allow' => true,
-                        'roles' => ['DocfilesEdit', 'RecoveryEdit'],
                     ],
                 ],
             ],

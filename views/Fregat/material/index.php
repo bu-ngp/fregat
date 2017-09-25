@@ -39,7 +39,11 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'material_name',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->primaryKey]) . '">' . $model->material_name . '</a>';
+                        if (Yii::$app->user->can('MaterialEdit')) {
+                            return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->primaryKey]) . '">' . $model->material_name . '</a>';
+                        } else {
+                            return $model->material_name;
+                        }
                     }
                 ],
                 [
@@ -145,12 +149,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ],
             ],
             'buttons' => array_merge(
-                empty($foreign) ? [
+                empty($foreign) ? (Yii::$app->user->can('MaterialEdit') ? [
                     'karta' => function ($url, $model) {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['Fregat/material/update', 'id' => $model->material_id]);
                         return \yii\helpers\Html::a('<i class="glyphicon glyphicon-pencil"></i>', $customurl, ['title' => 'Карта материальной ценности', 'class' => 'btn btn-xs btn-warning', 'data-pjax' => '0']);
                     }
-                ] : [
+                ] : []) : [
                     'chooseajax' => ['Fregat/material/assign-to-select2']
                 ]
             ),
