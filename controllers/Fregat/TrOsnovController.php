@@ -251,7 +251,8 @@ class TrOsnovController extends Controller
             $build_id = $Mattraffic->idMol->id_build;
 
             if (!(empty($mattraffic_id) || empty($tr_osnov_kab) || empty($matvid_id) || empty($build_id))) {
-                $count = Mattraffic::find()
+                $sum = Mattraffic::find()
+                    ->select('sum(mt1.mattraffic_number) as summ')
                     ->from('mattraffic mt1')
                     ->leftJoin('mattraffic mt2', 'mt1.id_material = mt2.id_material and (mt1.mattraffic_date < mt2.mattraffic_date or mt1.mattraffic_id < mt2.mattraffic_id)')
                     ->leftJoin('tr_osnov os', 'mt1.mattraffic_id = os.id_mattraffic')
@@ -261,11 +262,12 @@ class TrOsnovController extends Controller
                     ->andWhere(['like', 'os.tr_osnov_kab', $tr_osnov_kab])
                     ->andWhere(['m.id_matvid' => $matvid_id])
                     ->andWhere(['e.id_build' => $build_id])
-                    ->count();
+                    ->asArray()
+                    ->one();
 
-                if ($count !== null) {
+                if ($sum !== null) {
                     echo json_encode([
-                        'message' => "В кабинете \"$tr_osnov_kab\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: $count"]);
+                        'message' => "В кабинете \"$tr_osnov_kab\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"]);
                 }
             }
         }
