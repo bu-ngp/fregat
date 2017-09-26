@@ -1,4 +1,5 @@
 <?php
+use app\models\Fregat\Mattraffic;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
 use app\func\Proc;
@@ -21,6 +22,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
     $material_tip = Material::VariablesValues('material_tip');
     $material_writeoff = Material::VariablesValues('material_writeoff');
     $material_importdo = Material::VariablesValues('material_importdo');
+    $mattraffic_tip = Mattraffic::VariablesValues('mattraffic_tip');
 
     echo DynaGrid::widget(Proc::DGopts([
         'options' => ['id' => 'materialgrid'],
@@ -146,6 +148,19 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'material_comment',
                     'visible' => false,
+                ],
+                [
+                    'attribute' => 'lastMattraffic.mattraffic_tip',
+                    'label' => 'Тип последней операции',
+                    'filter' => $mattraffic_tip,
+                    'value' => function ($model) use ($mattraffic_tip) {
+                        return isset($mattraffic_tip[$model->lastMattraffic->mattraffic_tip]) ? $mattraffic_tip[$model->lastMattraffic->mattraffic_tip] : '';
+                    },
+                ],
+                [
+                    'attribute' => 'lastMattraffic.mattraffic_date',
+                    'format' => 'date',
+                    'label' => 'Дата последней операции',
                 ],
             ],
             'buttons' => array_merge(

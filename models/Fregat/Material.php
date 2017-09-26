@@ -169,6 +169,14 @@ class Material extends \yii\db\ActiveRecord
             ->andWhere(['mt1.mattraffic_date' => NULL]);
     }
 
+    public function getLastMattraffic()
+    {
+        return $this->hasOne(Mattraffic::className(), ['id_material' => 'material_id'])
+            ->from(['lastmattraffic' => Mattraffic::tableName()])
+            ->leftJoin('mattraffic mt2', 'lastmattraffic.id_material = mt2.id_material and (lastmattraffic.mattraffic_date < mt2.mattraffic_date or lastmattraffic.mattraffic_id < mt2.mattraffic_id)')
+            ->andWhere(['mt2.mattraffic_date' => NULL]);
+    }
+
     public function getMaterial_install_kab()
     {
         $material = self::find()
