@@ -36,6 +36,32 @@ function ClearTrOsnov() {
     $("#mattraffic_number_max").text('');
 }
 
+function MatvidCount() {
+    if ($("#trosnov-id_mattraffic").val() != "" && $("#trosnov-tr_osnov_kab").val() != "") {
+        $.ajax({
+            url: baseUrl + "Fregat/tr-osnov/matvid-count",
+            type: "post",
+            data: {mattraffic_id: $("#trosnov-id_mattraffic").val(), tr_osnov_kab: $("#trosnov-tr_osnov_kab").val()},
+            success: function (data) {
+                var obj = JSON.parse(data);
+                $(".alert-matvid").text(obj.message);
+            },
+            error: function (data) {
+                console.error("Ошибка MatvidCount()");
+            }
+        });
+    }
+}
+
 $(document).ready(function () {
     FillTrOsnov();
+    MatvidCount();
+
+    $("#trosnov-tr_osnov_kab").on("change", function (e) {
+        if ($(this).val() == "") {
+            $('.alert-matvid').text('После заполнения инвентарного номера и кабинета здесь будет отображаться количество установленного вида материальнной ценности в заданный кабинет');
+        } else {
+            MatvidCount();
+        }
+    })
 });
