@@ -156,11 +156,13 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'value' => function ($model) use ($mattraffic_tip) {
                         return isset($mattraffic_tip[$model->lastMattraffic->mattraffic_tip]) ? $mattraffic_tip[$model->lastMattraffic->mattraffic_tip] : '';
                     },
+                    'visible' => false,
                 ],
                 [
                     'attribute' => 'lastMattraffic.mattraffic_date',
                     'format' => 'date',
                     'label' => 'Дата последней операции',
+                    'visible' => false,
                 ],
             ],
             'buttons' => array_merge(
