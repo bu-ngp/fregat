@@ -120,7 +120,7 @@ class DocfilesController extends Controller
         $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
         $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
 
-        return Yii::$app->response->sendFile($fileroot, $Docfiles->docfiles_name);
+        return file_exists($fileroot) ? Yii::$app->response->sendFile($fileroot, $Docfiles->docfiles_name) : false;
     }
 
     public function actionAssignToGrid()
