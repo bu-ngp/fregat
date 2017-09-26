@@ -106,7 +106,7 @@ class MattrafficController extends Controller
         try {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 if ($Material->material_tip == 2) {
-                    $Material->material_number = floatval($Material->material_number) + 1;
+                    $Material->material_number = floatval($Material->material_number) + $Mattrafficlast->mattraffic_number;
                     if ($material_spisan) {
                         $Material->material_writeoff = 0;
                     }
