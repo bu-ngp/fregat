@@ -21,7 +21,8 @@ class MaterialFilter extends Model
     public $material_attachphoto_mark;
     public $material_attachdoc_mark;
     public $material_comment_mark;
-    public $tr_osnov_kab;
+    public $tr_osnov_kab_current;
+    public $tr_osnov_kab_always;
     public $tr_osnov_install_mark;
     public $tr_osnov_uninstall_mark;
     public $tr_mat_install_mark;
@@ -42,7 +43,8 @@ class MaterialFilter extends Model
                 'mat_id_grupa',
                 'mat_id_grupa_not',
                 'mattraffic_username',
-                'tr_osnov_kab',
+                'tr_osnov_kab_current',
+                'tr_osnov_kab_always',
                 'material_working_mark',
                 'material_recovery_attachfiles_mark',
                 'material_attachfiles_mark',
@@ -79,7 +81,8 @@ class MaterialFilter extends Model
             'material_attachphoto_mark' => 'Прикреплены картинки в карте материальной ценности',
             'material_attachdoc_mark' => 'Прикреплены документы в карте материальной ценности',
             'material_comment_mark' => 'Содержит заметку',
-            'tr_osnov_kab' => 'Кабинет в котором установлена материальная ценность',
+            'tr_osnov_kab_current' => 'Кабинет в котором уставновлена материальная ценность на текущий момент',
+            'tr_osnov_kab_always' => 'Кабинет в котором уставновлена материальная ценность за все время',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
             'material_working_mark' => 'Материальные ценности в рабочем состоянии',
