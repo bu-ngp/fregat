@@ -277,6 +277,16 @@ class OsmotraktSearch extends Osmotrakt
 
         if (!empty($filter)) {
 
+            $attr = 'osmotrakt_date';
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'osmotrakt_date',
+                'ExistsSubQuery' => (new Query())
+                    ->select('idOsmotrakt.osmotrakt_id')
+                    ->from('osmotrakt idOsmotrakt')
+                    ->andWhere('idOsmotrakt.osmotrakt_id = osmotrakt.osmotrakt_id')
+            ]);
+
             $attr = 'mattraffic_date_writeoff';
             Proc::Filter_Compare(Proc::DateRange, $query, $filter, [
                 'Attribute' => $attr,

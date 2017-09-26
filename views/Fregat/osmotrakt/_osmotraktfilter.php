@@ -28,6 +28,15 @@ use app\func\Proc;
     <div class="insideforms">
 
         <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
+            <div class="panel-heading"><?= Html::encode('Журнал осмотров материальынх ценностей') ?></div>
+            <div class="panel-body">
+
+                <?php Proc::FilterFieldDateRange($form, $model, 'osmotrakt_date') ?>
+
+            </div>
+        </div>
+
+        <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?> panelblock">
             <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
             <div class="panel-body">
 
