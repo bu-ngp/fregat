@@ -11,7 +11,7 @@ use app\func\Proc;
 
 $this->title = 'Карта материальной ценности' . ' (' . explode(' ', $model->material_name)[0] . '...)';
 $this->params['breadcrumbs'] = Proc::Breadcrumbs($this, [
-    'model' => [$model, $Mattraffic],
+    'model' => [$model/*, $Mattraffic*/],
     'postfix' => $model->primaryKey,
 ]);
 ?>
