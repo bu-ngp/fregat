@@ -8,6 +8,8 @@ use yii\base\Model;
 
 class OsmotraktFilter extends Model
 {
+    public $osmotrakt_date_beg;
+    public $osmotrakt_date_end;
     public $mattraffic_date_writeoff_beg;
     public $mattraffic_date_writeoff_end;
     public $osmotrakt_recoverysendakt_exists_mark;
@@ -26,6 +28,8 @@ class OsmotraktFilter extends Model
             [[
                 'mattraffic_date_writeoff_beg',
                 'mattraffic_date_writeoff_end',
+                'osmotrakt_date_beg',
+                'osmotrakt_date_end',
             ], 'date', 'format' => 'php:Y-m-d'],
             [[
                 'osmotrakt_recoveryrecieveakt_repaired',
@@ -36,6 +40,7 @@ class OsmotraktFilter extends Model
     public function attributeLabels()
     {
         return [
+            'osmotrakt_date_beg' => 'Дата осмотра материальной ценности',
             'mattraffic_date_writeoff_beg' => 'Дата списания материальной ценности',
             'osmotrakt_recoverysendakt_exists_mark' => 'Акт содержится в журнале восстановления материальных ценностей',
             'osmotrakt_recoverysendakt_not_exists_mark' => 'Акт отсутствует в журнале восстановления материальных ценностей',
