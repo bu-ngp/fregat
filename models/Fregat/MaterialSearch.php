@@ -245,20 +245,30 @@ class MaterialSearch extends Material
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
 
-            $attr = 'tr_osnov_kab';
+            $attr = 'tr_osnov_kab_current';
             Proc::Filter_Compare(Proc::Text, $query, $filter, [
                 'Attribute' => $attr,
-                'SQLAttribute' => 'trOsnovs.' . $attr,
+                'SQLAttribute' => 'trOsnovs.tr_osnov_kab',
+                'LikeManual' => true,
+                'ExistsSubQuery' => (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('mattraffic m2', 'mattraffics.id_material = m2.id_material and (mattraffics.mattraffic_date < m2.mattraffic_date or mattraffics.mattraffic_id < m2.mattraffic_id)')
+                    ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->andWhere(['m2.mattraffic_date' => null])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+            ]);
+
+            $attr = 'tr_osnov_kab_always';
+            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'trOsnovs.tr_osnov_kab',
                 'LikeManual' => true,
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
                     ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
-                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)')
-                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
-                    ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
                     ->andWhere('mattraffics.id_material = material.material_id')
-
             ]);
 
             $attr = 'tr_osnov_install_mark';

@@ -133,7 +133,17 @@ use app\func\Proc;
                 ]));
                 ?>
 
-                <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase']) ?>
+                <div class="form-group">
+                    <?= \yii\bootstrap\Html::tag('label', 'Кабинет в котором уставновлена материальная ценность', ['class' => 'control-label']) ?>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <?= $form->field($model, 'tr_osnov_kab_current')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase'])->label('- на текущий момент:') ?>
+                        </div>
+                        <div class="col-xs-6">
+                            <?= $form->field($model, 'tr_osnov_kab_always')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase'])->label('- за все время:') ?>
+                        </div>
+                    </div>
+                </div>
 
                 <?= $form->field($model, 'tr_osnov_install_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
