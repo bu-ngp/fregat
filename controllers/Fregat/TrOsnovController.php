@@ -31,7 +31,7 @@ class TrOsnovController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'forosmotrakt', 'selectinputforosmotrakt', 'assign-to-select2', 'fillinstalledmat'],
+                        'actions' => ['selectinputfortrosnov', 'filltrosnov', 'matvid-count', 'forosmotrakt', 'selectinputforosmotrakt', 'assign-to-select2', 'fillinstalledmat'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -235,6 +235,37 @@ class TrOsnovController extends Controller
                         'build_name' => $query->idMol->idbuild->build_name,
                         'mattraffic_number' => doubleval(Mattraffic::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id)), // Максимльно возможное кол-во для перемещения
                     ]);
+                }
+            }
+        }
+    }
+
+    // Заполнение полей формы после выбора материальной ценности по инвентарнику
+    public function actionMatvidCount()
+    {
+        if (Yii::$app->request->isAjax) {
+            $mattraffic_id = Yii::$app->request->post('mattraffic_id');
+            $tr_osnov_kab = Yii::$app->request->post('tr_osnov_kab');
+            $Mattraffic = Mattraffic::findOne($mattraffic_id);
+            $matvid_id = $Mattraffic->idMaterial->id_matvid;
+            $build_id = $Mattraffic->idMol->id_build;
+
+            if (!(empty($mattraffic_id) || empty($tr_osnov_kab) || empty($matvid_id) || empty($build_id))) {
+                $count = Mattraffic::find()
+                    ->from('mattraffic mt1')
+                    ->leftJoin('mattraffic mt2', 'mt1.id_material = mt2.id_material and (mt1.mattraffic_date < mt2.mattraffic_date or mt1.mattraffic_id < mt2.mattraffic_id)')
+                    ->leftJoin('tr_osnov os', 'mt1.mattraffic_id = os.id_mattraffic')
+                    ->leftJoin('material m', 'm.material_id = mt1.id_material')
+                    ->leftJoin('employee e', 'e.employee_id = mt1.id_mol')
+                    ->andWhere(['mt2.mattraffic_date' => null])
+                    ->andWhere(['like', 'os.tr_osnov_kab', $tr_osnov_kab])
+                    ->andWhere(['m.id_matvid' => $matvid_id])
+                    ->andWhere(['e.id_build' => $build_id])
+                    ->count();
+
+                if ($count !== null) {
+                    echo json_encode([
+                        'message' => "В кабинете \"$tr_osnov_kab\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: $count"]);
                 }
             }
         }

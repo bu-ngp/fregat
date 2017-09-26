@@ -18,7 +18,10 @@ use app\models\Fregat\Build;
 
 <div class="tr-osnov-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php
+    $form = ActiveForm::begin();
+    $alertMatvid = 'После заполнения инвентарного номера и кабинета здесь будет отображаться количество установленного вида материальнной ценности в заданный кабинет';
+    ?>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
         <div class="panel-body">
@@ -36,22 +39,22 @@ use app\models\Fregat\Build;
                 'thisroute' => $this->context->module->requestedRoute,
                 'methodquery' => 'selectinputfortrosnov',
                 'methodparams' => ['idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt')],
-              //  'disabled' => !$model->isNewRecord,
+                //  'disabled' => !$model->isNewRecord,
                 'dopparams' => [
                     'foreigndo' => '1',
                     'idinstallakt' => (string)filter_input(INPUT_GET, 'idinstallakt'),
                 ],
             ]), [
                 'pluginEvents' => [
-                    "select2:select" => "function() { FillTrOsnov(); }",
-                    "select2:unselect" => "function() { ClearTrOsnov(); }"
+                    "select2:select" => "function() { FillTrOsnov(); MatvidCount(); }",
+                    "select2:unselect" => "function() { ClearTrOsnov(); $('.alert-matvid').text('$alertMatvid'); }"
                 ],
             ]));
             ?>
 
             <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList([0 => '', 1 => 'Основное средство', 2 => 'Материал', 3 => 'Групповой учет'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])    ?>
+            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])      ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
@@ -79,7 +82,7 @@ use app\models\Fregat\Build;
     $form->field($Mattraffic, 'mattraffic_number', [
         'inputTemplate' => '<div class="input-group">{input}<span id="mattraffic_number_max" class="input-group-addon">' . $mattraffic_number_max . '</span></div>'
     ])->widget(TouchSpin::classname(), [
-       // 'disabled' => !$model->isNewRecord,
+        // 'disabled' => !$model->isNewRecord,
         'options' => ['class' => 'form-control setsession'],
         'pluginOptions' => [
             'verticalbuttons' => true,
@@ -93,6 +96,8 @@ use app\models\Fregat\Build;
     ?>
 
     <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+
+    <div class="alert alert-info alert-matvid" role="alert" style="display: block;"><?= $alertMatvid ?></div>
 
     <div class="form-group">
         <div class="panel panel-default">
