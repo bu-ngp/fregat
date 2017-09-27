@@ -15,6 +15,7 @@ use app\models\Base\Patient;
 use app\models\Base\Preparat;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
+use app\models\Fregat\Material;
 use app\models\Fregat\Mattraffic;
 use app\models\Fregat\Naklad;
 use app\models\Fregat\Nakladmaterials;
@@ -71,7 +72,7 @@ class PopulateData
                         $Mattraffic = Mattraffic::find()
                             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
                             ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (1))')
+                            ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                             ->andWhere(['in', 'mattraffic_tip', [1]])
                             ->andWhere([
                                 'm2.mattraffic_date_m2' => NULL,
@@ -104,7 +105,7 @@ class PopulateData
                         $Mattraffic = Mattraffic::find()
                             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                             ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (2))')
+                            ->andWhere(['in', 'idMaterial.material_tip', [Material::MATERIAL]])
                             ->andWhere(['in', 'mattraffic_tip', [1]])
                             ->andWhere([
                                 'm2.mattraffic_date_m2' => NULL,
@@ -119,7 +120,7 @@ class PopulateData
                         $MattrafficParent = Mattraffic::find()
                             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
                             ->joinWith(['idMaterial', 'idMol'])
-                            ->andWhere('(idMaterial.material_tip in (1))')
+                            ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                             ->andWhere(['in', 'mattraffic_tip', [1]])
                             ->andWhere([
                                 'm2.mattraffic_date_m2' => NULL,
@@ -214,7 +215,7 @@ class PopulateData
                 $MattrafficSchetuchet = Mattraffic::find()
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                     ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                     ->andWhere(['in', 'mattraffic_tip', [1]])
                     ->andWhere([
                         'm2.mattraffic_date_m2' => NULL,
@@ -243,7 +244,7 @@ class PopulateData
                 $Mattraffic = Mattraffic::find()
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                     ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                     ->andWhere(['in', 'mattraffic_tip', [1]])
                     ->andWhere([
                         'm2.mattraffic_date_m2' => NULL,
@@ -290,7 +291,7 @@ class PopulateData
                 $MolRelease = Mattraffic::find()
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                     ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                     ->andWhere(['in', 'mattraffic_tip', [1]])
                     ->andWhere([
                         'm2.mattraffic_date_m2' => NULL,
@@ -305,7 +306,7 @@ class PopulateData
                 $MolGot = Mattraffic::find()
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                     ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                     ->andWhere(['in', 'mattraffic_tip', [1]])
                     ->andWhere([
                         'm2.mattraffic_date_m2' => NULL,
@@ -321,7 +322,7 @@ class PopulateData
                 $MattrafficRelease = Mattraffic::find()
                     ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1)')
                     ->joinWith(['idMaterial', 'idMol'])
-                    ->andWhere('(idMaterial.material_tip in (1))')
+                    ->andWhere(['in', 'idMaterial.material_tip', [Material::OSNOV]])
                     ->andWhere(['in', 'mattraffic_tip', [1]])
                     ->andWhere([
                         'm2.mattraffic_date_m2' => NULL,

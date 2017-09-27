@@ -139,6 +139,7 @@ class InstallaktCest
      */
     public function createTrosnovGrids(AcceptanceTester $I)
     {
+        $I->executeJS('window.scrollTo(0,0);');
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
         $I->executeJS('window.scrollTo(0,0);');
@@ -548,7 +549,7 @@ class InstallaktCest
         $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', '003');
         $I->wait(2);
-        $I->seeInField("Material[material_install_kab]", 'не установлено');
+        $I->seeInField("Material[material_install_kab]", 'Не установлено');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '001');
         $I->wait(2);
         $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 101');

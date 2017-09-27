@@ -407,7 +407,7 @@ class FregatImport
             'material_release' => self::IsFileType(self::os) || self::IsFileType(self::gu) ? self::GetDateFromExcel(trim($row[self::xls('material_release')])) : NULL, // Определяем дату выпуска материальной ценности и переводим в формат PHP из формата Excel
             'material_number' => self::IsFileType(self::os) ? '1' : trim($row[self::xls('material_number')]), // Определяем количество материальной ценности
             'material_price' => $material_price,
-            'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3), // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал, 3 - Групповой учет основных средств)
+            'material_tip' => self::IsFileType(self::os) ? Material::OSNOV : (self::IsFileType(self::mat) ? Material::MATERIAL : Material::GROUP_UCHET), // Определяем тип материальной ценности (1 - Основное средство, 2 - Материал, 3 - Групповой учет основных средств)
             'id_matvid' => self::AssignMatvid(trim($row[self::xls('material_name1c')])), // Определяем Вид материальной ценности согласно таблицы соответствий importmaterial, если Вид материальной ценности не определен, то ставится ключ 1 со значением "Не определен"
             'id_izmer' => (self::IsFileType(self::os) || self::IsFileType(self::gu)) ? 1 : self::AssignIzmer(trim($row[self::xls('izmer_name')]), trim($row[self::xls('izmer_kod_okei')])), // Определяем Единицу измерения
             'id_schetuchet' => self::AssignSchetuchet(trim($row[self::xls('schetuchet_kod')]), trim($row[self::xls('schetuchet_name')])), // Определяем Единицу измерения
@@ -561,7 +561,7 @@ class FregatImport
             // Находим материальную ценность в базе по коду 1С, если не находим создаем новую запись
             $search = self::GetRowsPDO('select material_id from material where material_1c = :material_1c and material_tip = :material_tip ', [
                 'material_1c' => $xls_attributes_material['material_1c'],
-                'material_tip' => self::IsFileType(self::os) ? 1 : (self::IsFileType(self::mat) ? 2 : 3),
+                'material_tip' => self::IsFileType(self::os) ? Material::OSNOV : (self::IsFileType(self::mat) ? Material::MATERIAL : Material::GROUP_UCHET),
             ]);
 
             if (!empty($search))
@@ -985,7 +985,7 @@ class FregatImport
     {
         $return = false;
 
-        $Typemat = self::IsFileType(self::mat) ? 2 : 3;
+        $Typemat = self::IsFileType(self::mat) ? Material::MATERIAL : Material::GROUP_UCHET;
         $result = Mattraffic::find()
             ->from(['m1' => 'mattraffic'])
             ->join('LEFT JOIN', 'material', 'm1.id_material = material.material_id')
@@ -1034,7 +1034,7 @@ class FregatImport
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $Typemat = self::IsFileType(self::mat) ? 2 : 3;
+            $Typemat = self::IsFileType(self::mat) ? Material::MATERIAL : Material::GROUP_UCHET;
             $SP = Mattraffic::find()
                 //     ->joinWith('idMaterial')
                 ->from(['m1' => 'mattraffic'])
@@ -1857,9 +1857,9 @@ class FregatImport
                 'datetime' => ['matlog_filelastdate'],
                 'string' => ['material_1c', 'material_inv', 'material_serial'],
                 'case' => ['material_tip' => [
-                    1 => 'Основное средство',
-                    2 => 'Материал',
-                    3 => 'Групповой учет',
+                    Material::OSNOV => 'Основное средство',
+                    Material::MATERIAL => 'Материал',
+                    Material::GROUP_UCHET => 'Групповой учет',
                 ]]
             ]);
         }

@@ -266,6 +266,8 @@ class TrOsnovController extends Controller
                     ->one();
 
                 if ($sum !== null) {
+                    $sum['summ'] = $sum['summ'] === null ? 0 : $sum['summ'];
+
                     echo json_encode([
                         'message' => "В кабинете \"$tr_osnov_kab\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"]);
                 }

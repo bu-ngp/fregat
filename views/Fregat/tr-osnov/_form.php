@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Material;
 use app\models\Fregat\Mattraffic;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -52,9 +53,9 @@ use app\models\Fregat\Build;
             ]));
             ?>
 
-            <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList([0 => '', 1 => 'Основное средство', 2 => 'Материал', 3 => 'Групповой учет'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList(array_merge([0 => ''], Material::VariablesValues('material_tip')), ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])      ?>
+            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])        ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 

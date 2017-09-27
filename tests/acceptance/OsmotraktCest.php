@@ -279,7 +279,6 @@ class OsmotraktCest
         $I->wait(2);
         $I->seeElement(['class' => 'osmotrakt-form']);
 
-
         $I->click('//a[@data-toggle="collapse"]');
         $I->wait(2);
 

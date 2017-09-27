@@ -136,7 +136,7 @@ class TrMat extends \yii\db\ActiveRecord
     {
         $query = self::find()
             ->joinWith(['idInstallakt', 'idMattraffic.idMaterial', 'idMattraffic.idMol'])
-            ->andWhere(['idMaterial.material_tip' => 2])
+            ->andWhere(['in', 'idMaterial.material_tip', [Material::MATERIAL, Material::MATERIAL_R]])
             ->andWhere(['idMol.id_person' => Employee::findOne($id_mol)->id_person])
             ->andWhere(['between', 'idInstallakt.installakt_date', $period_beg, $period_end]);
 
@@ -152,7 +152,7 @@ class TrMat extends \yii\db\ActiveRecord
     {
         $query = self::find()
             ->joinWith(['idInstallakt', 'idMattraffic.idMaterial', 'idMattraffic.idMol'])
-            ->andWhere(['idMaterial.material_tip' => 2])
+            ->andWhere(['in', 'idMaterial.material_tip', [Material::MATERIAL, Material::MATERIAL_R]])
             ->andWhere(['idMol.id_person' => Employee::findOne($id_mol)->id_person])
             ->andWhere(['between', 'idInstallakt.installakt_date', $period_beg, $period_end]);
 

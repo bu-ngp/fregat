@@ -73,12 +73,12 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(1);
 
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство"]');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Групповой учет"]');
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство (Р)"]');
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал (Р)"]');
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="В комплекте"]');
 
         $I->see('Необходимо заполнить «Наименование».');
-        $I->see('Необходимо заполнить «Инвентарный номер».');
         $I->see('Необходимо заполнить «Материально-ответственное лицо».');
 
         $I->checkDatePicker('Material[material_release]');
@@ -113,7 +113,7 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Основное средство', 'ШКАФ', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'шт', '1200.15', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
+        $I->checkDynagridData(['Основное средство (Р)', 'ШКАФ', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'шт', '1200.15', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
     }
 
     /**
@@ -125,7 +125,7 @@ class MaterialJurnalCest
         $I->click(['link' => 'Составить акт прихода материальнной ценности']);
         $I->wait(2);
         $I->seeElement(['class' => 'material-form']);
-        $I->chooseValueFromSelect2('Material[material_tip]', 'Материал');
+        $I->chooseValueFromSelect2('Material[material_tip]', 'Материал (Р)');
         $I->chooseValueFromGrid('Material[id_matvid]', 'СТОЛ', 'matvidgrid_gw');
 
         $I->fillField('Material[material_name]', 'Кухонный стол');
@@ -163,7 +163,7 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->checkDynagridData(['Материал', 'СТОЛ', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '5.000', 'шт', '15000.00', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
+        $I->checkDynagridData(['Материал (Р)', 'СТОЛ', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '5.000', 'шт', '15000.00', 'Нет'], 'materialgrid_gw', ['a[@title="Карта материальной ценности"]']);
     }
 
     /**
@@ -190,8 +190,8 @@ class MaterialJurnalCest
         $I->wait(2);
 
         $I->existsInFilterTab('materialgrid_gw', ['ИВАНОВ ИВАН ИВАНОВИЧ', 'ADMIN', 'Дата изменения движения мат-ой ценности С ' . Yii::$app->formatter->asDate($dateNow) . ' ПО ' . Yii::$app->formatter->asDate($dateNow) . ';', 'Материальные ценности в рабочем состоянии']);
-        $I->checkDynagridData(['Материал', 'СТОЛ', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '5.000', 'шт', '15000.00', 'Нет']);
-        $I->checkDynagridData(['Основное средство', 'ШКАФ', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'шт', '1200.15', 'Нет']);
+        $I->checkDynagridData(['Материал (Р)', 'СТОЛ', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '5.000', 'шт', '15000.00', 'Нет']);
+        $I->checkDynagridData(['Основное средство (Р)', 'ШКАФ', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'шт', '1200.15', 'Нет']);
 
         $I->click('//a[@title="Дополнительный фильтр"]');
         $I->wait(4);
@@ -243,7 +243,7 @@ class MaterialJurnalCest
             ['I', 5, 'Списан'],
 
             ['A', 6, '1'],
-            ['B', 6, 'Материал'],
+            ['B', 6, 'Материал (Р)'],
             ['C', 6, 'СТОЛ'],
             ['D', 6, 'Кухонный стол'],
             ['E', 6, '1000002'],
@@ -253,7 +253,7 @@ class MaterialJurnalCest
             ['I', 6, 'Нет'],
 
             ['A', 7, '2'],
-            ['B', 7, 'Основное средство'],
+            ['B', 7, 'Основное средство (Р)'],
             ['C', 7, 'ШКАФ'],
             ['D', 7, 'Шкаф для одежды'],
             ['E', 7, '1000001'],

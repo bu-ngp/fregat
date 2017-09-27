@@ -34,7 +34,12 @@ use yii\db\Query;
  */
 class Material extends \yii\db\ActiveRecord
 {
-    //  public $material_install_kab;
+    const OSNOV = 1;
+    const MATERIAL = 2;
+    const GROUP_UCHET = 3;
+    const OSNOV_R = 4;
+    const MATERIAL_R = 5;
+    const V_KOMPLEKTE = 6;
 
     /**
      * @inheritdoc
@@ -56,6 +61,11 @@ class Material extends \yii\db\ActiveRecord
             [['material_username'], 'filter', 'filter' => function ($value) {
                 return 'IMPORT';
             }, 'on' => 'import1c'],
+            [['material_inv'], 'filter', 'filter' => function ($value) {
+                return (string)Material::getInvVKomplekte();
+            }, 'when' => function ($model) {
+                return $model->material_tip == Material::V_KOMPLEKTE;
+            }],
             [['material_number'], 'default', 'value' => 1],
             [['material_name', 'material_number', 'material_price', 'material_name1c', 'material_tip', 'id_matvid', 'id_izmer', 'material_username'], 'required'],
             [['id_izmer'], 'exist', 'skipOnError' => true, 'targetClass' => Izmer::className(), 'targetAttribute' => ['id_izmer' => 'izmer_id']],
@@ -69,7 +79,7 @@ class Material extends \yii\db\ActiveRecord
             [['material_1c'], 'string', 'max' => 20],
             [['material_inv'], 'string', 'max' => 50],
             [['material_serial'], 'string', 'max' => 255],
-            [['material_tip'], 'integer', 'min' => 1, 'max' => 3], // 1 - Основное средство, 2 - Материалы, 3 - Групповой учет основных средств
+            [['material_tip'], 'integer', 'min' => 1, 'max' => 6], // 1 - Основное средство, 2 - Материалы, 3 - Групповой учет основных средств, 4 - Основное средство (Ручной ввод), 5 - Материал (Ручной ввод), 6 - В комплекте
             [['material_name', 'material_name1c', 'material_1c', 'material_inv', 'material_release'], 'match', 'pattern' => '/^null$/iu', 'not' => true, 'message' => '{attribute} не может быть равен "NULL"'],
             ['material_inv', 'unique', 'targetAttribute' => ['material_inv', 'material_1c', 'material_tip'], 'message' => '"{value}" - такой инвентарный номер уже есть у данного типа материальнной ценности'],
             [['material_1c'], 'required', 'on' => 'import1c'],
@@ -88,7 +98,7 @@ class Material extends \yii\db\ActiveRecord
 
     public function FoldDevision($attribute)
     {
-        if (!(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->material_tip, [1, 3]) || in_array($this->material_tip, [2])))
+        if (!(ctype_digit(strval(round($this->$attribute, 3))) && in_array($this->material_tip, [Material::OSNOV, Material::OSNOV_R, Material::GROUP_UCHET, Material::V_KOMPLEKTE]) || in_array($this->material_tip, [Material::MATERIAL, Material::MATERIAL_R])))
             $this->addError($attribute, 'Количество должно быть целым числом');
     }
 
@@ -200,7 +210,6 @@ class Material extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : ['material_id AS id'], ['CONCAT_WS(", ", material_inv, material_name) AS text']))
             ->where(['like', isset($params['init']) ? 'material_id' : 'material_inv', $params['q'], isset($params['init']) ? false : null])
             ->andWhere(['material_number' => 1])
-            //  ->andWhere(['material_tip' => 2])
             ->limit(20)
             ->asArray()
             ->$method();
@@ -228,10 +237,26 @@ class Material extends \yii\db\ActiveRecord
         return 'инв. ' . self::findOne($ID)->material_inv . ', ' . self::findOne($ID)->material_name;
     }
 
+    private static function getInvVKomplekte()
+    {
+        $maxInv = Material::find()
+            ->andWhere(['material_tip' => Material::V_KOMPLEKTE])
+            ->max('material_inv');
+
+        return $maxInv ? intval($maxInv) + 1 : 99000001;
+    }
+
     public static function VariablesValues($attribute)
     {
         $values = [
-            'material_tip' => [1 => 'Основное средство', 2 => 'Материал', 3 => 'Групповой учет'],
+            'material_tip' => [
+                Material::OSNOV => 'Основное средство',
+                Material::MATERIAL => 'Материал',
+                Material::GROUP_UCHET => 'Групповой учет',
+                Material::OSNOV_R => 'Основное средство (Р)',
+                Material::MATERIAL_R => 'Материал (Р)',
+                Material::V_KOMPLEKTE => 'В комплекте',
+            ],
             'material_writeoff' => [0 => 'Нет', 1 => 'Да'],
             'material_importdo' => [0 => 'Нет', 1 => 'Да'],
         ];

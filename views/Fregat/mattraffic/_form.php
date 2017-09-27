@@ -4,6 +4,7 @@ use app\models\Config\Authuser;
 use app\models\Fregat\Build;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
+use app\models\Fregat\Material;
 use app\models\Fregat\Podraz;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -33,7 +34,7 @@ use yii\helpers\Url;
         <div class="panel-heading"><?= Html::encode('Материальная ценность') ?></div>
         <div class="panel-body">
 
-            <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList([0 => '', 1 => 'Основное средство', 2 => 'Материал'], ['class' => 'form-control', 'disabled' => true]) ?>
+            <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList(array_merge([0 => ''], Material::VariablesValues('material_tip')), ['class' => 'form-control', 'disabled' => true]) ?>
 
             <?=
             $form->field($Material, 'id_matvid', ['enableClientValidation' => false])->widget(Select2::classname(), Proc::DGselect2([
