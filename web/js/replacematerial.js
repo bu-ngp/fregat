@@ -44,7 +44,9 @@ function MatvidCount() {
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val(), tr_osnov_kab: $("#trosnov-tr_osnov_kab").val()},
             success: function (data) {
                 var obj = JSON.parse(data);
-                $(".alert-matvid").text(obj.message);
+                if (obj.message != "") {
+                    $(".alert-matvid").text(obj.message);
+                }
             },
             error: function (data) {
                 console.error("Ошибка MatvidCount()");

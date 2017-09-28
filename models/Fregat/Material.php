@@ -62,7 +62,7 @@ class Material extends \yii\db\ActiveRecord
                 return 'IMPORT';
             }, 'on' => 'import1c'],
             [['material_inv'], 'filter', 'filter' => function ($value) {
-                return (string)Material::getInvVKomplekte();
+                return $value ?: (string)Material::getInvVKomplekte();
             }, 'when' => function ($model) {
                 return $model->material_tip == Material::V_KOMPLEKTE;
             }],

@@ -106,6 +106,7 @@ class InstallaktCest
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Шкаф для медикаментов');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
+        $I->seeInField("Material[material_install_kab]", 'Не установлено');
 
         $I->seeInField("Authuser[auth_user_fullname]", 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ');
         $I->seeInField("Dolzh[dolzh_name]", 'ТЕРАПЕВТ');
@@ -113,8 +114,9 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", '');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('Mattraffic[mattraffic_number]', '2.000');
         $I->fillField('TrOsnov[tr_osnov_kab]', '101');
+        $I->fillField('Mattraffic[mattraffic_number]', '2.000');
+
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
 
@@ -124,7 +126,9 @@ class InstallaktCest
         $I->wait(1);
 
         $I->see('У материально ответственного лица "ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ" не заполнено "Здание", в которое устанавливается материальная ценность');
-        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '001');
+        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '1000001');
+        $I->wait(2);
+        $I->seeElementInDOM('//div[text()=\'В кабинете "101" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "ШКАФ" в количестве: 0\']');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -151,6 +155,7 @@ class InstallaktCest
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Кухонный стол');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
+        $I->seeInField("Material[material_install_kab]", 'Не установлено');
 
         $I->seeInField("Authuser[auth_user_fullname]", 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField("Dolzh[dolzh_name]", 'ПРОГРАММИСТ');
@@ -158,8 +163,11 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", 'ПОЛИКЛИНИКА 1');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
         $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
+        $I->wait(2);
+        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
+
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -181,6 +189,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство"]');
         $I->seeInField('Material[material_name]', 'Кухонный стол');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 102');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
@@ -200,14 +209,19 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeInField('Material[material_name]', 'Картридж А12');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
         $I->seeInField('Podraz[podraz_name]', 'ТЕРАПЕВТИЧЕСКОЕ');
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
-        $I->fillField('Mattraffic[mattraffic_number]', '6.000');
         $I->fillField('TrOsnov[tr_osnov_kab]', '103');
+        $I->fillField('Mattraffic[mattraffic_number]', '6.000');
+
+        $I->wait(2);
+        $I->seeElementInDOM('//div[text()=\'В кабинете "103" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(1);
@@ -229,6 +243,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeInField('Material[material_name]', 'Картридж А12');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 103');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
@@ -239,12 +254,16 @@ class InstallaktCest
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
         $I->seeInField('TrOsnov[tr_osnov_kab]', '103');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "103" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 4.000\']');
 
         $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '002');
 
-        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
         $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
+
+        $I->wait(2);
+        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
@@ -410,6 +429,82 @@ class InstallaktCest
     /**
      * @depends createTrmatWhereOsnovInsideOsnov
      */
+    public function createVKomplekte(AcceptanceTester $I)
+    {
+        $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
+        $I->wait(2);
+
+        $I->chooseValueFromSelect2('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 102, 1000002, Кухонный стол', '002');
+        $I->cantChooseValueFromSelect2('TrMat[id_mattraffic]', '99000001, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', '9900');
+
+        $I->click('//a[@id="backbutton"]');
+        $I->wait(2);
+
+        $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
+        $I->wait(2);
+
+        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '99000001, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', '9900');
+
+        $I->wait(2);
+        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="В комплекте"]');
+        $I->seeInField('Material[material_name]', 'Тарелка');
+        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+
+        $I->seeInField('Authuser[auth_user_fullname]', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ');
+        $I->seeInField('Dolzh[dolzh_name]', 'НЕВРОЛОГ');
+        $I->seeInField('Podraz[podraz_name]', 'ТЕРАПЕВТИЧЕСКОЕ');
+        $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 2');
+        $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
+
+        $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
+
+        $I->wait(2);
+        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 2" уже имеется вид материальной ценности "ТАРЕЛКА" в количестве: 0\']');
+
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData([['link' => ['text' => 'Тарелка', 'href' => '/Fregat/material/update?id=39']], '99000001', '1.000', 'ПОЛИКЛИНИКА 2', '102', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trOsnovgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trOsnovgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '1.000', 'ПОЛИКЛИНИКА 1', '101', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trOsnovgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('trOsnovgrid_gw', 3);
+
+        $I->click('//div[@id="trMatgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
+        $I->wait(2);
+
+        $I->chooseValueFromSelect2('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 102, 1000002, Кухонный стол', '002');
+        $I->chooseValueFromSelect2('TrMat[id_mattraffic]', '99000001, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', '9900');
+
+        $I->wait(1);
+        $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1.000"]');
+        $I->fillField('Mattraffic[mattraffic_number]', '1.000');
+
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'ПОЛИКЛИНИКА 1', '102', ['link' => ['text' => 'Тарелка', 'href' => '/Fregat/material/update?id=39']], '99000001', '1.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+        $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
+
+        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ']);
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+
+        $I->clickButtonDynagrid('trOsnovgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Тарелка', 'href' => '/Fregat/material/update?id=39']], '99000001', '1.000', 'ПОЛИКЛИНИКА 2', '102', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ']);
+        $I->wait(2);
+        $I->see('Вы уверены, что хотите удалить запись?');
+        $I->click('button[data-bb-handler="confirm"]');
+        $I->wait(2);
+    }
+
+
+    /**
+     * @depends createVKomplekte
+     */
     public function checkExcelExport(AcceptanceTester $I)
     {
         $I->click(['id' => 'DownloadReport']);
@@ -509,11 +604,11 @@ class InstallaktCest
         ]);
     }
 
-    public function deleteExcelFile(AcceptanceTester $I)
-    {
-        if (file_exists($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx')))
-            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx'));
-    }
+//    public function deleteExcelFile(AcceptanceTester $I)
+//    {
+//        if (file_exists($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx')))
+//            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx'));
+//    }
 
     /**
      * @depends checkExcelExport
