@@ -488,7 +488,7 @@ class InstallaktCest
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
 
-        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ']);
+        $I->clickButtonDynagrid('trMatgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'ПОЛИКЛИНИКА 1', '102', ['link' => ['text' => 'Тарелка', 'href' => '/Fregat/material/update?id=39']], '99000001', '1.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
@@ -604,11 +604,11 @@ class InstallaktCest
         ]);
     }
 
-//    public function deleteExcelFile(AcceptanceTester $I)
-//    {
-//        if (file_exists($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx')))
-//            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx'));
-//    }
+    public function deleteExcelFile(AcceptanceTester $I)
+    {
+        if (file_exists($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx')))
+            $I->deleteFile($I->convertOSFileName('web/files/' . 'Акт установки матер-ых цен-тей №1.xlsx'));
+    }
 
     /**
      * @depends checkExcelExport
