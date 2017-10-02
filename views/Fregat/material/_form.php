@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Material;
 use app\models\Fregat\Schetuchet;
 use kartik\file\FileInput;
 use yii\bootstrap\Tabs;
@@ -30,6 +31,11 @@ use yii\helpers\Url;
     ]);
 
     $disabled = !Yii::$app->user->can('MaterialEdit');
+    $material_tip = $model::VariablesValues('material_tip');
+    if ($model->isNewRecord) {
+        unset($material_tip[1]);
+        unset($material_tip[2]);
+    }
     ?>
 
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
@@ -44,7 +50,7 @@ use yii\helpers\Url;
                     <?=
                     $form->field($model, 'material_tip')->widget(Select2::classname(), [
                         'hideSearch' => true,
-                        'data' => $model::VariablesValues('material_tip'),
+                        'data' => $material_tip,
                         'pluginOptions' => [
                             'allowClear' => true
                         ],
@@ -75,7 +81,12 @@ use yii\helpers\Url;
                     ]));
                     ?>
 
-                    <?= $form->field($model, 'material_inv')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $disabled]) ?>
+                    <?php
+                    $material_inv_disabled = $model->material_tip == Material::V_KOMPLEKTE ?: $disabled;
+
+                    echo $form->field($model, 'material_inv', ['enableClientValidation' => false])
+                        ->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => $material_inv_disabled]);
+                    ?>
 
                     <?=
                     $form->field($model, 'material_number')->widget(kartik\touchspin\TouchSpin::classname(), [
@@ -278,7 +289,7 @@ use yii\helpers\Url;
                                         ]),
                                     ],
                                 ],
-                                $model->material_tip == 2 ?
+                                in_array($model->material_tip, [Material::MATERIAL, Material::MATERIAL_R]) ?
                                     [[
                                         'label' => 'Как материал',
                                         'content' => $this->render('_osmotrmat_jurnal', [
@@ -302,7 +313,7 @@ use yii\helpers\Url;
                                         ]),
                                     ]
                                 ],
-                                $model->material_tip == 2 ?
+                                in_array($model->material_tip, [Material::MATERIAL, Material::MATERIAL_R]) ?
                                     [[
                                         'label' => 'Как материал',
                                         'content' => $this->render('_recoverymat_jurnal', [
@@ -325,7 +336,7 @@ use yii\helpers\Url;
                                             'model' => $model,
                                         ]),
                                     ]],
-                                $model->material_tip == 2 ?
+                                in_array($model->material_tip, [Material::MATERIAL, Material::MATERIAL_R]) ?
                                     [[
                                         'label' => 'Как материал',
                                         'content' => $this->render('_spismat', [

@@ -53,6 +53,9 @@ class Nakladmaterials extends \yii\db\ActiveRecord
     {
         if ($this->idNaklad->id_mol_release != $this->idMattraffic->id_mol)
             $this->addError($attribute, 'Материальная ценность не соответствует МОЛ требования-накладной: ' . $this->idNaklad->idMolRelease->idperson->shortName . ', ' . $this->idNaklad->idMolRelease->iddolzh->dolzh_name . ', ' . $this->idNaklad->idMolRelease->idpodraz->podraz_name . ', ' . $this->idNaklad->idMolRelease->idbuild->build_name);
+
+        if ($this->idMattraffic->idMaterial->material_tip == Material::V_KOMPLEKTE)
+            $this->addError($attribute, 'Тип материальной ценности не может быть "В комплекте"');
     }
 
     /**

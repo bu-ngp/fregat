@@ -223,16 +223,14 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
-            // ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-            //  ->join('LEFT JOIN', 'tr_osnov', 'material_tip in (1,2) and tr_osnov.id_mattraffic in (select mt.mattraffic_id from mattraffic mt inner join tr_osnov tos on tos.id_mattraffic = mt.mattraffic_id where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material and tos.id_installakt = ' . $params['idinstallakt'] . ' )');
             ->join('LEFT JOIN', '(select mt1.id_material from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic where to1.id_installakt = ' . $params['idinstallakt'] . ') tmp1', 'tmp1.id_material = mattraffic.id_material');
 
         $this->baseRelations($query);
 
-        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
+        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip in (1,4,6)) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3,5)))')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL])
-            ->andWhere(['or', ['tmp1.id_material' => NULL], ['in', 'idMaterial.material_tip', [2, 3]]]);
+            ->andWhere(['or', ['tmp1.id_material' => NULL], ['in', 'idMaterial.material_tip', [Material::MATERIAL, Material::GROUP_UCHET, Material::MATERIAL_R]]]);
 
         $this->load($params);
 
@@ -258,16 +256,11 @@ class MattrafficSearch extends Mattraffic
         ]);
 
         $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)');
-        //        ->join('LEFT JOIN', 'tr_osnov', 'material_tip = 1 and tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-        // ->join('LEFT JOIN', 'tr_osnov', 'tr_osnov.id_mattraffic in (select mattraffic_id from mattraffic mt where mt.id_mol = mattraffic.id_mol and mt.id_material = mattraffic.id_material)');
-        //  ->join('LEFT JOIN', '(select mt1.id_material, mt1.id_mol from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic) tmp1', 'tmp1.id_material = mattraffic.id_material and tmp1.id_mol = mattraffic.id_mol');
         $this->baseRelations($query);
 
-        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip = 1) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3)))')
+        $query->andWhere('((mattraffic_number > 0 and idMaterial.material_tip in (1,4,6)) or (mattraffic_number >= 0 and idMaterial.material_tip in (2,3,5)))')
             ->andWhere(['in', 'mattraffic_tip', [1, 2]])
             ->andWhere(['m2.mattraffic_date_m2' => NULL]);
-        // ->andWhere(['tmp1.id_material' => NULL]);
-        //   ->andWhere(['idMaterial.material_tip' => 1]);
 
         $this->load($params);
 
@@ -347,7 +340,7 @@ class MattrafficSearch extends Mattraffic
                         ])
                         ->andWhere(['<>', 'mt.mattraffic_id', $params['id_parent']])
                     ],
-                    ['idMaterial.material_tip' => 1]],
+                    ['in', 'idMaterial.material_tip', [Material::OSNOV, Material::OSNOV_R, Material::V_KOMPLEKTE]]],
                 [
                     'and',
                     ['not exists', (new Query())
@@ -361,7 +354,7 @@ class MattrafficSearch extends Mattraffic
                             'tmat.id_parent' => $params['id_parent'],
                         ])
                     ],
-                    ['idMaterial.material_tip' => 2]
+                    ['in', 'idMaterial.material_tip', [Material::MATERIAL, Material::MATERIAL_R]]
                 ]
             ]);
 
@@ -458,7 +451,7 @@ class MattrafficSearch extends Mattraffic
 
         $query->joinWith('idMaterial.idSchetuchet');
 
-        $query->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3))')
+        $query->andWhere('(mattraffic_number > 0 and idMaterial.material_tip in (1,3,4))')
             ->andWhere(['in', 'mattraffic_tip', [1]])
             ->andWhere([
                 'm2.mattraffic_date_m2' => NULL,
@@ -501,6 +494,7 @@ class MattrafficSearch extends Mattraffic
         $query->andWhere(['idMaterial.material_writeoff' => 0]);
         $query->andWhere(['in', 'mattraffic_tip', [1]]);
         $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
+        $query->andWhere(['not in', 'idMaterial.material_tip', [Material::V_KOMPLEKTE]]);
 
         $this->load($params);
 
@@ -533,7 +527,7 @@ class MattrafficSearch extends Mattraffic
             'trMats.idInstallakt.idInstaller.iddolzh dolzhmaster',
         ]);
 
-        $query->andWhere(['idMaterial.material_tip' => 2]);
+        $query->andWhere(['in', 'idMaterial.material_tip', [Material::MATERIAL, Material::MATERIAL_R]]);
         $query->andWhere(['mattraffic.mattraffic_tip' => 4]);
 
         $this->load($params);

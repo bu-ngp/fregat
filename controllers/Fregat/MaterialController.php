@@ -83,7 +83,7 @@ class MaterialController extends Controller
             if (empty($model->material_name1c))
                 $model->material_name1c = $model->material_name;
 
-            if ($model->material_tip == 1)
+            if (in_array($model->material_tip, [Material::OSNOV, Material::OSNOV_R, Material::V_KOMPLEKTE]))
                 $model->material_number = 1;
 
             if ($model->save()) {
@@ -105,12 +105,12 @@ class MaterialController extends Controller
                     'Mattraffic' => $Mattraffic,
                 ]);
         } else {
-            $model->material_number = empty($model->material_number) ? 1 : $model->material_number;
-            $model->material_price = empty($model->material_price) ? 1 : $model->material_price;
-            $model->material_tip = empty($model->material_tip) ? 1 : $model->material_tip;
-            $model->id_matvid = empty($model->id_matvid) ? 1 : $model->id_matvid;
-            $model->id_izmer = empty($model->id_izmer) ? 1 : $model->id_izmer;
-            $Mattraffic->mattraffic_date = empty($Mattraffic->mattraffic_date) ? date('Y-m-d') : $Mattraffic->mattraffic_date;
+            $model->material_number = $model->material_number ?: 1;
+            $model->material_price = $model->material_price ?: 1;
+            $model->material_tip = $model->material_tip ?: Material::OSNOV_R;
+            $model->id_matvid = $model->id_matvid ?: 1;
+            $model->id_izmer = $model->id_izmer ?: 1;
+            $Mattraffic->mattraffic_date = $Mattraffic->mattraffic_date ?: date('Y-m-d');
 
             return $this->render('create', [
                 'model' => $model,

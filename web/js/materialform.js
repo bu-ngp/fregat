@@ -1,9 +1,18 @@
 function SetTipMaterial() {
-    console.debug($("#material-material_tip").val())
-    if ($("#material-material_tip").val() == "1") {
+    if (["1", "4", "6"].indexOf($("#material-material_tip").val()) >= 0) {
         $("#material-material_number").prop("disabled", true);
-    } else if ($.inArray($("#material-material_tip").val(), [2, 3])) {
+    }
+
+    if (["2", "3", "5"].indexOf($("#material-material_tip").val()) >= 0) {
         $("#material-material_number").prop("disabled", false);
+    }
+
+    if (["6"].indexOf($("#material-material_tip").val()) >= 0) {
+        $("#material-material_inv").prop("disabled", true);
+    }
+
+    if (["1", "2", "3", "4", "5"].indexOf($("#material-material_tip").val()) >= 0) {
+        $("#material-material_inv").prop("disabled", false);
     }
 }
 

@@ -33,7 +33,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'material_tip',
                     'filter' => $material_tip,
                     'value' => function ($model) use ($material_tip) {
-                        return isset($material_tip[$model->material_tip]) ? $material_tip[$model->material_tip] : '';
+                        return $material_tip[$model->material_tip] ?: '';
                     },
                 ],
                 'idMatv.matvid_name',
@@ -112,7 +112,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                     'label' => 'ФИО текущего МОЛ',
                     'value' => function ($model) {
-                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->idperson->auth_user_fullname : '';
+                        return in_array($model->material_tip, [Material::OSNOV, Material::OSNOV_R, Material::GROUP_UCHET, Material::V_KOMPLEKTE]) ? $model->currentMattraffic->idMol->idperson->auth_user_fullname : '';
                     },
                 ],
                 [
@@ -120,7 +120,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                     'label' => 'Должность текущего МОЛ',
                     'value' => function ($model) {
-                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->iddolzh->dolzh_name : '';
+                        return in_array($model->material_tip, [Material::OSNOV, Material::OSNOV_R, Material::GROUP_UCHET, Material::V_KOMPLEKTE]) ? $model->currentMattraffic->idMol->iddolzh->dolzh_name : '';
                     },
                 ],
                 [
@@ -128,7 +128,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                     'label' => 'Здание текущего МОЛ',
                     'value' => function ($model) {
-                        return $model->material_tip == 1 || $model->material_tip == 3 ? $model->currentMattraffic->idMol->idbuild->build_name : '';
+                        return in_array($model->material_tip, [Material::OSNOV, Material::OSNOV_R, Material::GROUP_UCHET, Material::V_KOMPLEKTE]) ? $model->currentMattraffic->idMol->idbuild->build_name : '';
                     },
                 ],
                 [

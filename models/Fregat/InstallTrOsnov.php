@@ -52,7 +52,7 @@ class InstallTrOsnov extends Model
                 ->andWhere(['mattraffic_id' => $this->id_mattraffic])
                 ->one();
 
-            if ($query->mattraffic_number == 0 && in_array($query->idMaterial->material_tip, [2, 3]))
+            if ($query->mattraffic_number == 0 && in_array($query->idMaterial->material_tip, [Material::MATERIAL, Material::MATERIAL_R, Material::GROUP_UCHET]))
                 $query->mattraffic_number++;
 
             if (!empty($query) && $this->mattraffic_number > $query->mattraffic_number)

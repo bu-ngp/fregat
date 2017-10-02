@@ -90,7 +90,7 @@ class MattrafficController extends Controller
         $model->attributes = $Mattrafficlast->attributes;
         $model->mattraffic_username = 'IMPORT';
 
-        if ($Material->material_tip == 2) {
+        if (in_array($Material->material_tip, [Material::MATERIAL, Material::MATERIAL_R])) {
             $model->mattraffic_tip = 1;
 
             if ($model->mattraffic_number == 0) {
@@ -105,7 +105,7 @@ class MattrafficController extends Controller
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                if ($Material->material_tip == 2) {
+                if (in_array($Material->material_tip, [Material::MATERIAL, Material::MATERIAL_R])) {
                     $Material->material_number = floatval($Material->material_number) + $Mattrafficlast->mattraffic_number;
                     if ($material_spisan) {
                         $Material->material_writeoff = 0;

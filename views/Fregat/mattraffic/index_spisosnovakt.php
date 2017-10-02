@@ -52,7 +52,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'attribute' => 'idMaterial.material_tip',
                     'filter' => $material_tip,
                     'value' => function ($model) use ($material_tip) {
-                        return isset($material_tip[$model->idMaterial->material_tip]) ? $material_tip[$model->idMaterial->material_tip] : '';
+                        return $material_tip[$model->idMaterial->material_tip] ?: '';
                     },
                 ],
                 [
