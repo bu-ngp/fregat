@@ -246,10 +246,12 @@ class MaterialSearch extends Material
                 'WhereStatement' => ['exists', (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
-                    ->leftJoin('material mvk', 'mvk.material_id = mattraffics.id_material')
-                    ->andWhere(['mattraffics.mattraffic_tip' => 4])
-                    ->andWhere(['mvk.material_tip' => Material::V_KOMPLEKTE])
-                    ->andWhere('mattraffics.id_material = material.material_id')
+                    ->leftJoin('tr_mat trMats', 'trMats.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('mattraffic mtparent', 'trMats.id_parent = mtparent.mattraffic_id')
+                    ->leftJoin('mattraffic mtchild', 'trMats.id_mattraffic = mtchild.mattraffic_id')
+                    ->leftJoin('material matchild', 'mtchild.id_material = matchild.material_id')
+                    ->andWhere(['matchild.material_tip' => Material::V_KOMPLEKTE])
+                    ->andWhere('mtparent.id_material = material.material_id')
                 ],
             ]);
 
