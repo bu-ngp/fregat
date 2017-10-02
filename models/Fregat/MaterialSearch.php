@@ -243,7 +243,7 @@ class MaterialSearch extends Material
             $attr = 'material_contain_vkomplekte_mark';
             Proc::Filter_Compare(Proc::Mark, $query, $filter, [
                 'Attribute' => $attr,
-                'WhereStatement' => ['not exists', (new Query())
+                'WhereStatement' => ['exists', (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
                     ->leftJoin('material mvk', 'mvk.material_id = mattraffics.id_material')
