@@ -60,8 +60,8 @@ echo DynaGrid::widget(Proc::DGopts([
                 'value' => function ($model) {
                     if (isset($model->trMats[0]->idParent->idMaterial)) {
                         return '<a data-pjax="0" href="' . Url::to(['Fregat/material/update', 'id' => $model->trMats[0]->idParent->idMaterial->primaryKey]) . '">' . $model->trMats[0]->idParent->idMaterial->material_inv . ' / ' . $model->trMats[0]->idParent->idMaterial->material_name . '</a>';
-
                     }
+                    
                     return '';
                 }
             ],
