@@ -21,6 +21,7 @@ class MaterialFilter extends Model
     public $material_attachphoto_mark;
     public $material_attachdoc_mark;
     public $material_comment_mark;
+    public $material_contain_vkomplekte_mark;
     public $tr_osnov_kab_current;
     public $tr_osnov_kab_always;
     public $tr_osnov_install_mark;
@@ -52,6 +53,7 @@ class MaterialFilter extends Model
                 'material_attachphoto_mark',
                 'material_attachdoc_mark',
                 'material_comment_mark',
+                'material_contain_vkomplekte_mark',
                 'tr_osnov_install_mark',
                 'tr_osnov_uninstall_mark',
                 'tr_mat_install_mark',
@@ -81,6 +83,7 @@ class MaterialFilter extends Model
             'material_attachphoto_mark' => 'Прикреплены картинки в карте материальной ценности',
             'material_attachdoc_mark' => 'Прикреплены документы в карте материальной ценности',
             'material_comment_mark' => 'Содержит заметку',
+            'material_contain_vkomplekte_mark' => 'Материальные ценности "Комплекты"',
             'tr_osnov_kab_current' => 'Кабинет в котором уставновлена материальная ценность на текущий момент',
             'tr_osnov_kab_always' => 'Кабинет в котором уставновлена материальная ценность за все время',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
