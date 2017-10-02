@@ -240,6 +240,19 @@ class MaterialSearch extends Material
                 'WhereStatement' => "material.material_comment <> ''",
             ]);
 
+            $attr = 'material_contain_vkomplekte_mark';
+            Proc::Filter_Compare(Proc::Mark, $query, $filter, [
+                'Attribute' => $attr,
+                'WhereStatement' => ['not exists', (new Query())
+                    ->select('mattraffics.id_material')
+                    ->from('mattraffic mattraffics')
+                    ->leftJoin('material mvk', 'mvk.material_id = mattraffics.id_material')
+                    ->andWhere(['mattraffics.mattraffic_tip' => 4])
+                    ->andWhere(['mvk.material_tip' => Material::V_KOMPLEKTE])
+                    ->andWhere('mattraffics.id_material = material.material_id')
+                ],
+            ]);
+
             $attr = 'mol_id_build';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
