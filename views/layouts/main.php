@@ -132,7 +132,7 @@ AppAsset::register($this);
 </div>
 
 <footer class="footer">
-    <div class="container">
+    <div class="container-footer">
         <p>&copy; Карпов Владимир, БУ "Нижневартовская городская поликлиника" <?= date('Y') ?></p>
     </div>
 </footer>
