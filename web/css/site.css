@@ -25,12 +25,14 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
+    background-color: #ffe9d9;
 }
 
 .wrap {
     /*margin: 0 auto -60px;
     padding: 0 0 60px;*/
-    height: calc(100% - 50px);
+    display: table-row;
+    height:100%;
 }
 
 .wrap > .container {
@@ -38,16 +40,20 @@ body {
 }
 
 .footer {
+    /*width: 100%;*/
+    display: table-row;
+    /* margin-top: -60px;*/
+}
+
+.footer > .container-footer {
     height: 60px;
     background-color: #ffe9d9;
     border-top: 1px solid #ffe9d9;
     padding-top: 20px;
-    width: 100%;
     bottom: 0;
-    /* margin-top: -60px;*/
 }
 
-.footer > .container > p {
+.footer > .container-footer > p {
     text-align: center;
 }
 
@@ -924,14 +930,12 @@ button.btn-primary:hover {
     color: #fff;
     background-color: rgb(99, 16, 15);
     border-color: rgb(42, 1, 0);
-    outline: 5px auto rgb(42, 1, 0);
 }
 
 button.btn-primary:active:hover, button.btn-primary:active {
     color: #fff;
     background-color: rgb(152, 26, 22);
     border-color: rgb(42, 1, 0);
-    outline: 5px auto rgb(42, 1, 0);
 }
 
 .datepicker table tr td.active:active, .datepicker table tr td.active.highlighted:active, .datepicker table tr td.active.active, .datepicker table tr td.active.highlighted.active {
