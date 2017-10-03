@@ -132,8 +132,9 @@ class MaterialSearch extends Material
             'currentMattraffic.idMol.idperson currentidperson',
             'currentMattraffic.idMol.iddolzh currentiddolzh',
             'currentMattraffic.idMol.idbuild currentidbuild',
-            'lastMattraffic',
         ]);
+
+        $query->with(['lastMattraffic']);
 
         $query->andFilterWhere(['LIKE', 'currentidperson.auth_user_fullname', $this->getAttribute('currentMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'currentiddolzh.dolzh_name', $this->getAttribute('currentMattraffic.idMol.iddolzh.dolzh_name')]);
