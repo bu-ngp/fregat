@@ -164,6 +164,16 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'label' => 'Дата последней операции',
                     'visible' => false,
                 ],
+                [
+                    'attribute' => 'lastInstallMattraffic',
+                    'value' => function ($model) {
+                        if (isset($model->lastInstallMattraffic->idMol->idbuild->build_name) && isset($model->lastInstallMattraffic->trOsnovs[0]->tr_osnov_kab)) {
+                            return $model->lastInstallMattraffic->idMol->idbuild->build_name . ', ' . $model->lastInstallMattraffic->trOsnovs[0]->tr_osnov_kab;
+                        }
+
+                        return '';
+                     },
+                ],
             ],
             'buttons' => array_merge(
                 empty($foreign) ? (Yii::$app->user->can('MaterialEdit') ? [
