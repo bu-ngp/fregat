@@ -173,6 +173,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
 
                         return '';
                      },
+                    'visible' => false,
                 ],
             ],
             'buttons' => array_merge(
