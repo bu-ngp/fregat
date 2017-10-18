@@ -37,6 +37,7 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
             [['id_spisosnovakt'], 'exist', 'skipOnError' => true, 'targetClass' => Spisosnovakt::className(), 'targetAttribute' => ['id_spisosnovakt' => 'spisosnovakt_id']],
             [['spisosnovmaterials_number'], 'MaxNumberSpis'],
+            [['id_mattraffic'], 'unique', 'targetAttribute' => ['id_mattraffic', 'id_spisosnovakt'], 'message' => 'Данная материальная ценность уже добавлена в текущую заявку'],
             ['id_mattraffic', 'CheckAccessForAddMaterial'],
         ];
     }

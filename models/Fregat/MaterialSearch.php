@@ -260,13 +260,15 @@ class MaterialSearch extends Material
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
                 'SQLAttribute' => 'idMol.id_build',
+                'LikeManual' => true,
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
+                    ->leftJoin('mattraffic m2', 'mattraffics.id_material = m2.id_material and mattraffics.mattraffic_date < m2.mattraffic_date and mattraffics.mattraffic_id < m2.mattraffic_id')
                     ->leftJoin('employee idMol', 'idMol.employee_id = mattraffics.id_mol')
-                    ->leftjoin('(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffics.id_material = m2.id_material_m2 and mattraffics.id_mol = m2.id_mol_m2 and mattraffics.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)')
-                    ->andWhere(['m2.mattraffic_date_m2' => NULL])
+                    ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
                     ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
+                    ->andWhere(['m2.mattraffic_date' => null])
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
 

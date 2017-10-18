@@ -50,7 +50,71 @@ class Osmotrakt extends \yii\db\ActiveRecord
             [['id_reason', 'osmotrakt_comment'], 'required', 'when' => function ($model) {
                 return empty($model->id_reason) && empty($model->osmotrakt_comment);
             }, 'message' => 'Необходимо заполнить одно из полей.', 'enableClientValidation' => false],
+            [['id_tr_osnov'], 'OsmotrExists'],
+            [['id_tr_osnov'], 'isNotSpisan'],
+            [['id_tr_osnov'], 'canOsmotr'],
         ];
+    }
+
+    public function isNotSpisan($attribute)
+    {
+        if (!empty($this->id_tr_osnov) && self::find()->joinWith(['idTrosnov.idMattraffic.idMaterial'])->andWhere([
+                'id_tr_osnov' => $this->id_tr_osnov,
+                'idMaterial.material_writeoff' => 1,
+            ])->one()
+        ) {
+            $this->addError($attribute, 'Нельзя составлять акты осмотра для списанных материальных ценностей');
+        }
+    }
+
+    public function canOsmotr($attribute)
+    {
+        if (!empty($this->id_tr_osnov)) {
+            $currentMaterialID = TrOsnov::findOne($this->id_tr_osnov)->idMattraffic->id_material;
+
+            $osmotrakt = self::find()->joinWith([
+                'idTrosnov.idMattraffic',
+                'recoveryrecieveakts',
+            ])->andWhere([
+                'idMattraffic.id_material' => $currentMaterialID,
+                'recoveryrecieveakts.recoveryrecieveakt_repaired' => 1,
+            ])->one();
+
+            if ($osmotrakt) {
+                $this->addError($attribute, 'Данная материальная ценность восстановлению не подлежит согласно составленному акту восстановления №' . $osmotrakt->recoveryrecieveakts[0]->id_recoverysendakt . ' от ' . Yii::$app->formatter->asDate($osmotrakt->recoveryrecieveakts[0]->idRecoverysendakt->recoverysendakt_date));
+            } else {
+                $osmotrakt = self::find()->joinWith([
+                    'idTrosnov.idMattraffic',
+                    'recoveryrecieveakts',
+                ])->andWhere([
+                    'idMattraffic.id_material' => $currentMaterialID,
+                    'recoveryrecieveakts.recoveryrecieveakt_repaired' => null,
+                    'recoveryrecieveakts.recoveryrecieveakt_date' => null,
+                ])->one();
+
+                if ($osmotrakt) {
+                    $this->addError($attribute, 'Данная материальная ценность находится на восстановлении. Акт восстановления №' . $osmotrakt->recoveryrecieveakts[0]->id_recoverysendakt . ' от ' . Yii::$app->formatter->asDate($osmotrakt->recoveryrecieveakts[0]->idRecoverysendakt->recoverysendakt_date));
+                }
+            }
+        }
+    }
+
+    public function OsmotrExists($attribute)
+    {
+        if (!empty($this->id_tr_osnov)) {
+            $currentMaterialID = TrOsnov::findOne($this->id_tr_osnov)->idMattraffic->id_material;
+            $otherOsmotrakt = self::find()->joinWith([
+                'idTrosnov.idMattraffic',
+                'recoveryrecieveakts',
+            ])->andWhere([
+                'idMattraffic.id_material' => $currentMaterialID,
+                'recoveryrecieveakts.recoveryrecieveakt_id' => null,
+            ])->one();
+
+            if ($otherOsmotrakt) {
+                $this->addError($attribute, 'На текащую материальную ценность уже существует акт осмотра без акта восставноления. Акт осмотра №' . $otherOsmotrakt->osmotrakt_id . ' от ' . Yii::$app->formatter->asDate($otherOsmotrakt->osmotrakt_date));
+            }
+        }
     }
 
     /**
