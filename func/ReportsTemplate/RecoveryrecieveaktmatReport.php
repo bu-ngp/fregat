@@ -55,7 +55,7 @@ class RecoveryrecieveaktmatReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->recoveryrecieveaktmat_result);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandCabinetByTrMatOsmotr($ar->id_tr_mat_osmotr));
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
 
             $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
@@ -75,7 +75,7 @@ class RecoveryrecieveaktmatReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar->recoveryrecieveaktmat_result);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num + $crows, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, TrMatOsmotr::getBuildandCabinetByTrMatOsmotr($ar->id_tr_mat_osmotr));
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num + $crows, Yii::$app->formatter->asDate($ar->recoveryrecieveaktmat_date));
             $objPHPExcel->getActiveSheet()->getStyle('A' . ($num + $crows) . ':K' . ($num + $crows))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
             $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);

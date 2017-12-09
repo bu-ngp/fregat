@@ -179,13 +179,14 @@ class Osmotrakt extends \yii\db\ActiveRecord
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : ['osmotrakt_id AS id'], ['CONCAT_WS(", ", CONCAT("Акт №", osmotrakt_id), idMaterial.material_inv, idMaterial.material_name, idbuild.build_name, idTrosnov.tr_osnov_kab) AS text']))
+            ->select(array_merge(isset($params['init']) ? [] : ['osmotrakt_id AS id'], ['CONCAT_WS(", ", CONCAT("Акт №", osmotrakt_id), idMaterial.material_inv, idMaterial.material_name, idbuild.build_name, idCabinet.cabinet_name) AS text']))
             ->joinWith([
                 'idTrosnov.idMattraffic.idMol.idperson',
                 'idTrosnov.idMattraffic.idMol.iddolzh',
                 'idTrosnov.idMattraffic.idMol.idpodraz',
                 'idTrosnov.idMattraffic.idMol.idbuild',
                 'idTrosnov.idMattraffic.idMaterial',
+                'idTrosnov.idCabinet',
                 'recoveryrecieveakts',
             ])
             ->join('LEFT JOIN', '(select mt.id_material, IF (rra.recoveryrecieveakt_date IS NULL, \'9999-12-31\', rra.recoveryrecieveakt_date) AS recoveryrecieveakt_date from recoveryrecieveakt rra LEFT JOIN osmotrakt oa ON oa.osmotrakt_id=rra.id_osmotrakt LEFT JOIN tr_osnov ts ON oa.id_tr_osnov = ts.tr_osnov_id LEFT JOIN mattraffic mt ON ts.id_mattraffic = mt.mattraffic_id) lastrra', 'lastrra.id_material = idMattraffic.id_material and recoveryrecieveakts.recoveryrecieveakt_date < lastrra.recoveryrecieveakt_date')

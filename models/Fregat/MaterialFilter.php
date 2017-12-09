@@ -22,8 +22,8 @@ class MaterialFilter extends Model
     public $material_attachdoc_mark;
     public $material_comment_mark;
     public $material_contain_vkomplekte_mark;
-    public $tr_osnov_kab_current;
-    public $tr_osnov_kab_always;
+    public $tr_osnov_current_id_cabinet;
+    public $tr_osnov_always_id_cabinet;
     public $tr_osnov_install_mark;
     public $tr_osnov_uninstall_mark;
     public $tr_mat_install_mark;
@@ -44,8 +44,8 @@ class MaterialFilter extends Model
                 'mat_id_grupa',
                 'mat_id_grupa_not',
                 'mattraffic_username',
-                'tr_osnov_kab_current',
-                'tr_osnov_kab_always',
+                'tr_osnov_current_id_cabinet',
+                'tr_osnov_always_id_cabinet',
                 'material_working_mark',
                 'material_recovery_attachfiles_mark',
                 'material_attachfiles_mark',
@@ -84,8 +84,8 @@ class MaterialFilter extends Model
             'material_attachdoc_mark' => 'Прикреплены документы в карте материальной ценности',
             'material_comment_mark' => 'Содержит заметку',
             'material_contain_vkomplekte_mark' => 'Материальные ценности "Комплекты"',
-            'tr_osnov_kab_current' => 'Кабинет в котором уставновлена материальная ценность на текущий момент',
-            'tr_osnov_kab_always' => 'Кабинет в котором уставновлена материальная ценность за все время',
+            'tr_osnov_current_id_cabinet' => 'Кабинет в котором уставновлена материальная ценность на текущий момент',
+            'tr_osnov_always_id_cabinet' => 'Кабинет в котором уставновлена материальная ценность за все время',
             'mattraffic_username' => 'Пользователь, последний изменивший движение материальной ценности',
             'mattraffic_lastchange_beg' => 'Дата изменения движения мат-ой ценности',
             'material_working_mark' => 'Материальные ценности в рабочем состоянии',
@@ -110,6 +110,8 @@ class MaterialFilter extends Model
             'mol_fullname_material' => [$value => Authuser::getAuthuserByID($value)],
             'material_writeoff' => Material::VariablesValues($attribute),
             'mat_id_grupa' => [$value => Grupa::getGrupaByID($value)],
+            'tr_osnov_current_id_cabinet' => [$value => Cabinet::getCabinetByID($value)],
+            'tr_osnov_always_id_cabinet' => [$value => Cabinet::getCabinetByID($value)],
             /* 'patient_pol' => Patient::VariablesValues($attribute),
              'fias_city' => [$value => Fias::GetCityByAOGUID($value)],
              'fias_street' => [$value => Fias::GetStreetByAOGUID($value)],

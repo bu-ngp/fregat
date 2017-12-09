@@ -178,7 +178,7 @@ class ReportTemplates
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->iddolzh->dolzh_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, $ar->idOsmotrakt->idTrosnov->idCabinet->cabinet_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, '');
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(15, $num, '');
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idOsmotrakt->osmotrakt_id);
@@ -229,7 +229,7 @@ class ReportTemplates
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->id_tr_mat_osmotr));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, TrMatOsmotr::getBuildandCabinetByTrMatOsmotr($ar->id_tr_mat_osmotr));
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_name);
             $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(15, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_id);

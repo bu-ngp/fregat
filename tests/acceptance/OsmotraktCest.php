@@ -79,7 +79,7 @@ class OsmotraktCest
         $I->seeInField('Material[material_inv]', '1000002');
         $I->seeInField('Material[material_serial]', '');
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
-        $I->seeInField('TrOsnov[tr_osnov_kab]', '101');
+        $I->seeInField('Cabinet[cabinet_name]', '101');
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
 
@@ -117,7 +117,7 @@ class OsmotraktCest
         $I->seeInField('Build[build_name]', '');
         $I->seeInField('InstallTrOsnov[mattraffic_number]', '1.000');
 
-        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('InstallTrOsnov[id_cabinet]', '102');
         $I->chooseValueFromSelect2('Osmotrakt[id_user]', 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', 'фед');
         $I->chooseValueFromSelect2('Osmotrakt[id_master]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'пет');
         $I->chooseValueFromSelect2('Osmotrakt[id_reason]', 'СЛОМАНА ПОЛКА', 'пол');
@@ -206,7 +206,7 @@ class OsmotraktCest
         $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 2');
 
-        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '103');
+        $I->fillField('InstallTrOsnov[id_cabinet]', '103');
         $I->chooseValueFromSelect2('Osmotrakt[id_user]', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'сид');
         $I->chooseValueFromSelect2('Osmotrakt[id_master]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'пет');
         $I->chooseValueFromSelect2('Osmotrakt[id_reason]', 'СЛОМАНА НОЖКА', 'нож');
@@ -272,7 +272,7 @@ class OsmotraktCest
     /**
      * @depends updateOsmotrakt
      */
-    public function checkInstallUniqueKab(AcceptanceTester $I)
+    public function checkInstallUniqueCabinet(AcceptanceTester $I)
     {
         $I->seeLink('Добавить');
         $I->click(['link' => 'Добавить']);
@@ -284,7 +284,7 @@ class OsmotraktCest
 
         $I->chooseValueFromSelect2('InstallTrOsnov[id_mattraffic]', '1000002, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2, Кухонный стол', '002');
 
-        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '103');
+        $I->fillField('InstallTrOsnov[id_cabinet]', '103');
         $I->chooseValueFromSelect2('Osmotrakt[id_user]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
         $I->chooseValueFromSelect2('Osmotrakt[id_master]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'пет');
         $I->chooseValueFromSelect2('Osmotrakt[id_reason]', 'СЛОМАНА НОЖКА', 'нож');
@@ -295,7 +295,7 @@ class OsmotraktCest
 
         $I->see('Данная материальная ценность "Кухонный стол" уже установлена в кабинет "103" в акте установки №3 от ' . date('d.m.Y') . '.');
 
-        $I->fillField('InstallTrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('InstallTrOsnov[id_cabinet]', '102');
 
         $I->see('Создать');
         $I->click('//button[contains(text(), "Создать")]');
@@ -309,7 +309,7 @@ class OsmotraktCest
     }
 
     /**
-     * @depends checkInstallUniqueKab
+     * @depends checkInstallUniqueCabinet
      */
     public function deleteOsmotrakt(AcceptanceTester $I)
     {

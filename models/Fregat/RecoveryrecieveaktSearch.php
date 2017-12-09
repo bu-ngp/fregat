@@ -22,7 +22,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
-            'idOsmotrakt.idTrosnov.tr_osnov_kab',
+            'idOsmotrakt.idTrosnov.idCabinet.cabinet_name',
             'idOsmotrakt.idReason.reason_text',
             'idOsmotrakt.osmotrakt_comment',
             'idOsmotrakt.idMaster.idperson.auth_user_fullname',
@@ -45,7 +45,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
                 'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
                 'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
                 'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
-                'idOsmotrakt.idTrosnov.tr_osnov_kab',
+                'idOsmotrakt.idTrosnov.idCabinet.cabinet_name',
                 'idOsmotrakt.idReason.reason_text',
                 'idOsmotrakt.osmotrakt_comment',
                 'idOsmotrakt.idMaster.idperson.auth_user_fullname',
@@ -91,7 +91,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'idTrosnov.tr_osnov_kab', $this->getAttribute('idOsmotrakt.idTrosnov.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idOsmotrakt.idTrosnov.idCabinet.cabinet_name')]);
         $query->andFilterWhere(['LIKE', 'idReason.reason_text', $this->getAttribute('idOsmotrakt.idReason.reason_text')]);
         $query->andFilterWhere(['LIKE', 'idOsmotrakt.osmotrakt_comment', $this->getAttribute('idOsmotrakt.osmotrakt_comment')]);
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idOsmotrakt.idMaster.idperson.auth_user_fullname')]);
@@ -106,7 +106,7 @@ class RecoveryrecieveaktSearch extends Recoveryrecieveakt
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_inv',
             'idOsmotrakt.idTrosnov.idMattraffic.idMaterial.material_name',
             'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
-            'idOsmotrakt.idTrosnov.tr_osnov_kab',
+            'idOsmotrakt.idTrosnov.idCabinet.cabinet_name',
             'idOsmotrakt.idReason.reason_text',
             'idOsmotrakt.osmotrakt_comment',
             'idOsmotrakt.idMaster.idperson.auth_user_fullname',

@@ -9,7 +9,7 @@ function FillTrOsnov() {
                 $("#material-material_tip").val(obj.material_tip);
                 $("#material-material_name").val(obj.material_name);
                 $("#material-material_writeoff").val(obj.material_writeoff);
-                $("#material-material_install_kab").val(obj.material_install_kab);
+                $("#material-material_install_cabinet").val(obj.material_install_cabinet);
                 $("#authuser-auth_user_fullname").val(obj.auth_user_fullname);
                 $("#dolzh-dolzh_name").val(obj.dolzh_name);
                 $("#podraz-podraz_name").val(obj.podraz_name);
@@ -41,7 +41,7 @@ function MatvidCount() {
         $.ajax({
             url: baseUrl + "Fregat/tr-osnov/matvid-count",
             type: "post",
-            data: {mattraffic_id: $("#trosnov-id_mattraffic").val(), tr_osnov_kab: $("#trosnov-tr_osnov_kab").val()},
+            data: {mattraffic_id: $("#trosnov-id_mattraffic").val(), cabinet_name: $("#cabinet-cabinet_name").val()},
             success: function (data) {
                 var obj = JSON.parse(data);
                 if (obj.message != "") {

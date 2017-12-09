@@ -28,6 +28,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMol.idbuild.build_name',
             'idInstallakt.installakt_id',
             'idInstallakt.installakt_date',
+            'idCabinet.cabinet_name',
         ]);
     }
 
@@ -38,7 +39,7 @@ class TrOsnovSearch extends TrOsnov
     {
         return [
             [['tr_osnov_id', 'id_installakt', 'id_mattraffic'], 'integer'],
-            [['tr_osnov_kab', 'idMattraffic.idMaterial.material_name',
+            [['idMattraffic.idMaterial.material_name',
                 'idMattraffic.mattraffic_date',
                 'idMattraffic.idMaterial.material_inv',
                 'idMattraffic.mattraffic_number',
@@ -48,6 +49,7 @@ class TrOsnovSearch extends TrOsnov
                 'idMattraffic.idMol.idbuild.build_name',
                 'idInstallakt.installakt_id',
                 'idInstallakt.installakt_date',
+                'idCabinet.cabinet_name',
             ], 'safe'],
         ];
     }
@@ -69,6 +71,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMol.idpodraz',
             'idMattraffic.idMol.idbuild',
             'idInstallakt',
+            'idCabinet',
         ])
             ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'idMattraffic.id_material = m2.id_material_m2 and idMattraffic.id_mol = m2.id_mol_m2 and idMattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)');
@@ -80,7 +83,7 @@ class TrOsnovSearch extends TrOsnov
         $query->andWhere(['in', 'idMattraffic.mattraffic_tip', [3]]);
         $query->andWhere(['m2.mattraffic_date_m2' => NULL]);
 
-        $query->andFilterWhere(['like', 'tr_osnov_kab', $this->tr_osnov_kab]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idCabinet.cabinet_name')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_id'));
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idInstallakt.installakt_date', Proc::Date));
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
@@ -106,6 +109,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMol.idbuild.build_name',
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
+            'idCabinet.cabinet_name',
         ]);
     }
 
@@ -132,6 +136,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMol.idperson',
             'idMattraffic.idMol.iddolzh',
             'idMattraffic.idMol.idbuild',
+            'idCabinet',
         ]);
 
         $this->load($params);
@@ -149,7 +154,7 @@ class TrOsnovSearch extends TrOsnov
             'id_mattraffic' => $this->id_mattraffic,
         ]);
 
-        $query->andFilterWhere(['like', 'tr_osnov_kab', $this->tr_osnov_kab]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idCabinet.cabinet_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_name', $this->getAttribute('idMattraffic.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'idMaterial.material_inv', $this->getAttribute('idMattraffic.idMaterial.material_inv')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idMattraffic.mattraffic_number'));
@@ -164,6 +169,7 @@ class TrOsnovSearch extends TrOsnov
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
             'idMattraffic.idMol.idbuild.build_name',
+            'idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;

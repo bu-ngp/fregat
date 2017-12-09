@@ -14,7 +14,7 @@ class InstallaktFilter extends Model
     public $tr_osnov_mol_id_build_not;
     public $mat_id_material_trmat;
     public $mol_id_person_trmat;
-    public $tr_osnov_kab;
+    public $id_cabinet;
     public $id_parent;
 
     public function rules()
@@ -28,8 +28,8 @@ class InstallaktFilter extends Model
                 'mat_id_material_trmat',
                 'mol_id_person_trmat',
                 'id_parent',
+                'id_cabinet'
             ], 'integer'],
-            ['tr_osnov_kab', 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class InstallaktFilter extends Model
             'tr_osnov_mol_id_build' => 'Здание',
             'mat_id_material_trmat' => 'Материальная ценность',
             'mol_id_person_trmat' => 'Материально-ответственное лицо',
-            'tr_osnov_kab' => 'Кабинет',
+            'id_cabinet' => 'Кабинет',
             'id_parent' => 'Комплектуемая материальная ценность',
         ];
     }
@@ -55,6 +55,7 @@ class InstallaktFilter extends Model
             'mat_id_material_trmat' => [$value => Material::getMaterialByID($value)],
             'mol_id_person_trmat' => [$value => Authuser::getAuthuserByID($value)],
             'id_parent' => [$value => Material::getMaterialByID($value)],
+            'id_cabinet' => [$value => Cabinet::getMaterialByID($value)],
         ];
 
         return isset($values[$attribute]) ? $values[$attribute] : NULL;

@@ -28,7 +28,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
             'idMattraffic.trMats.idParent.idMaterial.material_writeoff',
             'idMattraffic.trMats.idParent.idMol.idperson.auth_user_fullname',
             'idMattraffic.trMats.idParent.idMol.idbuild.build_name',
-            'idMattraffic.trMats.idParent.trOsnovs.tr_osnov_kab',
+            'idMattraffic.trMats.idParent.trOsnovs.idCabinet.cabinet_name',
             'idMattraffic.trMats.id_installakt',
             'idMattraffic.trMats.idInstallakt.installakt_date',
             'idMattraffic.trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
@@ -61,7 +61,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
                 'idMattraffic.trMats.idParent.idMaterial.material_writeoff',
                 'idMattraffic.trMats.idParent.idMol.idperson.auth_user_fullname',
                 'idMattraffic.trMats.idParent.idMol.idbuild.build_name',
-                'idMattraffic.trMats.idParent.trOsnovs.tr_osnov_kab',
+                'idMattraffic.trMats.idParent.trOsnovs.idCabinet.cabinet_name',
                 'idMattraffic.trMats.id_installakt',
                 'idMattraffic.trMats.idInstallakt.installakt_date',
                 'idMattraffic.trMats.idInstallakt.idInstaller.idperson.auth_user_fullname',
@@ -205,7 +205,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
         $query->andFilterWhere(['LIKE', 'podrazmaster.podraz_name', $this->getAttribute('idMattraffic.trMats.idInstallakt.idInstaller.idpodraz.podraz_name')]);
         $query->andFilterWhere(['LIKE', 'personmolparent.auth_user_fullname', $this->getAttribute('idMattraffic.trMats.idParent.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'buildmolparent.build_name', $this->getAttribute('idMattraffic.trMats.idParent.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'osnparent.tr_osnov_kab', $this->getAttribute('idMattraffic.trMats.idParent.trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idMattraffic.trMats.idParent.trOsnovs.idCabinet.cabinet_name')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_name', $this->getAttribute('idMattraffic.trMats.idParent.idMaterial.material_name')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('idMattraffic.trMats.idParent.idMaterial.material_inv')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_serial', $this->getAttribute('idMattraffic.trMats.idParent.idMaterial.material_serial')]);
@@ -224,7 +224,7 @@ class SpismatmaterialsSearch extends Spismatmaterials
             'idMattraffic.trMats.idInstallakt.idInstaller.idpodraz.podraz_name' => 'podrazmaster',
             'idMattraffic.trMats.idParent.idMol.idperson.auth_user_fullname' => 'personmolparent',
             'idMattraffic.trMats.idParent.idMol.idbuild.build_name' => 'buildmolparent',
-            'idMattraffic.trMats.idParent.trOsnovs.tr_osnov_kab' => 'osnparent',
+            'idMattraffic.trMats.idParent.trOsnovs.idCabinet.cabinet_name' => 'osnparent',
             'idMattraffic.trMats.idParent.idMaterial.material_name' => 'matparent',
             'idMattraffic.trMats.idParent.idMaterial.material_inv' => 'matparent',
             'idMattraffic.trMats.idParent.idMaterial.material_serial' => 'matparent',

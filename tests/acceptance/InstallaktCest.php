@@ -106,7 +106,7 @@ class InstallaktCest
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Шкаф для медикаментов');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
-        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+        $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField("Authuser[auth_user_fullname]", 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ');
         $I->seeInField("Dolzh[dolzh_name]", 'ТЕРАПЕВТ');
@@ -114,7 +114,7 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", '');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('TrOsnov[tr_osnov_kab]', '101');
+        $I->fillField('Cabinet[cabinet_name]', '101');
         $I->fillField('Mattraffic[mattraffic_number]', '2.000');
 
         $I->click('//button[contains(text(),"Добавить")]');
@@ -155,7 +155,7 @@ class InstallaktCest
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Кухонный стол');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
-        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+        $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField("Authuser[auth_user_fullname]", 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField("Dolzh[dolzh_name]", 'ПРОГРАММИСТ');
@@ -163,7 +163,7 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", 'ПОЛИКЛИНИКА 1');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Cabinet[cabinet_name]', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
         $I->wait(2);
         $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
@@ -189,7 +189,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство"]');
         $I->seeInField('Material[material_name]', 'Кухонный стол');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
-        $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 102');
+        $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 102');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
@@ -199,7 +199,7 @@ class InstallaktCest
         $I->seeInField('Mattraffic[mattraffic_number]', '1.000');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
 
-        $I->seeInField('TrOsnov[tr_osnov_kab]', '102');
+        $I->seeInField('Cabinet[cabinet_name]', '102');
 
         $I->executeJS('window.scrollTo(0,0);');
 
@@ -209,7 +209,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeInField('Material[material_name]', 'Картридж А12');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
-        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+        $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
@@ -217,7 +217,7 @@ class InstallaktCest
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
-        $I->fillField('TrOsnov[tr_osnov_kab]', '103');
+        $I->fillField('Cabinet[cabinet_name]', '103');
         $I->fillField('Mattraffic[mattraffic_number]', '6.000');
 
         $I->wait(2);
@@ -243,7 +243,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
         $I->seeInField('Material[material_name]', 'Картридж А12');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
-        $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 103');
+        $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 103');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ТЕРАПЕВТ');
@@ -253,13 +253,13 @@ class InstallaktCest
         $I->seeInField('Mattraffic[mattraffic_number]', '4.000');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
-        $I->seeInField('TrOsnov[tr_osnov_kab]', '103');
+        $I->seeInField('Cabinet[cabinet_name]', '103');
         $I->seeElementInDOM('//div[text()=\'В кабинете "103" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 4.000\']');
 
         $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '002');
 
-        $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Cabinet[cabinet_name]', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
 
         $I->wait(2);
@@ -449,7 +449,7 @@ class InstallaktCest
         $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="В комплекте"]');
         $I->seeInField('Material[material_name]', 'Тарелка');
         $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
-        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+        $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'НЕВРОЛОГ');
@@ -457,7 +457,7 @@ class InstallaktCest
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 2');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
 
-        $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Cabinet[cabinet_name]', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
 
         $I->wait(2);
@@ -613,7 +613,7 @@ class InstallaktCest
     /**
      * @depends checkExcelExport
      */
-    public function checkInstallUniqueKab(AcceptanceTester $I)
+    public function checkInstallUniqueCabinet(AcceptanceTester $I)
     {
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
@@ -644,17 +644,17 @@ class InstallaktCest
         $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', '003');
         $I->wait(2);
-        $I->seeInField("Material[material_install_kab]", 'Не установлено');
+        $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '001');
         $I->wait(2);
-        $I->seeInField("Material[material_install_kab]", 'ПОЛИКЛИНИКА 1, каб. 101');
+        $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 101');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
-        $I->fillField('TrOsnov[tr_osnov_kab]', '101');
+        $I->fillField('Cabinet[cabinet_name]', '101');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
 
         $I->see('Данная материальная ценность "Шкаф для одежды" уже установлена в кабинет "101" в акте установки №1 от ' . date('d.m.Y') . '.');
-        $I->fillField('TrOsnov[tr_osnov_kab]', '102');
+        $I->fillField('Cabinet[cabinet_name]', '102');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -676,7 +676,7 @@ class InstallaktCest
     }
 
     /**
-     * @depends checkInstallUniqueKab
+     * @depends checkInstallUniqueCabinet
      */
     public function deleteTrmat(AcceptanceTester $I)
     {

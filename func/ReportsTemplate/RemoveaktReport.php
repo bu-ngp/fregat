@@ -92,7 +92,7 @@ class RemoveaktReport extends BaseReportPortal
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($arm->idParent->idMaterial->material_release, 'y'));
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $arm->idParent->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $arm->idParent->idMol->idbuild->build_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $arm->idParent->trOsnovs[0]->tr_osnov_kab);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $arm->idParent->trOsnovs[0]->idCabinet->cabinet_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $arm->idParent->idMol->idperson->auth_user_fullname . ', ' . $arm->idParent->idMol->iddolzh->dolzh_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$arm->idParent->idMaterial->material_tip]);
 

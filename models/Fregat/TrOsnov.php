@@ -8,12 +8,14 @@ use Yii;
  * This is the model class for table "tr_osnov".
  *
  * @property string $tr_osnov_id
- * @property string $tr_osnov_kab
+ * @property integer $id_cabinet
  * @property string $id_installakt
  * @property string $id_mattraffic
  *
+ * @property Osmotrakt[] $osmotrakts
  * @property Installakt $idInstallakt
  * @property Mattraffic $idMattraffic
+ * @property Cabinet $idCabinet
  */
 class TrOsnov extends \yii\db\ActiveRecord
 {
@@ -32,13 +34,12 @@ class TrOsnov extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['tr_osnov_kab', 'id_installakt', 'id_mattraffic'], 'required', 'except' => 'forosmotrakt'],
-            [['id_installakt', 'id_mattraffic'], 'integer'],
-            [['tr_osnov_kab'], 'string', 'max' => 255],
+            [['id_cabinet', 'id_installakt', 'id_mattraffic'], 'required', 'except' => 'forosmotrakt'],
+            [['id_installakt', 'id_mattraffic', 'id_cabinet'], 'integer'],
             [['id_installakt'], 'exist', 'skipOnError' => true, 'targetClass' => Installakt::className(), 'targetAttribute' => ['id_installakt' => 'installakt_id']],
             [['id_mattraffic'], 'exist', 'skipOnError' => true, 'targetClass' => Mattraffic::className(), 'targetAttribute' => ['id_mattraffic' => 'mattraffic_id']],
             [['id_mattraffic'], 'CheckBuild'],
-            [['tr_osnov_kab'], 'checkKabUnique'],
+            [['id_cabinet'], 'checkCabinetUnique'],
         ];
     }
 
@@ -50,11 +51,11 @@ class TrOsnov extends \yii\db\ActiveRecord
     }
 
     // Проверка на уже установленную мат ценность в кабинете
-    public function checkKabUnique($attribute)
+    public function checkCabinetUnique($attribute)
     {
         if ($this->isNewRecord) {
             $trOsnov = self::find()
-                ->select(['tr_osnov_id', 'tr_osnov_kab', 'idMol.id_build', 'idInstallakt.installakt_date'])
+                ->select(['tr_osnov_id', 'id_cabinet', 'idMol.id_build', 'idInstallakt.installakt_date'])
                 ->joinWith(['idMattraffic.idMol', 'idInstallakt'])
                 ->andWhere(['idMattraffic.id_material' => $this->idMattraffic->id_material])
                 ->orderBy(['idMattraffic.mattraffic_date' => SORT_DESC, 'idMattraffic.mattraffic_id' => SORT_DESC])
@@ -62,8 +63,8 @@ class TrOsnov extends \yii\db\ActiveRecord
                 ->asArray()
                 ->one();
 
-            if ($trOsnov && $trOsnov['tr_osnov_kab'] == $this->tr_osnov_kab && $trOsnov['id_build'] == $this->idMattraffic->idMol->id_build) {
-                $this->addError($attribute, 'Данная материальная ценность "' . $this->idMattraffic->idMaterial->material_name . '" уже установлена в кабинет "' . $this->tr_osnov_kab . '" в акте установки №' . $trOsnov['tr_osnov_id'] . ' от ' . Yii::$app->formatter->asDate($trOsnov['installakt_date']) . '.');
+            if ($trOsnov && $trOsnov['id_cabinet'] == $this->id_cabinet && $trOsnov['id_build'] == $this->idMattraffic->idMol->id_build) {
+                $this->addError($attribute, 'Данная материальная ценность "' . $this->idMattraffic->idMaterial->material_name . '" уже установлена в кабинет "' . $this->idCabinet->cabinet_name . '" в акте установки №' . $trOsnov['tr_osnov_id'] . ' от ' . Yii::$app->formatter->asDate($trOsnov['installakt_date']) . '.');
             }
         }
     }
@@ -75,7 +76,7 @@ class TrOsnov extends \yii\db\ActiveRecord
     {
         return [
             'tr_osnov_id' => 'Tr Osnov ID',
-            'tr_osnov_kab' => 'Кабинет',
+            'id_cabinet' => 'Кабинет',
             'id_installakt' => 'Акт установки',
             'id_mattraffic' => 'Инвентарный номер',
         ];
@@ -100,6 +101,14 @@ class TrOsnov extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getIdCabinet()
+    {
+        return $this->hasOne(Cabinet::className(), ['cabinet_id' => 'id_cabinet'])->from(['idCabinet' => Cabinet::tableName()])->inverseOf('trOsnovs');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getOsmotrakts()
     {
         return $this->hasOne(Osmotrakt::className(), ['id_tr_osnov' => 'tr_osnov_id'])->from(['osmotrakts' => Osmotrakt::tableName()]);
@@ -111,13 +120,14 @@ class TrOsnov extends \yii\db\ActiveRecord
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : ['tr_osnov_id AS id'], ['CONCAT(idMaterial.material_inv, ", каб. ", tr_osnov_kab, ", ", IF(idbuild.build_name IS NULL, "Здание отсутствует", idbuild.build_name), ", ", idMaterial.material_name) AS text']))
+            ->select(array_merge(isset($params['init']) ? [] : ['tr_osnov_id AS id'], ['CONCAT(idMaterial.material_inv, ", каб. ", idCabinet.cabinet_name, ", ", IF(idbuild.build_name IS NULL, "Здание отсутствует", idbuild.build_name), ", ", idMaterial.material_name) AS text']))
             ->joinWith([
                 'idMattraffic.idMol.idperson',
                 'idMattraffic.idMol.iddolzh',
                 'idMattraffic.idMol.idpodraz',
                 'idMattraffic.idMol.idbuild',
                 'idInstallakt',
+                'idCabinet',
             ])
             ->join('LEFT JOIN', 'material idMaterial', 'id_material = idMaterial.material_id')
             ->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'idMattraffic.id_material = m2.id_material_m2 and idMattraffic.id_mol = m2.id_mol_m2 and idMattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (3)')

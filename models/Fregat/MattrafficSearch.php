@@ -43,7 +43,7 @@ class MattrafficSearch extends Mattraffic
             'idMol.employee_username',
             'idMol.employee_lastchange',
             'idMol.employee_importdo',
-            'trOsnovs.tr_osnov_kab',
+            'trOsnovs.idCabinet.cabinet_name',
             'trMats.idParent.idMaterial.material_inv',
             'idMaterial.idSchetuchet.schetuchet_kod',
             'trMats.idParent.idMaterial.material_name',
@@ -82,7 +82,7 @@ class MattrafficSearch extends Mattraffic
                 'idMol.employee_importdo',
                 'mattraffic_username',
                 'mattraffic_lastchange',
-                'trOsnovs.tr_osnov_kab',
+                'trOsnovs.idCabinet.cabinet_name',
                 'trMats.idParent.idMaterial.material_inv',
                 'mattraffic_number',
                 'idMaterial.material_number',
@@ -300,11 +300,11 @@ class MattrafficSearch extends Mattraffic
         }
 
         $this->baseFilter($query);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('trOsnovs.idCabinet.cabinet_name')]);
 
         $this->baseSort($dataProvider);
         Proc::AssignRelatedAttributes($dataProvider, [
-            'trOsnovs.tr_osnov_kab',
+            'trOsnovs.idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;
@@ -395,12 +395,12 @@ class MattrafficSearch extends Mattraffic
         }
 
         $this->baseFilter($query);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('trOsnovs.idCabinet.cabinet_name')]);
         $query->andFilterWhere(['LIKE', 'matparent.material_inv', $this->getAttribute('trMats.idParent.idMaterial.material_inv')]);
 
         $this->baseSort($dataProvider);
         Proc::AssignRelatedAttributes($dataProvider, [
-            'trOsnovs.tr_osnov_kab',
+            'trOsnovs.idCabinet.cabinet_name',
             'trMats.idParent.idMaterial.material_inv' => 'matparent',
         ]);
 

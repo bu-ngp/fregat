@@ -2,22 +2,23 @@
 
 namespace app\controllers\Fregat;
 
-use app\models\Fregat\CabinetSearch;
+use app\func\Proc;
 use Yii;
-use app\models\Fregat\Build;
-use app\models\Fregat\BuildSearch;
+use app\models\Fregat\Cabinet;
+use app\models\Fregat\CabinetSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\func\Proc;
-use yii\filters\AccessControl;
 
 /**
- * BuildController implements the CRUD actions for Build model.
+ * CabinetController implements the CRUD actions for Cabinet model.
  */
-class BuildController extends Controller
+class CabinetController extends Controller
 {
-
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -25,26 +26,21 @@ class BuildController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'selectinput', 'assign-to-select2', 'selectinput-changemol'],
+                        'actions' => ['selectinputforcabinet'],
                         'allow' => true,
-                        'roles' => ['FregatUserPermission', 'GlaukUserPermission'],
+                        'roles' => ['FregatUserPermission'],
                     ],
                     [
                         'actions' => ['create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['BuildEdit'],
                     ],
-                    [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['EmployeeBuildEdit'],
-                    ],
                 ],
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
@@ -52,34 +48,22 @@ class BuildController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new BuildSearch();
-        $Request = Yii::$app->request->queryParams;
-        $dataProvider = $searchModel->search($Request);
+        $searchModel = new CabinetSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'iduser' => $Request['iduser'],
         ]);
     }
 
-    public function actionSelectinput($field, $q = null)
+    public function actionCreate($idbuild)
     {
-        return Proc::ResultSelect2([
-            'model' => new Build,
-            'field' => $field,
-            'q' => $q,
-            'order' => 'build_name'
-        ]);
-    }
-
-    public function actionCreate()
-    {
-        $model = new Build();
+        $model = new Cabinet();
+        $model->id_build = $idbuild;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Proc::RemoveLastBreadcrumbsFromSession(); // Удаляем последнюю хлебную крошку из сессии (Создать меняется на Обновить)
-            return $this->redirect(['update', 'id' => $model->primaryKey]);
+            return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -94,13 +78,8 @@ class BuildController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Proc::GetPreviousURLBreadcrumbsFromSession());
         } else {
-            $searchModel = new CabinetSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
             return $this->render('update', [
                 'model' => $model,
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
             ]);
         }
     }
@@ -111,25 +90,19 @@ class BuildController extends Controller
             echo $this->findModel($id)->delete();
     }
 
-    public function actionAssignToSelect2()
-    {
-        Proc::AssignToModelFromGrid();
-    }
-
     /**
-     * Finds the Build model based on its primary key value.
+     * Finds the Cabinet model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Build the loaded model
+     * @return Cabinet the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Build::findOne($id)) !== null) {
+        if (($model = Cabinet::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

@@ -27,7 +27,7 @@ class TrRmMatSearch extends TrRmMat
             'idTrMat.idMattraffic.mattraffic_number',
             'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
-            'idTrMat.idParent.trOsnovs.tr_osnov_kab',
+            'idTrMat.idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
     }
 
@@ -47,7 +47,7 @@ class TrRmMatSearch extends TrRmMat
                 'idTrMat.idMattraffic.mattraffic_number',
                 'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
                 'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
-                'idTrMat.idParent.trOsnovs.tr_osnov_kab',
+                'idTrMat.idParent.trOsnovs.idCabinet.cabinet_name',
             ], 'safe'],
         ];
     }
@@ -113,7 +113,7 @@ class TrRmMatSearch extends TrRmMat
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrMat.idMattraffic.mattraffic_number'));
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idTrMat.idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idTrMat.idMattraffic.idMol.iddolzh.dolzh_name')]);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idTrMat.idParent.trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idTrMat.idParent.trOsnovs.idCabinet.cabinet_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idTrMat.idParent.idMaterial.material_name' => 'matparent',
@@ -125,7 +125,7 @@ class TrRmMatSearch extends TrRmMat
             'idTrMat.idMattraffic.mattraffic_number',
             'idTrMat.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrMat.idMattraffic.idMol.iddolzh.dolzh_name',
-            'idTrMat.idParent.trOsnovs.tr_osnov_kab',
+            'idTrMat.idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;

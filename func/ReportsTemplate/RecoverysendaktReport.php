@@ -46,7 +46,7 @@ class RecoverysendaktReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idOsmotrakt->idReason->reason_text . (empty($ar->idOsmotrakt->idReason->reason_text) ? '' : '. ') . $ar->idOsmotrakt->osmotrakt_comment);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idOsmotrakt->idTrosnov->idCabinet->cabinet_name);
             $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
             $num++;
         }

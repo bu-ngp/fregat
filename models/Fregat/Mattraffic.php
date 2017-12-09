@@ -316,8 +316,8 @@ class Mattraffic extends \yii\db\ActiveRecord
         $method = isset($params['init']) ? 'one' : 'all';
 
         $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idbuild.build_name, CONCAT("каб. ",trOsnovs.tr_osnov_kab), idMaterial.material_inv, idMaterial.material_name) AS text']))
-            ->joinWith(['trOsnovs', 'idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
+            ->select(array_merge(isset($params['init']) ? [] : ['mattraffic_id AS id'], ['CONCAT_WS(", ", idbuild.build_name, CONCAT("каб. ",idCabinet.cabinet_name), idMaterial.material_inv, idMaterial.material_name) AS text']))
+            ->joinWith(['trOsnovs.idCabinet', 'idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
             ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
             ->andWhere('mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic_tip', [3]])

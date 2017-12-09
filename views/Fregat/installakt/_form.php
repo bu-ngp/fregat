@@ -71,7 +71,9 @@ use yii\helpers\Url;
                         'attribute' => 'idMattraffic.idMol.idbuild.build_name',
                         'label' => 'Здание',
                     ],
-                    'tr_osnov_kab',
+                    [
+                        'attribute' => 'idCabinet.cabinet_name'
+                    ],
                     [
                         'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
                         'label' => 'ФИО материально-ответственного лица',
@@ -120,9 +122,9 @@ use yii\helpers\Url;
                     ],
                     'idParent.idMol.idbuild.build_name',
                     [
-                        'attribute' => 'idParent.trOsnovs.tr_osnov_kab',
+                        'attribute' => 'idParent.trOsnovs.idCabinet.cabinet_name',
                         'value' => function ($model) {
-                            return $model->idParent->trOsnovs[0]->tr_osnov_kab;
+                            return $model->idParent->trOsnovs[0]->idCabinet->cabinet_name;
                         },
                     ],
                     [

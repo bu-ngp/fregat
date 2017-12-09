@@ -25,7 +25,7 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMaterial.material_serial',
             'idTrosnov.idMattraffic.idMaterial.material_writeoff',
             'idTrosnov.idMattraffic.idMol.idbuild.build_name',
-            'idTrosnov.tr_osnov_kab',
+            'idTrosnov.idCabinet.cabinet_name',
             'idUser.idperson.auth_user_fullname',
             'idUser.iddolzh.dolzh_name',
             'idUser.idbuild.build_name',
@@ -53,7 +53,7 @@ class OsmotraktSearch extends Osmotrakt
                 'idTrosnov.idMattraffic.idMaterial.material_serial',
                 'idTrosnov.idMattraffic.idMaterial.material_writeoff',
                 'idTrosnov.idMattraffic.idMol.idbuild.build_name',
-                'idTrosnov.tr_osnov_kab',
+                'idTrosnov.idCabinet.cabinet_name',
                 'idUser.idperson.auth_user_fullname',
                 'idUser.iddolzh.dolzh_name',
                 'idUser.idbuild.build_name',
@@ -108,7 +108,7 @@ class OsmotraktSearch extends Osmotrakt
         $query->andFilterWhere(['LIKE', 'idMaterial.material_serial', $this->getAttribute('idTrosnov.idMattraffic.idMaterial.material_serial')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'idTrosnov.idMattraffic.idMaterial.material_writeoff'));
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idTrosnov.idMattraffic.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'idTrosnov.tr_osnov_kab', $this->getAttribute('idTrosnov.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idTrosnov.idCabinet.cabinet_name')]);
         $query->andFilterWhere(['LIKE', 'iduserperson.auth_user_fullname', $this->getAttribute('idUser.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iduserdolzh.dolzh_name', $this->getAttribute('idUser.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idmolperson.auth_user_fullname', $this->getAttribute('idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname')]);
@@ -130,7 +130,7 @@ class OsmotraktSearch extends Osmotrakt
             'idTrosnov.idMattraffic.idMol.idbuild.build_name',
             'idTrosnov.idMattraffic.idMol.idperson.auth_user_fullname',
             'idTrosnov.idMattraffic.idMol.iddolzh.dolzh_name',
-            'idTrosnov.tr_osnov_kab',
+            'idTrosnov.idCabinet.cabinet_name',
             'idReason.reason_text',
             'idUser.idperson.auth_user_fullname' => 'iduserperson',
             'idUser.iddolzh.dolzh_name' => 'iduserdolzh',

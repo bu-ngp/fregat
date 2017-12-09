@@ -98,7 +98,7 @@ class TrOsnovController extends Controller
                 $model->id_installakt = (string)filter_input(INPUT_GET, 'idinstallakt');
 
                 //Сохраняем кабинет в модель из отправленной формы
-                $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
+                $model->id_cabinet = isset(Yii::$app->request->post('TrOsnov')['id_cabinet']) ? Yii::$app->request->post('TrOsnov')['id_cabinet'] : NULL;
             }
 
             // Сохраняем модель с отправленными данными и сохраненным mattraffic
@@ -167,7 +167,7 @@ class TrOsnovController extends Controller
 
 
                 //Сохраняем кабинет в модель из отправленной формы
-                $model->tr_osnov_kab = isset(Yii::$app->request->post('TrOsnov')['tr_osnov_kab']) ? Yii::$app->request->post('TrOsnov')['tr_osnov_kab'] : NULL;
+                $model->id_cabinet = isset(Yii::$app->request->post('TrOsnov')['id_cabinet']) ? Yii::$app->request->post('TrOsnov')['id_cabinet'] : NULL;
 
                 if ($Mattraffic->save() && $model->save()) {
                     $transaction->commit();
@@ -228,7 +228,7 @@ class TrOsnovController extends Controller
                         'material_tip' => $query->idMaterial->material_tip,
                         'material_name' => $query->idMaterial->material_name,
                         'material_writeoff' => $query->idMaterial->material_writeoff,
-                        'material_install_kab' => $query->idMaterial->material_install_kab,
+                        'material_install_cabinet' => $query->idMaterial->material_install_cabinet,
                         'auth_user_fullname' => $query->idMol->idperson->auth_user_fullname,
                         'dolzh_name' => $query->idMol->iddolzh->dolzh_name,
                         'podraz_name' => $query->idMol->idpodraz->podraz_name,
@@ -245,21 +245,22 @@ class TrOsnovController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
-            $tr_osnov_kab = Yii::$app->request->post('tr_osnov_kab');
+            $cabinet_name = Yii::$app->request->post('cabinet_name');
             $Mattraffic = Mattraffic::findOne($mattraffic_id);
             $matvid_id = $Mattraffic->idMaterial->id_matvid;
             $build_id = $Mattraffic->idMol->id_build;
 
-            if (!(empty($mattraffic_id) || empty($tr_osnov_kab) || empty($matvid_id) || empty($build_id))) {
+            if (!(empty($mattraffic_id) || empty($cabinet_name) || empty($matvid_id) || empty($build_id))) {
                 $sum = Mattraffic::find()
                     ->select('sum(mt1.mattraffic_number) as summ')
                     ->from('mattraffic mt1')
                     ->leftJoin('mattraffic mt2', 'mt1.id_material = mt2.id_material and (mt1.mattraffic_date < mt2.mattraffic_date or mt1.mattraffic_id < mt2.mattraffic_id)')
                     ->leftJoin('tr_osnov os', 'mt1.mattraffic_id = os.id_mattraffic')
+                    ->leftJoin('cabinet cab', 'cab.cabinet_id = os.id_cabinet')
                     ->leftJoin('material m', 'm.material_id = mt1.id_material')
                     ->leftJoin('employee e', 'e.employee_id = mt1.id_mol')
                     ->andWhere(['mt2.mattraffic_date' => null])
-                    ->andWhere(['like', 'os.tr_osnov_kab', $tr_osnov_kab])
+                    ->andWhere(['like', 'cab.cabinet_name', $cabinet_name])
                     ->andWhere(['m.id_matvid' => $matvid_id])
                     ->andWhere(['e.id_build' => $build_id])
                     ->asArray()
@@ -269,7 +270,7 @@ class TrOsnovController extends Controller
                     $sum['summ'] = $sum['summ'] === null ? 0 : $sum['summ'];
 
                     echo json_encode([
-                        'message' => "В кабинете \"$tr_osnov_kab\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"
+                        'message' => "В кабинете \"$cabinet_name\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"
                     ]);
                 }
             } else {
@@ -309,7 +310,7 @@ class TrOsnovController extends Controller
                         'material_inv' => $query->idMattraffic->idMaterial->material_inv,
                         'material_serial' => $query->idMattraffic->idMaterial->material_serial,
                         'build_name' => $query->idMattraffic->idMol->idbuild->build_name,
-                        'tr_osnov_kab' => $query->tr_osnov_kab,
+                        'cabinet_name' => $query->idCabinet->cabinet_name,
                         'auth_user_fullname' => $query->idMattraffic->idMol->idperson->auth_user_fullname,
                         'dolzh_name' => $query->idMattraffic->idMol->iddolzh->dolzh_name,
                     ]);

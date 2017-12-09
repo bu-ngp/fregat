@@ -54,7 +54,7 @@ class RecoverysendaktmatReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->idTrMatOsmotr->idReason->reason_text . (empty($ar->idTrMatOsmotr->idReason->reason_text) ? '' : '. ') . $ar->idTrMatOsmotr->tr_mat_osmotr_comment);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandKabByTrMatOsmotr($ar->idTrMatOsmotr->tr_mat_osmotr_id));
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, TrMatOsmotr::getBuildandCabinetByTrMatOsmotr($ar->idTrMatOsmotr->tr_mat_osmotr_id));
             $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':J' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
             $num++;
         }

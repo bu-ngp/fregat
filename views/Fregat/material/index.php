@@ -1,4 +1,5 @@
 <?php
+
 use app\models\Fregat\Mattraffic;
 use yii\helpers\Html;
 use kartik\dynagrid\DynaGrid;
@@ -57,7 +58,14 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                 ],
                 'material_inv',
-                'material_number',
+                [
+                    'attribute' => 'material_number',
+                    'pageSummary' => function ($summary, $data, \kartik\grid\DataColumn $widget) {
+                        /** @var \yii\db\ActiveQuery $query */
+                        $query = $widget->grid->dataProvider->query;
+                        return $query->sum('material_number');
+                    },
+                ],
                 'idIzmer.izmer_name',
                 'material_price',
                 [
@@ -72,6 +80,12 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'material_writeoff',
                     'filter' => $material_writeoff,
+                    'pageSummary' => function ($summary, $data, \kartik\grid\DataColumn $widget) {
+                        /** @var \yii\db\ActiveQuery $query */
+                        $query = $widget->grid->dataProvider->query;
+                        $sum = $query->andWhere(['material_writeoff' => 1])->sum('material_writeoff');
+                        return 'Списано: ' . ($sum ?: 0);
+                    },
                     'value' => function ($model) use ($material_writeoff) {
                         return isset($material_writeoff[$model->material_writeoff]) ? $material_writeoff[$model->material_writeoff] : '';
                     },
@@ -172,7 +186,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                         }
 
                         return '';
-                     },
+                    },
                     'visible' => false,
                 ],
             ],
@@ -208,6 +222,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 ],
             ],
             'afterHeader' => $filter,
+            'showPageSummary' => true,
         ]
     ]));
     ?>

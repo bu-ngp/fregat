@@ -28,7 +28,7 @@ class TrMatSearch extends TrMat
             'idParent.idMaterial.material_name',
             'idParent.idMaterial.material_inv',
             'idParent.idMol.idbuild.build_name',
-            'idParent.trOsnovs.tr_osnov_kab',
+            'idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
     }
 
@@ -49,7 +49,7 @@ class TrMatSearch extends TrMat
                 'idParent.idMaterial.material_name',
                 'idParent.idMaterial.material_inv',
                 'idParent.idMol.idbuild.build_name',
-                'idParent.trOsnovs.tr_osnov_kab',
+                'idParent.trOsnovs.idCabinet.cabinet_name',
             ], 'safe'],
         ];
     }
@@ -117,7 +117,7 @@ class TrMatSearch extends TrMat
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idParent.trOsnovs.idCabinet.cabinet_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
@@ -128,7 +128,7 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
             'idParent.idMol.idbuild.build_name',
-            'idParent.trOsnovs.tr_osnov_kab',
+            'idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;
@@ -183,7 +183,7 @@ class TrMatSearch extends TrMat
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idParent.trOsnovs.idCabinet.cabinet_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
@@ -194,7 +194,7 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMol.idperson.auth_user_fullname',
             'idMattraffic.idMol.iddolzh.dolzh_name',
             'idParent.idMol.idbuild.build_name',
-            'idParent.trOsnovs.tr_osnov_kab',
+            'idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;
@@ -249,7 +249,7 @@ class TrMatSearch extends TrMat
         $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('idMattraffic.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idParent.idMol.idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'trOsnovs.tr_osnov_kab', $this->getAttribute('idParent.trOsnovs.tr_osnov_kab')]);
+        $query->andFilterWhere(['LIKE', 'idCabinet.cabinet_name', $this->getAttribute('idParent.trOsnovs.idCabinet.cabinet_name')]);
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'idMattraffic.idMaterial.material_name',
@@ -261,7 +261,7 @@ class TrMatSearch extends TrMat
             'idMattraffic.idMol.iddolzh.dolzh_name',
             'idMattraffic.idMaterial.material_name',
             'idParent.idMol.idbuild.build_name',
-            'idParent.trOsnovs.tr_osnov_kab',
+            'idParent.trOsnovs.idCabinet.cabinet_name',
         ]);
 
         return $dataProvider;

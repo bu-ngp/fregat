@@ -127,14 +127,15 @@ class InstallaktSearch extends Installakt
                     ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
             ]);
 
-            $attr = 'tr_osnov_kab';
+            $attr = 'cabinet_name';
             Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
-                'SQLAttribute' => 'trOsnov.tr_osnov_kab',
+                'SQLAttribute' => 'idCabinet.cabinet_name',
                 'ExistsSubQuery' => (new Query())
                     ->select('trOsnov.id_installakt')
                     ->from('tr_osnov trOsnov')
                     ->leftJoin('mattraffic idMattraffic', 'idMattraffic.mattraffic_id = trOsnov.id_mattraffic')
+                    ->leftJoin('cabinet idCabinet', 'idCabinet.cabinet_id = trOsnov.id_cabinet')
                     ->andWhere('trOsnov.id_installakt = installakt.installakt_id')
             ]);
 

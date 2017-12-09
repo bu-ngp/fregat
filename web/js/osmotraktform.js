@@ -11,7 +11,7 @@ function FillInstaledMat() {
                     $("#material-material_inv").val(obj.material_inv);
                     $("#material-material_serial").val(obj.material_serial);
                     $("#build-build_name").val(obj.build_name);
-                    $("#trosnov-tr_osnov_kab").val(obj.tr_osnov_kab);
+                    $("#cabinet-cabinet_name").val(obj.cabinet_name);
                     $("#authuser-auth_user_fullname").val(obj.auth_user_fullname);
                     $("#dolzh-dolzh_name").val(obj.dolzh_name);
                 }
@@ -28,7 +28,7 @@ function ClearInstaledMat() {
     $("#material-material_inv").val('');
     $("#material-material_serial").val('');
     $("#build-build_name").val('');
-    $("#trosnov-tr_osnov_kab").val('');
+    $("#cabinet-cabinet_name").val('');
     $("#authuser-auth_user_fullname").val('');
     $("#dolzh-dolzh_name").val('');
 }

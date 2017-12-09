@@ -271,30 +271,32 @@ class MaterialSearch extends Material
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
 
-            $attr = 'tr_osnov_kab_current';
+            $attr = 'tr_osnov_current_id_cabinet';
             Proc::Filter_Compare(Proc::Text, $query, $filter, [
                 'Attribute' => $attr,
-                'SQLAttribute' => 'trOsnovs.tr_osnov_kab',
+                'SQLAttribute' => 'trOsnovs.id_cabinet',
                 'LikeManual' => true,
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
                     ->leftJoin('mattraffic m2', 'mattraffics.id_material = m2.id_material and mattraffics.mattraffic_date < m2.mattraffic_date and mattraffics.mattraffic_id < m2.mattraffic_id')
                     ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('cabinet idCabinet', 'trOsnovs.id_cabinet = idCabinet.cabinet_id')
                     ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
                     ->andWhere(['m2.mattraffic_date' => null])
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
 
-            $attr = 'tr_osnov_kab_always';
+            $attr = 'tr_osnov_always_id_cabinet';
             Proc::Filter_Compare(Proc::Text, $query, $filter, [
                 'Attribute' => $attr,
-                'SQLAttribute' => 'trOsnovs.tr_osnov_kab',
+                'SQLAttribute' => 'trOsnovs.id_cabinet',
                 'LikeManual' => true,
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
                     ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
+                    ->leftJoin('cabinet idCabinet', 'trOsnovs.id_cabinet = idCabinet.cabinet_id')
                     ->andWhere('mattraffics.id_material = material.material_id')
             ]);
 

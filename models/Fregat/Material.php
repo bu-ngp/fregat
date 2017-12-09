@@ -18,6 +18,7 @@ use yii\db\Query;
  * @property string $material_release
  * @property string $material_number
  * @property string $material_price
+ * @property string $material_install_cabinet
  * @property integer $material_tip
  * @property integer $material_writeoff
  * @property integer $id_matvid
@@ -92,7 +93,7 @@ class Material extends \yii\db\ActiveRecord
             [['material_importdo'], 'integer', 'min' => 0, 'max' => 1], // 0 - Материальная ценность при импорте не изменяется, 1 - Материальная ценность может быть изменена при импорте
             [['material_number'], 'FoldDevision'],
             [['material_comment'], 'string', 'max' => 512],
-            [['material_install_kab'], 'safe'],
+            [['material_install_cabinet'], 'safe'],
         ];
     }
 
@@ -126,7 +127,7 @@ class Material extends \yii\db\ActiveRecord
             'material_importdo' => 'Запись изменяема при импортировании из 1С',
             'id_schetuchet' => 'Счет учета',
             'material_comment' => 'Заметка',
-            'material_install_kab' => 'В данный момент установлено в кабинете',
+            'material_install_cabinet' => 'В данный момент установлено в кабинете',
             'lastInstallMattraffic' => 'Кабинет, где установлено',
         ];
     }
@@ -198,11 +199,11 @@ class Material extends \yii\db\ActiveRecord
             ->orderBy(['last_install_mattraffic.mattraffic_date' => SORT_DESC, 'last_install_mattraffic.mattraffic_id' => SORT_DESC]);
     }
 
-    public function getMaterial_install_kab()
+    public function getMaterial_install_cabinet()
     {
         $material = self::find()
-            ->select(['idbuild.build_name', 'trOsnovs.tr_osnov_kab'])
-            ->joinWith(['mattraffics.trOsnovs', 'mattraffics.idMol.idbuild'])
+            ->select(['idbuild.build_name', 'trOsnovs.idCabinet.cabinet_name'])
+            ->joinWith(['mattraffics.trOsnovs.idCabinet', 'mattraffics.idMol.idbuild'])
             ->andWhere(['mattraffics.id_material' => $this->primaryKey])
             ->andWhere(['mattraffics.mattraffic_tip' => 3])
             ->orderBy(['mattraffics.mattraffic_date' => SORT_DESC, 'mattraffics.mattraffic_id' => SORT_DESC])
@@ -210,7 +211,7 @@ class Material extends \yii\db\ActiveRecord
             ->asArray()
             ->one();
 
-        return $material ? $material['build_name'] . ', каб. ' . $material['tr_osnov_kab'] : 'Не установлено';
+        return $material ? $material['build_name'] . ', каб. ' . $material['cabinet_name'] : 'Не установлено';
     }
 
     public function selectinputfortrmat_parent($params)

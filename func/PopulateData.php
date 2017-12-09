@@ -92,7 +92,7 @@ class PopulateData
                         $trOsnov = new TrOsnov();
                         $trOsnov->id_installakt = $Installakt->primaryKey;
                         $trOsnov->id_mattraffic = $MattrafficMove->primaryKey;
-                        $trOsnov->tr_osnov_kab = (string)rand(1, 799);
+                        $trOsnov->tr_osnov_kab = (string)rand(1, 799); // TODO $trOsnov->id_cabinet = ...
                         if (!$trOsnov->save())
                             throw new \yii\base\Exception('error');
                         /* var_dump($Installakt->attributes);

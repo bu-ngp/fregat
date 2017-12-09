@@ -49,7 +49,7 @@ class RecoveryrecieveaktReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $ar->recoveryrecieveakt_result);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idOsmotrakt->idTrosnov->idCabinet->cabinet_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, Yii::$app->formatter->asDate($ar->recoveryrecieveakt_date));
 
             $objPHPExcel->getActiveSheet()->getStyle('A' . $num . ':K' . $num)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
@@ -69,7 +69,7 @@ class RecoveryrecieveaktReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(6, $num + $crows, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMaterial->idIzmer->izmer_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num + $crows, $ar->recoveryrecieveakt_result);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num + $crows, $ar->idOsmotrakt->idTrosnov->idMattraffic->idMol->idbuild->build_name);
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, $ar->idOsmotrakt->idTrosnov->tr_osnov_kab);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num + $crows, $ar->idOsmotrakt->idTrosnov->idCabinet->cabinet_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num + $crows, Yii::$app->formatter->asDate($ar->recoveryrecieveakt_date));
             $objPHPExcel->getActiveSheet()->getStyle('A' . ($num + $crows) . ':K' . ($num + $crows))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
             $objPHPExcel->getActiveSheet()->insertNewRowBefore($num + $crows + 1);

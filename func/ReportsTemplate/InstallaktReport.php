@@ -83,18 +83,18 @@ class InstallaktReport extends BaseReportPortal
                 if (!empty($mattraffic_previous)) {
                     $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $mattraffic_previous->idMol->idperson->auth_user_fullname . ', ' . $mattraffic_previous->idMol->iddolzh->dolzh_name);
 
-                    if ($mattraffic_previous->mattraffic_tip == 1 && empty($mattraffic_previous->trOsnovs[0]->tr_osnov_kab))
-                        $kab = ', Приход';
-                    elseif ($mattraffic_previous->mattraffic_tip == 2 && empty($mattraffic_previous->trOsnovs[0]->tr_osnov_kab))
-                        $kab = ', Списание';
+                    if ($mattraffic_previous->mattraffic_tip == 1 && empty($mattraffic_previous->trOsnovs[0]->idCabinet->cabinet_name))
+                        $cabinet = ', Приход';
+                    elseif ($mattraffic_previous->mattraffic_tip == 2 && empty($mattraffic_previous->trOsnovs[0]->idCabinet->cabinet_name))
+                        $cabinet = ', Списание';
                     else
-                        $kab = ', ' . $mattraffic_previous->trOsnovs[0]->tr_osnov_kab;
+                        $cabinet = ', ' . $mattraffic_previous->trOsnovs[0]->idCabinet->cabinet_name;
 
-                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $mattraffic_previous->idMol->idbuild->build_name . $kab);
+                    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $mattraffic_previous->idMol->idbuild->build_name . $cabinet);
                 }
 
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $ar->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idMattraffic->idMol->iddolzh->dolzh_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idMattraffic->idMol->idbuild->build_name . ', ' . $ar->tr_osnov_kab);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $ar->idMattraffic->idMol->idbuild->build_name . ', ' . $ar->idCabinet->cabinet_name);
                 $num++;
             }
 
@@ -149,7 +149,7 @@ class InstallaktReport extends BaseReportPortal
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num, Yii::$app->formatter->asDate($arm->idParent->idMaterial->material_release, 'y'));
                 $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(6, $num, $arm->idParent->idMaterial->material_price, \PHPExcel_Cell_DataType::TYPE_STRING);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(7, $num, $arm->idParent->idMol->idbuild->build_name);
-                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $arm->idParent->trOsnovs[0]->tr_osnov_kab);
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(8, $num, $arm->idParent->trOsnovs[0]->idCabinet->cabinet_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(9, $num, $arm->idParent->idMol->idperson->auth_user_fullname . ', ' . $arm->idParent->idMol->iddolzh->dolzh_name);
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(10, $num, $material_tip[$arm->idParent->idMaterial->material_tip]);
 

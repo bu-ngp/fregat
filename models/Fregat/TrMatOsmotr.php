@@ -122,14 +122,14 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
             ->all();
     }
 
-    public static function getBuildandKabByTrMatOsmotr($Tr_mat_osmotr_id)
+    public static function getBuildandCabinetByTrMatOsmotr($Tr_mat_osmotr_id)
     {
         if (!empty($Tr_mat_osmotr_id)) {
             $query = self::find()
-                ->select(['idbuild.build_name', 'trOsnovs.tr_osnov_kab'])
+                ->select(['idbuild.build_name', 'idCabinet.cabinet_name'])
                 ->joinWith([
                     'idTrMat.idParent.idMol.idbuild',
-                    'idTrMat.idParent.trOsnovs',
+                    'idTrMat.idParent.trOsnovs.idCabinet',
                 ])
                 //   ->leftJoin('mattraffic mt', 'mattraffics.id_material = mt.id_material and  mattraffics.mattraffic_date < mt.mattraffic_date')
                 ->andWhere(['tr_mat_osmotr_id' => $Tr_mat_osmotr_id])
@@ -139,7 +139,7 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
                 ->one();
 
             if (!empty($query))
-                return $query['build_name'] . ', ' . $query['tr_osnov_kab'];
+                return $query['build_name'] . ', ' . $query['cabinet_name'];
         }
     }
 

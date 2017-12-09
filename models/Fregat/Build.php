@@ -10,6 +10,7 @@ use Yii;
  * @property integer $build_id
  * @property string $build_name
  *
+ * @property Cabinet[] $cabinets
  * @property Employee[] $employees
  * @property Importemployee[] $importemployees
  */
@@ -49,6 +50,14 @@ class Build extends \yii\db\ActiveRecord
             'build_id' => 'Build ID',
             'build_name' => 'Здание',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCabinets()
+    {
+        return $this->hasMany(Cabinet::className(), ['id_build' => 'build_id']);
     }
 
     /**

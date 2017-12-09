@@ -19,7 +19,7 @@ class InstallTrOsnov extends Model
     public $mattraffic_trosnov_id;
     public $id_mattraffic;
     public $mattraffic_number;
-    public $tr_osnov_kab;
+    public $id_cabinet;
     public $id_installer;
 
     public $primaryKey;
@@ -27,10 +27,9 @@ class InstallTrOsnov extends Model
     public function rules()
     {
         return [
-            [['id_mattraffic', 'tr_osnov_kab', 'mattraffic_number'], 'required'],
-            [['id_mattraffic', 'id_installer', 'mattraffic_trosnov_id'], 'integer'],
+            [['id_mattraffic', 'id_cabinet', 'mattraffic_number'], 'required'],
+            [['id_mattraffic', 'id_installer', 'mattraffic_trosnov_id', 'id_cabinet'], 'integer'],
             [['mattraffic_number'], 'double', 'min' => 0, 'max' => 10000000000],
-            [['tr_osnov_kab'], 'string', 'max' => 255],
             [['mattraffic_number'], 'MaxNumberMove'],
             [['id_mattraffic'], 'OsmotrExists'],
             [['id_mattraffic'], 'isNotSpisan'],
@@ -100,7 +99,7 @@ class InstallTrOsnov extends Model
         return [
             'id_mattraffic' => 'Инвентарный номер',
             'mattraffic_number' => 'Количество для перемещения',
-            'tr_osnov_kab' => 'Кабинет',
+            'id_cabinet' => 'Кабинет',
             'id_installer' => 'Составитель акта',
         ];
     }
@@ -145,7 +144,7 @@ class InstallTrOsnov extends Model
                         $trOsnov = new TrOsnov;
                         $trOsnov->id_installakt = $Installakt->primaryKey;
                         $trOsnov->id_mattraffic = $Mattraffic->primaryKey;
-                        $trOsnov->tr_osnov_kab = $this->tr_osnov_kab;
+                        $trOsnov->id_cabinet = $this->id_cabinet;
                         if ($trOsnov->save()) {
                             $this->mattraffic_trosnov_id = $trOsnov->primaryKey;
                             $this->primaryKey = $trOsnov->primaryKey;
@@ -156,8 +155,8 @@ class InstallTrOsnov extends Model
                                 $this->addError('id_mattraffic', $trOsnov->getErrors('id_mattraffic')[0]);
                             }
 
-                            if ($errors = $trOsnov->getErrors('tr_osnov_kab')) {
-                                $this->addError('tr_osnov_kab', $trOsnov->getErrors('tr_osnov_kab')[0]);
+                            if ($errors = $trOsnov->getErrors('id_cabinet')) {
+                                $this->addError('id_cabinet', $trOsnov->getErrors('id_cabinet')[0]);
                             }
 
                             $transaction->rollBack();
