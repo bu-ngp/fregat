@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Material;
 use app\models\Fregat\Mattraffic;
 use yii\helpers\Html;
@@ -55,13 +56,13 @@ use app\models\Fregat\Build;
 
             <?= $form->field($Material, 'material_tip', ['enableClientValidation' => false])->dropDownList(array_merge([0 => ''], Material::VariablesValues('material_tip')), ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])        ?>
+            <?= ''//$form->field(Proc::RelatModelValue($model,'idMattraffic.idMaterial', new \app\models\Fregat\Material), 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true])          ?>
 
             <?= $form->field($Material, 'material_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
             <?= $form->field($Material, 'material_writeoff', ['enableClientValidation' => false])->dropDownList([0 => 'Нет', 1 => 'Да'], ['class' => 'form-control setsession', 'disabled' => true]) ?>
 
-            <?= $form->field($Material, 'material_install_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
+            <?= $form->field($Material, 'material_install_cabinet', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'disabled' => true]) ?>
 
         </div>
     </div>
@@ -96,7 +97,24 @@ use app\models\Fregat\Build;
     ]);
     ?>
 
-    <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+    <?=
+    $form->field($model, 'id_cabinet')->widget(Select2::classname(), Proc::DGselect2([
+        'model' => $model,
+        'resultmodel' => new Cabinet,
+        'fields' => [
+            'keyfield' => 'id_cabinet',
+        ],
+        'disabled' => $model->isNewRecord,
+        'placeholder' => 'Введите кабинет',
+        'fromgridroute' => 'Fregat/cabinet/forinstallakt',
+        'resultrequest' => 'Fregat/cabinet/selectinput',
+        'thisroute' => $this->context->module->requestedRoute,
+        'methodquery' => 'selectinput',
+        'methodparams' => [
+            'id_mattraffic' => ['forInit' => $model->id_mattraffic, 'forJs' => '$("#trosnov-id_mattraffic").val()'],
+        ],
+    ]));
+    ?>
 
     <div class="alert alert-info alert-matvid" role="alert" style="display: block;"><?= $alertMatvid ?></div>
 

@@ -89,7 +89,30 @@ use app\func\Proc;
                 ]));
                 ?>
 
-                <?= $form->field($model, 'tr_osnov_kab')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase']) ?>
+                <?=
+                $form->field($model, 'id_cabinet')->widget(Select2::classname(), array_merge(Proc::DGselect2([
+                    'model' => $model,
+                    'resultmodel' => new \app\models\Fregat\Cabinet,
+                    'placeholder' => 'Введите кабинет',
+                    'setsession' => false,
+                    'fields' => [
+                        'keyfield' => 'id_cabinet',
+                    ],
+                    'MethodQuery' => 'selectinput',
+                    'resultrequest' => 'Fregat/cabinet/selectinput',
+                    'thisroute' => $this->context->module->requestedRoute,
+                    'onlyAjax' => false,
+                ]), [
+                    'addon' => [
+                        'prepend' => [
+                            'content' => Proc::SetTemplateForActiveFieldWithNOT($form, $model, 'id_cabinet'),
+                        ],
+                        'groupOptions' => [
+                            'class' => 'notforselect2',
+                        ],
+                    ],
+                ]));
+                ?>
 
             </div>
         </div>

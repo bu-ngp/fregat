@@ -11,7 +11,7 @@ use Yii;
  * @property integer $id_build
  * @property string $cabinet_name
  *
- * @property Build $idBuild
+ * @property Build $idbuild
  * @property TrOsnov[] $trOsnovs
  */
 class Cabinet extends \yii\db\ActiveRecord
@@ -52,9 +52,9 @@ class Cabinet extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdBuild()
+    public function getIdbuild()
     {
-        return $this->hasOne(Build::className(), ['build_id' => 'id_build']);
+        return $this->hasOne(Build::className(), ['build_id' => 'id_build'])->from(['idbuild' => Build::tableName()]);
     }
 
     /**
@@ -67,6 +67,31 @@ class Cabinet extends \yii\db\ActiveRecord
 
     public static function getCabinetByID($ID)
     {
-        return $query = self::findOne($ID)->cabinet_name;
+        $query = self::findOne($ID);
+        return $query->idbuild->build_name . ', каб. ' . $query->cabinet_name;
+    }
+
+    public function selectinput($params)
+    {
+        $method = isset($params['init']) ? 'one' : 'all';
+        $id_mattraffic = (string)filter_input(INPUT_GET, 'id_mattraffic');
+        $id_build = null;
+
+        if ($id_mattraffic) {
+            $mattraffic = Mattraffic::findOne($id_mattraffic);
+            $id_build = $mattraffic->idMol->id_build;
+        }
+
+        $query = self::find()
+            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idbuild.build_name, CONCAT_WS(" ", "каб.", cabinet_name)) AS text']))
+            ->joinWith(['idbuild'])
+            ->where($method === 'one' ? ['cabinet_id' => $params['q']] : ['like', 'cabinet_name', $params['q'] . '%', false])
+            ->andFilterWhere($id_build ? ['id_build' => $id_build] : [])
+            ->orderBy(['idbuild.build_name' => SORT_ASC, 'cabinet_name' => SORT_ASC])
+            ->limit(20)
+            ->asArray()
+            ->$method();
+
+        return $query;
     }
 }

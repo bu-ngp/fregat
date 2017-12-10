@@ -65,9 +65,9 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'idMol.idpodraz.podraz_name',
                 'idMol.idbuild.build_name',
                 [
-                    'attribute' => 'trOsnovs.tr_osnov_kab',
+                    'attribute' => 'trOsnovs.idCabinet.cabinet_name',
                     'value' => function ($model) {
-                        return $model->trOsnovs[0]->tr_osnov_kab;
+                        return $model->trOsnovs[0]->idCabinet->cabinet_name;
                     },
                 ],
                 [

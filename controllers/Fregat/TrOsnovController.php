@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Cabinet;
 use Yii;
 use app\models\Fregat\TrOsnov;
 use yii\db\Exception;
@@ -245,22 +246,21 @@ class TrOsnovController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
-            $cabinet_name = Yii::$app->request->post('cabinet_name');
+            $cabinet_id = Yii::$app->request->post('cabinet_id');
             $Mattraffic = Mattraffic::findOne($mattraffic_id);
             $matvid_id = $Mattraffic->idMaterial->id_matvid;
             $build_id = $Mattraffic->idMol->id_build;
 
-            if (!(empty($mattraffic_id) || empty($cabinet_name) || empty($matvid_id) || empty($build_id))) {
+            if (!(empty($mattraffic_id) || empty($cabinet_id) || empty($matvid_id) || empty($build_id))) {
                 $sum = Mattraffic::find()
                     ->select('sum(mt1.mattraffic_number) as summ')
                     ->from('mattraffic mt1')
                     ->leftJoin('mattraffic mt2', 'mt1.id_material = mt2.id_material and (mt1.mattraffic_date < mt2.mattraffic_date or mt1.mattraffic_id < mt2.mattraffic_id)')
                     ->leftJoin('tr_osnov os', 'mt1.mattraffic_id = os.id_mattraffic')
-                    ->leftJoin('cabinet cab', 'cab.cabinet_id = os.id_cabinet')
                     ->leftJoin('material m', 'm.material_id = mt1.id_material')
                     ->leftJoin('employee e', 'e.employee_id = mt1.id_mol')
                     ->andWhere(['mt2.mattraffic_date' => null])
-                    ->andWhere(['like', 'cab.cabinet_name', $cabinet_name])
+                    ->andWhere(['like', 'os.id_cabinet', $cabinet_id])
                     ->andWhere(['m.id_matvid' => $matvid_id])
                     ->andWhere(['e.id_build' => $build_id])
                     ->asArray()
@@ -268,9 +268,10 @@ class TrOsnovController extends Controller
 
                 if ($sum !== null) {
                     $sum['summ'] = $sum['summ'] === null ? 0 : $sum['summ'];
+                    $cabinet = Cabinet::findOne($cabinet_id);
 
                     echo json_encode([
-                        'message' => "В кабинете \"$cabinet_name\" здания \"{$Mattraffic->idMol->idbuild->build_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"
+                        'message' => "В кабинете \"{$cabinet->idbuild->build_name}, каб. {$cabinet->cabinet_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"
                     ]);
                 }
             } else {

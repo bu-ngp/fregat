@@ -15,6 +15,7 @@ class InstallaktFilter extends Model
     public $mat_id_material_trmat;
     public $mol_id_person_trmat;
     public $id_cabinet;
+    public $id_cabinet_not;
     public $id_parent;
 
     public function rules()
@@ -28,7 +29,8 @@ class InstallaktFilter extends Model
                 'mat_id_material_trmat',
                 'mol_id_person_trmat',
                 'id_parent',
-                'id_cabinet'
+                'id_cabinet',
+                'id_cabinet_not',
             ], 'integer'],
         ];
     }
@@ -55,7 +57,7 @@ class InstallaktFilter extends Model
             'mat_id_material_trmat' => [$value => Material::getMaterialByID($value)],
             'mol_id_person_trmat' => [$value => Authuser::getAuthuserByID($value)],
             'id_parent' => [$value => Material::getMaterialByID($value)],
-            'id_cabinet' => [$value => Cabinet::getMaterialByID($value)],
+            'id_cabinet' => [$value => Cabinet::getCabinetByID($value)],
         ];
 
         return isset($values[$attribute]) ? $values[$attribute] : NULL;

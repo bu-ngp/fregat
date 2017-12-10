@@ -26,7 +26,7 @@ class CabinetController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['selectinputforcabinet'],
+                        'actions' => ['selectinput', 'forinstallakt', 'assign-to-select2'],
                         'allow' => true,
                         'roles' => ['FregatUserPermission'],
                     ],
@@ -55,6 +55,31 @@ class CabinetController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionForinstallakt()
+    {
+        $searchModel = new CabinetSearch();
+        $dataProvider = $searchModel->searchforinstallakt(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionSelectinput($q = null)
+    {
+        return Proc::ResultSelect2([
+            'model' => new Cabinet,
+            'q' => $q,
+            'methodquery' => 'selectinput',
+        ]);
+    }
+
+    public function actionAssignToSelect2()
+    {
+        Proc::AssignToModelFromGrid();
     }
 
     public function actionCreate($idbuild)

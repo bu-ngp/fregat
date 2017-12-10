@@ -202,7 +202,7 @@ class Material extends \yii\db\ActiveRecord
     public function getMaterial_install_cabinet()
     {
         $material = self::find()
-            ->select(['idbuild.build_name', 'trOsnovs.idCabinet.cabinet_name'])
+            ->select(['idbuild.build_name', 'idCabinet.cabinet_name'])
             ->joinWith(['mattraffics.trOsnovs.idCabinet', 'mattraffics.idMol.idbuild'])
             ->andWhere(['mattraffics.id_material' => $this->primaryKey])
             ->andWhere(['mattraffics.mattraffic_tip' => 3])
