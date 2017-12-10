@@ -46,7 +46,7 @@ use yii\helpers\Url;
                     'label' => 'Должность материально-ответственного лица',
                 ],
                 'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
-                'idOsmotrakt.idTrosnov.tr_osnov_kab',
+                'idOsmotrakt.idTrosnov.idCabinet.cabinet_name',
                 'idOsmotrakt.idReason.reason_text',
                 'idOsmotrakt.osmotrakt_comment',
                 'idOsmotrakt.idMaster.idperson.auth_user_fullname',

@@ -78,10 +78,10 @@ echo DynaGrid::widget(Proc::DGopts([
                 },
             ],
             [
-                'attribute' => 'idMattraffic.trMats.idParent.trOsnovs.tr_osnov_kab',
+                'attribute' => 'idMattraffic.trMats.idParent.trOsnovs.idCabinet.cabinet_name',
                 'label' => 'Кабинет, где установлен материал',
                 'value' => function ($model) {
-                    return $model->idMattraffic->trMats[0]->idParent->trOsnovs[0]->tr_osnov_kab;
+                    return $model->idMattraffic->trMats[0]->idParent->trOsnovs[0]->idCabinet->cabinet_name;
                 },
             ],
             [

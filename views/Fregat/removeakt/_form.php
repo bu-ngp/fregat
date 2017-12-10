@@ -71,9 +71,9 @@ use yii\helpers\Url;
                     'idTrMat.idParent.idMaterial.material_serial',
                     'idTrMat.idParent.idMol.idbuild.build_name',
                     [
-                        'attribute' => 'idTrMat.idParent.trOsnovs.tr_osnov_kab',
+                        'attribute' => 'idTrMat.idParent.trOsnovs..idCabinet.cabinet_name',
                         'value' => function ($model) {
-                            return $model->idTrMat->idParent->trOsnovs[0]->tr_osnov_kab;
+                            return $model->idTrMat->idParent->trOsnovs[0]->idCabinet->cabinet_name;
                         },
                     ],
                     [

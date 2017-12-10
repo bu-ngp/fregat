@@ -93,7 +93,7 @@ use yii\bootstrap\ButtonDropdown;
                         }
                     ],
                     'idOsmotrakt.idTrosnov.idMattraffic.idMol.idbuild.build_name',
-                    'idOsmotrakt.idTrosnov.tr_osnov_kab',
+                    'idOsmotrakt.idTrosnov.idCabinet.cabinet_name',
                     'idOsmotrakt.idReason.reason_text',
                     'idOsmotrakt.osmotrakt_comment',
                     [

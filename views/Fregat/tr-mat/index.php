@@ -47,10 +47,10 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'label' => 'Здание, где установлено',
                 ],
                 [
-                    'attribute' => 'idParent.trOsnovs.tr_osnov_kab',
+                    'attribute' => 'idParent.trOsnovs.idCabinet.cabinet_name',
                     'label' => 'Кабинет, где установлено',
                     'value' => function ($model) {
-                        return $model->idParent->trOsnovs[0]->tr_osnov_kab;
+                        return $model->idParent->trOsnovs[0]->idCabinet->cabinet_name;
                     },
                 ],
                 [

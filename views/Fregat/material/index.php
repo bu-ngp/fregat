@@ -181,8 +181,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'lastInstallMattraffic',
                     'value' => function ($model) {
-                        if (isset($model->lastInstallMattraffic->idMol->idbuild->build_name) && isset($model->lastInstallMattraffic->trOsnovs[0]->tr_osnov_kab)) {
-                            return $model->lastInstallMattraffic->idMol->idbuild->build_name . ', ' . $model->lastInstallMattraffic->trOsnovs[0]->tr_osnov_kab;
+                        if (isset($model->lastInstallMattraffic->idMol->idbuild->build_name) && isset($model->lastInstallMattraffic->trOsnovs[0]->idCabinet->cabinet_name)) {
+                            return $model->lastInstallMattraffic->idMol->idbuild->build_name . ', ' . $model->lastInstallMattraffic->trOsnovs[0]->idCabinet->cabinet_name;
                         }
 
                         return '';

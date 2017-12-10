@@ -48,9 +48,9 @@ echo DynaGrid::widget(Proc::DGopts([
                 'visible' => false,
             ],
             [
-                'attribute' => 'trOsnovs.tr_osnov_kab',
+                'attribute' => 'trOsnovs.idCabinet.cabinet_name',
                 'value' => function ($model) {
-                    return $model->trOsnovs[0]->tr_osnov_kab;
+                    return $model->trOsnovs[0]->idCabinet->cabinet_name;
                 },
             ],
             [

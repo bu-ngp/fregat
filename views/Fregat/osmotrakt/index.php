@@ -75,7 +75,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                     'visible' => false,
                     'label' => 'Должность материально-ответственного лица',
                 ],
-                'idTrosnov.tr_osnov_kab',
+                'idTrosnov.idCabinet.cabinet_name',
                 'idTrosnov.idMattraffic.idMol.idbuild.build_name',
                 'idReason.reason_text',
                 'osmotrakt_comment',

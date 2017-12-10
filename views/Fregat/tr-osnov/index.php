@@ -38,7 +38,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'idMattraffic.idMaterial.material_inv',
                 'idMattraffic.idMaterial.material_serial',
                 'idMattraffic.idMol.idbuild.build_name',
-                'tr_osnov_kab',
+                'idCabinet.cabinet_name',
                 [
                     'attribute' => 'idMattraffic.idMol.idperson.auth_user_fullname',
                     'label' => 'ФИО материально-ответственного лица',
