@@ -272,7 +272,7 @@ class MaterialSearch extends Material
             ]);
 
             $attr = 'tr_osnov_current_id_cabinet';
-            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
                 'SQLAttribute' => 'trOsnovs.id_cabinet',
                 'LikeManual' => true,
@@ -288,7 +288,7 @@ class MaterialSearch extends Material
             ]);
 
             $attr = 'tr_osnov_always_id_cabinet';
-            Proc::Filter_Compare(Proc::Text, $query, $filter, [
+            Proc::Filter_Compare(Proc::Strict, $query, $filter, [
                 'Attribute' => $attr,
                 'SQLAttribute' => 'trOsnovs.id_cabinet',
                 'LikeManual' => true,

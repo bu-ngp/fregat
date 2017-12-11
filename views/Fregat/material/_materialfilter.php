@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Grupa;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -138,11 +139,36 @@ use app\func\Proc;
                 <div class="form-group">
                     <?= \yii\bootstrap\Html::tag('label', 'Кабинет в котором уставновлена материальная ценность', ['class' => 'control-label']) ?>
                     <div class="row">
-                        <div class="col-xs-6">
-                            <?= $form->field($model, 'tr_osnov_current_cabinet')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase'])->label('- на текущий момент:') ?>
+                        <div class="col-xs-12">
+                            <?=
+                            $form->field($model, 'tr_osnov_current_id_cabinet')->widget(Select2::classname(), Proc::DGselect2([
+                                'model' => $model,
+                                'resultmodel' => new Cabinet,
+                                'fields' => [
+                                    'keyfield' => 'tr_osnov_current_id_cabinet',
+                                ],
+                                'placeholder' => 'Введите кабинет',
+                                'resultrequest' => 'Fregat/cabinet/selectinput',
+                                'thisroute' => $this->context->module->requestedRoute,
+                                'methodquery' => 'selectinput',
+                            ]))->label('- на текущий момент:');
+                            ?>
+
                         </div>
-                        <div class="col-xs-6">
-                            <?= $form->field($model, 'tr_osnov_always_cabinet')->textInput(['maxlength' => true, 'class' => 'form-control inputuppercase'])->label('- за все время:') ?>
+                        <div class="col-xs-12">
+                            <?=
+                            $form->field($model, 'tr_osnov_always_id_cabinet')->widget(Select2::classname(), Proc::DGselect2([
+                                'model' => $model,
+                                'resultmodel' => new Cabinet,
+                                'fields' => [
+                                    'keyfield' => 'tr_osnov_always_id_cabinet',
+                                ],
+                                'placeholder' => 'Введите кабинет',
+                                'resultrequest' => 'Fregat/cabinet/selectinput',
+                                'thisroute' => $this->context->module->requestedRoute,
+                                'methodquery' => 'selectinput',
+                            ]))->label('- за все время:');
+                            ?>
                         </div>
                     </div>
                 </div>
