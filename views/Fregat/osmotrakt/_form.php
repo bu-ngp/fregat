@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Fregat\Cabinet;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use kartik\dynagrid\DynaGrid;
@@ -73,7 +74,7 @@ use \yii\helpers\Url;
 
     <?= $form->field(Proc::RelatModelValue($model, 'idTrosnov.idMattraffic.idMol.idbuild', new Build), 'build_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
 
-    <?= $form->field(Proc::RelatModelValue($model, 'idTrosnov', new TrOsnov), 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
+    <?= $form->field(Proc::RelatModelValue($model, 'idTrosnov.idCabinet', new Cabinet), 'cabinet_name', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
 
     <?= $form->field(Proc::RelatModelValue($model, 'idTrosnov.idMattraffic.idMol.idperson', new Authuser), 'auth_user_fullname', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control', 'disabled' => true]) ?>
 
@@ -142,7 +143,24 @@ use \yii\helpers\Url;
                     ])->label('Количество для перемещения');
                     ?>
 
-                    <?= $form->field($InstallTrOsnov, 'tr_osnov_kab', ['enableClientValidation' => false])->textInput(['maxlength' => true, 'class' => 'form-control setsession inputuppercase']) ?>
+                    <?=
+                    $form->field($InstallTrOsnov, 'id_cabinet')->widget(Select2::classname(), Proc::DGselect2([
+                        'model' => $InstallTrOsnov,
+                        'resultmodel' => new Cabinet,
+                        'fields' => [
+                            'keyfield' => 'id_cabinet',
+                        ],
+                        'disabled' => $model->isNewRecord,
+                        'placeholder' => 'Введите кабинет',
+                        'fromgridroute' => 'Fregat/cabinet/forinstallakt',
+                        'resultrequest' => 'Fregat/cabinet/selectinput',
+                        'thisroute' => $this->context->module->requestedRoute,
+                        'methodquery' => 'selectinput',
+                        'methodparams' => [
+                            'id_mattraffic' => ['forInit' => $InstallTrOsnov->id_mattraffic, 'forJs' => '$("#installtrosnov-id_mattraffic").val()'],
+                        ],
+                    ]));
+                    ?>
 
                     <?php
                     echo Yii::$app->user->can('MolEdit') ? Html::button('<i class="glyphicon glyphicon-list"></i> Сменить материально-ответственное лицо', ['onclick' => 'RedirectToChangeMol()', 'class' => 'btn btn-success']) : '';

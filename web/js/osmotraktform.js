@@ -34,7 +34,7 @@ function ClearInstaledMat() {
 }
 
 function FillNewinstallakt() {
-    if ($("#trosnov-id_mattraffic").val() != "undefined") {
+    if ($("#installtrosnov-id_mattraffic").val() != "") {
         $.ajax({
             url: baseUrl + "Fregat/osmotrakt/fillnewinstallakt",
             type: "post",
@@ -42,6 +42,15 @@ function FillNewinstallakt() {
             success: function (data) {
                 if (data != "") {
                     var obj = JSON.parse(data);
+                    $("#installtrosnov-id_cabinet").prop("disabled", false);
+                    $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
+
+                    var href = $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href");
+                    href = href.match(/(&id_mattraffic=.*)/)
+                        ? href.replace(/(&id_mattraffic=.*)/, '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val())
+                        : href + '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val();
+                    $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href", href);
+
                     $("#material-material_id").val(obj.material_id);
                     $("#material-material_name.newinstallakt").val(obj.material_name);
                     $("#material-material_writeoff.newinstallakt").val(obj.material_writeoff);
@@ -59,6 +68,9 @@ function FillNewinstallakt() {
 }
 
 function ClearNewinstallakt() {
+    $("#installtrosnov-id_cabinet").val('').trigger('change');
+    $("#installtrosnov-id_cabinet").prop("disabled", true);
+    $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").addClass("disabled");
     $("#material-material_id").val('');
     $("#material-material_name.newinstallakt").val('');
     $("#material-material_writeoff.newinstallakt").val('');
