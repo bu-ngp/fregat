@@ -443,7 +443,7 @@ abstract class BaseReportPortal
 
         $this->Body();
 
-        return $this->DownloadExcelPHP($this->getReportName(), $ProtectReport); // Скачиваем сформированный отчет
+        return $this->DownloadExcelPHP($this->getReportName(), false /*$ProtectReport*/); // Скачиваем сформированный отчет
     }
 
 }

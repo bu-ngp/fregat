@@ -81,8 +81,8 @@ class Spisosnovmaterials extends \yii\db\ActiveRecord
         if ($this->idSpisosnovakt->id_schetuchet != $this->idMattraffic->idMaterial->id_schetuchet)
             $errorMes .= 'Материальная ценность не соответствует счету учета, заявки на списание: ' . $this->idSpisosnovakt->idSchetuchet->schetuchet_kod;
 
-        if ($this->idSpisosnovakt->id_mol != $this->idMattraffic->id_mol)
-            $errorMes .= (empty($errorMes) ? '' : '. ') . 'Материальная ценность не соответствует МОЛ\'у, заявки на списание: ' . $this->idSpisosnovakt->idMol->employeeName;
+        if ($this->idSpisosnovakt->idMol->id_person != $this->idMattraffic->idMol->id_person)
+            $errorMes .= (empty($errorMes) ? '' : '. ') . 'Материальная ценность не соответствует МОЛ\'у, заявки на списание: ' . $this->idSpisosnovakt->idMol->idperson->auth_user_fullname;
 
         if ($this->idMattraffic->idMaterial->material_tip == Material::V_KOMPLEKTE)
             $errorMes .= 'Тип материальной ценности не может быть "В комплекте"';

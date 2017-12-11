@@ -419,7 +419,7 @@ class Mattraffic extends \yii\db\ActiveRecord
                     'm2.mattraffic_date_m2' => NULL,
                     'idMaterial.material_writeoff' => 0,
                 ])
-                ->andWhere(['id_mol' => $Spisosnovakt->id_mol])
+                ->andWhere(['idMol.id_person' => $Spisosnovakt->idMol->id_person])
                 ->andWhere(['idMaterial.id_schetuchet' => $Spisosnovakt->id_schetuchet])
                 ->andWhere(isset($params['init']) ? [] : ['m2.mattraffic_date_m2' => NULL])
                 ->andWhere(['or', ['not', ['spisosnovmaterials.id_spisosnovakt' => $params['spisosnovakt_id']]], ['spisosnovmaterials.id_spisosnovakt' => NULL]])
