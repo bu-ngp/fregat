@@ -101,7 +101,7 @@ class SpravBuildCest
         $I->wait(2);
 
         $I->checkDynagridData(['102'], 'buildcabinetsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->countRowsDynagridEquals('nakladmaterialsgrid_gw', 1);
+        $I->countRowsDynagridEquals('buildcabinetsgrid_gw', 1);
 
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
