@@ -1477,6 +1477,17 @@ class FregatImport
                                                         self::$logreport_updates++;
                                                     }
 
+                                                    $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], ['and', [
+                                                        'id_person' => $Employee->id_person,
+                                                        'employee_dateinactive' => NULL,
+                                                    ], [
+                                                        'not', ['employee_id' => $Employee->primaryKey]
+                                                    ]]);
+
+                                                    if ($count) {
+                                                        $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
+                                                    }
+
                                                     $Employee->employee_forinactive = 1;
                                                     $Employee->save(false);
                                                 }
