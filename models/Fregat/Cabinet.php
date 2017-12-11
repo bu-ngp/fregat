@@ -32,6 +32,7 @@ class Cabinet extends \yii\db\ActiveRecord
         return [
             [['id_build'], 'integer'],
             [['cabinet_name'], 'string', 'max' => 255],
+            [['id_build', 'cabinet_name'], 'required'],
             [['id_build', 'cabinet_name'], 'unique', 'targetAttribute' => ['id_build', 'cabinet_name'], 'message' => 'В здании уже имеется этот кабинет.'],
             [['id_build'], 'exist', 'skipOnError' => true, 'targetClass' => Build::className(), 'targetAttribute' => ['id_build' => 'build_id']],
         ];

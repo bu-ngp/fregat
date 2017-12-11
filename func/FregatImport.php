@@ -1400,7 +1400,7 @@ class FregatImport
                                                     $Employee->id_person = $Authuser->getPrimaryKey();
                                                     if ($Employee->validate()) {
 
-                                                        if ($Employee->isNewRecord) {
+                                                   /*     if ($Employee->isNewRecord) {
                                                             $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], [
                                                                 'id_person' => $Employee->id_person,
                                                                 'employee_dateinactive' => NULL,
@@ -1409,7 +1409,7 @@ class FregatImport
                                                             if ($count) {
                                                                 $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
                                                             }
-                                                        }
+                                                        }*/
 
                                                         $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                         $Employee->save(false);
@@ -1476,7 +1476,7 @@ class FregatImport
                                                         $Employee->employee_dateinactive = null;
                                                         self::$logreport_updates++;
                                                     }
-
+/*
                                                     $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], ['and', [
                                                         'id_person' => $Employee->id_person,
                                                         'employee_dateinactive' => NULL,
@@ -1487,7 +1487,7 @@ class FregatImport
                                                     if ($count) {
                                                         $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
                                                     }
-
+*/
                                                     $Employee->employee_forinactive = 1;
                                                     $Employee->save(false);
                                                 }

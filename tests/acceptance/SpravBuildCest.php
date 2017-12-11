@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Url;
 
 /**
@@ -6,14 +7,6 @@ use yii\helpers\Url;
  */
 class SpravBuildCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -69,12 +62,53 @@ class SpravBuildCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'buildgrid_gw']);
-        $I->see('ПОЛИКЛИНИКА 1');
+        $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
+        $I->seeElement(['id' => 'buildcabinetsgrid_gw']);
+        $I->countRowsDynagridEquals('buildcabinetsgrid_gw', 0);
     }
 
     /**
      * @depends saveCreateBuild
+     */
+    public function createCabinet(AcceptanceTester $I)
+    {
+        $I->click('//a[contains(text(),"Добавить кабинет")]');
+        $I->wait(2);
+
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(1);
+        $I->see('Необходимо заполнить «Кабинет».');
+
+        $I->fillField('Cabinet[cabinet_name]', '101');
+        $I->click('//button[contains(text(),"Добавить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData(['101'], 'buildcabinetsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('buildcabinetsgrid_gw', 1);
+    }
+
+    /**
+     * @depends createCabinet
+     */
+    public function updateCabinet(AcceptanceTester $I)
+    {
+        $I->clickButtonDynagrid('buildcabinetsgrid_gw', 'a[@title="Обновить"]', ['101']);
+        $I->wait(2);
+
+        $I->fillField('Cabinet[cabinet_name]', '102');
+
+        $I->click('//button[contains(text(),"Обновить")]');
+        $I->wait(2);
+
+        $I->checkDynagridData(['102'], 'buildcabinetsgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('nakladmaterialsgrid_gw', 1);
+
+        $I->click('//button[contains(text(),"Обновить")]');
+        $I->wait(2);
+    }
+
+    /**
+     * @depends updateCabinet
      */
     public function checkUniqueBuild(AcceptanceTester $I)
     {
@@ -96,14 +130,14 @@ class SpravBuildCest
      */
     public function openUpdateBuild(AcceptanceTester $I)
     {
-        $I->click('//td[text()="ПОЛИКЛИНИКА 1"]/preceding-sibling::td/a[@title="Обновить"]');
-        $I->wait(2);
+        $I->clickButtonDynagrid('buildgrid_gw', 'a[@title="Обновить"]', ['ПОЛИКЛИНИКА 1']);
+
         $I->fillField('Build[build_name]', 'Взрослая поликлиника 1');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'buildgrid_gw']);
-        $I->see('ВЗРОСЛАЯ ПОЛИКЛИНИКА 1');
+        $I->checkDynagridData(['ВЗРОСЛАЯ ПОЛИКЛИНИКА 1'], 'buildgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->countRowsDynagridEquals('buildgrid_gw', 1);
     }
 
     /**
@@ -111,12 +145,11 @@ class SpravBuildCest
      */
     public function deleteBuild(AcceptanceTester $I)
     {
-        $I->click('//td[text()="ВЗРОСЛАЯ ПОЛИКЛИНИКА 1"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->clickButtonDynagrid('buildgrid_gw', 'button[@title="Удалить"]', ['ВЗРОСЛАЯ ПОЛИКЛИНИКА 1']);
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->dontSee('ВЗРОСЛАЯ ПОЛИКЛИНИКА 1');
-        $I->see('Ничего не найдено');
+        $I->countRowsDynagridEquals('buildgrid_gw', 0);
     }
 }
