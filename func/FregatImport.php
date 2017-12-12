@@ -1458,13 +1458,6 @@ class FregatImport
                                                     if (isset($Employee->scenarios()['import1c']))
                                                         $Employee->scenario = 'import1c';
 
-                                                    $inactivePerson = Employee::find()
-                                                        ->andWhere([
-                                                            'id_person' => $Employee->id_person,
-                                                            'employee_dateinactive' => NULL,
-                                                        ])
-                                                        ->count();
-
                                                     $Employeelog = new Employeelog;
                                                     $Employeelog->id_logreport = self::$logreport_id;
                                                     $Employeelog->employeelog_type = 2;
@@ -1477,14 +1470,7 @@ class FregatImport
                                                     if (!empty($Employee->id_build))
                                                         $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
 
-                                                    if (empty($inactivePerson)) {
-                                                        $Employee = Employee::find(['id_person' => $Employee->id_person])
-                                                            ->andWhere([
-                                                                'id_person' => $Employee->id_person,
-                                                            ])
-                                                            ->orderBy(['employee_id' => SORT_DESC])
-                                                            ->one();
-
+                                                    if (!empty($Employee->employee_dateinactive)) {
                                                         $Employeelog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($Employee->employee_dateinactive) . '".';
                                                         $Employeelog->save(false);
 
