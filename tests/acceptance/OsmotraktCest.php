@@ -1,6 +1,8 @@
 <?php
+
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -21,14 +23,6 @@ use yii\helpers\Url;
  */
 class OsmotraktCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -46,8 +40,7 @@ class OsmotraktCest
     {
         $I->click('//div[contains(text(), "Журнал осмотров материальных ценностей")]');
         $I->wait(2);
-        $I->seeElement(['id' => 'osmotraktgrid_gw']);
-        $I->see('Ничего не найдено');
+        $I->countRowsDynagridEquals('osmotraktgrid_gw', 0);
     }
 
     /**
@@ -118,6 +111,7 @@ class OsmotraktCest
         $I->seeInField('InstallTrOsnov[mattraffic_number]', '1.000');
 
         $I->fillField('InstallTrOsnov[id_cabinet]', '102');
+        //   $I->chooseValueFromSelect2('InstallTrOsnov[id_cabinet]','','102');
         $I->chooseValueFromSelect2('Osmotrakt[id_user]', 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', 'фед');
         $I->chooseValueFromSelect2('Osmotrakt[id_master]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'пет');
         $I->chooseValueFromSelect2('Osmotrakt[id_reason]', 'СЛОМАНА ПОЛКА', 'пол');
@@ -360,21 +354,22 @@ class OsmotraktCest
      */
     public function destroyData()
     {
-        Organ::deleteAll();
-        Osmotrakt::deleteAll();
-        Reason::deleteAll();
-        TrOsnov::deleteAll();
-        Installakt::deleteAll();
-        Mattraffic::deleteAll();
-        Material::deleteAll();
-        Employee::deleteAll();
-        Matvid::deleteAll();
-        Izmer::deleteAll();
-        Schetuchet::deleteAll();
-        Authuser::deleteAll('auth_user_id <> 1');
-        Build::deleteAll();
-        Dolzh::deleteAll();
-        Podraz::deleteAll();
+//        Organ::deleteAll();
+//        Osmotrakt::deleteAll();
+//        Reason::deleteAll();
+//        TrOsnov::deleteAll();
+//        Installakt::deleteAll();
+//        Mattraffic::deleteAll();
+//        Material::deleteAll();
+//        Employee::deleteAll();
+//        Matvid::deleteAll();
+//        Izmer::deleteAll();
+//        Schetuchet::deleteAll();
+//        Authuser::deleteAll('auth_user_id <> 1');
+//        Cabinet::deleteAll();
+//        Build::deleteAll();
+//        Dolzh::deleteAll();
+//        Podraz::deleteAll();
     }
 
 }

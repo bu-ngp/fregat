@@ -55,7 +55,7 @@ class TrOsnov extends \yii\db\ActiveRecord
     {
         if ($this->isNewRecord) {
             $trOsnov = self::find()
-                ->select(['tr_osnov_id', 'id_cabinet', 'idMol.id_build', 'idInstallakt.installakt_date'])
+                ->select(['tr_osnov_id', 'id_installakt', 'id_cabinet', 'idMol.id_build', 'idInstallakt.installakt_date'])
                 ->joinWith(['idMattraffic.idMol', 'idInstallakt'])
                 ->andWhere(['idMattraffic.id_material' => $this->idMattraffic->id_material])
                 ->orderBy(['idMattraffic.mattraffic_date' => SORT_DESC, 'idMattraffic.mattraffic_id' => SORT_DESC])
@@ -64,7 +64,7 @@ class TrOsnov extends \yii\db\ActiveRecord
                 ->one();
 
             if ($trOsnov && $trOsnov['id_cabinet'] == $this->id_cabinet && $trOsnov['id_build'] == $this->idMattraffic->idMol->id_build) {
-                $this->addError($attribute, 'Данная материальная ценность "' . $this->idMattraffic->idMaterial->material_name . '" уже установлена в кабинет "' . $this->idCabinet->cabinet_name . '" в акте установки №' . $trOsnov['tr_osnov_id'] . ' от ' . Yii::$app->formatter->asDate($trOsnov['installakt_date']) . '.');
+                $this->addError($attribute, 'Данная материальная ценность "' . $this->idMattraffic->idMaterial->material_name . '" уже установлена в кабинет "' . $this->idCabinet->cabinet_name . '" в акте установки №' . $trOsnov['id_installakt'] . ' от ' . Yii::$app->formatter->asDate($trOsnov['installakt_date']) . '.');
             }
         }
     }

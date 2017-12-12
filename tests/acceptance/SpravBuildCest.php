@@ -1,5 +1,7 @@
 <?php
 
+use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use yii\helpers\Url;
 
 /**
@@ -151,5 +153,11 @@ class SpravBuildCest
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
         $I->countRowsDynagridEquals('buildgrid_gw', 0);
+    }
+
+    public function destroyData()
+    {
+        Cabinet::deleteAll();
+        Build::deleteAll();
     }
 }

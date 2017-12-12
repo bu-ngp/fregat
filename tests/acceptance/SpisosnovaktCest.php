@@ -1,6 +1,8 @@
 <?php
+
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -20,14 +22,6 @@ use yii\helpers\Url;
  */
 class SpisosnovaktCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -81,7 +75,7 @@ class SpisosnovaktCest
         $I->seeInField('Spisosnovakt[spisosnovakt_id]', '1');
         $I->seeElement('//input[@name="Spisosnovakt[spisosnovakt_id]" and @disabled]');
 
-        $I->seeInDatecontrol('Spisosnovakt[spisosnovakt_date]',date('d.m.Y'));
+        $I->seeInDatecontrol('Spisosnovakt[spisosnovakt_date]', date('d.m.Y'));
         $I->seeInSelect2('Spisosnovakt[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', true);
         $I->seeInSelect2('Spisosnovakt[id_mol]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', true);
         $I->seeInSelect2('Spisosnovakt[id_employee]', 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ');
@@ -100,7 +94,7 @@ class SpisosnovaktCest
         $I->chooseValueFromGrid('Spisosnovmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->click('//button[contains(text(),"Создать")]');
         $I->wait(1);
-        $I->see('Материальная ценность не соответствует МОЛ\'у, заявки на списание: ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
+        $I->see('Материальная ценность не соответствует МОЛ\'у, заявки на списание: ПЕТРОВ ПЕТР ПЕТРОВИЧ');
 
         $I->chooseValueFromSelect2('Spisosnovmaterials[id_mattraffic]', '1000001, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '001');
         $I->click('//button[contains(text(),"Создать")]');
@@ -263,6 +257,7 @@ class SpisosnovaktCest
         Izmer::deleteAll();
         Schetuchet::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
+        Cabinet::deleteAll();
         Build::deleteAll();
         Dolzh::deleteAll();
         Podraz::deleteAll();

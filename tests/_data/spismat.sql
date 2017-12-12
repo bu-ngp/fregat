@@ -3,6 +3,7 @@ INSERT INTO `podraz` VALUES (40,'ТЕРАПЕВТИЧЕСКОЕ'),(41,'АУП');
 INSERT INTO `schetuchet` VALUES (1,'101.34','НОВЫЙ СЧЕТ');
 INSERT INTO `izmer` VALUES (1,'шт', '796');
 INSERT INTO `build` VALUES (8,'ПОЛИКЛИНИКА 1'),(9,'ПОЛИКЛИНИКА 2');
+INSERT INTO `cabinet` VALUES (1,8,'101'),(2,8,'102'),(3,8,'103');
 INSERT INTO `dolzh` VALUES (165,'ТЕРАПЕВТ'),(166,'ПРОГРАММИСТ'),(167,'НЕВРОЛОГ');
 INSERT INTO `auth_user` VALUES (1196,'ИВАНОВ ИВАН ИВАНОВИЧ','IvanovII','$2y$13$H.bwEoPlfWDVZUCSn0vOju8Ejp0lgw78UG7KvgOoKfZki3m/GLM5S','test'),(1197,'ПЕТРОВ ПЕТР ПЕТРОВИЧ','PetrovPP','$2y$13$7Tzlr290.eomuM7XeG8utuzDSsiFnGAbhWXJ.WFiW07yrR23Lw6uK','test'),(1198,'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ','FedotovFF','$2y$13$wj1bw.JqvF45QxsMYtHSbu3QaRWMlOuzL1P.WMw/uBkeHxCYULwTa','test'),(1199,'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ','SidorovEA','$2y$13$XN0D.IjamZeTLdCGMqSkvegKi.Fhz1oQkMXATsYKEo8BnNElBScxW','test');
 INSERT INTO `employee` VALUES (1175,165,40,8,1196,'admin','2016-11-17 13:33:17',NULL,NULL,1),(1176,166,41,8,1197,'admin','2016-11-22 08:37:08',NULL,NULL,1),(1177,165,40,8,1198,'admin','2017-04-27 10:00:23',NULL,NULL,1),(1178,167,40,9,1199,'admin','2016-11-22 13:31:59',NULL,NULL,1);
@@ -10,5 +11,6 @@ INSERT INTO `material` VALUES (34,'Шкаф для одежды','Шкаф дл�
 INSERT INTO `mattraffic` VALUES (1,'2016-11-22',1.000,34,1176,'admin','2016-11-22 08:57:48',1,NULL),(2,'2016-11-22',1.000,35,1176,'admin','2016-11-22 08:59:45',1,NULL),(3,'2016-11-22',1.000,36,1176,'admin','2016-11-22 09:27:38',1,NULL),(4,'2016-11-22',5.000,37,1176,'admin','2016-11-22 13:32:36',1,NULL),(5,'2016-11-22',4.000,38,1176,'admin','2016-11-22 13:32:25',1,NULL),(6,NOW(),2.000,39,1176,'admin','2017-04-27 09:58:02',1,NULL),(7,NOW(),1.000,34,1176,'admin','2017-04-27 09:59:06',3,NULL),(9,NOW(),1.000,36,1176,'admin','2017-04-27 10:01:05',3,NULL),(10,NOW(),1.000,35,1176,'admin','2017-04-27 10:01:28',3,NULL),(11,NOW(),1.000,39,1176,'admin','2017-04-27 10:03:41',4,NULL),(12,NOW(),1.000,39,1176,'admin','2017-04-27 10:04:11',4,NULL),(13,NOW(),2.000,37,1176,'admin','2017-04-27 10:05:20',4,NULL),(14,NOW(),1.000,37,1176,'admin','2017-04-27 10:05:54',4,NULL),(15,NOW(),2.000,38,1176,'admin','2017-04-27 10:06:31',4,NULL);
 ALTER TABLE `installakt` AUTO_INCREMENT = 1;
 INSERT INTO `installakt` VALUES (1,NOW(),1176),(2,NOW(),1176),(3,NOW(),1177),(4,NOW(),1178),(5,NOW(),1177);
-INSERT INTO `tr_osnov` VALUES (1,'101',1,7),(2,'102',1,9),(3,'103',1,10);
+INSERT INTO `tr_osnov` VALUES (1,1,7,1),(2,1,9,2),(3,1,10,3);
 INSERT INTO `tr_mat` VALUES (1,2,11,9),(2,2,12,7),(3,3,13,9),(4,4,14,7),(5,5,15,10);
+ALTER TABLE `spismat` AUTO_INCREMENT = 1;

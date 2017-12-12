@@ -1,6 +1,8 @@
 <?php
+
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -19,14 +21,6 @@ use yii\helpers\Url;
  */
 class InstallaktCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -44,8 +38,7 @@ class InstallaktCest
     {
         $I->click('//div[contains(text(), "Журнал установки материальных ценностей")]');
         $I->wait(2);
-        $I->seeElement(['id' => 'installaktgrid_gw']);
-        $I->see('Ничего не найдено');
+        $I->countRowsDynagridEquals('installaktgrid_gw', 0);
     }
 
     /**
@@ -76,13 +69,11 @@ class InstallaktCest
         $I->click('//button[@form="Installaktform"]');
         $I->wait(2);
 
-        $I->seeElement('//select[@name="Installakt[id_installer]"]/following-sibling::span/span/span/span[@title="ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1"]');
+        $I->seeInSelect2('Installakt[id_installer]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
         $I->seeInDatecontrol('Installakt[installakt_date]', date('d.m.Y'));
         $I->seeElement(['class' => 'installakt-form']);
-        $I->seeElement(['id' => 'trOsnovgrid_gw']);
-        $I->seeElement('//div[@id="trOsnovgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
-        $I->seeElement(['id' => 'trMatgrid_gw']);
-        $I->seeElement('//div[@id="trMatgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
+        $I->countRowsDynagridEquals('trOsnovgrid_gw', 0);
+        $I->countRowsDynagridEquals('trMatgrid_gw', 0);
     }
 
     /**
@@ -92,12 +83,12 @@ class InstallaktCest
     {
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
+        $I->seeInSelect2('TrOsnov[id_cabinet]', '', true);
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Необходимо заполнить «Инвентарный номер».');
         $I->see('Необходимо заполнить «Количество (Задействованное в операции)».');
-        $I->see('Необходимо заполнить «Кабинет».');
 
         $I->seeInField('Material[material_name]', '');
         $I->executeJS('window.scrollTo(0,0);');
@@ -114,7 +105,7 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", '');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('Cabinet[cabinet_name]', '101');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 101', '101');
         $I->fillField('Mattraffic[mattraffic_number]', '2.000');
 
         $I->click('//button[contains(text(),"Добавить")]');
@@ -128,7 +119,7 @@ class InstallaktCest
         $I->see('У материально ответственного лица "ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ" не заполнено "Здание", в которое устанавливается материальная ценность');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '1000001');
         $I->wait(2);
-        $I->seeElementInDOM('//div[text()=\'В кабинете "101" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "ШКАФ" в количестве: 0\']');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 101" уже имеется вид материальной ценности "ШКАФ" в количестве: 0\']');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -143,15 +134,11 @@ class InstallaktCest
      */
     public function createTrosnovGrids(AcceptanceTester $I)
     {
-        $I->executeJS('window.scrollTo(0,0);');
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
-        $I->executeJS('window.scrollTo(0,0);');
 
         $I->seeInField('Material[material_name]', '');
-
         $I->chooseValueFromGrid('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]');
-
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Кухонный стол');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
@@ -163,10 +150,10 @@ class InstallaktCest
         $I->seeInField("Build[build_name]", 'ПОЛИКЛИНИКА 1');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
-        $I->fillField('Cabinet[cabinet_name]', '102');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
         $I->wait(2);
-        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 102" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
@@ -186,9 +173,9 @@ class InstallaktCest
         $I->wait(2);
 
         $I->seeInSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство"]');
+        $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField('Material[material_name]', 'Кухонный стол');
-        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
         $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 102');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
@@ -199,16 +186,13 @@ class InstallaktCest
         $I->seeInField('Mattraffic[mattraffic_number]', '1.000');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
 
-        $I->seeInField('Cabinet[cabinet_name]', '102');
-
-        $I->executeJS('window.scrollTo(0,0);');
-
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
 
         $I->wait(2);
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
+        $I->seeOptionIsSelected("Material[material_tip]", 'Материал');
         $I->seeInField('Material[material_name]', 'Картридж А12');
-        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
         $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
@@ -217,11 +201,11 @@ class InstallaktCest
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
-        $I->fillField('Cabinet[cabinet_name]', '103');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 103', '103');
         $I->fillField('Mattraffic[mattraffic_number]', '6.000');
 
         $I->wait(2);
-        $I->seeElementInDOM('//div[text()=\'В кабинете "103" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 0\']');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 103" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(1);
@@ -240,9 +224,9 @@ class InstallaktCest
         $I->wait(2);
 
         $I->seeInSelect2('TrOsnov[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал"]');
+        $I->seeOptionIsSelected("Material[material_tip]", 'Материал');
         $I->seeInField('Material[material_name]', 'Картридж А12');
-        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
         $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 103');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'ИВАНОВ ИВАН ИВАНОВИЧ');
@@ -253,17 +237,15 @@ class InstallaktCest
         $I->seeInField('Mattraffic[mattraffic_number]', '4.000');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 5"]');
 
-        $I->seeInField('Cabinet[cabinet_name]', '103');
-        $I->seeElementInDOM('//div[text()=\'В кабинете "103" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 4.000\']');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 103', '103');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 103" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 4.000\']');
 
-        $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '002');
-
-        $I->fillField('Cabinet[cabinet_name]', '102');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
 
         $I->wait(2);
-        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 1" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 102" уже имеется вид материальной ценности "СТОЛ" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
@@ -311,7 +293,6 @@ class InstallaktCest
         $I->seeElement(['class' => 'installakt-form']);
         $I->seeElement(['id' => 'trMatgrid_gw']);
 
-        // $I->executeJS('window.scrollTo(0,200);');
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
     }
 
@@ -334,8 +315,6 @@ class InstallaktCest
         $I->wait(2);
 
         $I->seeElement(['class' => 'installakt-form']);
-        $I->seeElement(['id' => 'trMatgrid_gw']);
-
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '3.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
     }
@@ -446,9 +425,9 @@ class InstallaktCest
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '99000001, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', '9900');
 
         $I->wait(2);
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="В комплекте"]');
+        $I->seeOptionIsSelected("Material[material_tip]", 'В комплекте');
         $I->seeInField('Material[material_name]', 'Тарелка');
-        $I->seeElementInDOM('//select[@name="Material[material_writeoff]"]/option[text()="Нет"]');
+        $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
         $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
         $I->seeInField('Authuser[auth_user_fullname]', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ');
@@ -457,11 +436,11 @@ class InstallaktCest
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 2');
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
 
-        $I->fillField('Cabinet[cabinet_name]', '102');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 2, каб. 102', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
 
         $I->wait(2);
-        $I->seeElementInDOM('//div[text()=\'В кабинете "102" здания "ПОЛИКЛИНИКА 2" уже имеется вид материальной ценности "ТАРЕЛКА" в количестве: 0\']');
+        $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 2, каб. 102" уже имеется вид материальной ценности "ТАРЕЛКА" в количестве: 0\']');
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
@@ -630,18 +609,15 @@ class InstallaktCest
         $I->click('//button[@form="Installaktform"]');
         $I->wait(2);
 
-        $I->seeElement('//select[@name="Installakt[id_installer]"]/following-sibling::span/span/span/span[@title="ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1"]');
+        $I->seeInSelect2('Installakt[id_installer]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1');
         $I->seeInDatecontrol('Installakt[installakt_date]', date('d.m.Y'));
         $I->seeElement(['class' => 'installakt-form']);
-        $I->seeElement(['id' => 'trOsnovgrid_gw']);
-        $I->seeElement('//div[@id="trOsnovgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
-        $I->seeElement(['id' => 'trMatgrid_gw']);
-        $I->seeElement('//div[@id="trMatgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
+        $I->countRowsDynagridEquals('trOsnovgrid_gw', 0);
+        $I->countRowsDynagridEquals('trMatgrid_gw', 0);
 
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
 
-        $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', '003');
         $I->wait(2);
         $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
@@ -649,12 +625,12 @@ class InstallaktCest
         $I->wait(2);
         $I->seeInField("Material[material_install_cabinet]", 'ПОЛИКЛИНИКА 1, каб. 101');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
-        $I->fillField('Cabinet[cabinet_name]', '101');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 101', '101');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
 
         $I->see('Данная материальная ценность "Шкаф для одежды" уже установлена в кабинет "101" в акте установки №1 от ' . date('d.m.Y') . '.');
-        $I->fillField('Cabinet[cabinet_name]', '102');
+        $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
 
@@ -670,8 +646,7 @@ class InstallaktCest
         $I->wait(2);
 
         $I->countRowsDynagridEquals('installaktgrid_gw', 1);
-
-        $I->click('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ПЕТРОВ ПЕТР ПЕТРОВИЧ"]/preceding-sibling::td/a[@title="Обновить"]');
+        $I->clickButtonDynagrid('installaktgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
         $I->wait(2);
     }
 
@@ -699,7 +674,6 @@ class InstallaktCest
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
         $I->dontSeeDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', '1.000', 'ПОЛИКЛИНИКА 1', '102', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'trOsnovgrid_gw');
-
     }
 
     /**
@@ -709,15 +683,14 @@ class InstallaktCest
     {
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
-        $I->click('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ПЕТРОВ ПЕТР ПЕТРОВИЧ"]/preceding-sibling::td/a[@title="Обновить"]');
+        $I->clickButtonDynagrid('installaktgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
         $I->wait(2);
 
         $I->chooseValueFromSelect2('Installakt[id_installer]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'installaktgrid_gw']);
-        $I->seeElement('//div[@id="installaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->checkDynagridData(['1', date('d.m.Y'), 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'installaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
     }
 
     /**
@@ -748,6 +721,7 @@ class InstallaktCest
         Izmer::deleteAll();
         Schetuchet::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
+        Cabinet::deleteAll();
         Build::deleteAll();
         Dolzh::deleteAll();
         Podraz::deleteAll();

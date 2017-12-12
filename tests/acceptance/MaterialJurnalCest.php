@@ -16,14 +16,6 @@ use yii\helpers\Url;
  */
 class MaterialJurnalCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -73,16 +65,15 @@ class MaterialJurnalCest
         $I->click('//button[contains(text(), "Создать")]');
         $I->wait(1);
 
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Групповой учет"]');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Основное средство (Р)"]');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="Материал (Р)"]');
-        $I->seeElementInDOM('//select[@name="Material[material_tip]"]/option[text()="В комплекте"]');
+        $I->seeSelect2Options('Material[material_tip]','Основное средство (Р)',[
+            "Групповой учет",
+            "Основное средство (Р)",
+            "Материал (Р)",
+            "В комплекте",
+        ]);
 
         $I->see('Необходимо заполнить «Наименование».');
         $I->see('Необходимо заполнить «Материально-ответственное лицо».');
-
-        $I->checkDatePicker('Material[material_release]');
-        $I->checkDatePicker('Mattraffic[mattraffic_date]');
     }
 
     /**
@@ -90,7 +81,6 @@ class MaterialJurnalCest
      */
     public function addCreateMaterialFromSelect2(AcceptanceTester $I)
     {
-        $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('Material[id_matvid]', 'ШКАФ', 'шка');
         $I->fillField('Material[material_name]', 'Шкаф для одежды');
         $I->fillField('Material[material_inv]', '1000001');
@@ -99,7 +89,6 @@ class MaterialJurnalCest
         $I->fillField('Material[material_price]', '1200.15');
         $I->fillField('Material[material_serial]', 'ABCD123');
         $I->fillDatecontrol('Material[material_release]', '01.01.2005');
-        $I->executeJS('window.scrollTo(0,200);');
         $I->chooseValueFromSelect2('Material[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', '101');
         $I->chooseValueFromSelect2('Mattraffic[id_mol]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
 
@@ -135,7 +124,7 @@ class MaterialJurnalCest
         $I->fillField('Material[material_number]', '5.000');
         $I->chooseValueFromGrid('Material[id_izmer]', 'шт', 'izmergrid_gw');
         $I->fillField('Material[material_price]', '15000');
-        //  $I->executeJS('window.scrollTo(0,200);');
+
         $I->chooseValueFromGrid('Material[id_schetuchet]', '101.34, НОВЫЙ СЧЕТ', 'schetuchetgrid_gw', '//td[text()="НОВЫЙ СЧЕТ"]'
             . '/preceding-sibling::td[text()="101.34"]'
             . '/preceding-sibling::td/button[@title="Выбрать"]');

@@ -57,7 +57,9 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function checkDatePicker($nameDatePicker)
     {
+        $this->wait(1);
         $this->click('//input[@name="' . $nameDatePicker . '"]/../div/input');
+        $this->wait(1);
         $this->seeElement('//div[contains(@class, "datepicker")]');
         $this->seeElement('//th[contains(text(), "Вс")]');
         $this->seeElement(['class' => 'kv-date-remove']);

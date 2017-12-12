@@ -1,6 +1,8 @@
 <?php
+
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -22,14 +24,6 @@ use yii\helpers\Url;
  */
 class RemoveaktCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -47,8 +41,7 @@ class RemoveaktCest
     {
         $I->click('//div[contains(text(), "Журнал снятия комплектующих с материальных ценностей")]');
         $I->wait(2);
-        $I->seeElement(['id' => 'removeaktgrid_gw']);
-        $I->see('Ничего не найдено');
+        $I->countRowsDynagridEquals('removeaktgrid_gw', 0);
     }
 
     /**
@@ -79,11 +72,10 @@ class RemoveaktCest
         $I->click('//button[@form="Removeaktform"]');
         $I->wait(2);
 
-        $I->seeElement('//select[@name="Removeakt[id_remover]"]/following-sibling::span/span/span/span[@title="ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1"]');
-        $I->seeInDatecontrol('Removeakt[removeakt_date]',date('d.m.Y'));
+        $I->seeInSelect2('Removeakt[id_remover]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
+        $I->seeInDatecontrol('Removeakt[removeakt_date]', date('d.m.Y'));
         $I->seeElement(['class' => 'removeakt-form']);
-        $I->seeElement(['id' => 'trRmMatgrid_gw']);
-        $I->seeElement('//div[@id="trRmMatgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
+        $I->countRowsDynagridEquals('trRmMatgrid_gw', 0);
     }
 
     /**
@@ -233,15 +225,13 @@ class RemoveaktCest
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
 
-        $I->seeElement(['id' => 'removeaktgrid_gw']);
-
         $I->checkDynagridData(['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ'], 'removeaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
 
-        $I->click('//div[@id="removeaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ПЕТРОВ ПЕТР ПЕТРОВИЧ"]/preceding-sibling::td/a[@title="Обновить"]');
+        $I->clickButtonDynagrid('removeaktgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
         $I->wait(2);
 
         $I->chooseValueFromSelect2('Removeakt[id_remover]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
-        $I->click('//button[@form="Removeaktform"]');
+        //     $I->click('//button[@form="Removeaktform"]');
         $I->wait(2);
 
         $I->checkDynagridData(['1', date('d.m.Y'), 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'removeaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
@@ -252,12 +242,13 @@ class RemoveaktCest
      */
     public function deleteRemoveakt(AcceptanceTester $I)
     {
-        $I->click('//div[@id="removeaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ИВАНОВ ИВАН ИВАНОВИЧ"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->clickButtonDynagrid('removeaktgrid_gw', 'button[@title="Удалить"]', ['1', date('d.m.Y'), 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ']);
+
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
-        $I->see('Ничего не найдено');
+        $I->countRowsDynagridEquals('removeaktgrid_gw', 0);
     }
 
     /**
@@ -277,6 +268,7 @@ class RemoveaktCest
         Izmer::deleteAll();
         Schetuchet::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
+        Cabinet::deleteAll();
         Build::deleteAll();
         Dolzh::deleteAll();
         Podraz::deleteAll();

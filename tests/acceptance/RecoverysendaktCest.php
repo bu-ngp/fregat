@@ -1,6 +1,7 @@
 <?php
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -521,6 +522,7 @@ class RecoverysendaktCest
         Izmer::deleteAll();
         Schetuchet::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
+        Cabinet::deleteAll();
         Build::deleteAll();
         Dolzh::deleteAll();
         Podraz::deleteAll();

@@ -1,6 +1,7 @@
 <?php
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\Dolzh;
 use app\models\Fregat\Employee;
 use app\models\Fregat\Installakt;
@@ -24,14 +25,6 @@ use yii\helpers\Url;
  */
 class OsmotraktmatCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -207,6 +200,7 @@ class OsmotraktmatCest
         Izmer::deleteAll();
         Schetuchet::deleteAll();
         Authuser::deleteAll('auth_user_id <> 1');
+        Cabinet::deleteAll();
         Build::deleteAll();
         Dolzh::deleteAll();
         Podraz::deleteAll();
