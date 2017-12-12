@@ -21,11 +21,17 @@ use yii\helpers\Url;
     ?>
     <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
         <div
-            class="panel-heading"><?= Html::encode('Настройка отправки электронного письма при отправке в организацию (из справочника организаций)') ?></div>
+                class="panel-heading"><?= Html::encode('Настройка отправки электронного письма при отправке в организацию (из справочника организаций)') ?></div>
         <div class="panel-body">
             <?= $form->field($model, 'fregatsettings_recoverysend_emailtheme')->textInput(['maxlength' => true, 'class' => 'form-control setsession', 'autofocus' => true]) ?>
 
             <?= $form->field($model, 'fregatsettings_recoverysend_emailfrom')->textInput(['maxlength' => true, 'class' => 'form-control setsession']) ?>
+        </div>
+    </div>
+    <div class="panel panel-<?= Yii::$app->params['panelStyle'] ?>">
+        <div class="panel-heading"><?= Html::encode('Настройка справочников') ?></div>
+        <div class="panel-body">
+            <?= $form->field($model, 'fregatsettings_employee_inactive_hidden')->checkbox() ?>
         </div>
     </div>
     <div class="form-group">

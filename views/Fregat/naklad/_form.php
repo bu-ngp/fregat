@@ -62,7 +62,7 @@ use yii\widgets\ActiveForm;
         'fromgridroute' => 'Fregat/employee/index',
         'resultrequest' => 'Fregat/employee/selectinputemloyee',
         'thisroute' => $this->context->module->requestedRoute,
-        'methodquery' => 'selectinput',
+        'methodquery' => 'selectinputactive',
     ]));
     ?>
 

@@ -66,7 +66,7 @@ use yii\bootstrap\ActiveForm;
         'fromgridroute' => 'Fregat/employee/index',
         'resultrequest' => 'Fregat/employee/selectinputemloyee',
         'thisroute' => $this->context->module->requestedRoute,
-        'methodquery' => 'selectinput',
+        'methodquery' => 'selectinputactive',
         'disabled' => !$model->isNewRecord,
     ]));
     ?>
@@ -83,7 +83,7 @@ use yii\bootstrap\ActiveForm;
         'fromgridroute' => 'Fregat/employee/index',
         'resultrequest' => 'Fregat/employee/selectinputemloyee',
         'thisroute' => $this->context->module->requestedRoute,
-        'methodquery' => 'selectinput',
+        'methodquery' => 'selectinputactive',
     ]));
     ?>
 

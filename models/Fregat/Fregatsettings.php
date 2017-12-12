@@ -14,6 +14,7 @@ use Yii;
  * @property string $fregatsettings_uchrezh_namesokr
  * @property string $fregatsettings_uchrezh_name
  * @property string $fregatsettings_glavbuh_name
+ * @property integer $fregatsettings_employee_inactive_hidden
  */
 class Fregatsettings extends \yii\db\ActiveRecord
 {
@@ -40,6 +41,7 @@ class Fregatsettings extends \yii\db\ActiveRecord
             ], 'required'],
             [['fregatsettings_recoverysend_emailtheme', 'fregatsettings_glavvrach_name', 'fregatsettings_uchrezh_namesokr', 'fregatsettings_uchrezh_name', 'fregatsettings_glavbuh_name'], 'string', 'max' => 255],
             [['fregatsettings_recoverysend_emailfrom'], 'email'],
+            [['fregatsettings_employee_inactive_hidden'], 'integer', 'min' => 0, 'max' => 1]
         ];
     }
 
@@ -56,6 +58,7 @@ class Fregatsettings extends \yii\db\ActiveRecord
             'fregatsettings_uchrezh_namesokr' => 'Сокращенное наименование учреждения',
             'fregatsettings_uchrezh_name' => 'Полное наименование учреждения',
             'fregatsettings_glavbuh_name' => 'ФИО Главного бухгалтера',
+            'fregatsettings_employee_inactive_hidden' => 'Скрыть неактивных сотрудников',
         ];
     }
 

@@ -149,8 +149,8 @@ use yii\helpers\Url;
 
                 </div>
                 <div
-                    style="border: 3px solid #cccccc; height: 600px; font-size: 400px; text-align: center; color: #e7e7e7; padding-top: 5px;"
-                    class="col-md-8">
+                        style="border: 3px solid #cccccc; height: 600px; font-size: 400px; text-align: center; color: #e7e7e7; padding-top: 5px;"
+                        class="col-md-8">
                     <div style="position: absolute; left: 50%">
                         <i class="glyphicon glyphicon-camera" style="position: relative; left: -50%;"></i>
                     </div>
@@ -232,7 +232,7 @@ use yii\helpers\Url;
                 'fromgridroute' => 'Fregat/employee/index',
                 'resultrequest' => 'Fregat/employee/selectinputemloyee',
                 'thisroute' => $this->context->module->requestedRoute,
-                'methodquery' => 'selectinput',
+                'methodquery' => 'selectinputactive',
                 'disabled' => $disabled,
             ]));
             ?>

@@ -73,47 +73,9 @@ class EmployeeSearch extends Employee
             'id_build' => $this->id_build,
         ]);
 
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_id'));
-        $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
-        $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);
-        $query->andFilterWhere(['LIKE', 'idpodraz.podraz_name', $this->getAttribute('idpodraz.podraz_name')]);
-        $query->andFilterWhere(['LIKE', 'employee_username', $this->getAttribute('employee_username')]);
-        $query->andFilterWhere(['LIKE', 'idperson.auth_user_fullname', $this->getAttribute('idperson.auth_user_fullname')]);
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_lastchange', Proc::DateTime));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_dateinactive', Proc::Date));
-
-        Proc::AssignRelatedAttributes($dataProvider, ['idperson.auth_user_fullname', 'iddolzh.dolzh_name', 'idbuild.build_name', 'idpodraz.podraz_name']);
-
-        return $dataProvider;
-    }
-
-    public function searchforactiveemployee($params)
-    {
-        $query = Employee::find();
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'sort' => ['defaultOrder' => ['employee_id' => SORT_ASC]],
-        ]);
-
-        $query->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild']);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+        if (Fregatsettings::findOne(1)->fregatsettings_employee_inactive_hidden) {
+            $query->andWhere(['employee_dateinactive' => null]);
         }
-
-        $query->andFilterWhere([
-            'id_person' => $this->id_person,
-            'id_dolzh' => $this->id_dolzh,
-            'id_podraz' => $this->id_podraz,
-            'id_build' => $this->id_build,
-        ]);
-
-        $query->andWhere(['employee_dateinactive' => NULL]);
 
         $query->andFilterWhere(Proc::WhereConstruct($this, 'employee_id'));
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
@@ -239,6 +201,10 @@ class EmployeeSearch extends Employee
             'id_build' => $this->id_build,
             'id_person' => $this->id_person,
         ]);
+
+        if (Fregatsettings::findOne(1)->fregatsettings_employee_inactive_hidden) {
+            $query->andWhere(['employee_dateinactive' => null]);
+        }
 
         $query->andFilterWhere(['LIKE', 'iddolzh.dolzh_name', $this->getAttribute('iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'idbuild.build_name', $this->getAttribute('idbuild.build_name')]);

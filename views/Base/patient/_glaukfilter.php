@@ -138,7 +138,7 @@ use app\func\Proc;
                             'placeholder' => 'Введите врача',
                             'resultrequest' => 'Glauk/glaukuchet/selectinputforvrach',
                             'thisroute' => $this->context->module->requestedRoute,
-                            'methodquery' => 'selectinput',
+                            'methodquery' => 'selectinputactive',
 
                         ]), [
                             'addon' => [

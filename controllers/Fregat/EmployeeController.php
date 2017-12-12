@@ -90,23 +90,12 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function actionForactiveemployee()
-    {
-        $searchModel = new EmployeeSearch();
-        $dataProvider = $searchModel->searchforactiveemployee(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
     public function actionSelectinputemloyee($q = null)
     {
         return Proc::ResultSelect2([
             'model' => new Employee,
             'q' => $q,
-            'methodquery' => 'selectinput',
+            'methodquery' => 'selectinputactive',
         ]);
     }
 

@@ -231,25 +231,10 @@ class Employee extends \yii\db\ActiveRecord
         return parent::beforeSave($insert);
     }
 
-    public function selectinput($params)
-    {
-        $method = isset($params['init']) ? 'one' : 'all';
-
-        $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
-            ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
-            ->orderBy('idperson.auth_user_fullname')
-            ->limit(20)
-            ->asArray()
-            ->$method();
-
-        return $query;
-    }
-
     public function selectinputwithmaterials($params)
     {
         $method = isset($params['init']) ? 'one' : 'all';
+        $employee_inactive_hidden = Fregatsettings::findOne(1)->fregatsettings_employee_inactive_hidden;
 
         $query = self::find()
             ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
@@ -257,27 +242,14 @@ class Employee extends \yii\db\ActiveRecord
             ->innerJoinWith('mattraffics')
             ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
             ->andWhere(['in', 'mattraffics.mattraffic_tip', [1, 2]])
+            ->andWhere(isset($params['init']) || !$employee_inactive_hidden ? [] : ['employee_dateinactive' => NULL])
             ->groupBy('employee_id')
-            ->orderBy('idperson.auth_user_fullname')
-            ->limit(20)
-            ->asArray()
-            ->$method();
-
-        return $query;
-    }
-
-    public function selectinputnaklad($params)
-    {
-        $method = isset($params['init']) ? 'one' : 'all';
-
-        $query = self::find()
-            ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
-            ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
-            ->innerJoinWith('mattraffics')
-            ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
-            ->andWhere(['in', 'mattraffics.mattraffic_tip', [1]])
-            ->groupBy('employee_id')
-            ->orderBy('idperson.auth_user_fullname')
+            ->orderBy([
+                'idperson.auth_user_fullname' => SORT_ASC,
+                'iddolzh.dolzh_name' => SORT_ASC,
+                'idpodraz.podraz_name' => SORT_ASC,
+                'idbuild.build_name' => SORT_ASC,
+            ])
             ->limit(20)
             ->asArray()
             ->$method();
@@ -288,12 +260,19 @@ class Employee extends \yii\db\ActiveRecord
     public function selectinputactive($params)
     {
         $method = isset($params['init']) ? 'one' : 'all';
+        $employee_inactive_hidden = Fregatsettings::findOne(1)->fregatsettings_employee_inactive_hidden;
 
         $query = self::find()
             ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idperson.auth_user_fullname, iddolzh.dolzh_name, idpodraz.podraz_name, idbuild.build_name) AS text']))
             ->joinWith(['idperson', 'iddolzh', 'idpodraz', 'idbuild'])
             ->where(['like', isset($params['init']) ? 'employee_id' : 'idperson.auth_user_fullname', $params['q'] . (isset($params['init']) ? '' : '%'), false])
-            ->andWhere(isset($params['init']) ? [] : ['employee_dateinactive' => NULL])
+            ->andWhere(isset($params['init']) || !$employee_inactive_hidden ? [] : ['employee_dateinactive' => NULL])
+            ->orderBy([
+                'idperson.auth_user_fullname' => SORT_ASC,
+                'iddolzh.dolzh_name' => SORT_ASC,
+                'idpodraz.podraz_name' => SORT_ASC,
+                'idbuild.build_name' => SORT_ASC,
+            ])
             ->limit(20)
             ->asArray()
             ->$method();

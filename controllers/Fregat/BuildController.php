@@ -2,7 +2,9 @@
 
 namespace app\controllers\Fregat;
 
+use app\models\Fregat\Cabinet;
 use app\models\Fregat\CabinetSearch;
+use Exception;
 use Yii;
 use app\models\Fregat\Build;
 use app\models\Fregat\BuildSearch;
@@ -107,8 +109,23 @@ class BuildController extends Controller
 
     public function actionDelete($id)
     {
-        if (Yii::$app->request->isAjax)
-            echo $this->findModel($id)->delete();
+        if (Yii::$app->request->isAjax) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                Cabinet::deleteAll(['id_build' => $id]);
+
+                $Build = $this->findModel($id)->delete();
+
+                if ($Build === false)
+                    throw new Exception('Не удалось удалить группу');
+
+                echo $Build;
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw new Exception($e->getMessage());
+            }
+        }
     }
 
     public function actionAssignToSelect2()

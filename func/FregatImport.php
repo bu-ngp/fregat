@@ -1227,6 +1227,32 @@ class FregatImport
         }
     }
 
+    static function inactiveSpeciality(Employee $Employee, Employeelog $Employeelog)
+    {
+        $condition = $Employee->isNewRecord ? [
+            'id_person' => $Employee->id_person,
+            'employee_dateinactive' => NULL,
+        ] : [
+            'and',
+            ['id_person' => $Employee->id_person],
+            ['employee_dateinactive' => NULL],
+            ['not', [
+                'and',
+                ['id_dolzh' => $Employee->id_dolzh],
+                ['id_podraz' => $Employee->id_podraz]
+            ]]
+        ];
+
+        $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], $condition);
+
+        if ($count) {
+            $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
+            return true;
+        }
+
+        return false;
+    }
+
     // Производим импорт материальных ценностей                                             // Не забыть про InactiveEmployee
     static function ImportDo()
     {
@@ -1399,18 +1425,7 @@ class FregatImport
 
                                                     $Employee->id_person = $Authuser->getPrimaryKey();
                                                     if ($Employee->validate()) {
-
-                                                   /*     if ($Employee->isNewRecord) {
-                                                            $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], [
-                                                                'id_person' => $Employee->id_person,
-                                                                'employee_dateinactive' => NULL,
-                                                            ]);
-
-                                                            if ($count) {
-                                                                $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
-                                                            }
-                                                        }*/
-
+                                                        self::inactiveSpeciality($Employee, $Employeelog);
                                                         $newEmployee ? self::$logreport_additions++ : self::$logreport_updates++;
                                                         $Employee->save(false);
 
@@ -1450,6 +1465,18 @@ class FregatImport
                                                         ])
                                                         ->count();
 
+                                                    $Employeelog = new Employeelog;
+                                                    $Employeelog->id_logreport = self::$logreport_id;
+                                                    $Employeelog->employeelog_type = 2;
+                                                    $Employeelog->employeelog_filename = self::$filename;
+                                                    $Employeelog->employeelog_filelastdate = self::$filelastdate;
+                                                    $Employeelog->employeelog_rownum = $i;
+                                                    $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname;
+                                                    $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
+                                                    $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
+                                                    if (!empty($Employee->id_build))
+                                                        $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+
                                                     if (empty($inactivePerson)) {
                                                         $Employee = Employee::find(['id_person' => $Employee->id_person])
                                                             ->andWhere([
@@ -1458,36 +1485,17 @@ class FregatImport
                                                             ->orderBy(['employee_id' => SORT_DESC])
                                                             ->one();
 
-                                                        $Employeelog = new Employeelog;
-                                                        $Employeelog->id_logreport = self::$logreport_id;
-                                                        $Employeelog->employeelog_type = 2;
-                                                        $Employeelog->employeelog_filename = self::$filename;
-                                                        $Employeelog->employeelog_filelastdate = self::$filelastdate;
-                                                        $Employeelog->employeelog_rownum = $i;
-                                                        $Employeelog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($Employee->employee_dateinactive) . '"';
-
-                                                        $Employeelog->employee_fio = Authuser::findOne($Employee->id_person)->auth_user_fullname;
-                                                        $Employeelog->dolzh_name = Dolzh::findOne($Employee->id_dolzh)->dolzh_name;
-                                                        $Employeelog->podraz_name = Podraz::findOne($Employee->id_podraz)->podraz_name;
-                                                        if (!empty($Employee->id_build))
-                                                            $Employeelog->build_name = Build::findOne($Employee->id_build)->build_name;
+                                                        $Employeelog->employeelog_message = 'Запись изменена. Очищена дата неактивности специальности "' . Yii::$app->formatter->asDate($Employee->employee_dateinactive) . '".';
                                                         $Employeelog->save(false);
 
                                                         $Employee->employee_dateinactive = null;
                                                         self::$logreport_updates++;
                                                     }
-/*
-                                                    $count = Employee::updateAll(['employee_dateinactive' => date('Y-m-d')], ['and', [
-                                                        'id_person' => $Employee->id_person,
-                                                        'employee_dateinactive' => NULL,
-                                                    ], [
-                                                        'not', ['employee_id' => $Employee->primaryKey]
-                                                    ]]);
 
-                                                    if ($count) {
-                                                        $Employeelog->employeelog_message .= ($Employeelog->employeelog_message ? ' ' : '') . 'Установлена дата неактивности "' . Yii::$app->formatter->asDate(date('Y-m-d')) . '" у ' . $count . ' специальностей.';
+                                                    if (self::inactiveSpeciality($Employee, $Employeelog)) {
+                                                        $Employeelog->save(false);
+                                                        self::$logreport_updates++;
                                                     }
-*/
                                                     $Employee->employee_forinactive = 1;
                                                     $Employee->save(false);
                                                 }
