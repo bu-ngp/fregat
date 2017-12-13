@@ -92,17 +92,18 @@ class InstallaktCest
 
         $I->seeInField('Material[material_name]', '');
         $I->executeJS('window.scrollTo(0,0);');
-        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ', '003');
+
+        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '1000001');
         $I->wait(2);
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
-        $I->seeInField("Material[material_name]", 'Шкаф для медикаментов');
+        $I->seeInField("Material[material_name]", 'Шкаф для одежды');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
         $I->seeInField("Material[material_install_cabinet]", 'Не установлено');
 
-        $I->seeInField("Authuser[auth_user_fullname]", 'ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ');
+        $I->seeInField("Authuser[auth_user_fullname]", 'ИВАНОВ ИВАН ИВАНОВИЧ');
         $I->seeInField("Dolzh[dolzh_name]", 'ТЕРАПЕВТ');
         $I->seeInField("Podraz[podraz_name]", 'ТЕРАПЕВТИЧЕСКОЕ');
-        $I->seeInField("Build[build_name]", '');
+        $I->seeInField("Build[build_name]", 'ПОЛИКЛИНИКА 1');
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
         $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 101', '101');
@@ -110,15 +111,9 @@ class InstallaktCest
 
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
-
         $I->see('Количество не может превышать 1');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
-        $I->click('//button[contains(text(),"Добавить")]');
-        $I->wait(1);
 
-        $I->see('У материально ответственного лица "ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ" не заполнено "Здание", в которое устанавливается материальная ценность');
-        $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000001, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '1000001');
-        $I->wait(2);
         $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 101" уже имеется вид материальной ценности "ШКАФ" в количестве: 0\']');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);
@@ -134,6 +129,7 @@ class InstallaktCest
      */
     public function createTrosnovGrids(AcceptanceTester $I)
     {
+        $I->executeJS('window.scrollTo(0,0);');
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
 

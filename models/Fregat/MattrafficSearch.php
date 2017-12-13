@@ -222,7 +222,7 @@ class MattrafficSearch extends Mattraffic
             'sort' => ['defaultOrder' => ['mattraffic_date' => SORT_DESC, 'mattraffic_id' => SORT_DESC]],
         ]);
 
-        $query->join('LEFT JOIN', '(select id_material as id_material_m2, id_mol as id_mol_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and mattraffic.id_mol = m2.id_mol_m2 and mattraffic.mattraffic_date < m2.mattraffic_date_m2 and m2.mattraffic_tip_m2 in (1,2)')
+        $query->join('LEFT JOIN', '(select mattraffic_id as mattraffic_id_m2, id_material as id_material_m2, mattraffic_date as mattraffic_date_m2, mattraffic_tip as mattraffic_tip_m2 from mattraffic) m2', 'mattraffic.id_material = m2.id_material_m2 and (mattraffic.mattraffic_date < m2.mattraffic_date_m2 or mattraffic.mattraffic_id < m2.mattraffic_id_m2) and m2.mattraffic_tip_m2 in (1,2)')
             ->join('LEFT JOIN', '(select mt1.id_material from mattraffic mt1 inner join tr_osnov to1 on mt1.mattraffic_id = to1.id_mattraffic where to1.id_installakt = ' . $params['idinstallakt'] . ') tmp1', 'tmp1.id_material = mattraffic.id_material');
 
         $this->baseRelations($query);
