@@ -316,8 +316,16 @@ class AcceptanceTester extends \Codeception\Actor
         $this->wait(1);
         $this->click('//select[@name="' . $attributeName . '"]/following-sibling::span[contains(@class, "select2-container")]/span/span[contains(@class, "select2-selection")]/*[contains(@class, "select2-selection__rendered")]');
         if (!empty($inputValue)) {
-            $this->fillField('//input[@class="select2-search__field"]', $inputValue);
-            $this->wait(1);
+            $select2Class = $this->grabAttributeFrom('span.select2-search.select2-search--dropdown', 'class');
+
+            switch ($select2Class) {
+                case "select2-search select2-search--dropdown select2-search--hide":
+                    break;
+                case "select2-search select2-search--dropdown":
+                    $this->fillField('//input[@class="select2-search__field"]', $inputValue);
+                    $this->wait(1);
+                    break;
+            }
         }
 
         $strBegin = '//span[@class="select2-results"]/ul[@class="select2-results__options"]';

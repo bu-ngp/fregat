@@ -231,7 +231,7 @@ class RemoveaktCest
         $I->wait(2);
 
         $I->chooseValueFromSelect2('Removeakt[id_remover]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
-        //     $I->click('//button[@form="Removeaktform"]');
+        $I->click('//button[@form="Removeaktform"]');
         $I->wait(2);
 
         $I->checkDynagridData(['1', date('d.m.Y'), 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'removeaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);

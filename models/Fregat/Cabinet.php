@@ -83,11 +83,13 @@ class Cabinet extends \yii\db\ActiveRecord
             $id_build = $mattraffic->idMol->id_build;
         }
 
+        $buildCondition = $id_mattraffic && !$id_build ? ['id_build' => -1] : ($id_mattraffic && $id_build ? ['id_build' => $id_build] : []);
+
         $query = self::find()
             ->select(array_merge(isset($params['init']) ? [] : [self::primaryKey()[0] . ' AS id'], ['CONCAT_WS(", ", idbuild.build_name, CONCAT_WS(" ", "каб.", cabinet_name)) AS text']))
             ->joinWith(['idbuild'])
             ->where($method === 'one' ? ['cabinet_id' => $params['q']] : ['like', 'cabinet_name', $params['q'] . '%', false])
-            ->andFilterWhere($id_build ? ['id_build' => $id_build] : [])
+            ->andFilterWhere($buildCondition)
             ->orderBy(['idbuild.build_name' => SORT_ASC, 'cabinet_name' => SORT_ASC])
             ->limit(20)
             ->asArray()

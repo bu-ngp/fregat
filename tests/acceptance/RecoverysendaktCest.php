@@ -1,4 +1,5 @@
 <?php
+
 use app\models\Config\Authuser;
 use app\models\Fregat\Build;
 use app\models\Fregat\Cabinet;
@@ -29,14 +30,6 @@ use yii\helpers\Url;
  */
 class RecoverysendaktCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
-    public function _after(AcceptanceTester $I)
-    {
-    }
-
     /**
      * @depends LoginCest:login
      */
@@ -87,7 +80,7 @@ class RecoverysendaktCest
         $I->wait(2);
 
         $I->seeElement('//select[@name="Recoverysendakt[id_organ]"]/following-sibling::span/span/span/span[@title="РОГА И КОПЫТА"]');
-        $I->seeInDatecontrol('Recoverysendakt[recoverysendakt_date]',date('d.m.Y'));
+        $I->seeInDatecontrol('Recoverysendakt[recoverysendakt_date]', date('d.m.Y'));
         $I->seeElement(['id' => 'recoveryrecieveaktgrid_gw']);
         $I->seeElement('//div[@id="recoveryrecieveaktgrid_gw"]/div/div/table/tbody/tr/td/div[text()="Ничего не найдено."]');
         $I->seeElement(['id' => 'recoveryrecieveaktmatgrid_gw']);
@@ -103,8 +96,8 @@ class RecoverysendaktCest
         $I->wait(2);
         $I->seeElement(['id' => 'osmotraktgrid_gw']);
         $I->countRowsDynagridEquals('osmotraktgrid_gw', 2);
-        $I->clickChooseButtonFromGrid(['2', '15.12.2016', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', '102', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw');
-        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', '102', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->clickChooseButtonFromGrid(['2', '15.12.2016', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ'], 'osmotraktgrid_gw');
+        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('recoveryrecieveaktgrid_gw', 1);
     }
 
@@ -116,8 +109,8 @@ class RecoverysendaktCest
         $I->chooseValueFromSelect2('Osmotrakt[osmotrakt_id]', 'Акт №1, 1000002, Кухонный стол, ПОЛИКЛИНИКА 1, 101', '002');
         $I->click(['id' => 'addrecoveryrecieveakt']);
         $I->wait(2);
-        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', '101', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', '102', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('recoveryrecieveaktgrid_gw', 2);
     }
 
@@ -133,8 +126,8 @@ class RecoverysendaktCest
         $I->chooseValueFromSelect2('Recoveryrecieveakt[recoveryrecieveakt_repaired]', 'Восстановлено');
         $I->click('//button[contains(text(), "Обновить")]');
         $I->wait(2);
-        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', '101', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'Заменено', 'Восстановлено', date('d.m.Y')], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
-        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', '102', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'Заменено', 'Восстановлено', date('d.m.Y')], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['2', '1000001', ['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', ''], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('recoveryrecieveaktgrid_gw', 2);
     }
 
@@ -204,7 +197,7 @@ class RecoverysendaktCest
             ['G', 9, 'шт'],
             ['H', 9, 'СЛОМАНА ПОЛКА. '],
             ['I', 9, 'ПОЛИКЛИНИКА 1'],
-            ['J', 9, '102'],
+            ['J', 9, '101'],
 
             ['A', 10, '2'],
             ['B', 10, 'СТОЛ'],
@@ -267,7 +260,7 @@ class RecoverysendaktCest
             ['G', 9, 'шт'],
             ['H', 9, 'ТРЕБУЕТСЯ ЗАПРАВКА. '],
             ['I', 9, 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ'],
-            ['J', 9, 'ПОЛИКЛИНИКА 2, 103'],
+            ['J', 9, 'ПОЛИКЛИНИКА 2, 102'],
 
             ['A', 11, 'Материально ответственное лицо'],
             ['D', 11, 'НЕВРОЛОГ'],
@@ -337,7 +330,7 @@ class RecoverysendaktCest
             ['G', 16, 'шт'],
             ['H', 16, ''],
             ['I', 16, 'ПОЛИКЛИНИКА 1'],
-            ['J', 16, '102'],
+            ['J', 16, '101'],
             ['K', 16, ''],
 
             ['A', 19, 'Материально ответственное лицо'],
@@ -361,6 +354,7 @@ class RecoverysendaktCest
     {
         $I->click(['id' => 'DownloadReport']);
         $I->wait(1);
+        $I->executeJS('window.scrollTo(0,1000);');
         $I->click('//a[contains(text(),"Акт получения материалов от сторонней организации")]');
         $I->wait(4);
 
@@ -392,7 +386,7 @@ class RecoverysendaktCest
             ['G', 11, 'шт'],
             ['H', 11, 'Заменен чип'],
             ['I', 11, 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ'],
-            ['J', 11, 'ПОЛИКЛИНИКА 2, 103'],
+            ['J', 11, 'ПОЛИКЛИНИКА 2, 102'],
             ['K', 11, date('d.m.Y')],
 
             ['A', 14, '№'],
@@ -456,14 +450,14 @@ class RecoverysendaktCest
     public function deleteRecoveryrecieveakt(AcceptanceTester $I)
     {
         $I->clickButtonDynagrid('recoverysendaktgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ФИРМА']);
-        $I->clickButtonDynagrid('recoveryrecieveaktgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', '102', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', '']);
+        $I->clickButtonDynagrid('recoveryrecieveaktgrid_gw', 'button[@title="Удалить"]', [['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА ПОЛКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', '', '', '']);
 
         $I->wait(2);
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
 
-        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', '101', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'Заменено', 'Восстановлено', date('d.m.Y')], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
+        $I->checkDynagridData(['1', '1000002', ['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], 'ПОЛИКЛИНИКА 1', 'СЛОМАНА НОЖКА', '', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'Заменено', 'Восстановлено', date('d.m.Y')], 'recoveryrecieveaktgrid_gw', ['a[@title="Обновить"]', 'button[@title="Удалить"]']);
         $I->countRowsDynagridEquals('recoveryrecieveaktgrid_gw', 1);
     }
 
@@ -490,13 +484,14 @@ class RecoverysendaktCest
      */
     public function deleteRecoverysendakt(AcceptanceTester $I)
     {
-        $I->click('//div[@id="recoverysendaktgrid_gw"]/div/div/table/tbody/tr/td[text()="ФИРМА"]/preceding-sibling::td/button[@title="Удалить"]');
+        $I->clickButtonDynagrid('recoverysendaktgrid_gw', 'button[@title="Удалить"]', ['1', date('d.m.Y'), 'ФИРМА']);
         $I->wait(2);
+
         $I->see('Вы уверены, что хотите удалить запись?');
         $I->click('button[data-bb-handler="confirm"]');
         $I->wait(2);
 
-        $I->see('Ничего не найдено.');
+        $I->countRowsDynagridEquals('recoverysendaktgrid_gw', 0);
     }
 
     /**

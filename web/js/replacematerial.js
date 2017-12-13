@@ -6,14 +6,20 @@ function FillTrOsnov() {
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val()},
             success: function (data) {
                 var obj = JSON.parse(data);
-                $("#trosnov-id_cabinet").prop("disabled", false);
-                $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
 
-                var href = $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href");
-                href = href.match(/(&id_mattraffic=.*)/)
-                    ? href.replace(/(&id_mattraffic=.*)/, '&id_mattraffic=' + $("#trosnov-id_mattraffic").val())
-                    : href + '&id_mattraffic=' + $("#trosnov-id_mattraffic").val();
-                $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href", href);
+                if (obj.build_name) {
+                    $("#trosnov-id_cabinet").prop("disabled", false);
+                    $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
+
+                    var href = $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href");
+                    href = href.match(/(&id_mattraffic=.*)/)
+                        ? href.replace(/(&id_mattraffic=.*)/, '&id_mattraffic=' + $("#trosnov-id_mattraffic").val())
+                        : href + '&id_mattraffic=' + $("#trosnov-id_mattraffic").val();
+                    $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href", href);
+                } else {
+                    $("#trosnov-id_cabinet").prop("disabled", true);
+                    $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").addClass("disabled");
+                }
 
                 $("#material-material_tip").val(obj.material_tip);
                 $("#material-material_name").val(obj.material_name);

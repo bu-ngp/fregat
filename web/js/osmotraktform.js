@@ -42,14 +42,20 @@ function FillNewinstallakt() {
             success: function (data) {
                 if (data != "") {
                     var obj = JSON.parse(data);
-                    $("#installtrosnov-id_cabinet").prop("disabled", false);
-                    $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
 
-                    var href = $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href");
-                    href = href.match(/(&id_mattraffic=.*)/)
-                        ? href.replace(/(&id_mattraffic=.*)/, '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val())
-                        : href + '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val();
-                    $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href", href);
+                    if (obj.build_name) {
+                        $("#installtrosnov-id_cabinet").prop("disabled", false);
+                        $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
+
+                        var href = $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href");
+                        href = href.match(/(&id_mattraffic=.*)/)
+                            ? href.replace(/(&id_mattraffic=.*)/, '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val())
+                            : href + '&id_mattraffic=' + $("#installtrosnov-id_mattraffic").val();
+                        $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").attr("href", href);
+                    } else {
+                        $("#installtrosnov-id_cabinet").prop("disabled", true);
+                        $("#installtrosnov-id_cabinet").next("span").next(".input-group-btn").find("a").addClass("disabled");
+                    }
 
                     $("#material-material_id").val(obj.material_id);
                     $("#material-material_name.newinstallakt").val(obj.material_name);

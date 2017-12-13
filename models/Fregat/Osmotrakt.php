@@ -61,6 +61,9 @@ class Osmotrakt extends \yii\db\ActiveRecord
         if (!empty($this->id_tr_osnov) && self::find()->joinWith(['idTrosnov.idMattraffic.idMaterial'])->andWhere([
                 'id_tr_osnov' => $this->id_tr_osnov,
                 'idMaterial.material_writeoff' => 1,
+            ])->andFilterWhere($this->isNewRecord ? [] : [
+                'not',
+                ['osmotrakt_id' => $this->osmotrakt_id]
             ])->one()
         ) {
             $this->addError($attribute, 'Нельзя составлять акты осмотра для списанных материальных ценностей');
@@ -78,6 +81,9 @@ class Osmotrakt extends \yii\db\ActiveRecord
             ])->andWhere([
                 'idMattraffic.id_material' => $currentMaterialID,
                 'recoveryrecieveakts.recoveryrecieveakt_repaired' => 1,
+            ])->andFilterWhere($this->isNewRecord ? [] : [
+                'not',
+                ['osmotrakt_id' => $this->osmotrakt_id]
             ])->one();
 
             if ($osmotrakt) {
@@ -90,6 +96,9 @@ class Osmotrakt extends \yii\db\ActiveRecord
                     'idMattraffic.id_material' => $currentMaterialID,
                     'recoveryrecieveakts.recoveryrecieveakt_repaired' => null,
                     'recoveryrecieveakts.recoveryrecieveakt_date' => null,
+                ])->andFilterWhere($this->isNewRecord ? [] : [
+                    'not',
+                    ['osmotrakt_id' => $this->osmotrakt_id]
                 ])->one();
 
                 if ($osmotrakt) {
@@ -109,6 +118,9 @@ class Osmotrakt extends \yii\db\ActiveRecord
             ])->andWhere([
                 'idMattraffic.id_material' => $currentMaterialID,
                 'recoveryrecieveakts.recoveryrecieveakt_id' => null,
+            ])->andFilterWhere($this->isNewRecord ? [] : [
+                'not',
+                ['osmotrakt_id' => $this->osmotrakt_id]
             ])->one();
 
             if ($otherOsmotrakt) {

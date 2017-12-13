@@ -125,6 +125,15 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
     public static function getBuildandCabinetByTrMatOsmotr($Tr_mat_osmotr_id)
     {
         if (!empty($Tr_mat_osmotr_id)) {
+            $query2 = self::find()
+                ->select(['idbuild.build_name', 'idCabinet.cabinet_name'])
+                ->joinWith([
+                    'idTrMat.idParent.idMol.idbuild',
+                    'idTrMat.idParent.trOsnovs.idCabinet',
+                ])
+                ->andWhere(['tr_mat_osmotr_id' => $Tr_mat_osmotr_id])
+                ->andWhere(['idParent.mattraffic_tip' => 3]);
+
             $query = self::find()
                 ->select(['idbuild.build_name', 'idCabinet.cabinet_name'])
                 ->joinWith([
@@ -137,6 +146,8 @@ class TrMatOsmotr extends \yii\db\ActiveRecord
                 //   ->andWhere('`mt`.`mattraffic_date` IS NULL')
                 ->asArray()
                 ->one();
+
+            $a=$query2->createCommand()->getRawSql();
 
             if (!empty($query))
                 return $query['build_name'] . ', ' . $query['cabinet_name'];

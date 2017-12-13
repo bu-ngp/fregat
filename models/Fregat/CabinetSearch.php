@@ -85,7 +85,10 @@ class CabinetSearch extends Cabinet
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['idbuild.build_name' => SORT_ASC, 'cabinet_name' => SORT_ASC]],
+            'sort' => ['defaultOrder' => [
+                //'idbuild.build_name' => SORT_ASC,
+                'cabinet_name' => SORT_ASC,
+            ]],
         ]);
 
         $query->joinWith(['idbuild']);
@@ -99,6 +102,7 @@ class CabinetSearch extends Cabinet
         }
 
         if (empty($params['id_mattraffic']) || !($mattraffic = Mattraffic::findOne($params['id_mattraffic'])) || empty($mattraffic->idMol->id_build)) {
+            $query->where('0=1');
             return $dataProvider;
         }
 
