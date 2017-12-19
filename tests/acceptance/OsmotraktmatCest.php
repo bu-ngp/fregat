@@ -82,7 +82,7 @@ class OsmotraktmatCest
         $I->wait(2);
         $I->seeElement(['class' => 'tr-mat-osmotr-form']);
 
-        $I->chooseValueFromGrid('TrMatOsmotr[id_tr_mat]', 'Картиридж Kard, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, 1.000', 'trmatgrid_gw', '//div[@id="trmatgrid_gw"]/descendant::td/a[text()="Картиридж Kard" and @href="/Fregat/material/update?id=37"]/../preceding-sibling::td/button[@title="Выбрать"]', 1);
+        $I->chooseValueFromGrid('TrMatOsmotr[id_tr_mat]', 'Картиридж Kard, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, 1.000', 'trmatgrid_gw', '//div[@id="trmatgrid_gw"]/descendant::td/a[text()="Картиридж Kard" and contains(@href,"/Fregat/material/update?id=37")]/../preceding-sibling::td/button[@title="Выбрать"]', 1);
         $I->chooseValueFromSelect2('TrMatOsmotr[id_reason]', 'ТРЕБУЕТСЯ ЗАПРАВКА', 'зап');
         $I->fillField('TrMatOsmotr[tr_mat_osmotr_comment]', 'С заменой чипа');
 

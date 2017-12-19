@@ -104,14 +104,14 @@ class NakladCest
         $I->wait(1);
         $I->see('Необходимо заполнить «Материальная ценность».');
 
-        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ПОЛИКЛИНИКА 2, HP LJ 1022', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ПОЛИКЛИНИКА 2, HP LJ 1022', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and contains(@href,"/Fregat/material/update?id=36")]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->fillField('Nakladmaterials[nakladmaterials_number]', '2.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(1);
         $I->see('Материальная ценность не соответствует МОЛ требования-накладной: ПЕТРОВ П. П., ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1');
         $I->see('Максимально допустимое количество у этого МОЛ равно 1.000');
 
-        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Nakladmaterials[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and contains(@href,"/Fregat/material/update?id=35")]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->fillField('Nakladmaterials[nakladmaterials_number]', '1.000');
         $I->click('//button[contains(text(),"Добавить")]');
         $I->wait(2);

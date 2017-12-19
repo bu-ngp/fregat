@@ -67,7 +67,7 @@ class OsmotraktCest
      */
     public function saveOsmotrakt(AcceptanceTester $I)
     {
-        $I->chooseValueFromGrid('Osmotrakt[id_tr_osnov]', '1000002, каб. 101, ПОЛИКЛИНИКА 1, Кухонный стол', 'tr-osnovgrid_gw', '//div[@id="tr-osnovgrid_gw"]/descendant::td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]', 1);
+        $I->chooseValueFromGrid('Osmotrakt[id_tr_osnov]', '1000002, каб. 101, ПОЛИКЛИНИКА 1, Кухонный стол', 'tr-osnovgrid_gw', '//div[@id="tr-osnovgrid_gw"]/descendant::td/a[text()="Кухонный стол" and contains(@href,"/Fregat/material/update?id=35")]/../preceding-sibling::td/button[@title="Выбрать"]', 1);
         $I->seeInField('Material[material_name]', 'Кухонный стол');
         $I->seeInField('Material[material_inv]', '1000002');
         $I->seeInField('Material[material_serial]', '');
@@ -101,7 +101,7 @@ class OsmotraktCest
         $I->click('//a[@data-toggle="collapse"]');
         $I->wait(2);
 
-        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, Шкаф для медикаментов', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td/a[text()="Шкаф для медикаментов" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000003, ФЕДОТОВ ФЕДОР ФЕДОРОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, Шкаф для медикаментов', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td/a[text()="Шкаф для медикаментов" and contains(@href,"/Fregat/material/update?id=36")]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
 
         $I->seeInField('Material[material_name]', 'Шкаф для медикаментов');
         $I->seeInField('Material[material_writeoff]', 'Нет');
@@ -153,7 +153,7 @@ class OsmotraktCest
         $I->click('//a[@data-toggle="collapse"]');
         $I->wait(2);
 
-        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('InstallTrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1, Кухонный стол', 'mattrafficgrid_gw', '//div[@id="mattrafficgrid_gw"]/descendant::td/a[text()="Кухонный стол" and contains(@href,"/Fregat/material/update?id=35")]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->seeInField('Authuser[auth_user_fullname]', 'ПЕТРОВ ПЕТР ПЕТРОВИЧ');
         $I->seeInField('Dolzh[dolzh_name]', 'ПРОГРАММИСТ');
         $I->seeInField('Build[build_name]', 'ПОЛИКЛИНИКА 1');

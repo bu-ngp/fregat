@@ -91,7 +91,7 @@ class SpisosnovaktCest
     {
         $I->click('//a[contains(text(),"Добавить материальную ценность")]');
         $I->wait(2);
-        $I->chooseValueFromGrid('Spisosnovmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and @href="/Fregat/material/update?id=36"]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
+        $I->chooseValueFromGrid('Spisosnovmaterials[id_mattraffic]', '1000003, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="HP LJ 1022" and contains(@href,"/Fregat/material/update?id=36")]/../preceding-sibling::td/button[@title="Выбрать"]', 3);
         $I->click('//button[contains(text(),"Создать")]');
         $I->wait(1);
         $I->see('Материальная ценность не соответствует МОЛ\'у, заявки на списание: ПЕТРОВ ПЕТР ПЕТРОВИЧ');
