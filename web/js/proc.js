@@ -1,6 +1,6 @@
 bootbox.setDefaults({locale: "ru"});
 
-var subdir = document.location.pathname.indexOf("/ver2/") == 0 ? "/ver2/" : "/";
+var subdir = document.location.pathname.indexOf("/fregat/") == 0 ? "/fregat/" : "/";
 var baseUrl = window.location.protocol + "//" + window.location.host + subdir;
 
 var getUrlParameter = function getUrlParameter(sParam) {
