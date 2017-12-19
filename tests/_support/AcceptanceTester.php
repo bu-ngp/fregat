@@ -240,7 +240,7 @@ class AcceptanceTester extends \Codeception\Actor
 
         $result = array_diff($filesArray, $filesFromZip);
 
-        if (!empty($result))
+        if (DIRECTORY_SEPARATOR !== '/' && !empty($result))
             $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
 
         $zip->close();
