@@ -443,12 +443,13 @@ class Proc
 
             if (!empty($model) && !empty($resultmodel) && !empty($fields['keyfield']) && !(empty($fields['resultfield']) && empty($methodquery)) && !empty($thisroute) && (!empty($multiple) && isset($multiple['idvalue']) || empty($multiple))) {
 
-                $valuemodel = is_array($model->$fields['keyfield']) ? $model->$fields['keyfield'] : [$model->$fields['keyfield']];
+                $keyfield = $fields['keyfield'];
+                $valuemodel = is_array($model->$keyfield) ? $model->$keyfield : [$model->$keyfield];
 
                 if (!empty($methodquery)) {
                     $methodparams_tmp = $methodparams;
 
-                    $methodparams_tmp['q'] = $model->$fields['keyfield'];
+                    $methodparams_tmp['q'] = $model->$keyfield;
                     $methodparams_tmp['init'] = true;
 
                     foreach ($methodparams_tmp as $key => $value) {
