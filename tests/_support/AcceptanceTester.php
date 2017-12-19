@@ -164,7 +164,7 @@ class AcceptanceTester extends \Codeception\Actor
     {
         if (is_array($element)) {
             if (isset($element['link'])) {
-                return 'td/a[text()="' . $element['link']['text'] . '" and @href="' . $element['link']['href'] . '"]/..';
+                return 'td/a[text()="' . $element['link']['text'] . '" and contains(@href,"' . $element['link']['href'] . '"])/..';
             }
         } else
             return 'td[text()="' . $element . '"]';
