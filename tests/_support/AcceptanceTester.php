@@ -235,11 +235,12 @@ class AcceptanceTester extends \Codeception\Actor
         $filesFromZip = [];
 
         for ($i = 0; $i < $zip->numFiles; $i++) {
-            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP862');
+            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
         }
 
         $result = array_diff($filesArray, $filesFromZip);
 
+        // TODO Узнать кодировку zip архивов на Centos
         if (DIRECTORY_SEPARATOR !== '/' && !empty($result))
             $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
 
