@@ -120,7 +120,6 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 'base' => ['content' => \yii\bootstrap\Html::a('<i class="glyphicon glyphicon-filter"></i>', ['osmotraktfilter'], [
                         'title' => 'Дополнительный фильтр',
                         'class' => 'btn btn-default filter_button',
-                        'data-pjax' => '0',
                     ]) . \yii\bootstrap\Html::button('<i class="glyphicon glyphicon-floppy-disk"></i>', [
                         'id' => 'Osmotraktexcel',
                         'type' => 'button',
