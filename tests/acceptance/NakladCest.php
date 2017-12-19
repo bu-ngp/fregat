@@ -284,7 +284,7 @@ class NakladCest
     }
 
     /**
-     * @depends deleteNaklad
+     * @depends loadData
      */
     public function destroyData(AcceptanceTester $I)
     {
