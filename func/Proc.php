@@ -566,7 +566,7 @@ class Proc
                 if (is_string($Params['methodquery']) && (!isset($Params['methodparams']) || is_array($Params['methodparams']))) {
                     $Params['methodparams']['q'] = $Params['q'];
 
-                    $Out['results'] = $Model->$Params['methodquery']($Params['methodparams']);
+                    $Out['results'] = call_user_func_array([$Model, $Params['methodquery']], [$Params['methodparams']]);
                     if (!is_array($Out['results']))
                         exit;
                 } else {
@@ -1283,6 +1283,7 @@ class Proc
     }
 
     // Заполняем форму Фильтра из сессии
+
     /**
      * @param $ModelGridName
      * @param $ModelFilter
@@ -1314,6 +1315,7 @@ class Proc
     }
 
     // Получаем значения полей фильтра
+
     /**
      * @param $ModelGridName
      * @param $ModelFilterName
@@ -1336,6 +1338,7 @@ class Proc
     }
 
     // Функция выводит строку фильтра для отображения в гриде
+
     /**
      * @param $AR
      * @return string
@@ -1609,6 +1612,7 @@ class Proc
     }
 
     // Присваеиват сортировку реляционным атрибутам по массиву списку атрибутов
+
     /**
      * @param $DataProvider
      * @param $AttributesNames
@@ -1675,6 +1679,7 @@ class Proc
     }
 
     // Меняет раскладку клавиатуры
+
     /**
      * @param $text
      * @param int $arrow
@@ -1688,6 +1693,7 @@ class Proc
     }
 
     // Используется для полей формы со связью, чтобы укоротить код (isset($model->idTrosnov->idMattraffic->idMaterial) ? $model->idTrosnov->idMattraffic->idMaterial : new Material)
+
     /**
      * @param $ActiverecordRelat
      * @param $Relationstring
