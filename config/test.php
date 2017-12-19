@@ -11,6 +11,10 @@ return [
     'language' => 'ru-RU',
     'bootstrap' => ['log'],
     'timeZone' => 'Asia/Yekaterinburg',
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm' => '@vendor/npm-asset',
+    ],
     'components' => [
         'request' => [
             'cookieValidationKey' => 'test',
@@ -21,6 +25,7 @@ return [
         ],
         'assetManager' => [
             'appendTimestamp' => true,
+            'linkAssets' => true,
         ],
         'user' => [
             'identityClass' => 'app\models\User',
@@ -29,11 +34,7 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-
         'db' => $dbParams,
-        'mailer' => [
-            'useFileTransport' => true,
-        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             //  'enableStrictParsing' => true,
@@ -55,6 +56,9 @@ return [
             'datetimeFormat' => 'dd.MM.yyyy HH:mm:ss',
             'nullDisplay' => '',
             'timeZone' => 'UTC', // в dynagrid прибавляет еще timezone
+        ],
+        'mailer' => [
+            'useFileTransport' => true,
         ],
     ],
     'modules' => [

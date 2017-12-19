@@ -4,7 +4,7 @@
 
 $db = [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=127.0.0.1;dbname=fregat_dev;charset=UTF8',
+    'dsn' => 'mysql:host=127.0.0.1;dbname=fregat_test;charset=UTF8',
     'username' => 'root',
     'password' => '265463',
     'charset' => 'utf8',

@@ -19,7 +19,7 @@ modules:
             entryScript: index-test.php
             cleanup: false
         Db:
-            dsn: 'mysql:host=127.0.0.1;dbname=baseportal'
+            dsn: 'mysql:host=127.0.0.1;dbname=fregat_test'
             user: 'root'
             password: '265463'
             dump: tests/_data/db.sql
