@@ -11,9 +11,11 @@ use app\models\ContactForm;
 use app\models\EntryForm;
 use yii\web\Session;
 
-class SiteController extends Controller {
+class SiteController extends Controller
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -44,7 +46,8 @@ class SiteController extends Controller {
         ];
     }
 
-    public function actions() {
+    public function actions()
+    {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -52,11 +55,13 @@ class SiteController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         return $this->render('index');
     }
 
-    public function actionLogin() {
+    public function actionLogin()
+    {
         if (!\Yii::$app->user->isGuest)
             return $this->goHome();
 
@@ -65,22 +70,24 @@ class SiteController extends Controller {
             return $this->goBack();
 
         return $this->render('login', [
-                    'model' => $model,
+            'model' => $model,
         ]);
     }
 
-    public function actionLogout() {
+    public function actionLogout()
+    {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
 
-    public function actionSetsession() {
+    public function actionSetsession()
+    {
         $result = '0';
-        $modelclass = (string) filter_input(INPUT_POST, 'modelclass');
-        $field = (string) filter_input(INPUT_POST, 'field');
-        $value = (string) filter_input(INPUT_POST, 'value');
-        $data = (string) filter_input(INPUT_POST, 'data');
+        $modelclass = (string)filter_input(INPUT_POST, 'modelclass');
+        $field = (string)filter_input(INPUT_POST, 'field');
+        $value = (string)filter_input(INPUT_POST, 'value');
+        $data = (string)filter_input(INPUT_POST, 'data');
 
 
         if (!empty($modelclass) && !empty($field)) {
@@ -118,10 +125,11 @@ class SiteController extends Controller {
     }
 
     // Для определения секущей вкладки, если вкладка сменилась, то перейти на домашнюю страницу
-    public function actionSetwindowguid() {
-        $guid = (string) filter_input(INPUT_POST, 'guid');
-        $pathname = (string) filter_input(INPUT_POST, 'path');
-        $search = (string) filter_input(INPUT_POST, 'search');
+    public function actionSetwindowguid()
+    {
+        $guid = (string)filter_input(INPUT_POST, 'guid');
+        $pathname = (string)filter_input(INPUT_POST, 'path');
+        $search = (string)filter_input(INPUT_POST, 'search');
         $session = new Session;
         $session->open();
         $res = isset($session['WindowsGUIDs']) ? $session['WindowsGUIDs'] : [];
@@ -155,21 +163,26 @@ class SiteController extends Controller {
             $session['WindowsGUIDs'] = $res;
         }
         $session->close();
-        echo json_encode((object) ['guid' => $guid, 'gohome' => $gohome]);
+        echo json_encode((object)['guid' => $guid, 'gohome' => $gohome]);
     }
 
-    public function actionGohome() {
+    public function actionGohome()
+    {
         if (Yii::$app->request->isAjax)
             return $this->goHome();
     }
 
-    public function actionDeleteExcelFile() {
-        $FileName = DIRECTORY_SEPARATOR === '/' ? 'files/' . (string) filter_input(INPUT_POST, 'filename') : mb_convert_encoding('files/' . (string) filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
-        unlink($FileName);
+    public function actionDeleteExcelFile()
+    {
+        if (YII_ENV !== 'test') {
+            $FileName = DIRECTORY_SEPARATOR === '/' ? 'files/' . (string)filter_input(INPUT_POST, 'filename') : mb_convert_encoding('files/' . (string)filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+            unlink($FileName);
+        }
     }
 
-    public function actionDeleteTmpFile() {
-        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . (string) filter_input(INPUT_POST, 'filename') : mb_convert_encoding('tmpfiles/' . (string) filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+    public function actionDeleteTmpFile()
+    {
+        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . (string)filter_input(INPUT_POST, 'filename') : mb_convert_encoding('tmpfiles/' . (string)filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
         unlink($FileName);
     }
 
