@@ -134,7 +134,7 @@ class InstallaktCest
         $I->wait(2);
 
         $I->seeInField('Material[material_name]', '');
-        $I->chooseValueFromGrid('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and @href="/Fregat/material/update?id=35"]/../preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', 'mattrafficgrid_gw', '//td/a[text()="Кухонный стол" and contains(@href,"/Fregat/material/update?id=35")]/../preceding-sibling::td/button[@title="Выбрать"]');
         $I->seeOptionIsSelected("Material[material_tip]", 'Основное средство');
         $I->seeInField("Material[material_name]", 'Кухонный стол');
         $I->seeOptionIsSelected("Material[material_writeoff]", 'Нет');
@@ -301,8 +301,8 @@ class InstallaktCest
         $I->wait(2);
         $I->seeInSelect2('TrMat[id_mattraffic]', '', true);
 
-        $I->chooseValueFromGrid('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', 'mattrafficgrid_gw', '//td/a[text()="Шкаф для одежды" and @href="/Fregat/material/update?id=34"]/../preceding-sibling::td/button[@title="Выбрать"]');
-        $I->chooseValueFromGrid('TrMat[id_mattraffic]', '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="Картридж 36A" and @href="/Fregat/material/update?id=38"]/../preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrMat[id_parent]', 'ПОЛИКЛИНИКА 1, каб. 101, 1000001, Шкаф для одежды', 'mattrafficgrid_gw', '//td/a[text()="Шкаф для одежды" and contains(@href,"/Fregat/material/update?id=34")]/../preceding-sibling::td/button[@title="Выбрать"]');
+        $I->chooseValueFromGrid('TrMat[id_mattraffic]', '1000005, СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ, НЕВРОЛОГ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 2', 'mattrafficgrid_gw', '//td/a[text()="Картридж 36A" and contains(@href,"/Fregat/material/update?id=38")]/../preceding-sibling::td/button[@title="Выбрать"]');
 
         $I->wait(1);
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 4.000"]');
