@@ -235,8 +235,7 @@ class AcceptanceTester extends \Codeception\Actor
         $filesFromZip = [];
 
         for ($i = 0; $i < $zip->numFiles; $i++) {
-            //$filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
-            $filesFromZip[] = $zip->getNameIndex($i);
+            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP862');
         }
 
         $result = array_diff($filesArray, $filesFromZip);
