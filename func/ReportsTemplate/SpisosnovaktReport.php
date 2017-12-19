@@ -65,7 +65,7 @@ class SpisosnovaktReport extends BaseReportPortal
         $crows = count($Spisosnovmaterials);
         $num = 12;
 
-        //$objPHPExcel->getActiveSheet()->unmergeCellsByColumnAndRow(1, $num + $crows - 1, 2, $num + $crows - 1);
+        $objPHPExcel->getActiveSheet()->unmergeCellsByColumnAndRow(1, $num + $crows - 1, 2, $num + $crows - 1);
         $objPHPExcel->getActiveSheet()->getStyle('C' . ($num + $crows - 1))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows, $Spisosnovakt->idMol->iddolzh->dolzh_name);
