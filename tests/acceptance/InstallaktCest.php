@@ -680,6 +680,7 @@ class InstallaktCest
         $I->click('//button[contains(text(),"Обновить")]');
         $I->wait(2);
         $I->clickButtonDynagrid('installaktgrid_gw', 'a[@title="Обновить"]', ['1', date('d.m.Y'), 'ПЕТРОВ ПЕТР ПЕТРОВИЧ', 'ПРОГРАММИСТ']);
+        $I->executeJS('window.scrollTo(0,0);');
         $I->wait(2);
 
         $I->chooseValueFromSelect2('Installakt[id_installer]', 'ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', 'ива');
