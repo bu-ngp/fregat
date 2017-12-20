@@ -400,22 +400,24 @@ class FregatController extends Controller
         ];
 
         $zip = new ZipArchive();
-        var_dump(Yii::$app->basePath . $fileName);
-        var_dump(file_exists(Yii::$app->basePath . '/web/files/' . $fileName));
-        $open = $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
-        var_dump($open);
+        $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
         $filesFromZip = [];
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
-        }
 
-        $result = array_diff($filesArray, $filesFromZip);
+        var_dump($zip->getNameIndex(0));
+        var_dump(mb_convert_encoding($zip->getNameIndex(0), 'UTF-8', 'CP866'));
+        var_dump(mb_convert_encoding($zip->getNameIndex(0), 'UTF-8', 'Windows-1251'));
 
-        var_dump($result);
-        var_dump($filesArray);
-        var_dump($filesFromZip);
+        /*   for ($i = 0; $i < $zip->numFiles; $i++) {
+               $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
+           }
 
-        //$zip->close();
+           $result = array_diff($filesArray, $filesFromZip);
+
+           var_dump($result);
+           var_dump($filesArray);
+           var_dump($filesFromZip);*/
+
+        $zip->close();
     }
 
     public function actionPopulateData()
