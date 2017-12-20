@@ -2,21 +2,25 @@ var filtergrid = "#nakladgrid_gw";
 var filtermodal = "#NakladFilter";
 var filtersearch = "NakladSearch";
 
-$(document).ready(function () {
-    $(document).on('ready pjax:success', function () {
-        $('.filter_button').click(function (e) {
-            e.preventDefault(); //for prevent default behavior of <a> tag.
-            $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
-            $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
-                SetStyleFilterBehavior();
-                GetScrollFilter("div.insideforms");
+var modalShow = function () {
+    $(filtergrid).find('.filter_button').click(function (e) {
+        e.preventDefault();
+        $(filtermodal).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
+        $(filtermodal).modal('show').find('.modal-body').load($(this).attr('href'), function () {
+            SetStyleFilterBehavior();
+            GetScrollFilter("div.insideforms");
 
-                $("div.insideforms").scroll(function () {
-                    SetScrollFilter(this);
-                });
-
+            $("div.insideforms").scroll(function () {
+                SetScrollFilter(this);
             });
+
         });
+    });
+};
+
+$(document).ready(function () {
+    $(document).on('pjax:success', function () {
+        modalShow();
     });
 
     $(document).on("click", filtermodal + "_apply", function () {
@@ -81,4 +85,5 @@ $(document).ready(function () {
         })
     });
 
+    modalShow();
 });
