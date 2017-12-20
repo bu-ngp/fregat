@@ -400,8 +400,10 @@ class FregatController extends Controller
         ];
 
         $zip = new ZipArchive();
-        $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
-
+        var_dump(Yii::$app->basePath . '/web/files/' . $fileName);
+        var_dump(file_exists(Yii::$app->basePath . '/web/files/' . $fileName));
+        $open = $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
+        var_dump($open);
         $filesFromZip = [];
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
