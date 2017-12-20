@@ -413,7 +413,7 @@ class FregatController extends Controller
         var_dump($filesArray);
         var_dump($filesFromZip);
 
-        $zip->close();
+        //$zip->close();
     }
 
     public function actionPopulateData()
