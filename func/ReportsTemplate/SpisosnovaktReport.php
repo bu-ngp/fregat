@@ -79,8 +79,6 @@ class SpisosnovaktReport extends BaseReportPortal
             $objPHPExcel->getActiveSheet()->mergeCellsByColumnAndRow(5, $num + $crows + 1, 8, $num + $crows + 1);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $num + $crows + 1, $Spisosnovakt->idEmployee->iddolzh->dolzh_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(5, $num + $crows + 1, $Spisosnovakt->idEmployee->idperson->auth_user_fullname);
-        } else
-            $objPHPExcel->getActiveSheet()->removeRow($num + $crows + 1);
+        }
     }
-
 }
