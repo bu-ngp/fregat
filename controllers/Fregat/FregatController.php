@@ -407,6 +407,7 @@ class FregatController extends Controller
         //var_dump(mb_detect_encoding($zip->getNameIndex(0), mb_detect_order(), true));
 
         foreach (mb_list_encodings() as $code) {
+            var_dump($code . ' > ');
             var_dump(mb_convert_encoding($zip->getNameIndex(0), 'UTF-8', $code));
         }
 
