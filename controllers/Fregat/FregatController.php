@@ -391,7 +391,7 @@ class FregatController extends Controller
 
     public function actionTest()
     {
-        $fileName = 'web/files/Акты установки для ведомости №2.zip';
+        $fileName = 'Акты установки для ведомости №2.zip';
         $filesArray = [
             'Акт установки матер-ых цен-тей №2.xlsx',
             'Акт установки матер-ых цен-тей №3.xlsx',
@@ -400,7 +400,7 @@ class FregatController extends Controller
         ];
 
         $zip = new ZipArchive();
-        var_dump(Yii::$app->basePath . '/web/files/' . $fileName);
+        var_dump(Yii::$app->basePath . $fileName);
         var_dump(file_exists(Yii::$app->basePath . '/web/files/' . $fileName));
         $open = $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
         var_dump($open);
