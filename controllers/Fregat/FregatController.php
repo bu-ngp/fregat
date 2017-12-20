@@ -48,6 +48,7 @@ use yii\filters\AccessControl;
 use app\func\FregatImport;
 use app\func\TestMem;
 use app\models\Base\Fias;
+use ZipArchive;
 
 class FregatController extends Controller
 {
@@ -390,12 +391,29 @@ class FregatController extends Controller
 
     public function actionTest()
     {
-        /*  setlocale(LC_ALL, 'ru_RU.UTF-8');
-          var_dump(date('d', strtotime('2016-11-05')));
-          var_dump(Yii::$app->formatter->asDate(date('M', strtotime('2016-11-05')), 'php:F'));
-          var_dump(date('y', strtotime('2016-11-05')));*/
+        $fileName = 'web/files/Акты установки для ведомости №2.zip';
+        $filesArray = [
+            'Акт установки матер-ых цен-тей №2.xlsx',
+            'Акт установки матер-ых цен-тей №3.xlsx',
+            'Акт установки матер-ых цен-тей №4.xlsx',
+            'Акт установки матер-ых цен-тей №5.xlsx',
+        ];
 
-        var_dump(date('d.m.Y', mt_rand(strtotime('2016-01-01'), strtotime('2016-12-31'))));
+        $zip = new ZipArchive();
+        $zip->open(Yii::$app->basePath . '/web/files/' . $fileName);
+
+        $filesFromZip = [];
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
+        }
+
+        $result = array_diff($filesArray, $filesFromZip);
+
+        var_dump($result);
+        var_dump($filesArray);
+        var_dump($filesFromZip);
+
+        $zip->close();
     }
 
     public function actionPopulateData()
