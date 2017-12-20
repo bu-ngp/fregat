@@ -404,9 +404,12 @@ class FregatController extends Controller
         $filesFromZip = [];
 
         var_dump($zip->getNameIndex(0));
-        var_dump(mb_convert_encoding($zip->getNameIndex(0), 'UTF-8', 'ASCII'));
         //var_dump(mb_detect_encoding($zip->getNameIndex(0), mb_detect_order(), true));
-        var_dump(mb_detect_order());
+
+        foreach (mb_list_encodings() as $code) {
+            var_dump(mb_convert_encoding($zip->getNameIndex(0), 'UTF-8', $code));
+        }
+
         /*   for ($i = 0; $i < $zip->numFiles; $i++) {
                $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
            }
