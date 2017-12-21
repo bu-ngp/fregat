@@ -1763,12 +1763,8 @@ class FregatImport
         if (count($rows) > 0) {
             $c = count(array_keys($rows[0])); // ??????????????????
 
-            if (DIRECTORY_SEPARATOR === '/') {
-                \PHPExcel_Shared_Font::setTrueTypeFontPath('/usr/share/fonts');
-            }
-
             /* Авторазмер колонок Excel */
-            \PHPExcel_Shared_Font::setAutoSizeMethod(\PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+            //\PHPExcel_Shared_Font::setAutoSizeMethod(\PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
             foreach (range(0, $c) as $col) {
                 $sheet->getColumnDimensionByColumn($col)->setAutoSize(true);
                 $sheet->calculateColumnWidths();
