@@ -95,7 +95,7 @@ class FregatController extends Controller
                             'generate-authkeys',
                         ],
                         'allow' => true,
-                        'ips' => ['172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
+                        'ips' => ['172.19.17.40', '172.19.17.39', '172.19.17.30', '127.0.0.1', 'localhost', '::1', '172.19.17.81', '172.19.17.253'],
                     ],
                     [
                         'actions' => ['resetadmin', 'mat-files'],
