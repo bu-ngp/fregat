@@ -88,6 +88,8 @@ use app\func\Proc;
                 ]));
                 ?>
 
+                <?= Proc::FilterFieldDateRange($form, $model, 'mattraffic_first_prihod') ?>
+
                 <?= $form->field($model, 'material_attachfiles_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>
 
                 <?= $form->field($model, 'not_material_attachfiles_mark')->checkbox()->label(null, ['class' => 'control-label']); ?>

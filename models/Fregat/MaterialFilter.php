@@ -8,7 +8,6 @@ use yii\base\Model;
 
 class MaterialFilter extends Model
 {
-
     public $mol_fullname_material;
     public $mol_fullname_material_not;
     public $material_writeoff;
@@ -33,7 +32,8 @@ class MaterialFilter extends Model
     public $mattraffic_lastchange_end;
     public $material_working_mark;
     public $material_recovery_attachfiles_mark;
-
+    public $mattraffic_first_prihod_beg;
+    public $mattraffic_first_prihod_end;
 
     public function rules()
     {
@@ -62,6 +62,8 @@ class MaterialFilter extends Model
             [[
                 'mattraffic_lastchange_beg',
                 'mattraffic_lastchange_end',
+                'mattraffic_first_prihod_beg',
+                'mattraffic_first_prihod_end',
             ], 'date', 'format' => 'php:Y-m-d'],
             [[
                 'mol_id_build',
@@ -94,6 +96,7 @@ class MaterialFilter extends Model
             'tr_osnov_uninstall_mark' => 'Отсутствует акт установки, как перемещенная материальная ценность',
             'tr_mat_install_mark' => 'Имеется акт установки, как укомплектованная материальная ценность',
             'tr_mat_uninstall_mark' => 'Отсутствует акт установки, как укомплектованная материальная ценность',
+            'mattraffic_first_prihod_beg' => 'Дата первого прихода мат. ценности',
         ];
     }
 
