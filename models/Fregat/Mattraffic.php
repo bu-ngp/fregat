@@ -319,7 +319,7 @@ class Mattraffic extends \yii\db\ActiveRecord
             ->select(array_merge(isset($params['init']) ? [] : ['mattraffic.mattraffic_id AS id'], ['CONCAT_WS(", ", idbuild.build_name, CONCAT("каб. ",idCabinet.cabinet_name), idMaterial.material_inv, idMaterial.material_name) AS text']))
             ->joinWith(['trOsnovs.idCabinet', 'idMol.idperson', 'idMol.iddolzh', 'idMol.idpodraz', 'idMol.idbuild', 'idMaterial'])
             ->leftJoin('mattraffic m2', 'mattraffic.id_material = m2.id_material and mattraffic.id_mol = m2.id_mol and mattraffic.mattraffic_date < m2.mattraffic_date')
-            ->where(['like', isset($params['init']) ? 'mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
+            ->where(['like', isset($params['init']) ? 'mattraffic.mattraffic_id' : 'idMaterial.material_inv', $params['q'], isset($params['init']) ? false : null])
             ->andWhere('mattraffic.mattraffic_number > 0')
             ->andWhere(['in', 'mattraffic.mattraffic_tip', [3]])
             ->andWhere(['m2.mattraffic_date' => null])

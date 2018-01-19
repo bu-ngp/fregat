@@ -134,22 +134,22 @@ class MaterialSearch extends Material
             'currentMattraffic.idMol.idbuild currentidbuild',
         ]);
 
-        $query->with(['lastMattraffic']);
+//        $query->with(['lastMattraffic']);
 
         $query->andFilterWhere(['LIKE', 'currentidperson.auth_user_fullname', $this->getAttribute('currentMattraffic.idMol.idperson.auth_user_fullname')]);
         $query->andFilterWhere(['LIKE', 'currentiddolzh.dolzh_name', $this->getAttribute('currentMattraffic.idMol.iddolzh.dolzh_name')]);
         $query->andFilterWhere(['LIKE', 'currentidbuild.build_name', $this->getAttribute('currentMattraffic.idMol.idbuild.build_name')]);
         $query->andFilterWhere(Proc::WhereConstruct($this, 'currentMattraffic.mattraffic_date', Proc::Date));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'lastMattraffic.mattraffic_tip'));
-        $query->andFilterWhere(Proc::WhereConstruct($this, 'lastMattraffic.mattraffic_date', Proc::Date));
+//        $query->andFilterWhere(Proc::WhereConstruct($this, 'lastMattraffic.mattraffic_tip'));
+//        $query->andFilterWhere(Proc::WhereConstruct($this, 'lastMattraffic.mattraffic_date', Proc::Date));
 
         Proc::AssignRelatedAttributes($dataProvider, [
             'currentMattraffic.idMol.idperson.auth_user_fullname' => 'currentidperson',
             'currentMattraffic.idMol.iddolzh.dolzh_name' => 'currentiddolzh',
             'currentMattraffic.idMol.idbuild.build_name' => 'currentidbuild',
             'currentMattraffic.mattraffic_date',
-            'lastMattraffic.mattraffic_tip',
-            'lastMattraffic.mattraffic_date',
+//            'lastMattraffic.mattraffic_tip',
+//            'lastMattraffic.mattraffic_date',
         ]);
 
         $this->materialDopFilter($query);
@@ -189,6 +189,18 @@ class MaterialSearch extends Material
                     ->leftJoin('matvid idMatv', 'idMatv.matvid_id = materials.id_matvid')
                     ->leftJoin('grupavid grupavids', 'idMatv.matvid_id = grupavids.id_matvid')
                     ->andWhere('materials.material_id = material.material_id')
+            ]);
+
+            $attr = 'mattraffic_first_prihod';
+            Proc::Filter_Compare(Proc::DateRange, $query, $filter, [
+                'Attribute' => $attr,
+                'SQLAttribute' => 'prih.mattraffic_date',
+                'ExistsSubQuery' => (new Query())
+                    ->select('prih.id_material')
+                    ->from('mattraffic prih')
+                    ->leftJoin('mattraffic prih2','prih.id_material = prih2.id_material and prih.mattraffic_date > prih2.mattraffic_date')
+                    ->andWhere(['prih2.mattraffic_date' => NULL])
+                    ->andWhere('prih.id_material = material.material_id')
             ]);
 
             $attr = 'material_attachfiles_mark';

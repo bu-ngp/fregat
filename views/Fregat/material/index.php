@@ -166,7 +166,8 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'lastMattraffic.mattraffic_tip',
                     'label' => 'Тип последней операции',
-                    'filter' => $mattraffic_tip,
+                    'filter' => false,
+//                    'filter' => $mattraffic_tip,
                     'value' => function ($model) use ($mattraffic_tip) {
                         return isset($mattraffic_tip[$model->lastMattraffic->mattraffic_tip]) ? $mattraffic_tip[$model->lastMattraffic->mattraffic_tip] : '';
                     },
@@ -175,6 +176,7 @@ $this->params['breadcrumbs'] = Proc::Breadcrumbs($this);
                 [
                     'attribute' => 'lastMattraffic.mattraffic_date',
                     'format' => 'date',
+                    'filter' => false,
                     'label' => 'Дата последней операции',
                     'visible' => false,
                 ],
