@@ -153,6 +153,7 @@ use app\func\Proc;
                                 'resultrequest' => 'Fregat/cabinet/selectinput',
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinput',
+                                'minimumInputLength' => 1,
                             ]))->label('- на текущий момент:');
                             ?>
 
@@ -169,6 +170,7 @@ use app\func\Proc;
                                 'resultrequest' => 'Fregat/cabinet/selectinput',
                                 'thisroute' => $this->context->module->requestedRoute,
                                 'methodquery' => 'selectinput',
+                                'minimumInputLength' => 1,
                             ]))->label('- за все время:');
                             ?>
                         </div>
