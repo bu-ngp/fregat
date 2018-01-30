@@ -291,7 +291,7 @@ class MaterialSearch extends Material
                 'ExistsSubQuery' => (new Query())
                     ->select('mattraffics.id_material')
                     ->from('mattraffic mattraffics')
-                    ->leftJoin('mattraffic m2', 'mattraffics.id_material = m2.id_material and mattraffics.mattraffic_date < m2.mattraffic_date and mattraffics.mattraffic_id < m2.mattraffic_id')
+                    ->leftJoin('mattraffic m2', 'mattraffics.id_material = m2.id_material and mattraffics.mattraffic_date < m2.mattraffic_date and mattraffics.mattraffic_id < m2.mattraffic_id and m2.mattraffic_tip = 3')
                     ->leftJoin('tr_osnov trOsnovs', 'trOsnovs.id_mattraffic = mattraffics.mattraffic_id')
                     ->leftJoin('cabinet idCabinet', 'trOsnovs.id_cabinet = idCabinet.cabinet_id')
                     ->andWhere(['in', 'mattraffics.mattraffic_tip', [3]])
