@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\func\OSHelper;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -83,6 +84,7 @@ class SiteController extends Controller
 
     public function actionSetsession()
     {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $result = '0';
         $modelclass = (string)filter_input(INPUT_POST, 'modelclass');
         $field = (string)filter_input(INPUT_POST, 'field');
@@ -121,12 +123,13 @@ class SiteController extends Controller
             $session->close();
         }
 
-        echo $result;
+        return $result;
     }
 
     // Для определения секущей вкладки, если вкладка сменилась, то перейти на домашнюю страницу
     public function actionSetwindowguid()
     {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $guid = (string)filter_input(INPUT_POST, 'guid');
         $pathname = (string)filter_input(INPUT_POST, 'path');
         $search = (string)filter_input(INPUT_POST, 'search');
@@ -163,7 +166,8 @@ class SiteController extends Controller
             $session['WindowsGUIDs'] = $res;
         }
         $session->close();
-        echo json_encode((object)['guid' => $guid, 'gohome' => $gohome]);
+
+        return (object)['guid' => $guid, 'gohome' => $gohome];
     }
 
     public function actionGohome()
@@ -175,14 +179,14 @@ class SiteController extends Controller
     public function actionDeleteExcelFile()
     {
         if (YII_ENV !== 'test') {
-            $FileName = DIRECTORY_SEPARATOR === '/' ? 'files/' . (string)filter_input(INPUT_POST, 'filename') : mb_convert_encoding('files/' . (string)filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+            $FileName = OSHelper::setFileNameByOS('files/' . (string)filter_input(INPUT_POST, 'filename'));
             unlink($FileName);
         }
     }
 
     public function actionDeleteTmpFile()
     {
-        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . (string)filter_input(INPUT_POST, 'filename') : mb_convert_encoding('tmpfiles/' . (string)filter_input(INPUT_POST, 'filename'), 'Windows-1251', 'UTF-8');
+        $FileName = OSHelper::setFileNameByOS('tmpfiles/' . (string)filter_input(INPUT_POST, 'filename'));
         unlink($FileName);
     }
 

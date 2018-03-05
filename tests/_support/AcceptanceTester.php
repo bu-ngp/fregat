@@ -1,5 +1,7 @@
 <?php
 
+use app\func\OSHelper;
+
 
 /**
  * Inherited Methods
@@ -205,12 +207,12 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function convertOSFileName($FileName)
     {
-        return DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        return OSHelper::setFileNameByOS($FileName);
     }
 
     public function checkExcelFile($fileName, $dataArray)
     {
-        $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
+        $fileNameOutput = OSHelper::getFileNameByOS($fileName);
         $objPHPExcel = \PHPExcel_IOFactory::load(Yii::$app->basePath . '/web/files/' . $fileName);
         if (is_string($fileName) && !empty($fileName) && is_array($dataArray) && count($dataArray) > 0) {
             foreach ($dataArray as $cell) {
@@ -226,7 +228,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function checkZipFile($fileName, $filesArray)
     {
-        $fileNameOutput = DIRECTORY_SEPARATOR === '/' ? $fileName : mb_convert_encoding($fileName, 'UTF-8', 'Windows-1251');
+        $fileNameOutput = OSHelper::getFileNameByOS($fileName);
 
         $zip = new ZipArchive();
         if ($zip->open(Yii::$app->basePath . '/web/files/' . $fileName) !== true)
@@ -238,13 +240,17 @@ class AcceptanceTester extends \Codeception\Actor
             $filesFromZip[] = mb_convert_encoding($zip->getNameIndex($i), 'UTF-8', 'CP866');
         }
 
-        $result = array_diff($filesArray, $filesFromZip);
+        if ($zip->numFiles !== count($filesArray)) {
+            $this->fail('Количество файлов в архиве не совпадает: ' . $zip->numFiles . ' , вместо ' . count($filesArray));
+        }
+
+//        $result = array_diff($filesArray, $filesFromZip);
 
         // TODO Узнать кодировку zip архивов на Centos
-        if (DIRECTORY_SEPARATOR !== '/' && !empty($result))
-            $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
+//        if (DIRECTORY_SEPARATOR !== '/' && !empty($result))
+//            $this->fail('Отсутствуют файлы в архиве: ' . implode(',', $result));
 
-        $zip->close();
+            $zip->close();
     }
 
     public function countRowsDynagridEquals($dynaGridID, $needCount)

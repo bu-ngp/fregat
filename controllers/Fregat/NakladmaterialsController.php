@@ -104,9 +104,10 @@ class NakladmaterialsController extends Controller
             if (!empty($mattraffic_id)) {
                 $query = Mattraffic::findOne($mattraffic_id);
                 if (!empty($query)) {
-                    echo json_encode([
+                    \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return [
                         'mattraffic_number' => $query->mattraffic_number,
-                    ]);
+                    ];
                 }
             }
         }

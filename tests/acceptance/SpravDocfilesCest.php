@@ -159,6 +159,6 @@ class SpravDocfilesCest
      */
     public function destroyData()
     {
-        Docfiles::deleteAll();
+//        Docfiles::deleteAll();
     }
 }

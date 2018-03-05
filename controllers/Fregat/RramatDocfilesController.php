@@ -65,9 +65,10 @@ class RramatDocfilesController extends Controller
                     $RramatDocfiles = new RramatDocfiles;
                     $RramatDocfiles->id_docfiles = $Docfiles->primaryKey;
                     $RramatDocfiles->id_recoveryrecieveaktmat = $_POST['id_recoveryrecieveaktmat'];
-                    if ($RramatDocfiles->save())
-                        echo json_encode(['ok']);
-                    else
+                    if ($RramatDocfiles->save()) {
+                        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                        return ['ok'];
+                    } else
                         throw new HttpException(500, Proc::ActiveRecordErrorsToString($RramatDocfiles));
                 } else
                     throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));

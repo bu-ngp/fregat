@@ -1,6 +1,7 @@
 <?php
 namespace app\models\Fregat;
 
+use app\func\OSHelper;
 use Yii;
 use yii\base\Model;
 use yii\web\UploadedFile;
@@ -44,7 +45,7 @@ class UploadDocFile extends Model
 
         if ($this->validate()) {
             $filebase = str_replace(" ", "_", $this->docFile->baseName);
-            $fileroot = (DIRECTORY_SEPARATOR === '/') ? $filebase : mb_convert_encoding($filebase, 'Windows-1251', 'UTF-8');
+            $fileroot = OSHelper::setFileNameByOS($filebase);
             $Unix = date('U');
             $result['savedhashfilename'] = $fileroot . '_' . $Unix . '.' . $this->docFile->extension;
             $result['savedhashfilename_utf8'] = $filebase . '_' . $Unix . '.' . $this->docFile->extension;

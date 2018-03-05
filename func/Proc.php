@@ -1199,16 +1199,13 @@ class Proc
         $objPHPExcel->setActiveSheetIndex(0);
         // Формируем файл Excel
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        $FileName = OSHelper::setFileNameByOS($FileName);
         // Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
         $fileroot = self::SaveFileIfExists('files/' . $FileName . '.xlsx');
         // Сохраняем файл в папку "files"
         $objWriter->save('files/' . $fileroot);
         // Возвращаем имя файла Excel
-        if (DIRECTORY_SEPARATOR === '/')
-            echo $fileroot;
-        else
-            echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+        echo OSHelper::getFileNameByOS($fileroot);
     }
 
     // Функция преобразует массив
@@ -1734,7 +1731,7 @@ class Proc
                 $fnutf8 = $filename;
                 $fregatsettings = Fregatsettings::findOne(1);
 
-                $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+                $fl = OSHelper::setFileNameByOS('tmpfiles/' . $filename);
 
                 Yii::$app->mailer->compose('//Fregat/recoverysendakt/_send', [
                     'filename' => $filename,
@@ -1878,7 +1875,7 @@ class Proc
         $Docfiles = Docfiles::findOne($docfile_id);
         if (!empty($Docfiles)) {
             $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
-            $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+            $fileroot = OSHelper::setFileNameByOS($hash);
 
             if ($Docfiles->delete() && file_exists($fileroot))
                 return unlink($fileroot);
@@ -1912,7 +1909,7 @@ class Proc
 
     public static function file_exists_utf8($FileNameUTF8)
     {
-        $FileRoot = (DIRECTORY_SEPARATOR === '/') ? $FileNameUTF8 : mb_convert_encoding($FileNameUTF8, 'Windows-1251', 'UTF-8');
+        $FileRoot = OSHelper::setFileNameByOS($FileNameUTF8);
         return file_exists($FileRoot);
     }
 

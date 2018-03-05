@@ -30,7 +30,6 @@ $(document).ready(function () {
                     buttonloadingid: "ChangeBuildMolDialog_apply"
                 },
                 success: function (data) {
-                    data = JSON.parse(data);
                     $("#mattraffic-id_mol").append("<option value='" + data.id + "'>" + data.text + "</option>");
                     $("#mattraffic-id_mol").val(data.id).trigger('change');
                     $(ChangeBuildMolDialog).modal("hide");

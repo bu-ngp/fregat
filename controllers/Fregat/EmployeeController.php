@@ -197,8 +197,8 @@ class EmployeeController extends Controller
             $session->close();
 
             $text = $Employee->selectinput(['init' => true, 'q' => $Employee->primaryKey]);
-
-            return json_encode((object)['id' => $Employee->primaryKey, 'text' => $text['text']]);
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['id' => $Employee->primaryKey, 'text' => $text['text']];
         }
     }
 

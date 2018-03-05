@@ -4,9 +4,7 @@ function FillTrOsnov() {
             url: baseUrl + "Fregat/tr-osnov/filltrosnov",
             type: "post",
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val()},
-            success: function (data) {
-                var obj = JSON.parse(data);
-
+            success: function (obj) {
                 if (obj.build_name) {
                     $("#trosnov-id_cabinet").prop("disabled", false);
                     $("#trosnov-id_cabinet").next("span").next(".input-group-btn").find("a").removeClass("disabled");
@@ -60,8 +58,7 @@ function MatvidCount() {
             url: baseUrl + "Fregat/tr-osnov/matvid-count",
             type: "post",
             data: {mattraffic_id: $("#trosnov-id_mattraffic").val(), cabinet_id: $("#trosnov-id_cabinet").val()},
-            success: function (data) {
-                var obj = JSON.parse(data);
+            success: function (obj) {
                 if (obj.message != "") {
                     $(".alert-matvid").text(obj.message);
                 }

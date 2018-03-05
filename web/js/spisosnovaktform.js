@@ -5,8 +5,7 @@ function AddMattraffic(spisosnovakt_id) {
             type: "post",
             data: {id_mattraffic: $("#mattraffic-mattraffic_id").val(), id_spisosnovakt: spisosnovakt_id},
             success: function (data) {
-                var obj = JSON.parse(data);
-                if (obj.status) {
+                if (data.status) {
                     $('select[name="Mattraffic[mattraffic_id]"]').select2('val', '');
                     $("#spisosnovmaterialsgrid_gw").yiiGridView("applyFilter");
                 }

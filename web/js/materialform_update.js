@@ -6,8 +6,7 @@ function LoadImages(data) {
             url: baseUrl + "Fregat/material-docfiles/get-images",
             type: "post",
             data: {id_material: $("#material-material_id").val()},
-            success: function (data) {
-                var obj = JSON.parse(data);
+            success: function (obj) {
                 var fotoramaDiv = $('#material_fotorama').fotorama();
                 var fotorama = fotoramaDiv.data('fotorama');
                 if (obj.length == 0)

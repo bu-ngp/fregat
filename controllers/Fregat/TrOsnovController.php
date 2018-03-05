@@ -221,11 +221,12 @@ class TrOsnovController extends Controller
     public function actionFilltrosnov()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
             if (!empty($mattraffic_id)) {
                 $query = Mattraffic::findOne($mattraffic_id);
                 if (!empty($query)) {
-                    echo json_encode([
+                    return [
                         'material_tip' => $query->idMaterial->material_tip,
                         'material_name' => $query->idMaterial->material_name,
                         'material_writeoff' => $query->idMaterial->material_writeoff,
@@ -235,7 +236,7 @@ class TrOsnovController extends Controller
                         'podraz_name' => $query->idMol->idpodraz->podraz_name,
                         'build_name' => $query->idMol->idbuild->build_name,
                         'mattraffic_number' => doubleval(Mattraffic::GetMaxNumberMattrafficForInstallAkt($query->mattraffic_id)), // Максимльно возможное кол-во для перемещения
-                    ]);
+                    ];
                 }
             }
         }
@@ -245,6 +246,7 @@ class TrOsnovController extends Controller
     public function actionMatvidCount()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
             $cabinet_id = Yii::$app->request->post('cabinet_id');
             $Mattraffic = Mattraffic::findOne($mattraffic_id);
@@ -270,14 +272,14 @@ class TrOsnovController extends Controller
                     $sum['summ'] = $sum['summ'] === null ? 0 : $sum['summ'];
                     $cabinet = Cabinet::findOne($cabinet_id);
 
-                    echo json_encode([
+                    return [
                         'message' => "В кабинете \"{$cabinet->idbuild->build_name}, каб. {$cabinet->cabinet_name}\" уже имеется вид материальной ценности \"{$Mattraffic->idMaterial->idMatv->matvid_name}\" в количестве: {$sum['summ']}"
-                    ]);
+                    ];
                 }
             } else {
-                echo json_encode([
+                return [
                     'message' => "",
-                ]);
+                ];
             }
         }
     }
@@ -302,11 +304,12 @@ class TrOsnovController extends Controller
     public function actionFillinstalledmat()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $id_tr_osnov = Yii::$app->request->post('id_tr_osnov');
             if (!empty($id_tr_osnov)) {
                 $query = TrOsnov::findOne($id_tr_osnov);
                 if (!empty($query)) {
-                    echo json_encode([
+                    return [
                         'material_name' => $query->idMattraffic->idMaterial->material_name,
                         'material_inv' => $query->idMattraffic->idMaterial->material_inv,
                         'material_serial' => $query->idMattraffic->idMaterial->material_serial,
@@ -314,7 +317,7 @@ class TrOsnovController extends Controller
                         'cabinet_name' => $query->idCabinet->cabinet_name,
                         'auth_user_fullname' => $query->idMattraffic->idMol->idperson->auth_user_fullname,
                         'dolzh_name' => $query->idMattraffic->idMol->iddolzh->dolzh_name,
-                    ]);
+                    ];
                 }
             }
         }

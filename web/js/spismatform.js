@@ -14,9 +14,8 @@ function checkMaterialsCount() {
                     spisinclude: $("#spismat-spismat_spisinclude").val()
                 })
             },
-            success: function (data) {
-                if (data != "") {
-                    var obj = JSON.parse(data);
+            success: function (obj) {
+                if (obj != "") {
 
                     $("#spismat_alert").html("<strong>Доступно материалов для добавления: </strong>" + obj.count);
                     $("#spismat_alert").show();

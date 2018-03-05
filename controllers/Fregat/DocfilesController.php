@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\OSHelper;
 use app\func\Proc;
 use app\models\Fregat\MaterialDocfiles;
 use app\models\Fregat\RraDocfiles;
@@ -85,9 +86,10 @@ class DocfilesController extends Controller
                 $Docfiles->docfiles_hash = $UploadTrigger['savedhashfilename_utf8'];
                 $Docfiles->docfiles_name = $UploadTrigger['savedfilename'];
                 $Docfiles->docfiles_ext = $UploadTrigger['fileextension'];
-                if ($Docfiles->save())
-                    echo json_encode(['ok']);
-                else
+                if ($Docfiles->save()) {
+                    \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['ok'];
+                } else
                     throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));
             } else
                 throw new HttpException(500, Proc::ActiveRecordErrorsToString($UploadTrigger['errors']));
@@ -105,7 +107,7 @@ class DocfilesController extends Controller
     {
         if (Yii::$app->request->isAjax) {
             $hash = Yii::$app->basePath . '/docs/' . $this->findModel($id)->docfiles_hash;
-            $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+            $fileroot = OSHelper::setFileNameByOS($hash);
 
             if ($this->findModel($id)->delete())
                 if (file_exists($fileroot))
@@ -118,7 +120,7 @@ class DocfilesController extends Controller
         $Docfiles = $this->findModel($id);
 
         $hash = Yii::$app->basePath . '/docs/' . $Docfiles->docfiles_hash;
-        $fileroot = (DIRECTORY_SEPARATOR === '/') ? $hash : mb_convert_encoding($hash, 'Windows-1251', 'UTF-8');
+        $fileroot = OSHelper::setFileNameByOS($hash);
 
         return file_exists($fileroot) ? Yii::$app->response->sendFile($fileroot, $Docfiles->docfiles_name) : false;
     }

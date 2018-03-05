@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\OSHelper;
 use app\func\ReportsTemplate\InstallaktReport;
 use app\func\ReportsTemplate\SpismatReport;
 use app\models\Fregat\SpismatFilter;
@@ -204,7 +205,8 @@ class SpismatController extends Controller
             if (!preg_match('/\d{4}-\d{2}-\d{2}/', $params->period_end))
                 throw new HttpException(500, 'не валидный period_end');
 
-            return json_encode(['count' => TrMat::getCountMaterials($params->id_mol, $params->period_beg, $params->period_end, $params->spisinclude)]);
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['count' => TrMat::getCountMaterials($params->id_mol, $params->period_beg, $params->period_end, $params->spisinclude)];
         } else
             throw new HttpException(500, 'не Ajax запрос');
     }
@@ -236,7 +238,7 @@ class SpismatController extends Controller
 
         if ($materials) {
             $subDirName = DIRECTORY_SEPARATOR . 'Акты установки для ведомости №' . $spismat_id;
-            $subDirName = DIRECTORY_SEPARATOR === '/' ? $subDirName : mb_convert_encoding($subDirName, 'Windows-1251', 'UTF-8');
+            $subDirName = OSHelper::setFileNameByOS($subDirName);
 
             $dir_work = $Report->getDirectoryFiles();
             $directory = $Report->getDirectoryFiles() . $subDirName;
@@ -258,7 +260,7 @@ class SpismatController extends Controller
             $zip = new ZipArchive();
             $zip->open($dir_work . $subDirName . '.zip', ZipArchive::CREATE);
             foreach ($aktsNames as $aktName) {
-                $aktName_encode = DIRECTORY_SEPARATOR === '/' ? $aktName : mb_convert_encoding($aktName, 'Windows-1251', 'UTF-8');
+                $aktName_encode = OSHelper::setFileNameByOS($aktName);
                 $aktName = mb_convert_encoding($aktName, 'CP866', 'UTF-8');
                 $zip->addFile($directory . DIRECTORY_SEPARATOR . $aktName_encode, $aktName);
             }
@@ -268,7 +270,7 @@ class SpismatController extends Controller
             array_map('unlink', glob($directory . DIRECTORY_SEPARATOR . "*"));
             rmdir($directory);
 
-            $subDirName = DIRECTORY_SEPARATOR === '/' ? $subDirName : mb_convert_encoding($subDirName, 'UTF-8', 'Windows-1251');
+            $subDirName = OSHelper::getFileNameByOS($subDirName);
 
             echo $subDirName . '.zip';
         }

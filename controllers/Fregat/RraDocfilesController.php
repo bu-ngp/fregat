@@ -65,9 +65,10 @@ class RraDocfilesController extends Controller
                     $RraDocfiles = new RraDocfiles;
                     $RraDocfiles->id_docfiles = $Docfiles->primaryKey;
                     $RraDocfiles->id_recoveryrecieveakt = $_POST['id_recoveryrecieveakt'];
-                    if ($RraDocfiles->save())
-                        echo json_encode(['ok']);
-                    else
+                    if ($RraDocfiles->save()) {
+                        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                        return ['ok'];
+                    } else
                         throw new HttpException(500, Proc::ActiveRecordErrorsToString($RraDocfiles));
                 } else
                     throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));

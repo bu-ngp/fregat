@@ -276,16 +276,13 @@ class ReportTemplates
         $objPHPExcel->setActiveSheetIndex(0);
         // Формируем файл Excel
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        $FileName = OSHelper::setFileNameByOS($FileName);
         // Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
         $fileroot = Proc::SaveFileIfExists('files/' . $FileName . '.xlsx');
         // Сохраняем файл в папку "files"
         $objWriter->save('files/' . $fileroot);
         // Возвращаем имя файла Excel
-        if (DIRECTORY_SEPARATOR === '/')
-            echo $fileroot;
-        else
-            echo mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+        echo OSHelper::getFileNameByOS($fileroot);
     }
 
 }

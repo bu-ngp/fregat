@@ -213,13 +213,14 @@ class TrMatController extends Controller
     public function actionMaxNumberMaterialByMol()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $mattraffic_id = Yii::$app->request->post('mattraffic_id');
             if (!empty($mattraffic_id)) {
                 $query = Mattraffic::findOne($mattraffic_id);
                 if (!empty($query)) {
-                    echo json_encode([
+                    return [
                         'mattraffic_number' => $query->mattraffic_number,
-                    ]);
+                    ];
                 }
             }
         }

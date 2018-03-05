@@ -60,9 +60,10 @@ class MaterialDocfilesController extends Controller
                     $MaterialDocfiles = new MaterialDocfiles;
                     $MaterialDocfiles->id_docfiles = $Docfiles->primaryKey;
                     $MaterialDocfiles->id_material = $_POST['id_material'];
-                    if ($MaterialDocfiles->save())
-                        echo json_encode(['ok']);
-                    else
+                    if ($MaterialDocfiles->save()) {
+                        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                        return ['ok'];
+                    } else
                         throw new HttpException(500, Proc::ActiveRecordErrorsToString($MaterialDocfiles));
                 } else
                     throw new HttpException(500, Proc::ActiveRecordErrorsToString($Docfiles));
@@ -79,14 +80,15 @@ class MaterialDocfilesController extends Controller
             $id_docfiles = $ar->id_docfiles;
             if ($ar->delete())
                 Proc::DeleteDocFile($id_docfiles);
-                
+
         }
     }
 
     public function actionGetImages()
     {
         if (Yii::$app->request->isAjax) {
-            echo json_encode(MaterialDocfiles::getImagesList(Yii::$app->request->post('id_material')));
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return MaterialDocfiles::getImagesList(Yii::$app->request->post('id_material'));
         }
     }
 

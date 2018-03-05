@@ -4,9 +4,8 @@ function FillInstaledMat() {
             url: baseUrl + "Fregat/tr-osnov/fillinstalledmat",
             type: "post",
             data: {id_tr_osnov: $("#osmotrakt-id_tr_osnov").val()},
-            success: function (data) {
-                if (data != "") {
-                    var obj = JSON.parse(data);
+            success: function (obj) {
+                if (obj != "") {
                     $("#material-material_name").val(obj.material_name);
                     $("#material-material_inv").val(obj.material_inv);
                     $("#material-material_serial").val(obj.material_serial);
@@ -39,9 +38,8 @@ function FillNewinstallakt() {
             url: baseUrl + "Fregat/osmotrakt/fillnewinstallakt",
             type: "post",
             data: {id_mattraffic: $("#installtrosnov-id_mattraffic").val()},
-            success: function (data) {
-                if (data != "") {
-                    var obj = JSON.parse(data);
+            success: function (obj) {
+                if (obj != "") {
 
                     if (obj.build_name) {
                         $("#installtrosnov-id_cabinet").prop("disabled", false);

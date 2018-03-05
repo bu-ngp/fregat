@@ -134,6 +134,7 @@ class RemoveaktReport extends BaseReportPortal
                         'id_parent' => $arm->idParent->primaryKey,
                         'trRmMats.id_removeakt' => $Removeakt->removeakt_id,
                     ])
+                    ->orderBy(['trRmMats.tr_rm_mat_id' => SORT_ASC])
                     ->all();
 
                 $startrow = $num;

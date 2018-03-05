@@ -96,6 +96,7 @@ class SpisosnovmaterialsController extends Controller
     public function actionAddmattraffic()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $id_mattraffic = Yii::$app->request->post('id_mattraffic');
             $id_spisosnovakt = Yii::$app->request->post('id_spisosnovakt');
             if (!empty($id_mattraffic) && !empty($id_spisosnovakt)) {
@@ -103,9 +104,9 @@ class SpisosnovmaterialsController extends Controller
                 $Spisosnovmaterials->id_mattraffic = $id_mattraffic;
                 $Spisosnovmaterials->id_spisosnovakt = $id_spisosnovakt;
                 $Spisosnovmaterials->spisosnovmaterials_number = 1;
-                echo json_encode([
+                return [
                     'status' => $Spisosnovmaterials->save(),
-                ]);
+                ];
             }
         }
     }

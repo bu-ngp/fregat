@@ -4,8 +4,7 @@ function AddOsmotrakt(recoverysendakt_id) {
             url: baseUrl + "Fregat/recoveryrecieveakt/addosmotrakt",
             type: "post",
             data: {id_osmotrakt: $("#osmotrakt-osmotrakt_id").val(), id_recoverysendakt: recoverysendakt_id},
-            success: function (data) {
-                var obj = JSON.parse(data);
+            success: function (obj) {
                 if (obj.status) {
                     $('select[name="Osmotrakt[osmotrakt_id]"]').select2('val', '');
                     $("#recoveryrecieveaktgrid_gw").yiiGridView("applyFilter");

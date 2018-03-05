@@ -1922,15 +1922,12 @@ class FregatImport
         /* Формируем файл Excel */
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         /* Proc::SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows */
-        $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+        $FileName = OSHelper::setFileNameByOS($FileName);
         $fileroot = Proc::SaveFileIfExists('importreports/' . $FileName . '.xlsx');
         /* Сохраняем файл в папку "files" */
         $objWriter->save('importreports/' . $fileroot);
         /* Возвращаем имя файла Excel */
-        if (DIRECTORY_SEPARATOR === '/')
-            echo '<BR>' . $fileroot . '<BR>';
-        else
-            echo '<BR>' . mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251') . '<BR>';
+        echo '<BR>' . OSHelper::getFileNameByOS($fileroot) . '<BR>';
     }
 
     // Функция удаляет последние отчеты
@@ -1956,9 +1953,7 @@ class FregatImport
                     Logreport::findOne($row['logreport_id'])->delete();
 
                     $fileroot = 'importreports/Отчет импорта в систему Фрегат N' . $row['logreport_id'] . '.xlsx';
-
-                    if (DIRECTORY_SEPARATOR !== '/')
-                        $fileroot = mb_convert_encoding($fileroot, 'Windows-1251', 'UTF-8');
+                    $fileroot = OSHelper::setFileNameByOS($fileroot);
 
                     unlink($fileroot);
                 }

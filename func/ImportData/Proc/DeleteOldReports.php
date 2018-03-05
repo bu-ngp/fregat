@@ -2,6 +2,7 @@
 
 namespace app\func\ImportData\Proc;
 
+use app\func\OSHelper;
 use app\models\Fregat\Import\Employeelog;
 use app\models\Fregat\Import\Importconfig;
 use app\models\Fregat\Import\Logreport;
@@ -147,8 +148,7 @@ class DeleteOldReports implements iDeleteOldReports
 
                 $FileRoot = 'importreports/Отчет импорта в систему Фрегат N' . $Row['logreport_id'] . '.xlsx';
 
-                if (DIRECTORY_SEPARATOR !== '/')
-                    $FileRoot = mb_convert_encoding($FileRoot, 'Windows-1251', 'UTF-8');
+                $FileRoot = OSHelper::setFileNameByOS($FileRoot);
 
                 unlink($FileRoot);
 

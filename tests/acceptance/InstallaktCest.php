@@ -183,6 +183,7 @@ class InstallaktCest
         $I->seeElement('//span[@id="mattraffic_number_max" and text()="Не более 1"]');
 
         $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
+        $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000004, ИВАНОВ ИВАН ИВАНОВИЧ, ТЕРАПЕВТ, ТЕРАПЕВТИЧЕСКОЕ, ПОЛИКЛИНИКА 1', '004');
 
         $I->wait(2);
@@ -236,6 +237,7 @@ class InstallaktCest
         $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 103', '103');
         $I->seeElementInDOM('//div[text()=\'В кабинете "ПОЛИКЛИНИКА 1, каб. 103" уже имеется вид материальной ценности "КАРТРИДЖ" в количестве: 4.000\']');
 
+        $I->executeJS('window.scrollTo(0,0);');
         $I->chooseValueFromSelect2('TrOsnov[id_mattraffic]', '1000002, ПЕТРОВ ПЕТР ПЕТРОВИЧ, ПРОГРАММИСТ, АУП, ПОЛИКЛИНИКА 1', '002');
         $I->chooseValueFromSelect2('TrOsnov[id_cabinet]', 'ПОЛИКЛИНИКА 1, каб. 102', '102');
         $I->fillField('Mattraffic[mattraffic_number]', '1.000');
@@ -349,7 +351,7 @@ class InstallaktCest
 
         $I->fillField('Mattraffic[mattraffic_number]', '5.000');
         $I->click('//button[contains(text(),"Добавить")]');
-        $I->wait(2);
+        $I->wait(3);
 
         $I->checkDynagridData([['link' => ['text' => 'Кухонный стол', 'href' => '/Fregat/material/update?id=35']], '1000002', 'ПОЛИКЛИНИКА 1', '102', ['link' => ['text' => 'Картридж А12', 'href' => '/Fregat/material/update?id=37']], '1000004', '5.000', 'ИВАНОВ ИВАН ИВАНОВИЧ', 'ТЕРАПЕВТ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
         $I->checkDynagridData([['link' => ['text' => 'Шкаф для одежды', 'href' => '/Fregat/material/update?id=34']], '1000001', 'ПОЛИКЛИНИКА 1', '101', ['link' => ['text' => 'Картридж 36A', 'href' => '/Fregat/material/update?id=38']], '1000005', '2.000', 'СИДОРОВ ЕВГЕНИЙ АНАТОЛЬЕВИЧ', 'НЕВРОЛОГ'], 'trMatgrid_gw', ['button[@title="Удалить"]']);
@@ -415,6 +417,7 @@ class InstallaktCest
         $I->click('//a[@id="backbutton"]');
         $I->wait(2);
 
+        $I->executeJS('window.scrollTo(0,0);');
         $I->click('//div[@id="trOsnovgrid_gw"]/div/div/a[contains(text(), "Добавить материальную ценность")]');
         $I->wait(2);
 

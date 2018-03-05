@@ -248,16 +248,13 @@ abstract class BaseReportPortal
 
             $objWriter = \PHPExcel_IOFactory::createWriter($this->_objPHPExcel, 'Excel2007');
 
-            $FileName = DIRECTORY_SEPARATOR === '/' ? $FileName : mb_convert_encoding($FileName, 'Windows-1251', 'UTF-8');
+            $FileName = OSHelper::setFileNameByOS($FileName);
             //this->SaveFileIfExists() - Функция выводит подходящее имя файла, которое еще не существует. mb_convert_encoding() - Изменяем кодировку на кодировку Windows
             $fileroot = $this->SaveFileIfExists($this->getDirectoryFiles() . '/' . $FileName . '.xlsx');
             // Сохраняем файл в папку "files"
             $objWriter->save($this->getDirectoryFiles() . '/' . $fileroot);
             // Возвращаем имя файла Excel
-            if (DIRECTORY_SEPARATOR === '/')
-                return $fileroot;
-            else
-                return mb_convert_encoding($fileroot, 'UTF-8', 'Windows-1251');
+            return OSHelper::getFileNameByOS($fileroot);
         } else
             throw new \Exception('Ошибка в BaseReportPortal->DownloadExcelPHP()');
     }

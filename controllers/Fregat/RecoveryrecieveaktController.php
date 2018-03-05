@@ -82,15 +82,16 @@ class RecoveryrecieveaktController extends Controller
     public function actionAddosmotrakt()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $id_osmotrakt = Yii::$app->request->post('id_osmotrakt');
             $id_recoverysendakt = Yii::$app->request->post('id_recoverysendakt');
             if (!empty($id_osmotrakt) && !empty($id_recoverysendakt)) {
                 $Recoveryrecieveakt = new Recoveryrecieveakt;
                 $Recoveryrecieveakt->id_osmotrakt = $id_osmotrakt;
                 $Recoveryrecieveakt->id_recoverysendakt = $id_recoverysendakt;
-                echo json_encode([
+                return [
                     'status' => $Recoveryrecieveakt->save(),
-                ]);
+                ];
             }
         }
     }

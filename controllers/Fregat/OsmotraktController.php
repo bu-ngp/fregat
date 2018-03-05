@@ -2,6 +2,7 @@
 
 namespace app\controllers\Fregat;
 
+use app\func\OSHelper;
 use app\func\ReportsTemplate\OsmotraktReport;
 use app\models\Fregat\Fregatsettings;
 use app\models\Fregat\InstallTrOsnov;
@@ -152,12 +153,13 @@ class OsmotraktController extends Controller
     public function actionFillnewinstallakt()
     {
         if (Yii::$app->request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $id_mattraffic = Yii::$app->request->post('id_mattraffic');
             if (!empty($id_mattraffic)) {
                 $query = Mattraffic::findOne($id_mattraffic);
                 if (!empty($query)) {
                     $material_writeoff = Material::VariablesValues('material_writeoff');
-                    echo json_encode([
+                    return [
                         'material_id' => $query->id_material,
                         'material_name' => $query->idMaterial->material_name,
                         'material_writeoff' => $material_writeoff[$query->idMaterial->material_writeoff],
@@ -165,9 +167,11 @@ class OsmotraktController extends Controller
                         'dolzh_name' => $query->idMol->iddolzh->dolzh_name,
                         'build_name' => $query->idMol->idbuild->build_name,
                         'mattraffic_number' => $query->mattraffic_number,
-                    ]);
+                    ];
                 }
             }
+
+            return "";
         }
     }
 
@@ -227,7 +231,7 @@ class OsmotraktController extends Controller
                     $fnutf8 = $filename;
                     $fregatsettings = Fregatsettings::findOne(1);
 
-                    $fl = (DIRECTORY_SEPARATOR === '/') ? ('tmpfiles/' . $filename) : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+                    $fl = OSHelper::setFileNameByOS('tmpfiles/' . $filename);
 
                     $sended = Yii::$app->mailer->compose('//Fregat/osmotrakt/_send', [
                         'filename' => $filename,
@@ -242,7 +246,7 @@ class OsmotraktController extends Controller
                     if (!$sended)
                         throw new HttpException(500, 'Возникла ошибка при отправке письма');
                     else {
-                        $FileName = DIRECTORY_SEPARATOR === '/' ? 'tmpfiles/' . $filename : mb_convert_encoding('tmpfiles/' . $filename, 'Windows-1251', 'UTF-8');
+                        $FileName = OSHelper::setFileNameByOS('tmpfiles/' . $filename);
                         unlink($FileName);
                     }
                     echo $fnutf8;
