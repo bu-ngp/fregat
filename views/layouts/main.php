@@ -21,6 +21,11 @@ AppAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title>Портал БУ "НГП"</title>
     <?php $this->head() ?>
+    <?php $this->registerLinkTag([
+        'rel' => 'shortcut icon',
+        'type' => 'image/x-icon',
+        'href' =>  Yii::getAlias('@web/favicon.ico'),
+    ]);?>
 </head>
 <body>
 <style>
