@@ -96,21 +96,27 @@
 ### Скриншоты проекта
 
 Окно авторизации в системе
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/01.jpg)
 
 Главное меню системы
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/02.jpg)
 
 Меню системы "Фрегат"
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/03.jpg)
 
 Журнал материальных ценностей в системе "Фрегат"
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/04.jpg)
 
 Окно настройки грида
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/05.jpg)
 
 Окно дополнительного фильтра грида с возможностью поиска
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/06.jpg)
 
 ## Регистр глаукомных пациентов
@@ -126,4 +132,5 @@
 ### Скриншоты проекта
 
 Главная страница регистра глаукомных пациентов (данные пациентов на скриншоте тестовые, не имеющие отношения к реальным людям)
+
 ![Портал организации 2016 01](https://github.com/vovancho/karpovportal/blob/master/project/07.jpg)
