@@ -1,20 +1,25 @@
 var SendOsmotraktDialog = "#SendOsmotraktDialog";
 
-$(document).ready(function () {
-    $(document).on('ready pjax:success', function () {
-        $('.osmotraktsend').click(function (e) {
-            e.preventDefault(); //for prevent default behavior of <a> tag.
-            $(SendOsmotraktDialog).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
-            $(SendOsmotraktDialog).modal('show').find('.modal-body').load($(this).attr('href'), function () {
-                SetStyleFilterBehavior();
-                GetScrollFilter("div.insideforms");
+var modalSendShow = function () {
+    console.debug('yeah');
+    $(filtergrid).find('.osmotraktsend').click(function (e) {
+        e.preventDefault(); //for prevent default behavior of <a> tag.
+        $(SendOsmotraktDialog).modal('show').find('.modal-body').html('<div style="height: 150px; width: 100%; background: url(' + baseUrl + 'images/progress.svg) center center no-repeat; background-size: 20px;"></div>');
+        $(SendOsmotraktDialog).modal('show').find('.modal-body').load($(this).attr('href'), function () {
+            SetStyleFilterBehavior();
+            GetScrollFilter("div.insideforms");
 
-                $("div.insideforms").scroll(function () {
-                    SetScrollFilter(this);
-                });
-
+            $("div.insideforms").scroll(function () {
+                SetScrollFilter(this);
             });
+
         });
+    });
+};
+
+$(document).ready(function () {
+    $(document).on('pjax:success', function () {
+        modalSendShow();
     });
 
     $(document).on("click", SendOsmotraktDialog + "_apply", function () {
@@ -57,4 +62,5 @@ $(document).ready(function () {
         $(SendOsmotraktDialog).modal("hide");
     });
 
+    modalSendShow();
 });

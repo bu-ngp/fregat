@@ -230,8 +230,8 @@ class ReportTemplates
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(11, $num, $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idperson->auth_user_fullname . ', ' . $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->iddolzh->dolzh_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(12, $num, empty($ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name) ? '' : $ar->idTrMatOsmotr->idTrMat->idMattraffic->idMol->idbuild->build_name);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(13, $num, TrMatOsmotr::getBuildandCabinetByTrMatOsmotr($ar->id_tr_mat_osmotr));
-            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_name);
-            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(15, $num, $ar->idTrMatOsmotr->idTrMat->idParent->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(14, $num, $ar->idTrMatOsmotr->idTrMat->idParent->idMaterial->material_name);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicitByColumnAndRow(15, $num, $ar->idTrMatOsmotr->idTrMat->idParent->idMaterial->material_inv, \PHPExcel_Cell_DataType::TYPE_STRING);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(16, $num, $ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_id);
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(17, $num, Yii::$app->formatter->asDate($ar->idTrMatOsmotr->idOsmotraktmat->osmotraktmat_date));
             $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(18, $num, 'Материал');
